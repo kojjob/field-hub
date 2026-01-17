@@ -142,31 +142,32 @@ Refs: FH-002"
 git push -u origin feature/FH-002-database-schema
 ```
 
-### FH-003: Ecto Schemas
+### FH-003: Ecto Schemas ✅
 
-- [ ] **Test First:** Write schema validation tests
-  - [ ] `test/field_hub/accounts/organization_test.exs`
-  - [ ] `test/field_hub/dispatch/technician_test.exs`
-  - [ ] `test/field_hub/crm/customer_test.exs`
-  - [ ] `test/field_hub/jobs/job_test.exs`
-- [ ] **Implement:** Create schema modules
-  - [ ] `lib/field_hub/accounts/organization.ex`
-  - [ ] `lib/field_hub/dispatch/technician.ex`
-  - [ ] `lib/field_hub/crm/customer.ex`
-  - [ ] `lib/field_hub/jobs/job.ex`
-  - [ ] `lib/field_hub/jobs/job_event.ex`
-- [ ] **Verify:** All tests pass
+- [x] **Test First:** Write schema validation tests
+  - [x] `test/field_hub/accounts/organization_test.exs`
+  - [x] `test/field_hub/dispatch/technician_test.exs`
+  - [x] `test/field_hub/crm/customer_test.exs`
+  - [x] `test/field_hub/jobs/job_test.exs`
+  - [x] `test/field_hub/jobs/job_event_test.exs`
+- [x] **Implement:** Create schema modules
+  - [x] `lib/field_hub/accounts/organization.ex`
+  - [x] `lib/field_hub/dispatch/technician.ex`
+  - [x] `lib/field_hub/crm/customer.ex`
+  - [x] `lib/field_hub/jobs/job.ex`
+  - [x] `lib/field_hub/jobs/job_event.ex`
+- [x] **Verify:** All tests pass (169 tests)
 
-**Branch:** `feature/FH-003-ecto-schemas`
+**Branch:** `feature/FH-003-ecto-schemas` (merged to develop)
 
-### FH-004: Update User Schema for Multi-tenancy
+### FH-004: Update User Schema for Multi-tenancy ✅
 
-- [ ] **Test First:** Write tests for user-organization association
-- [ ] **Implement:** Update User schema with organization_id, name, role
-- [ ] **Implement:** Update Accounts context with organization scoping
-- [ ] **Verify:** Auth still works, tests pass
+- [x] **Test First:** Write tests for user-organization association
+- [x] **Implement:** Update User schema with organization_id, name, role
+- [x] **Implement:** Update Accounts context with organization scoping
+- [x] **Verify:** Auth still works, tests pass
 
-**Branch:** `feature/FH-004-user-multitenancy`
+**Branch:** `feature/FH-003-ecto-schemas` (included in schema work)
 
 ### FH-005: Git Repository Setup
 
@@ -196,33 +197,38 @@ git push -u origin develop
 
 ## Phase 1: Core Domain (Weeks 2-3)
 
-### FH-010: Organizations Context
+### FH-010: Organizations Context ✅
 
-- [ ] **Test First:** `test/field_hub/accounts/accounts_organization_test.exs`
-  - [ ] `create_organization/1` with valid attrs
-  - [ ] `create_organization/1` with invalid attrs
-  - [ ] `update_organization/2`
-  - [ ] `delete_organization/1`
-  - [ ] `get_organization!/1`
-  - [ ] `get_organization_by_slug/1`
-  - [ ] `generate_slug/1` uniqueness
-- [ ] **Implement:** Add organization functions to Accounts context
-- [ ] **Refactor:** Extract slug generation to helper module
+- [x] **Test First:** `test/field_hub/accounts/organizations_test.exs`
+  - [x] `create_organization/1` with valid attrs
+  - [x] `create_organization/1` with invalid attrs
+  - [x] `update_organization/2`
+  - [x] `delete_organization/1`
+  - [x] `get_organization!/1`
+  - [x] `get_organization_by_slug/1`
+  - [x] `generate_unique_slug/1` uniqueness
+  - [x] `create_organization_with_owner/2` (Ecto.Multi)
+  - [x] `update_subscription/2`
+  - [x] `organization_active?/1`
+- [x] **Implement:** Add organization functions to Accounts context
+- [x] **Refactor:** Handle string/atom keys, DateTime truncation
 
-**Branch:** `feature/FH-010-organizations-context`
+**Branch:** `feature/FH-010-organizations-context` (merged to develop)
 
-### FH-011: Organization Onboarding Flow
+### FH-011: Organization Onboarding Flow ✅
 
-- [ ] **Test First:** `test/field_hub_web/live/onboarding_live_test.exs`
-  - [ ] Renders onboarding form for user without org
-  - [ ] Creates organization on valid submit
-  - [ ] Shows validation errors
-  - [ ] Redirects to dashboard after creation
-- [ ] **Implement:** `lib/field_hub_web/live/onboarding_live.ex`
-- [ ] **Implement:** Update router with onboarding route
-- [ ] **Implement:** Plug to redirect users without org to onboarding
+- [x] **Test First:** `test/field_hub_web/live/onboarding_live_test.exs`
+  - [x] Renders onboarding form for user without org
+  - [x] Creates organization on valid submit
+  - [x] Shows validation errors
+  - [x] Redirects to dashboard after creation
+  - [x] Auto-generates slug preview
+  - [x] Redirects users with org to dashboard
+- [x] **Implement:** `lib/field_hub_web/live/onboarding_live.ex`
+- [x] **Implement:** `lib/field_hub_web/live/dashboard_live.ex`
+- [x] **Implement:** Update router with onboarding/dashboard routes
 
-**Branch:** `feature/FH-011-onboarding-flow`
+**Branch:** `feature/FH-011-onboarding-flow` (merged to develop)
 
 ### FH-012: Dispatch Context (Technicians)
 
@@ -772,29 +778,32 @@ git push -u origin develop
 
 | Phase | Tasks | Completed | Progress |
 | ----- | ----- | --------- | -------- |
-| 0 - Foundation | 17 | 11 | 65% |
-| 1 - Core Domain | 32 | 0 | 0% |
+| 0 - Foundation | 17 | 17 | 100% |
+| 1 - Core Domain | 32 | 8 | 25% |
 | 2 - Dispatcher Dashboard | 36 | 0 | 0% |
 | 3 - Technician Mobile | 28 | 0 | 0% |
 | 4 - Customer Portal | 12 | 0 | 0% |
 | 5 - Notifications | 20 | 0 | 0% |
 | 6 - Billing & Polish | 16 | 0 | 0% |
 | 7 - Launch Prep | 24 | 0 | 0% |
-| **TOTAL** | **185** | **11** | **6%** |
+| **TOTAL** | **185** | **25** | **14%** |
 
 ---
 
 ## 🏃 Current Sprint
 
-**Sprint 1 (Week 1):** Foundation
-- [ ] FH-002: Run all migrations
-- [ ] FH-003: Create Ecto schemas with tests
-- [ ] FH-004: Update User for multi-tenancy
-- [ ] FH-005: Git repository setup
+**Sprint 1 (Week 1):** Foundation ✅
+- [x] FH-002: Run all migrations
+- [x] FH-003: Create Ecto schemas with tests
+- [x] FH-004: Update User for multi-tenancy
+- [x] FH-005: Git repository setup
+- [x] FH-010: Organizations Context
+- [x] FH-011: Onboarding Flow
 
-**Next Up:**
-- FH-010: Organizations Context
-- FH-011: Onboarding Flow
+**Next Up (Sprint 2):**
+- FH-012: Dispatch Context (Technicians)
+- FH-013: CRM Context (Customers)
+- FH-014: Jobs Context - Basic CRUD
 
 ---
 
