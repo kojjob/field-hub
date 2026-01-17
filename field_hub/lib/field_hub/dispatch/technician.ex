@@ -72,6 +72,7 @@ defmodule FieldHub.Dispatch.Technician do
     |> validate_number(:hourly_rate, greater_than: 0)
     |> foreign_key_constraint(:organization_id)
     |> foreign_key_constraint(:user_id)
+    |> unique_constraint(:email, name: :technicians_organization_id_email_index)
   end
 
   @doc """
