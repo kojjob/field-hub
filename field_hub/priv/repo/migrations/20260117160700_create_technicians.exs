@@ -9,7 +9,8 @@ defmodule FieldHub.Repo.Migrations.CreateTechnicians do
       add :email, :string
       add :phone, :string
       add :status, :string, default: "off_duty"
-      add :color, :string, default: "#3B82F6"  # Blue
+      # Blue
+      add :color, :string, default: "#3B82F6"
       add :avatar_url, :string
 
       # Skills and certifications

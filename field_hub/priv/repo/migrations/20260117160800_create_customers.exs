@@ -33,7 +33,8 @@ defmodule FieldHub.Repo.Migrations.CreateCustomers do
       add :special_instructions, :text
 
       # Source tracking
-      add :source, :string  # "referral", "google", "phone", etc.
+      # "referral", "google", "phone", etc.
+      add :source, :string
       add :referred_by, :string
 
       # Soft delete

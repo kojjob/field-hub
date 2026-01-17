@@ -55,13 +55,15 @@ defmodule FieldHub.Repo.Migrations.CreateJobs do
       add :invoice_id, :string
 
       # Completion
-      add :customer_signature, :text  # Base64 encoded
+      # Base64 encoded
+      add :customer_signature, :text
       add :photos, {:array, :string}, default: []
       add :completed_by_id, references(:technicians, on_delete: :nilify_all)
 
       # Recurring job reference
       add :recurring_job_id, :integer
-      add :recurrence_rule, :string  # iCal RRULE format
+      # iCal RRULE format
+      add :recurrence_rule, :string
 
       # Metadata
       add :tags, {:array, :string}, default: []
@@ -80,9 +82,10 @@ defmodule FieldHub.Repo.Migrations.CreateJobs do
 
     # Job number sequence per organization
     execute """
-    CREATE SEQUENCE IF NOT EXISTS job_number_seq START 1000;
-    """, """
-    DROP SEQUENCE IF EXISTS job_number_seq;
-    """
+            CREATE SEQUENCE IF NOT EXISTS job_number_seq START 1000;
+            """,
+            """
+            DROP SEQUENCE IF EXISTS job_number_seq;
+            """
   end
 end
