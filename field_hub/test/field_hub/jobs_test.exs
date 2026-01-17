@@ -106,7 +106,7 @@ defmodule FieldHub.JobsTest do
   describe "list_unassigned_jobs/1" do
     test "returns jobs with status unscheduled", %{org: org, customer: customer} do
       unscheduled = job_fixture(org.id, customer.id, %{status: "unscheduled"})
-      scheduled = job_fixture(org.id, customer.id, %{status: "scheduled", scheduled_date: Date.utc_today()})
+      _scheduled = job_fixture(org.id, customer.id, %{status: "scheduled", scheduled_date: Date.utc_today()})
 
       jobs = Jobs.list_unassigned_jobs(org.id)
 
@@ -123,6 +123,58 @@ defmodule FieldHub.JobsTest do
       assert {:ok, updated} = Jobs.assign_job(job, tech.id)
       assert updated.technician_id == tech.id
       assert updated.status == "dispatched"
+    end
+  end
+
+  describe "job workflow" do
+    test "full lifecycle", %{org: org, customer: customer} do
+      job = job_fixture(org.id, customer.id, %{status: "unscheduled"})
+
+      # Schedule
+      tomorrow = Date.add(Date.utc_today(), 1)
+      assert {:ok, scheduled} = Jobs.schedule_job(job, %{
+        scheduled_date: tomorrow,
+        scheduled_start: ~T[09:00:00],
+        scheduled_end: ~T[11:00:00]
+      })
+      assert scheduled.status == "scheduled"
+      assert scheduled.scheduled_date == tomorrow
+
+      # Assign
+      {:ok, tech} = Dispatch.create_technician(org.id, %{name: "Tech Flow", email: "flow@example.com"})
+      assert {:ok, dispatched} = Jobs.assign_job(scheduled, tech.id)
+      assert dispatched.status == "dispatched"
+
+      # Start Travel
+      assert {:ok, en_route} = Jobs.start_travel(dispatched)
+      assert en_route.status == "en_route"
+      assert en_route.travel_started_at
+
+      # Arrive
+      assert {:ok, on_site} = Jobs.arrive_on_site(en_route)
+      assert on_site.status == "on_site"
+      assert on_site.arrived_at
+
+      # Start Work
+      assert {:ok, working} = Jobs.start_work(on_site)
+      assert working.status == "in_progress"
+      assert working.started_at
+
+      # Complete
+      assert {:ok, completed} = Jobs.complete_job(working, %{
+        work_performed: "Fixed it",
+        customer_signature: "Sig",
+        actual_amount: 150
+      })
+      assert completed.status == "completed"
+      assert completed.completed_at
+    end
+
+    test "cancelling a job", %{org: org, customer: customer} do
+      job = job_fixture(org.id, customer.id)
+      assert {:ok, cancelled} = Jobs.cancel_job(job, "Customer request")
+      assert cancelled.status == "cancelled"
+      assert cancelled.internal_notes =~ "Cancelled: Customer request"
     end
   end
 

@@ -136,4 +136,60 @@ defmodule FieldHub.Jobs do
     |> Job.assign_changeset(technician_id)
     |> Repo.update()
   end
+
+  @doc """
+  Schedules a job.
+
+  Updates status to "scheduled" if valid.
+  """
+  def schedule_job(%Job{} = job, attrs) do
+    job
+    |> Job.schedule_changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Updates job status to "en_route" and sets travel start time.
+  """
+  def start_travel(%Job{} = job) do
+    job
+    |> Job.start_travel_changeset()
+    |> Repo.update()
+  end
+
+  @doc """
+  Updates job status to "on_site" and sets arrival time.
+  """
+  def arrive_on_site(%Job{} = job) do
+    job
+    |> Job.arrive_changeset()
+    |> Repo.update()
+  end
+
+  @doc """
+  Updates job status to "in_progress" and sets start time.
+  """
+  def start_work(%Job{} = job) do
+    job
+    |> Job.start_work_changeset()
+    |> Repo.update()
+  end
+
+  @doc """
+  Completes a job with required details.
+  """
+  def complete_job(%Job{} = job, attrs) do
+    job
+    |> Job.complete_changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Cancels a job with a reason.
+  """
+  def cancel_job(%Job{} = job, reason) do
+    job
+    |> Job.cancel_changeset(reason)
+    |> Repo.update()
+  end
 end
