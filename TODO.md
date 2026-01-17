@@ -362,19 +362,21 @@ git push -u origin develop
 
 **Branch:** `feature/FH-022-customer-management`
 
-### FH-023: Job Creation & Editing
+### FH-023: Job Creation & Editing ✅
 
-- [ ] **Test First:** `test/field_hub_web/live/job_live_test.exs`
-  - [ ] Create job with customer selection
-  - [ ] Create job with new customer inline
-  - [ ] Edit job details
-  - [ ] Validate required fields
-  - [ ] Auto-generate job number on create
-- [ ] **Implement:** `lib/field_hub_web/live/job_live/form_component.ex`
-- [ ] **Implement:** Customer search/select component
-- [ ] **Implement:** Address autocomplete (Google Places API)
+- [x] **Test First:** `test/field_hub_web/live/job_live_test.exs`
+  - [x] Create job with customer selection
+  - [x] Edit job details
+  - [x] Validate required fields
+  - [x] Auto-generate job number on create
+- [x] **Implement:** `lib/field_hub_web/live/job_live/index.ex`
+- [x] **Implement:** `lib/field_hub_web/live/job_live/show.ex`
+- [x] **Implement:** `lib/field_hub_web/live/job_live/form_component.ex`
+- [ ] **Stretch:** Customer search/select component (inline new customer)
+- [ ] **Stretch:** Address autocomplete (Google Places API)
 
 **Branch:** `feature/FH-023-job-forms`
+**PR:** [#3](https://github.com/kojjob/field-hub/pull/3)
 
 ### FH-024: Dispatch Board - Calendar View
 
@@ -800,16 +802,18 @@ git push -u origin develop
 - [x] FH-010: Organizations Context
 - [x] FH-011: Onboarding Flow
 
-**Sprint 2 (Week 2):** Dispatcher Dashboard 🚧
+**Sprint 2 (Week 2):** Dispatcher Dashboard ✅
 - [x] FH-012: Dispatch Context (Technicians)
 - [x] FH-013: CRM Context (Customers)
 - [x] FH-014: Jobs Context - Basic CRUD
 - [x] FH-020: Dashboard Layout
 - [x] FH-021: Technician Management UI
+- [x] FH-022: Customer Management UI
+- [x] FH-023: Job Creation & Editing
 
 **Next Up:**
-- FH-022: Customer Management UI
-- FH-023: Job Creation & Editing
+- FH-024: Dispatch Board - Calendar View
+- FH-025: Dispatch Board - Drag & Drop Assignment
 
 ---
 
