@@ -5,6 +5,8 @@ defmodule FieldHub.DispatchTest do
   alias FieldHub.Dispatch.Technician
   alias FieldHub.Accounts
 
+  import FieldHub.DispatchFixtures
+
   setup do
     {:ok, org} = Accounts.create_organization(%{name: "Test Org", slug: "test-org"})
     %{org: org}
@@ -216,17 +218,4 @@ defmodule FieldHub.DispatchTest do
     end
   end
 
-  # Fixtures
-
-  defp technician_fixture(org_id, attrs \\ %{}) do
-    {:ok, tech} =
-      attrs
-      |> Enum.into(%{
-        name: "Test Tech #{System.unique_integer([:positive])}",
-        email: "tech#{System.unique_integer([:positive])}@example.com"
-      })
-      |> then(&Dispatch.create_technician(org_id, &1))
-
-    tech
-  end
 end

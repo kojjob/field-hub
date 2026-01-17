@@ -61,45 +61,40 @@ defmodule FieldHub.CRM do
       {:error, %Ecto.Changeset{}}
 
   """
+  alias FieldHub.CRM.Broadcaster
+
+  # ...
+
   def create_customer(org_id, attrs) do
     %Customer{organization_id: org_id}
     |> Customer.changeset(attrs)
     |> Customer.generate_portal_token()
     |> Repo.insert()
+    |> broadcast_customer_created()
   end
 
-  @doc """
-  Updates a customer.
-
-  ## Examples
-
-      iex> update_customer(customer, %{field: new_value})
-      {:ok, %Customer{}}
-
-      iex> update_customer(customer, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
   def update_customer(%Customer{} = customer, attrs) do
     customer
     |> Customer.changeset(attrs)
     |> Repo.update()
+    |> broadcast_customer_updated()
   end
 
-  @doc """
-  Archives a customer (soft delete).
-
-  ## Examples
-
-      iex> archive_customer(customer)
-      {:ok, %Customer{}}
-
-  """
   def archive_customer(%Customer{} = customer) do
     customer
     |> Ecto.Changeset.change(%{archived_at: DateTime.utc_now() |> DateTime.truncate(:second)})
     |> Repo.update()
+    |> broadcast_customer_archived()
   end
+
+  defp broadcast_customer_created({:ok, customer}), do: Broadcaster.broadcast_customer_created(customer)
+  defp broadcast_customer_created(error), do: error
+
+  defp broadcast_customer_updated({:ok, customer}), do: Broadcaster.broadcast_customer_updated(customer)
+  defp broadcast_customer_updated(error), do: error
+
+  defp broadcast_customer_archived({:ok, customer}), do: Broadcaster.broadcast_customer_archived(customer)
+  defp broadcast_customer_archived(error), do: error
 
   @doc """
   Searches customers by name, email, phone, or address.
@@ -119,5 +114,18 @@ defmodule FieldHub.CRM do
     )
     |> order_by([c], c.name)
     |> Repo.all()
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking customer changes.
+
+  ## Examples
+
+      iex> change_customer(customer)
+      %Ecto.Changeset{data: %Customer{}}
+
+  """
+  def change_customer(%Customer{} = customer, attrs \\ %{}) do
+    Customer.changeset(customer, attrs)
   end
 end

@@ -30,6 +30,21 @@ defmodule FieldHub.AccountsFixtures do
   def user_fixture(attrs \\ %{}) do
     user = unconfirmed_user_fixture(attrs)
 
+    # Manually update organization if provided since register_user doesn't handle it
+    org_id = attrs[:organization_id] || attrs[:current_organization_id]
+
+    user =
+      if org_id do
+        {:ok, updated_user} =
+          user
+          |> Ecto.Changeset.change(organization_id: org_id)
+          |> FieldHub.Repo.update()
+
+        updated_user
+      else
+        user
+      end
+
     token =
       extract_user_token(fn url ->
         Accounts.deliver_login_instructions(user, url)
@@ -37,6 +52,8 @@ defmodule FieldHub.AccountsFixtures do
 
     {:ok, {user, _expired_tokens}} =
       Accounts.login_user_by_magic_link(token)
+
+
 
     user
   end

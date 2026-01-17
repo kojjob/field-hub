@@ -77,6 +77,7 @@ defmodule FieldHub.Dispatch do
     %Technician{organization_id: org_id}
     |> Technician.changeset(attrs)
     |> Repo.insert()
+    |> broadcast_technician_created()
   end
 
   @doc """
@@ -95,6 +96,20 @@ defmodule FieldHub.Dispatch do
     technician
     |> Technician.changeset(attrs)
     |> Repo.update()
+    |> broadcast_technician_updated()
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking technician changes.
+
+  ## Examples
+
+      iex> change_technician(technician)
+      %Ecto.Changeset{data: %Technician{}}
+
+  """
+  def change_technician(%Technician{} = technician, attrs \\ %{}) do
+    Technician.changeset(technician, attrs)
   end
 
   @doc """
@@ -146,6 +161,7 @@ defmodule FieldHub.Dispatch do
     technician
     |> Ecto.Changeset.change(%{archived_at: DateTime.utc_now() |> DateTime.truncate(:second)})
     |> Repo.update()
+    |> broadcast_technician_archived()
   end
 
   @doc """
@@ -163,6 +179,7 @@ defmodule FieldHub.Dispatch do
     technician
     |> Ecto.Changeset.change(%{archived_at: nil})
     |> Repo.update()
+    |> broadcast_technician_updated()
   end
 
   @doc """
@@ -266,4 +283,22 @@ defmodule FieldHub.Dispatch do
     {:ok, tech}
   end
   defp broadcast_technician_location(error), do: error
+
+  defp broadcast_technician_created({:ok, tech}) do
+    Broadcaster.broadcast_technician_created(tech)
+    {:ok, tech}
+  end
+  defp broadcast_technician_created(error), do: error
+
+  defp broadcast_technician_updated({:ok, tech}) do
+    Broadcaster.broadcast_technician_updated(tech)
+    {:ok, tech}
+  end
+  defp broadcast_technician_updated(error), do: error
+
+  defp broadcast_technician_archived({:ok, tech}) do
+    Broadcaster.broadcast_technician_archived(tech)
+    {:ok, tech}
+  end
+  defp broadcast_technician_archived(error), do: error
 end

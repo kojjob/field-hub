@@ -29,6 +29,21 @@ defmodule FieldHub.Dispatch.Broadcaster do
     {:ok, tech}
   end
 
+  def broadcast_technician_created(%Technician{} = tech) do
+    broadcast(org_topic(tech.organization_id), {:technician_created, tech})
+    {:ok, tech}
+  end
+
+  def broadcast_technician_updated(%Technician{} = tech) do
+    broadcast(org_topic(tech.organization_id), {:technician_updated, tech})
+    {:ok, tech}
+  end
+
+  def broadcast_technician_archived(%Technician{} = tech) do
+    broadcast(org_topic(tech.organization_id), {:technician_archived, tech})
+    {:ok, tech}
+  end
+
   def broadcast_technician_status(%Technician{} = tech) do
     broadcast(org_topic(tech.organization_id), {:technician_status_updated, tech})
     {:ok, tech}
