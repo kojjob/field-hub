@@ -401,7 +401,8 @@ git push -u origin develop
 - [x] **Implement:** `handle_event("assign_job", ...)` and `handle_event("unassign_job", ...)`
 - [x] **Implement:** Unassigned jobs sidebar (draggable source)
 - [x] **Implement:** Visual feedback during drag
-- [x] **Integrate:** Assignment changes update UI via load_data()
+```
+  - [x] **Integrate:** Assignment changes update UI via load_data()
 
 **Branch:** `feature/FH-025-drag-drop-assignment`
 **PR:** [#5](https://github.com/kojjob/field-hub/pull/5)
@@ -417,13 +418,15 @@ git push -u origin develop
 **Branch:** `feature/FH-026-dispatch-quick-actions`
 **PR:** [#6](https://github.com/kojjob/field-hub/pull/6)
 
-### FH-027: Technician Status Sidebar
+### FH-027: Technician Status Sidebar ✅
 
-- [ ] **Test First:** Real-time status updates render
-- [ ] **Implement:** Technician list with current status
-- [ ] **Implement:** Real-time status badge updates
-- [ ] **Implement:** Current job indicator
-- [ ] **Implement:** Click to view technician schedule
+- [x] **Test First:** Real-time status updates render
+- [x] **Implement:** Technician list with current status
+- [x] **Implement:** Real-time status badge updates
+- [x] **Implement:** Current job indicator
+- [x] **Implement:** Click to view technician schedule
+- [x] **Implement:** Reschedule job (drag to different time/day)
+- [x] **Implement:** Keyboard shortcuts (n = new job, etc.)
 
 **Branch:** `feature/FH-027-tech-status-sidebar`
 

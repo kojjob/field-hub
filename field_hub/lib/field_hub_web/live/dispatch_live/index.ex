@@ -7,6 +7,8 @@ defmodule FieldHubWeb.DispatchLive.Index do
   alias FieldHub.Jobs
   alias FieldHub.Dispatch
   alias FieldHub.Dispatch.Broadcaster
+  import Ecto.Query
+  alias FieldHub.Repo
 
   @impl true
   def mount(_params, _session, socket) do
@@ -26,6 +28,7 @@ defmodule FieldHubWeb.DispatchLive.Index do
       |> assign(:selected_date, today)
       |> assign(:view_mode, :day)
       |> assign(:selected_job, nil)
+      |> assign(:technician_filter, nil)
       |> load_data()
 
     {:ok, socket}
@@ -39,9 +42,18 @@ defmodule FieldHubWeb.DispatchLive.Index do
   defp load_data(socket) do
     org_id = socket.assigns.current_organization.id
     selected_date = socket.assigns.selected_date
+    tech_filter_id = socket.assigns.technician_filter
 
-    # Load technicians
-    technicians = Dispatch.list_technicians(org_id)
+    # Load technicians with active jobs
+    base_query = Dispatch.list_technicians(org_id)
+      |> Repo.preload(jobs: from(j in FieldHub.Jobs.Job, where: j.status == "in_progress", order_by: [desc: j.updated_at], limit: 1, preload: [:customer]))
+
+    technicians =
+      if tech_filter_id do
+        Enum.filter(base_query, fn t -> t.id == tech_filter_id end)
+      else
+        base_query
+      end
 
     # Load scheduled jobs for the selected date
     scheduled_jobs = Jobs.list_jobs_for_date(org_id, selected_date)
@@ -88,7 +100,8 @@ defmodule FieldHubWeb.DispatchLive.Index do
 
     # Add scheduled time if hour is provided
     update_params = if params["hour"] do
-      hour = params["hour"]
+      hour_val = params["hour"]
+      hour = if is_integer(hour_val), do: hour_val, else: String.to_integer(hour_val)
       Map.put(update_params, "scheduled_start", Time.new!(hour, 0, 0) |> Time.to_string())
     else
       update_params
@@ -165,6 +178,48 @@ defmodule FieldHubWeb.DispatchLive.Index do
   end
 
   @impl true
+  def handle_event("update_tech_status", %{"technician_id" => tech_id, "status" => status}, socket) do
+    org_id = socket.assigns.current_organization.id
+    technician = Dispatch.get_technician!(org_id, tech_id)
+
+    case Dispatch.update_technician(technician, %{status: status}) do
+      {:ok, _tech} ->
+        {:noreply, socket}
+
+      {:error, _changeset} ->
+        {:noreply, put_flash(socket, :error, "Failed to update status")}
+    end
+  end
+
+  @impl true
+  def handle_event("view_tech_schedule", %{"tech_id" => tech_id}, socket) do
+    {:noreply,
+     socket
+     |> assign(:technician_filter, String.to_integer(tech_id))
+     |> load_data()}
+  end
+
+  @impl true
+  def handle_event("clear_tech_filter", _params, socket) do
+    {:noreply,
+     socket
+     |> assign(:technician_filter, nil)
+     |> load_data()}
+  end
+
+  @impl true
+  def handle_event("keydown", %{"key" => key}, socket) do
+    case key do
+      "n" -> {:noreply, push_navigate(socket, to: ~p"/jobs/new")}
+      "Escape" -> handle_event("close_job_details", nil, socket)
+      "ArrowLeft" -> handle_event("prev_day", nil, socket)
+      "ArrowRight" -> handle_event("next_day", nil, socket)
+      "t" -> handle_event("today", nil, socket)
+      _ -> {:noreply, socket}
+    end
+  end
+
+  @impl true
   def handle_event("close_job_details", _params, socket) do
     {:noreply, assign(socket, :selected_job, nil)}
   end
@@ -176,6 +231,11 @@ defmodule FieldHubWeb.DispatchLive.Index do
 
   @impl true
   def handle_info({:job_updated, _job}, socket) do
+    {:noreply, load_data(socket)}
+  end
+
+  @impl true
+  def handle_info({:technician_updated, _tech}, socket) do
     {:noreply, load_data(socket)}
   end
 
@@ -252,7 +312,7 @@ defmodule FieldHubWeb.DispatchLive.Index do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="h-full flex flex-col">
+    <div class="h-full flex flex-col" phx-window-keydown="keydown">
       <!-- Header -->
       <div class="bg-white border-b px-4 py-3 flex items-center justify-between">
         <div>
@@ -387,10 +447,56 @@ defmodule FieldHubWeb.DispatchLive.Index do
             <% end %>
           </div>
         </div>
-      </div>
+        <!-- Technician Status Sidebar -->
+      <div class="w-72 bg-white border-l flex flex-col shrink-0">
+        <div class="p-4 border-b flex items-center justify-between">
+          <h2 class="font-semibold text-gray-800">Technician Status</h2>
+          <%= if @technician_filter do %>
+            <button phx-click="clear_tech_filter" class="text-xs text-blue-600 hover:text-blue-800 font-medium">
+              Clear Filter
+            </button>
+          <% end %>
+        </div>
+        <div class="flex-1 overflow-y-auto p-4 space-y-4">
+          <%= for tech <- @technicians do %>
+            <div
+              class={"bg-gray-50 rounded-lg p-3 border hover:bg-gray-100 cursor-pointer transition-colors #{if @technician_filter == tech.id, do: "ring-2 ring-primary ring-offset-2"}"}
+              phx-click="view_tech_schedule"
+              phx-value-tech_id={tech.id}
+            >
+              <div class="flex items-center gap-3 mb-2">
+                <div class="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold" style={"background-color: #{tech.color}"}>
+                  {initials(tech.name)}
+                </div>
+                <div>
+                  <div class="font-medium text-sm">{tech.name}</div>
+                  <div class="flex items-center gap-1.5 mt-0.5">
+                    <div class={"w-2 h-2 rounded-full #{tech_status_dot(tech.status)}"}></div>
+                    <span class={"text-xs px-1.5 py-0.5 rounded #{tech_status_color(tech.status)}"}>
+                      {String.replace(tech.status, "_", " ")}
+                    </span>
+                  </div>
+                </div>
+              </div>
 
-      <!-- Job Details Slideout Panel -->
-      <%= if @selected_job do %>
+              <!-- Current Active Job -->
+              <%= if tech.status == "on_job" || tech.status == "traveling" do %>
+                <%= if active_job = List.first(tech.jobs) do %>
+                  <div class="mt-2 text-xs bg-white rounded p-2 border shadow-sm">
+                    <div class="text-gray-500 mb-0.5">Current Job:</div>
+                    <div class="font-medium truncate">{active_job.title}</div>
+                    <div class="text-gray-500 truncate">{active_job.customer.name}</div>
+                  </div>
+                <% end %>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+  <!-- Job Details Slideout Panel -->
+  <%= if @selected_job do %>
         <div class="fixed inset-0 bg-black/20 z-40" phx-click="close_job_details"></div>
         <div class="fixed right-0 top-0 h-full w-96 bg-white shadow-xl z-50 overflow-y-auto">
           <div class="p-4 border-b flex items-center justify-between">
@@ -548,4 +654,35 @@ defmodule FieldHubWeb.DispatchLive.Index do
     Calendar.strftime(time, "%I:%M %p")
   end
   defp format_time(_), do: ""
+
+  defp tech_status_color(status) do
+    case status do
+      "available" -> "bg-green-100 text-green-800"
+      "on_job" -> "bg-blue-100 text-blue-800"
+      "traveling" -> "bg-yellow-100 text-yellow-800"
+      "break" -> "bg-orange-100 text-orange-800"
+      "off_duty" -> "bg-gray-100 text-gray-800"
+      _ -> "bg-gray-100 text-gray-800"
+    end
+  end
+
+  defp tech_status_dot(status) do
+    case status do
+      "available" -> "bg-green-500"
+      "on_job" -> "bg-blue-500"
+      "traveling" -> "bg-yellow-500"
+      "break" -> "bg-orange-500"
+      "off_duty" -> "bg-gray-400"
+      _ -> "bg-gray-400"
+    end
+  end
+
+  defp initials(name) do
+    name
+    |> String.split(" ")
+    |> Enum.take(2)
+    |> Enum.map(&String.at(&1, 0))
+    |> Enum.join("")
+    |> String.upcase()
+  end
 end

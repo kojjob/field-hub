@@ -255,4 +255,58 @@ defmodule FieldHubWeb.DispatchLiveTest do
       assert html =~ "View this job for more details"
     end
   end
+
+  describe "Technician Status Sidebar" do
+    test "displays technicians with their current status", %{conn: conn, org: org} do
+      technician_fixture(org.id, %{name: "John Smith", status: "available"})
+      technician_fixture(org.id, %{name: "Jane Doe", status: "on_job"})
+
+      {:ok, _live, html} = live(conn, ~p"/dispatch")
+
+      # Both technicians should appear with status
+      assert html =~ "John Smith"
+      assert html =~ "Jane Doe"
+      assert html =~ "available"
+      assert html =~ "on_job"
+    end
+
+    test "shows current job for technicians on a job", %{conn: conn, user: user, org: org} do
+      customer = customer_fixture(org.id)
+      technician = technician_fixture(org.id, %{name: "Active Tech", status: "on_job"})
+
+      {:ok, _job} = FieldHub.Jobs.create_job(org.id, %{
+        title: "Current Active Job",
+        description: "This job is in progress",
+        job_type: "service_call",
+        priority: "normal",
+        status: "in_progress",
+        customer_id: customer.id,
+        technician_id: technician.id,
+        scheduled_date: Date.utc_today(),
+        created_by_id: user.id
+      })
+
+      {:ok, _live, html} = live(conn, ~p"/dispatch")
+
+      # Should show the technician and their current job
+      assert html =~ "Active Tech"
+      assert html =~ "Current Active Job"
+    end
+
+    test "update_tech_status changes technician status", %{conn: conn, org: org} do
+      technician = technician_fixture(org.id, %{name: "Status Test", status: "available"})
+
+      {:ok, live, _html} = live(conn, ~p"/dispatch")
+
+      # Change technician status
+      render_hook(live, "update_tech_status", %{
+        "technician_id" => technician.id,
+        "status" => "on_job"
+      })
+
+      # Verify status changed
+      updated_tech = FieldHub.Dispatch.get_technician!(org.id, technician.id)
+      assert updated_tech.status == "on_job"
+    end
+  end
 end
