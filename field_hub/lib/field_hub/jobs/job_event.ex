@@ -15,6 +15,7 @@ defmodule FieldHub.Jobs.JobEvent do
     created updated status_changed assigned unassigned
     scheduled rescheduled note_added photo_added
     signature_captured payment_collected
+    travel_started arrived work_started completed cancelled
   )
 
   schema "job_events" do
@@ -54,9 +55,9 @@ defmodule FieldHub.Jobs.JobEvent do
   end
 
   @doc """
-  Creates a new job event and inserts it into the database.
+  Builds a job event changeset. Useful for Ecto.Multi.
   """
-  def create_event(job, event_type, attrs \\ %{}) do
+  def build_event_changeset(job, event_type, attrs \\ %{}) do
     metadata = Map.get(attrs, :metadata, %{}) |> stringify_keys()
 
     %__MODULE__{}
@@ -69,6 +70,13 @@ defmodule FieldHub.Jobs.JobEvent do
         metadata: metadata
       })
     )
+  end
+
+  @doc """
+  Creates a new job event and inserts it into the database.
+  """
+  def create_event(job, event_type, attrs \\ %{}) do
+    build_event_changeset(job, event_type, attrs)
     |> Repo.insert()
   end
 
