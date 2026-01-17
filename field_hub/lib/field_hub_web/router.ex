@@ -43,6 +43,14 @@ defmodule FieldHubWeb.Router do
 
       # Main application routes (require organization)
       live "/dashboard", DashboardLive, :index
+    live "/technicians", TechnicianLive.Index, :index
+    live "/technicians/new", TechnicianLive.Index, :new
+    live "/technicians/:id/edit", TechnicianLive.Index, :edit
+
+      live "/customers", CustomerLive.Index, :index
+      live "/customers/new", CustomerLive.Index, :new
+      live "/customers/:id/edit", CustomerLive.Index, :edit
+      live "/customers/:id", CustomerLive.Show, :show
     end
 
     post "/users/update-password", UserSessionController, :update_password

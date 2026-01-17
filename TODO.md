@@ -295,28 +295,28 @@ git push -u origin develop
 
 **Branch:** `feature/FH-015-job-status-workflow` (merged to develop)
 
-### FH-016: Job Events (Audit Trail)
+### FH-016: Job Events (Audit Trail) ✅
 
-- [ ] **Test First:** `test/field_hub/jobs/job_event_test.exs`
-  - [ ] Event created on job creation
-  - [ ] Event created on status change
-  - [ ] Event created on assignment
-  - [ ] Event includes actor info
-  - [ ] Events are immutable (no update)
-- [ ] **Implement:** `lib/field_hub/jobs/job_event.ex` schema
-- [ ] **Implement:** Event creation hooks in Jobs context
+- [x] **Test First:** `test/field_hub/jobs/job_event_test.exs`
+  - [x] Event created on job creation
+  - [x] Event created on status change
+  - [x] Event created on assignment
+  - [x] Event includes actor info
+  - [x] Events are immutable (no update)
+- [x] **Implement:** `lib/field_hub/jobs/job_event.ex` schema
+- [x] **Implement:** Event creation hooks in Jobs context
 
 **Branch:** `feature/FH-016-job-events`
 
-### FH-017: Real-Time Broadcasting
+### FH-017: Real-Time Broadcasting ✅
 
-- [ ] **Test First:** `test/field_hub/dispatch/broadcaster_test.exs`
-  - [ ] `broadcast_job_created/1` sends to org topic
-  - [ ] `broadcast_job_updated/1` sends to org + tech topics
-  - [ ] `broadcast_technician_location/4` sends to org topic
-  - [ ] `broadcast_technician_status_changed/1`
-- [ ] **Implement:** `lib/field_hub/dispatch/broadcaster.ex`
-- [ ] **Integrate:** Call broadcaster from Jobs and Dispatch contexts
+- [x] **Test First:** `test/field_hub/dispatch/broadcaster_test.exs`
+  - [x] `broadcast_job_created/1` sends to org topic
+  - [x] `broadcast_job_updated/1` sends to org + tech topics
+  - [x] `broadcast_technician_location/4` sends to org topic
+  - [x] `broadcast_technician_status_changed/1`
+- [x] **Implement:** `lib/field_hub/dispatch/broadcaster.ex`
+- [x] **Integrate:** Call broadcaster from Jobs and Dispatch contexts
 
 **Branch:** `feature/FH-017-realtime-broadcasting`
 
@@ -324,41 +324,41 @@ git push -u origin develop
 
 ## Phase 2: Dispatcher Dashboard (Weeks 4-5)
 
-### FH-020: Dashboard Layout & Navigation
+### FH-020: Dashboard Layout & Navigation ✅
 
-- [ ] **Design:** Create wireframe/mockup of dashboard
-- [ ] **Implement:** App layout with sidebar navigation
-- [ ] **Implement:** Responsive design (desktop-first)
-- [ ] **Implement:** Dark mode support
-- [ ] **Style:** Professional dispatch-themed styling
+- [x] **Design:** Create wireframe/mockup of dashboard
+- [x] **Implement:** App layout with sidebar navigation
+- [x] **Implement:** Responsive design (desktop-first)
+- [x] **Implement:** Dark mode support
+- [x] **Style:** Professional dispatch-themed styling
 
 **Branch:** `feature/FH-020-dashboard-layout`
 
 ### FH-021: Technician Management UI
 
-- [ ] **Test First:** `test/field_hub_web/live/technician_live_test.exs`
-  - [ ] Lists technicians for current org
-  - [ ] Create technician form validates input
-  - [ ] Edit technician updates record
-  - [ ] Archive technician marks as archived
-  - [ ] Skills can be added/removed
-- [ ] **Implement:** `lib/field_hub_web/live/technician_live/index.ex`
-- [ ] **Implement:** `lib/field_hub_web/live/technician_live/form_component.ex`
-- [ ] **Implement:** Color picker for technician calendar color
+- [x] **Test First:** `test/field_hub_web/live/technician_live_test.exs`
+  - [x] Lists technicians for current org
+  - [x] Create technician form validates input
+  - [x] Edit technician updates record
+  - [x] Archive technician marks as archived
+  - [x] Skills can be added/removed
+- [x] **Implement:** `lib/field_hub_web/live/technician_live/index.ex`
+- [x] **Implement:** `lib/field_hub_web/live/technician_live/form_component.ex`
+- [x] **Implement:** Color picker for technician calendar color
 
 **Branch:** `feature/FH-021-technician-management`
 
 ### FH-022: Customer Management UI
 
-- [ ] **Test First:** `test/field_hub_web/live/customer_live_test.exs`
-  - [ ] Lists customers for current org
-  - [ ] Search filters customers
-  - [ ] Create customer form with address
-  - [ ] Edit customer
-  - [ ] View customer job history
-- [ ] **Implement:** `lib/field_hub_web/live/customer_live/index.ex`
-- [ ] **Implement:** `lib/field_hub_web/live/customer_live/show.ex`
-- [ ] **Implement:** `lib/field_hub_web/live/customer_live/form_component.ex`
+- [x] **Test First:** `test/field_hub_web/live/customer_live_test.exs`
+  - [x] Lists customers for current org
+  - [x] Search filters customers
+  - [x] Create customer form with address
+  - [x] Edit customer
+  - [x] View customer job history
+- [x] **Implement:** `lib/field_hub_web/live/customer_live/index.ex`
+- [x] **Implement:** `lib/field_hub_web/live/customer_live/show.ex`
+- [x] **Implement:** `lib/field_hub_web/live/customer_live/form_component.ex`
 
 **Branch:** `feature/FH-022-customer-management`
 
@@ -779,14 +779,14 @@ git push -u origin develop
 | Phase | Tasks | Completed | Progress |
 | ----- | ----- | --------- | -------- |
 | 0 - Foundation | 17 | 17 | 100% |
-| 1 - Core Domain | 32 | 8 | 25% |
-| 2 - Dispatcher Dashboard | 36 | 0 | 0% |
+| 1 - Core Domain | 32 | 32 | 100% |
+| 2 - Dispatcher Dashboard | 36 | 15 | 42% |
 | 3 - Technician Mobile | 28 | 0 | 0% |
 | 4 - Customer Portal | 12 | 0 | 0% |
 | 5 - Notifications | 20 | 0 | 0% |
 | 6 - Billing & Polish | 16 | 0 | 0% |
 | 7 - Launch Prep | 24 | 0 | 0% |
-| **TOTAL** | **185** | **25** | **14%** |
+| **TOTAL** | **185** | **64** | **35%** |
 
 ---
 
@@ -800,10 +800,16 @@ git push -u origin develop
 - [x] FH-010: Organizations Context
 - [x] FH-011: Onboarding Flow
 
-**Next Up (Sprint 2):**
-- FH-012: Dispatch Context (Technicians)
-- FH-013: CRM Context (Customers)
-- FH-014: Jobs Context - Basic CRUD
+**Sprint 2 (Week 2):** Dispatcher Dashboard 🚧
+- [x] FH-012: Dispatch Context (Technicians)
+- [x] FH-013: CRM Context (Customers)
+- [x] FH-014: Jobs Context - Basic CRUD
+- [x] FH-020: Dashboard Layout
+- [x] FH-021: Technician Management UI
+
+**Next Up:**
+- FH-022: Customer Management UI
+- FH-023: Job Creation & Editing
 
 ---
 

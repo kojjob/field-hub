@@ -9,6 +9,7 @@ defmodule FieldHub.Dispatch do
   import Ecto.Query, warn: false
   alias FieldHub.Repo
   alias FieldHub.Dispatch.Technician
+  alias FieldHub.Dispatch.Broadcaster
 
   @doc """
   Returns the list of technicians for an organization.
@@ -76,6 +77,7 @@ defmodule FieldHub.Dispatch do
     %Technician{organization_id: org_id}
     |> Technician.changeset(attrs)
     |> Repo.insert()
+    |> broadcast_technician_created()
   end
 
   @doc """
@@ -94,6 +96,20 @@ defmodule FieldHub.Dispatch do
     technician
     |> Technician.changeset(attrs)
     |> Repo.update()
+    |> broadcast_technician_updated()
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking technician changes.
+
+  ## Examples
+
+      iex> change_technician(technician)
+      %Ecto.Changeset{data: %Technician{}}
+
+  """
+  def change_technician(%Technician{} = technician, attrs \\ %{}) do
+    Technician.changeset(technician, attrs)
   end
 
   @doc """
@@ -111,6 +127,7 @@ defmodule FieldHub.Dispatch do
     technician
     |> Technician.status_changeset(status)
     |> Repo.update()
+    |> broadcast_technician_status()
   end
 
   @doc """
@@ -126,6 +143,7 @@ defmodule FieldHub.Dispatch do
     technician
     |> Technician.location_changeset(%{current_lat: lat, current_lng: lng})
     |> Repo.update()
+    |> broadcast_technician_location()
   end
 
   @doc """
@@ -143,6 +161,7 @@ defmodule FieldHub.Dispatch do
     technician
     |> Ecto.Changeset.change(%{archived_at: DateTime.utc_now() |> DateTime.truncate(:second)})
     |> Repo.update()
+    |> broadcast_technician_archived()
   end
 
   @doc """
@@ -160,6 +179,7 @@ defmodule FieldHub.Dispatch do
     technician
     |> Ecto.Changeset.change(%{archived_at: nil})
     |> Repo.update()
+    |> broadcast_technician_updated()
   end
 
   @doc """
@@ -251,4 +271,34 @@ defmodule FieldHub.Dispatch do
     |> order_by([t], t.name)
     |> Repo.all()
   end
+
+  defp broadcast_technician_status({:ok, tech}) do
+    Broadcaster.broadcast_technician_status(tech)
+    {:ok, tech}
+  end
+  defp broadcast_technician_status(error), do: error
+
+  defp broadcast_technician_location({:ok, tech}) do
+    Broadcaster.broadcast_technician_location(tech)
+    {:ok, tech}
+  end
+  defp broadcast_technician_location(error), do: error
+
+  defp broadcast_technician_created({:ok, tech}) do
+    Broadcaster.broadcast_technician_created(tech)
+    {:ok, tech}
+  end
+  defp broadcast_technician_created(error), do: error
+
+  defp broadcast_technician_updated({:ok, tech}) do
+    Broadcaster.broadcast_technician_updated(tech)
+    {:ok, tech}
+  end
+  defp broadcast_technician_updated(error), do: error
+
+  defp broadcast_technician_archived({:ok, tech}) do
+    Broadcaster.broadcast_technician_archived(tech)
+    {:ok, tech}
+  end
+  defp broadcast_technician_archived(error), do: error
 end
