@@ -1,0 +1,33 @@
+# Override global gitignore for Elixir lib directories
+!lib/
+!*/lib/
+
+# Phoenix build artifacts
+_build/
+deps/
+*.ez
+
+# Database files
+*.db
+*.db-journal
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Compiled beam files in root (if any)
+*.beam
+
+# Test coverage
+/cover/
