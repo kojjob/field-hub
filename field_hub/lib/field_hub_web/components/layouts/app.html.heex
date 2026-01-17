@@ -1,0 +1,217 @@
+<div class="h-screen w-full bg-zinc-50 dark:bg-zinc-900 flex overflow-hidden selection:bg-indigo-500 selection:text-white">
+  
+  <!-- Off-canvas menu for mobile -->
+  <div id="mobile-sidebar" class="relative z-50 lg:hidden hidden" role="dialog" aria-modal="true">
+    
+    <!-- Backdrop -->
+    <div id="mobile-sidebar-backdrop" 
+         class="fixed inset-0 bg-gray-900/80 transition-opacity ease-linear duration-300 opacity-0" 
+         aria-hidden="true"
+         phx-click={JS.hide(to: "#mobile-sidebar-backdrop", transition: {"opacity-100", "opacity-100", "opacity-0"}) 
+                    |> JS.hide(to: "#mobile-sidebar-panel", transition: {"translate-x-0", "translate-x-0", "-translate-x-full"}, time: 300) 
+                    |> JS.hide(to: "#mobile-sidebar", time: 300)}>
+    </div>
+
+    <div class="fixed inset-0 flex">
+      <!-- Sidebar panel -->
+      <div id="mobile-sidebar-panel" class="relative mr-16 flex w-full max-w-xs flex-1 transform transition ease-in-out duration-300 -translate-x-full bg-zinc-900 shadow-2xl ring-1 ring-white/10">
+        
+        <div class="absolute left-full top-0 flex w-16 justify-center pt-5">
+          <button type="button" class="-m-2.5 p-2.5" 
+                  phx-click={JS.hide(to: "#mobile-sidebar-backdrop", transition: {"opacity-100", "opacity-100", "opacity-0"}) 
+                             |> JS.hide(to: "#mobile-sidebar-panel", transition: {"translate-x-0", "translate-x-0", "-translate-x-full"}, time: 300) 
+                             |> JS.hide(to: "#mobile-sidebar", time: 300)}>
+            <span class="sr-only">Close sidebar</span>
+            <.icon name="hero-x-mark" class="h-6 w-6 text-white" />
+          </button>
+        </div>
+
+        <!-- Mobile Sidebar Content -->
+        <div class="flex grow flex-col gap-y-5 overflow-y-auto px-6 pb-4 bg-zinc-900">
+          <div class="flex h-16 shrink-0 items-center">
+             <img class="h-8 w-auto" src={~p"/images/logo.svg"} alt="FieldHub">
+             <span class="ml-2 text-xl font-bold text-white tracking-tight">FieldHub</span>
+          </div>
+          <nav class="flex flex-1 flex-col">
+            <ul role="list" class="flex flex-1 flex-col gap-y-7">
+              <li>
+                <ul role="list" class="-mx-2 space-y-1">
+                  <li>
+                    <.link navigate={~p"/dashboard"} class="bg-zinc-800 text-white group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold">
+                      <.icon name="hero-home" class="h-6 w-6 shrink-0" />
+                      Dashboard
+                    </.link>
+                  </li>
+                  <!-- Placeholder links -->
+                   <li>
+                    <a href="#" class="text-zinc-400 hover:text-white hover:bg-zinc-800 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold">
+                      <.icon name="hero-calendar" class="h-6 w-6 shrink-0" />
+                      Schedule
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#" class="text-zinc-400 hover:text-white hover:bg-zinc-800 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold">
+                      <.icon name="hero-map" class="h-6 w-6 shrink-0" />
+                      Dispatch Map
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#" class="text-zinc-400 hover:text-white hover:bg-zinc-800 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold">
+                      <.icon name="hero-briefcase" class="h-6 w-6 shrink-0" />
+                      Jobs
+                    </a>
+                  </li>
+                   <li>
+                    <a href="#" class="text-zinc-400 hover:text-white hover:bg-zinc-800 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold">
+                      <.icon name="hero-user-group" class="h-6 w-6 shrink-0" />
+                      Technicians
+                    </a>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Static sidebar for desktop -->
+  <div class="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
+    <div class="flex grow flex-col gap-y-5 overflow-y-auto bg-zinc-900 px-6 pb-4 border-r border-white/5">
+      <div class="flex h-16 shrink-0 items-center border-b border-white/5 mb-4">
+        <img class="h-8 w-auto" src={~p"/images/logo.svg"} alt="FieldHub">
+        <span class="ml-3 text-xl font-bold text-white tracking-tight">FieldHub</span>
+      </div>
+      <nav class="flex flex-1 flex-col">
+        <ul role="list" class="flex flex-1 flex-col gap-y-7">
+          <li>
+            <ul role="list" class="-mx-2 space-y-1">
+              <li>
+                <.link navigate={~p"/dashboard"} class="bg-indigo-600/10 text-indigo-400 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold border-l-2 border-indigo-500">
+                  <.icon name="hero-home" class="h-5 w-5 shrink-0 text-indigo-400" />
+                  Dashboard
+                </.link>
+              </li>
+              <li>
+                <a href="#" class="text-zinc-400 hover:text-white hover:bg-zinc-800 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold transition-colors duration-200">
+                  <.icon name="hero-calendar" class="h-5 w-5 shrink-0 group-hover:text-indigo-400 transition-colors" />
+                  Schedule
+                </a>
+              </li>
+              <li>
+                <a href="#" class="text-zinc-400 hover:text-white hover:bg-zinc-800 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold transition-colors duration-200">
+                  <.icon name="hero-map" class="h-5 w-5 shrink-0 group-hover:text-indigo-400 transition-colors" />
+                  Dispatch Map
+                </a>
+              </li>
+              <li>
+                <a href="#" class="text-zinc-400 hover:text-white hover:bg-zinc-800 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold transition-colors duration-200">
+                  <.icon name="hero-briefcase" class="h-5 w-5 shrink-0 group-hover:text-indigo-400 transition-colors" />
+                  Jobs
+                </a>
+              </li>
+              <li>
+                <a href="#" class="text-zinc-400 hover:text-white hover:bg-zinc-800 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold transition-colors duration-200">
+                  <.icon name="hero-user-group" class="h-5 w-5 shrink-0 group-hover:text-indigo-400 transition-colors" />
+                  Technicians
+                </a>
+              </li>
+               <li>
+                <a href="#" class="text-zinc-400 hover:text-white hover:bg-zinc-800 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold transition-colors duration-200">
+                  <.icon name="hero-users" class="h-5 w-5 shrink-0 group-hover:text-indigo-400 transition-colors" />
+                  Customers
+                </a>
+              </li>
+            </ul>
+          </li>
+          <li>
+            <div class="text-xs font-semibold leading-6 text-zinc-500 uppercase tracking-wider">System</div>
+            <ul role="list" class="-mx-2 mt-2 space-y-1">
+              <li>
+                <a href="#" class="text-zinc-400 hover:text-white hover:bg-zinc-800 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold transition-colors duration-200">
+                  <.icon name="hero-cog-6-tooth" class="h-5 w-5 shrink-0 group-hover:text-indigo-400 transition-colors" />
+                  Settings
+                </a>
+              </li>
+            </ul>
+          </li>
+          
+          <li class="mt-auto">
+             <div class="border-t border-white/5 pt-4 mb-2">
+                 <div class="flex items-center gap-x-3 px-2 py-3 text-sm font-semibold leading-6 text-white hover:bg-zinc-800 rounded-md cursor-pointer">
+                    <div class="h-8 w-8 rounded-full bg-zinc-800 flex items-center justify-center border border-zinc-700">
+                        <span class="text-xs font-bold text-indigo-400">KO</span>
+                    </div>
+                    <span class="sr-only">Your profile</span>
+                    <span aria-hidden="true">Kojo (Admin)</span>
+                 </div>
+             </div>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+
+  <div class="lg:pl-72 w-full flex flex-col h-full overflow-hidden">
+    <!-- Top Bar -->
+    <div class="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
+      <button type="button" class="-m-2.5 p-2.5 text-zinc-700 dark:text-zinc-200 lg:hidden" 
+              phx-click={JS.show(to: "#mobile-sidebar") |> JS.show(to: "#mobile-sidebar-backdrop", transition: {"ease-linear duration-300", "opacity-0", "opacity-100"}) |> JS.show(to: "#mobile-sidebar-panel", transition: {"ease-in-out duration-300", "-translate-x-full", "translate-x-0"})}>
+        <span class="sr-only">Open sidebar</span>
+        <.icon name="hero-bars-3" class="h-6 w-6" />
+      </button>
+
+      <!-- Separator -->
+      <div class="h-6 w-px bg-zinc-200 dark:bg-zinc-700 lg:hidden" aria-hidden="true"></div>
+
+      <div class="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
+        <form class="relative flex flex-1" action="#" method="GET">
+          <label for="search-field" class="sr-only">Search</label>
+          <div class="relative w-full text-zinc-400 focus-within:text-zinc-600 dark:focus-within:text-zinc-200">
+             <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-0">
+               <.icon name="hero-magnifying-glass" class="h-5 w-5" />
+             </div>
+             <input id="search-field" class="block h-full w-full border-0 py-0 pl-8 pr-0 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:ring-0 sm:text-sm bg-transparent" placeholder="Search jobs, customers, technicians..." type="search" name="search">
+           </div>
+        </form>
+        <div class="flex items-center gap-x-4 lg:gap-x-6">
+          <button type="button" class="-m-2.5 p-2.5 text-zinc-400 hover:text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full transition-colors">
+            <span class="sr-only">View notifications</span>
+            <.icon name="hero-bell" class="h-6 w-6" />
+          </button>
+          
+          <!-- Theme Toggle -->
+          <div class="flex items-center border-l border-zinc-200 dark:border-zinc-700 pl-4 lg:pl-6">
+             <.theme_toggle />
+          </div>
+
+          <!-- Profile dropdown (Simplified for now) -->
+          <div class="relative">
+            <button type="button" class="-m-1.5 flex items-center p-1.5" id="user-menu-button" aria-expanded="false" aria-haspopup="true">
+              <span class="sr-only">Open user menu</span>
+              <img class="h-8 w-8 rounded-full bg-zinc-50" src="https://ui-avatars.com/api/?name=Kojo&background=6366f1&color=fff" alt="">
+              <span class="hidden lg:flex lg:items-center">
+                <span class="ml-4 text-sm font-semibold leading-6 text-zinc-900 dark:text-zinc-100" aria-hidden="true">Kojo</span>
+                <.icon name="hero-chevron-down" class="ml-2 h-5 w-5 text-zinc-400" />
+              </span>
+            </button>
+          </div>
+           <div class="pl-2">
+             <.link href={~p"/users/log-out"} method="delete" class="text-sm font-semibold leading-6 text-zinc-900 dark:text-zinc-100 hover:text-red-500 transition-colors">
+                Log out
+             </.link>
+           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="flex-1 overflow-y-auto bg-zinc-50 dark:bg-black/20">
+      <div class="px-4 py-8 sm:px-6 lg:px-8">
+        <.flash_group flash={@flash} />
+        {render_slot(@inner_block)}
+      </div>
+    </main>
+  </div>
+</div>
