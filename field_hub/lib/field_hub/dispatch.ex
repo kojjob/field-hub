@@ -9,6 +9,7 @@ defmodule FieldHub.Dispatch do
   import Ecto.Query, warn: false
   alias FieldHub.Repo
   alias FieldHub.Dispatch.Technician
+  alias FieldHub.Dispatch.Broadcaster
 
   @doc """
   Returns the list of technicians for an organization.
@@ -111,6 +112,7 @@ defmodule FieldHub.Dispatch do
     technician
     |> Technician.status_changeset(status)
     |> Repo.update()
+    |> broadcast_technician_status()
   end
 
   @doc """
@@ -126,6 +128,7 @@ defmodule FieldHub.Dispatch do
     technician
     |> Technician.location_changeset(%{current_lat: lat, current_lng: lng})
     |> Repo.update()
+    |> broadcast_technician_location()
   end
 
   @doc """
@@ -251,4 +254,16 @@ defmodule FieldHub.Dispatch do
     |> order_by([t], t.name)
     |> Repo.all()
   end
+
+  defp broadcast_technician_status({:ok, tech}) do
+    Broadcaster.broadcast_technician_status(tech)
+    {:ok, tech}
+  end
+  defp broadcast_technician_status(error), do: error
+
+  defp broadcast_technician_location({:ok, tech}) do
+    Broadcaster.broadcast_technician_location(tech)
+    {:ok, tech}
+  end
+  defp broadcast_technician_location(error), do: error
 end

@@ -8,6 +8,7 @@ defmodule FieldHub.Jobs do
 
   alias FieldHub.Jobs.Job
   alias FieldHub.Jobs.JobEvent
+  alias FieldHub.Dispatch.Broadcaster
   alias Ecto.Multi
 
   @doc """
@@ -72,6 +73,7 @@ defmodule FieldHub.Jobs do
       JobEvent.build_event_changeset(job, "created", %{new_value: sanitize_attrs(attrs)})
     end)
     |> run_transaction()
+    |> broadcast_job_created()
   end
 
   @doc """
@@ -96,6 +98,7 @@ defmodule FieldHub.Jobs do
       })
     end)
     |> run_transaction()
+    |> broadcast_job_updated()
   end
 
   @doc """
@@ -154,6 +157,7 @@ defmodule FieldHub.Jobs do
       })
     end)
     |> run_transaction()
+    |> broadcast_job_updated()
   end
 
   @doc """
@@ -171,6 +175,7 @@ defmodule FieldHub.Jobs do
       })
     end)
     |> run_transaction()
+    |> broadcast_job_updated()
   end
 
   @doc """
@@ -186,6 +191,7 @@ defmodule FieldHub.Jobs do
       })
     end)
     |> run_transaction()
+    |> broadcast_job_updated()
   end
 
   @doc """
@@ -201,6 +207,7 @@ defmodule FieldHub.Jobs do
       })
     end)
     |> run_transaction()
+    |> broadcast_job_updated()
   end
 
   @doc """
@@ -216,6 +223,7 @@ defmodule FieldHub.Jobs do
       })
     end)
     |> run_transaction()
+    |> broadcast_job_updated()
   end
 
   @doc """
@@ -231,6 +239,7 @@ defmodule FieldHub.Jobs do
       })
     end)
     |> run_transaction()
+    |> broadcast_job_updated()
   end
 
   @doc """
@@ -247,6 +256,7 @@ defmodule FieldHub.Jobs do
       })
     end)
     |> run_transaction()
+    |> broadcast_job_updated()
   end
 
   defp run_transaction(multi) do
@@ -268,4 +278,16 @@ defmodule FieldHub.Jobs do
      # Extract relevant audit fields
      Map.take(job, [:title, :description, :status, :technician_id, :scheduled_date, :scheduled_start, :scheduled_end, :internal_notes])
   end
+
+  defp broadcast_job_created({:ok, job}) do
+    Broadcaster.broadcast_job_created(job)
+    {:ok, job}
+  end
+  defp broadcast_job_created(error), do: error
+
+  defp broadcast_job_updated({:ok, job}) do
+    Broadcaster.broadcast_job_updated(job)
+    {:ok, job}
+  end
+  defp broadcast_job_updated(error), do: error
 end
