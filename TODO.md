@@ -230,22 +230,22 @@ git push -u origin develop
 
 **Branch:** `feature/FH-011-onboarding-flow` (merged to develop)
 
-### FH-012: Dispatch Context (Technicians)
+### FH-012: Dispatch Context (Technicians) ✅
 
-- [ ] **Test First:** `test/field_hub/dispatch_test.exs`
-  - [ ] `list_technicians/1` scoped to organization
-  - [ ] `create_technician/2` with valid attrs
-  - [ ] `create_technician/2` with org scope
-  - [ ] `update_technician/2`
-  - [ ] `update_technician_status/2`
-  - [ ] `update_technician_location/3`
-  - [ ] `archive_technician/1` (soft delete)
-  - [ ] `get_available_technicians/1`
-  - [ ] `get_technicians_with_skill/2`
-- [ ] **Implement:** `lib/field_hub/dispatch.ex` context
-- [ ] **Implement:** `lib/field_hub/dispatch/technician.ex` schema
+- [x] **Test First:** `test/field_hub/dispatch_test.exs`
+  - [x] `list_technicians/1` scoped to organization
+  - [x] `create_technician/2` with valid attrs
+  - [x] `create_technician/2` with org scope
+  - [x] `update_technician/2`
+  - [x] `update_technician_status/2`
+  - [x] `update_technician_location/3`
+  - [x] `archive_technician/1` (soft delete)
+  - [x] `get_available_technicians/1`
+  - [x] `get_technicians_with_skill/2`
+- [x] **Implement:** `lib/field_hub/dispatch.ex` context
+- [x] **Implement:** `lib/field_hub/dispatch/technician.ex` schema
 
-**Branch:** `feature/FH-012-dispatch-context`
+**Branch:** `feature/FH-012-dispatch-context` (merged to develop)
 
 ### FH-013: CRM Context (Customers)
 
