@@ -75,6 +75,46 @@ defmodule FieldHubWeb.DispatchLive.Index do
   end
 
   @impl true
+  def handle_event("assign_job", %{"job_id" => job_id, "technician_id" => tech_id} = params, socket) do
+    org_id = socket.assigns.current_organization.id
+    job = Jobs.get_job!(org_id, job_id)
+
+    # Build update params
+    update_params = %{
+      "technician_id" => tech_id,
+      "scheduled_date" => Date.to_string(socket.assigns.selected_date)
+    }
+
+    # Add scheduled time if hour is provided
+    update_params = if params["hour"] do
+      hour = params["hour"]
+      Map.put(update_params, "scheduled_start", Time.new!(hour, 0, 0) |> Time.to_string())
+    else
+      update_params
+    end
+
+    case Jobs.update_job(job, update_params) do
+      {:ok, _updated_job} ->
+        {:noreply, socket |> put_flash(:info, "Job assigned successfully") |> load_data()}
+      {:error, _changeset} ->
+        {:noreply, put_flash(socket, :error, "Failed to assign job")}
+    end
+  end
+
+  @impl true
+  def handle_event("unassign_job", %{"job_id" => job_id}, socket) do
+    org_id = socket.assigns.current_organization.id
+    job = Jobs.get_job!(org_id, job_id)
+
+    case Jobs.update_job(job, %{"technician_id" => nil, "scheduled_date" => nil, "scheduled_start" => nil}) do
+      {:ok, _updated_job} ->
+        {:noreply, socket |> put_flash(:info, "Job unassigned") |> load_data()}
+      {:error, _changeset} ->
+        {:noreply, put_flash(socket, :error, "Failed to unassign job")}
+    end
+  end
+
+  @impl true
   def handle_info({:job_created, _job}, socket) do
     {:noreply, load_data(socket)}
   end
@@ -204,9 +244,12 @@ defmodule FieldHubWeb.DispatchLive.Index do
             Unassigned
           </h2>
 
-          <div class="space-y-2">
+          <div id="unassigned-jobs" class="space-y-2" phx-hook="DragDrop" data-group="jobs" data-type="source">
             <%= for job <- @unassigned_jobs do %>
-              <div class={"p-2 bg-white rounded-lg border shadow-sm cursor-pointer hover:shadow-md transition-shadow #{priority_indicator(job.priority)}"}>
+              <div
+                class={"drag-handle p-2 bg-white rounded-lg border shadow-sm cursor-grab hover:shadow-md transition-shadow #{priority_indicator(job.priority)}"}
+                data-job-id={job.id}
+              >
                 <div class="font-medium text-sm text-gray-900 truncate">{job.title}</div>
                 <div class="text-xs text-gray-500">{job.customer.name}</div>
                 <div class="mt-1 flex items-center gap-1">
@@ -249,9 +292,20 @@ defmodule FieldHubWeb.DispatchLive.Index do
 
                 <!-- Technician Columns -->
                 <%= for tech <- @technicians do %>
-                  <div class="w-48 shrink-0 border-r p-1 min-h-[60px] relative">
+                  <div
+                    id={"slot-#{tech.id}-#{slot.hour}"}
+                    class="w-48 shrink-0 border-r p-1 min-h-[60px] relative"
+                    phx-hook="DragDrop"
+                    data-group="jobs"
+                    data-type="target"
+                    data-technician-id={tech.id}
+                    data-hour={slot.hour}
+                  >
                     <%= for job <- jobs_for_technician_at_hour(@scheduled_jobs, tech.id, slot.hour) do %>
-                      <div class={"#{job_duration_class(job)} #{status_color(job.status)} #{priority_indicator(job.priority)} w-full rounded p-1 border text-xs cursor-pointer hover:shadow-md transition-shadow"}>
+                      <div
+                        class={"drag-handle #{job_duration_class(job)} #{status_color(job.status)} #{priority_indicator(job.priority)} w-full rounded p-1 border text-xs cursor-grab hover:shadow-md transition-shadow"}
+                        data-job-id={job.id}
+                      >
                         <div class="font-medium truncate">{job.title}</div>
                         <div class="text-gray-600 truncate">{job.customer.name}</div>
                       </div>

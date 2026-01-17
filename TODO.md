@@ -394,16 +394,17 @@ git push -u origin develop
 **Branch:** `feature/FH-024-dispatch-calendar`
 **PR:** [#4](https://github.com/kojjob/field-hub/pull/4)
 
-### FH-025: Dispatch Board - Drag & Drop Assignment
+### FH-025: Dispatch Board - Drag & Drop Assignment ✅
 
-- [ ] **Test First:** Test drag-drop events update job
-- [ ] **Implement:** Sortable.js hook for drag-drop
-- [ ] **Implement:** `handle_event("drop_on_tech", ...)`
-- [ ] **Implement:** Unassigned jobs sidebar (draggable source)
-- [ ] **Implement:** Visual feedback during drag
-- [ ] **Integrate:** Broadcast assignment to all dispatchers
+- [x] **Test First:** Test drag-drop events update job (2 tests added)
+- [x] **Implement:** Sortable.js hook for drag-drop
+- [x] **Implement:** `handle_event("assign_job", ...)` and `handle_event("unassign_job", ...)`
+- [x] **Implement:** Unassigned jobs sidebar (draggable source)
+- [x] **Implement:** Visual feedback during drag
+- [x] **Integrate:** Assignment changes update UI via load_data()
 
 **Branch:** `feature/FH-025-drag-drop-assignment`
+**PR:** [#5](https://github.com/kojjob/field-hub/pull/5)
 
 ### FH-026: Dispatch Board - Quick Actions
 
@@ -814,7 +815,7 @@ git push -u origin develop
 
 **Sprint 3 (Week 3):** Dispatch Board 🚧
 - [x] FH-024: Dispatch Board - Calendar View
-- FH-025: Dispatch Board - Drag & Drop Assignment
+- [x] FH-025: Dispatch Board - Drag & Drop Assignment
 - FH-026: Dispatch Board - Quick Actions
 
 ---
