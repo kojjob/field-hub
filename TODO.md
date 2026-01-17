@@ -378,20 +378,21 @@ git push -u origin develop
 **Branch:** `feature/FH-023-job-forms`
 **PR:** [#3](https://github.com/kojjob/field-hub/pull/3)
 
-### FH-024: Dispatch Board - Calendar View
+### FH-024: Dispatch Board - Calendar View ✅
 
-- [ ] **Test First:** `test/field_hub_web/live/dispatch_live_test.exs`
-  - [ ] Renders day view by default
-  - [ ] Shows jobs in correct time slots
-  - [ ] Groups by technician
-  - [ ] Date navigation works
-  - [ ] Receives real-time job updates
-- [ ] **Implement:** `lib/field_hub_web/live/dispatch_live/index.ex`
-- [ ] **Implement:** `lib/field_hub_web/live/dispatch_live/calendar_component.ex`
-- [ ] **Implement:** Day view with time slots (7am - 7pm)
-- [ ] **Implement:** Week view (stretch goal)
+- [x] **Test First:** `test/field_hub_web/live/dispatch_live_test.exs`
+  - [x] Renders day view by default
+  - [x] Shows jobs in correct time slots
+  - [x] Groups by technician
+  - [x] Date navigation works
+  - [x] Shows unassigned jobs sidebar
+- [x] **Implement:** `lib/field_hub_web/live/dispatch_live/index.ex`
+- [x] **Implement:** Day view with time slots (7am - 7pm)
+- [x] **Implement:** Unassigned jobs sidebar
+- [ ] **Stretch:** Week view
 
 **Branch:** `feature/FH-024-dispatch-calendar`
+**PR:** [#4](https://github.com/kojjob/field-hub/pull/4)
 
 ### FH-025: Dispatch Board - Drag & Drop Assignment
 
@@ -811,9 +812,10 @@ git push -u origin develop
 - [x] FH-022: Customer Management UI
 - [x] FH-023: Job Creation & Editing
 
-**Next Up:**
-- FH-024: Dispatch Board - Calendar View
+**Sprint 3 (Week 3):** Dispatch Board 🚧
+- [x] FH-024: Dispatch Board - Calendar View
 - FH-025: Dispatch Board - Drag & Drop Assignment
+- FH-026: Dispatch Board - Quick Actions
 
 ---
 
