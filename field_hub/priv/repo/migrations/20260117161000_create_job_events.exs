@@ -7,10 +7,12 @@ defmodule FieldHub.Repo.Migrations.CreateJobEvents do
       add :actor_id, references(:users, on_delete: :nilify_all)
       add :technician_id, references(:technicians, on_delete: :nilify_all)
 
-      add :event_type, :string, null: false  # "status_changed", "assigned", "note_added", etc.
+      # "status_changed", "assigned", "note_added", etc.
+      add :event_type, :string, null: false
       add :old_value, :map
       add :new_value, :map
-      add :metadata, :map, default: %{}  # GPS coords, device info, IP, etc.
+      # GPS coords, device info, IP, etc.
+      add :metadata, :map, default: %{}
 
       # Immutable - no updated_at
       add :inserted_at, :utc_datetime, null: false, default: fragment("NOW()")
