@@ -58,13 +58,46 @@ defmodule FieldHubWeb.DispatchLive.Index do
     # Load scheduled jobs for the selected date
     scheduled_jobs = Jobs.list_jobs_for_date(org_id, selected_date)
 
+    # Prepare map data
+    map_technicians = Enum.map(technicians, fn t ->
+      %{
+        id: t.id,
+        name: t.name,
+        status: t.status,
+        color: t.color,
+        current_lat: t.current_lat,
+        current_lng: t.current_lng
+      }
+    end)
+
+    map_jobs = Enum.map(scheduled_jobs, fn j ->
+      %{
+        id: j.id,
+        number: j.number,
+        title: j.title,
+        status: j.status,
+        service_lat: j.service_lat,
+        service_lng: j.service_lng
+      }
+    end)
+
     # Load unassigned jobs (no technician or no scheduled date)
     unassigned_jobs = Jobs.list_unassigned_jobs(org_id)
 
-    socket
-    |> assign(:technicians, technicians)
-    |> assign(:scheduled_jobs, scheduled_jobs)
-    |> assign(:unassigned_jobs, unassigned_jobs)
+    socket =
+      socket
+      |> assign(:unassigned_jobs, unassigned_jobs)
+      |> assign(:technicians, technicians)
+      |> assign(:scheduled_jobs, scheduled_jobs)
+      |> assign(:map_technicians, map_technicians)
+      |> assign(:map_jobs, map_jobs)
+      |> assign(:time_slots, time_slots())
+
+    if socket.assigns.view_mode == :map do
+      push_event(socket, "update_map_data", %{technicians: map_technicians, jobs: map_jobs})
+    else
+      socket
+    end
   end
 
   @impl true
@@ -85,6 +118,11 @@ defmodule FieldHubWeb.DispatchLive.Index do
   def handle_event("today", _params, socket) do
     socket = socket |> assign(:selected_date, Date.utc_today()) |> load_data()
     {:noreply, socket}
+  end
+
+  @impl true
+  def handle_event("set_view_mode", %{"mode" => mode}, socket) do
+    {:noreply, assign(socket, :view_mode, String.to_existing_atom(mode))}
   end
 
   @impl true
@@ -323,11 +361,19 @@ defmodule FieldHubWeb.DispatchLive.Index do
         <div class="flex items-center gap-2">
           <!-- View Toggle -->
           <div class="flex rounded-lg border border-gray-300 p-1">
-            <button class={"px-3 py-1 text-sm rounded #{if @view_mode == :day, do: "bg-primary text-white", else: "text-gray-600 hover:bg-gray-100"}"}>
+            <button
+              phx-click="set_view_mode"
+              phx-value-mode="day"
+              class={"px-3 py-1 text-sm rounded #{if @view_mode == :day, do: "bg-primary text-white", else: "text-gray-600 hover:bg-gray-100"}"}
+            >
               Day
             </button>
-            <button class={"px-3 py-1 text-sm rounded #{if @view_mode == :week, do: "bg-primary text-white", else: "text-gray-600 hover:bg-gray-100"}"} disabled>
-              Week
+            <button
+              phx-click="set_view_mode"
+              phx-value-mode="map"
+              class={"px-3 py-1 text-sm rounded #{if @view_mode == :map, do: "bg-primary text-white", else: "text-gray-600 hover:bg-gray-100"}"}
+            >
+              Map
             </button>
           </div>
 
@@ -394,58 +440,71 @@ defmodule FieldHubWeb.DispatchLive.Index do
           </div>
         </div>
 
-        <!-- Calendar Grid -->
-        <div class="flex-1 overflow-auto">
-          <div class="min-w-max">
-            <!-- Technician Headers -->
-            <div class="flex sticky top-0 bg-white z-10 border-b">
-              <div class="w-20 shrink-0 border-r bg-gray-50"></div>
-              <%= for tech <- @technicians do %>
-                <div class="w-48 shrink-0 border-r p-2">
-                  <div class="flex items-center gap-2">
-                    <div class="w-3 h-3 rounded-full" style={"background-color: #{tech.color}"}></div>
-                    <span class="font-medium text-sm">{tech.name}</span>
-                  </div>
-                  <div class="text-xs text-gray-500 capitalize">{tech.status}</div>
-                </div>
-              <% end %>
-            </div>
-
-            <!-- Time Slots -->
-            <%= for slot <- time_slots() do %>
-              <div class="flex border-b hover:bg-gray-50/50">
-                <!-- Time Label -->
-                <div class="w-20 shrink-0 border-r bg-gray-50 p-2 text-xs text-gray-500 text-right">
-                  {slot.label}
-                </div>
-
-                <!-- Technician Columns -->
+        <!-- Calendar Grid or Map -->
+        <div class="flex-1 overflow-auto relative">
+          <%= if @view_mode == :map do %>
+            <div
+              id="map-view"
+              class="absolute inset-0 z-0 bg-gray-100"
+              phx-hook="Map"
+              phx-update="ignore"
+              data-lat="37.7749"
+              data-lng="-122.4194"
+              data-technicians={Jason.encode!(@map_technicians)}
+              data-jobs={Jason.encode!(@map_jobs)}
+            ></div>
+          <% else %>
+            <div class="min-w-max">
+              <!-- Technician Headers -->
+              <div class="flex sticky top-0 bg-white z-10 border-b">
+                <div class="w-20 shrink-0 border-r bg-gray-50"></div>
                 <%= for tech <- @technicians do %>
-                  <div
-                    id={"slot-#{tech.id}-#{slot.hour}"}
-                    class="w-48 shrink-0 border-r p-1 min-h-[60px] relative"
-                    phx-hook="DragDrop"
-                    data-group="jobs"
-                    data-type="target"
-                    data-technician-id={tech.id}
-                    data-hour={slot.hour}
-                  >
-                    <%= for job <- jobs_for_technician_at_hour(@scheduled_jobs, tech.id, slot.hour) do %>
-                      <div
-                        class={"drag-handle #{job_duration_class(job)} #{status_color(job.status)} #{priority_indicator(job.priority)} w-full rounded p-1 border text-xs cursor-grab hover:shadow-md transition-shadow"}
-                        data-job-id={job.id}
-                        phx-click="show_job_details"
-                        phx-value-job_id={job.id}
-                      >
-                        <div class="font-medium truncate">{job.title}</div>
-                        <div class="text-gray-600 truncate">{job.customer.name}</div>
-                      </div>
-                    <% end %>
+                  <div class="w-48 shrink-0 border-r p-2">
+                    <div class="flex items-center gap-2">
+                      <div class="w-3 h-3 rounded-full" style={"background-color: #{tech.color}"}></div>
+                      <span class="font-medium text-sm">{tech.name}</span>
+                    </div>
+                    <div class="text-xs text-gray-500 capitalize">{tech.status}</div>
                   </div>
                 <% end %>
               </div>
-            <% end %>
-          </div>
+
+              <!-- Time Slots -->
+              <%= for slot <- time_slots() do %>
+                <div class="flex border-b hover:bg-gray-50/50">
+                  <!-- Time Label -->
+                  <div class="w-20 shrink-0 border-r bg-gray-50 p-2 text-xs text-gray-500 text-right">
+                    {slot.label}
+                  </div>
+
+                  <!-- Technician Columns -->
+                  <%= for tech <- @technicians do %>
+                    <div
+                      id={"slot-#{tech.id}-#{slot.hour}"}
+                      class="w-48 shrink-0 border-r p-1 min-h-[60px] relative"
+                      phx-hook="DragDrop"
+                      data-group="jobs"
+                      data-type="target"
+                      data-technician-id={tech.id}
+                      data-hour={slot.hour}
+                    >
+                      <%= for job <- jobs_for_technician_at_hour(@scheduled_jobs, tech.id, slot.hour) do %>
+                        <div
+                          class={"drag-handle #{job_duration_class(job)} #{status_color(job.status)} #{priority_indicator(job.priority)} w-full rounded p-1 border text-xs cursor-grab hover:shadow-md transition-shadow"}
+                          data-job-id={job.id}
+                          phx-click="show_job_details"
+                          phx-value-job_id={job.id}
+                        >
+                          <div class="font-medium truncate">{job.title}</div>
+                          <div class="text-gray-600 truncate">{job.customer.name}</div>
+                        </div>
+                      <% end %>
+                    </div>
+                  <% end %>
+                </div>
+              <% end %>
+            </div>
+          <% end %>
         </div>
         <!-- Technician Status Sidebar -->
       <div class="w-72 bg-white border-l flex flex-col shrink-0">
@@ -495,8 +554,8 @@ defmodule FieldHubWeb.DispatchLive.Index do
       </div>
     </div>
 
-  <!-- Job Details Slideout Panel -->
-  <%= if @selected_job do %>
+      <!-- Job Details Slideout Panel -->
+      <%= if @selected_job do %>
         <div class="fixed inset-0 bg-black/20 z-40" phx-click="close_job_details"></div>
         <div class="fixed right-0 top-0 h-full w-96 bg-white shadow-xl z-50 overflow-y-auto">
           <div class="p-4 border-b flex items-center justify-between">
