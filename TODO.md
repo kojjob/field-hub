@@ -247,20 +247,20 @@ git push -u origin develop
 
 **Branch:** `feature/FH-012-dispatch-context` (merged to develop)
 
-### FH-013: CRM Context (Customers)
+### FH-013: CRM Context (Customers) ✅
 
-- [ ] **Test First:** `test/field_hub/crm_test.exs`
-  - [ ] `list_customers/1` scoped to organization
-  - [ ] `search_customers/2` by name, phone, email
-  - [ ] `create_customer/2`
-  - [ ] `update_customer/2`
-  - [ ] `archive_customer/1`
-  - [ ] `generate_portal_token/1`
-  - [ ] `get_customer_by_portal_token/1`
-- [ ] **Implement:** `lib/field_hub/crm.ex` context
-- [ ] **Implement:** `lib/field_hub/crm/customer.ex` schema
+- [x] **Test First:** `test/field_hub/crm_test.exs`
+  - [x] `list_customers/1` scoped to organization
+  - [x] `search_customers/2` by name, phone, email
+  - [x] `create_customer/2`
+  - [x] `update_customer/2`
+  - [x] `archive_customer/1`
+  - [x] `generate_portal_token/1`
+  - [x] `get_customer_by_portal_token/1`
+- [x] **Implement:** `lib/field_hub/crm.ex` context
+- [x] **Implement:** `lib/field_hub/crm/customer.ex` schema
 
-**Branch:** `feature/FH-013-crm-context`
+**Branch:** `feature/FH-013-crm-context` (merged to develop)
 
 ### FH-014: Jobs Context - Basic CRUD
 
