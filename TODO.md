@@ -429,6 +429,7 @@ git push -u origin develop
 - [x] **Implement:** Keyboard shortcuts (n = new job, etc.)
 
 **Branch:** `feature/FH-027-tech-status-sidebar`
+**PR:** [#7](https://github.com/kojjob/field-hub/pull/7)
 
 ### FH-028: Live Map Component
 
@@ -823,7 +824,7 @@ git push -u origin develop
 - [x] FH-026: Dispatch Board - Quick Actions
 
 **Sprint 4 (Week 4):** Real-Time Features 🚧
-- FH-027: Technician Status Sidebar
+- [x] FH-027: Technician Status Sidebar
 - FH-028: Live Map Component
 
 ---
