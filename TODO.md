@@ -439,7 +439,15 @@ git push -u origin develop
 - [x] Click marker to view details
 - [ ] **Implement:** Route visualization (stretch)
 
-**Branch:** `feature/FH-028-live-map`
+**Branch:** `feature/FH-028-live-map-component`
+
+### FH-029: Optimize Dispatch Board
+- [ ] **Implement:** Use `streams` for technician and job lists to support large datasets
+- [ ] **Refactor:** Optimize `load_data` to avoid full re-fetching on minor updates
+- [ ] **Implement:** Payload reduction for real-time events
+- [ ] **Test:** Verify performance improvement (or at least no regression)
+
+**Branch:** `feature/FH-029-optimize-dispatch`
 
 ---
 
