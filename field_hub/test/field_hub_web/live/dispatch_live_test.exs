@@ -118,5 +118,60 @@ defmodule FieldHubWeb.DispatchLiveTest do
       assert html =~ "Unassigned"
       assert html =~ "Unassigned Service"
     end
+
+    test "assign_job event assigns job to technician", %{conn: conn, user: user, org: org} do
+      customer = customer_fixture(org.id)
+      technician = technician_fixture(org.id)
+
+      {:ok, job} = FieldHub.Jobs.create_job(org.id, %{
+        title: "Test Assignment",
+        description: "Test",
+        job_type: "service_call",
+        priority: "normal",
+        customer_id: customer.id,
+        created_by_id: user.id
+      })
+
+      {:ok, live, _html} = live(conn, ~p"/dispatch")
+
+      # Trigger assign_job event
+      render_hook(live, "assign_job", %{
+        "job_id" => job.id,
+        "technician_id" => technician.id,
+        "hour" => 9
+      })
+
+      # Verify job was assigned
+      updated_job = FieldHub.Jobs.get_job!(org.id, job.id)
+      assert updated_job.technician_id == technician.id
+      assert updated_job.scheduled_date == Date.utc_today()
+    end
+
+    test "unassign_job event removes technician assignment", %{conn: conn, user: user, org: org} do
+      customer = customer_fixture(org.id)
+      technician = technician_fixture(org.id)
+
+      {:ok, job} = FieldHub.Jobs.create_job(org.id, %{
+        title: "Assigned Job",
+        description: "Test",
+        job_type: "service_call",
+        priority: "normal",
+        customer_id: customer.id,
+        technician_id: technician.id,
+        scheduled_date: Date.utc_today(),
+        scheduled_start: ~T[10:00:00],
+        created_by_id: user.id
+      })
+
+      {:ok, live, _html} = live(conn, ~p"/dispatch")
+
+      # Trigger unassign_job event
+      render_hook(live, "unassign_job", %{"job_id" => job.id})
+
+      # Verify job was unassigned
+      updated_job = FieldHub.Jobs.get_job!(org.id, job.id)
+      assert is_nil(updated_job.technician_id)
+      assert is_nil(updated_job.scheduled_date)
+    end
   end
 end
