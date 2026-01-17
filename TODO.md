@@ -448,6 +448,7 @@ git push -u origin develop
 - [x] **Test:** Verify performance improvement (tests passed)
 
 **Branch:** `feature/FH-029-optimize-dispatch`
+**PR:** [#8](https://github.com/kojjob/field-hub/pull/8)
 
 ---
 
