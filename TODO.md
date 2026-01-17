@@ -278,22 +278,22 @@ git push -u origin develop
 
 **Branch:** `feature/FH-014-jobs-context` (merged to develop)
 
-### FH-015: Jobs Context - Status Workflow
+### FH-015: Jobs Context - Status Workflow ✅
 
-- [ ] **Test First:** Job status transitions
-  - [ ] `unscheduled` → `scheduled` (when date assigned)
-  - [ ] `scheduled` → `dispatched` (when tech assigned)
-  - [ ] `dispatched` → `en_route` (tech starts travel)
-  - [ ] `en_route` → `on_site` (tech arrives)
-  - [ ] `on_site` → `in_progress` (work started)
-  - [ ] `in_progress` → `completed` (work done)
-  - [ ] Any → `cancelled`
-  - [ ] Any → `on_hold`
-  - [ ] Invalid transitions raise error
-- [ ] **Implement:** State machine for job status
-- [ ] **Implement:** `start_travel/1`, `arrive/1`, `start_work/1`, `complete/2`
+- [x] **Test First:** Job status transitions
+  - [x] `unscheduled` → `scheduled` (when date assigned)
+  - [x] `scheduled` → `dispatched` (when tech assigned)
+  - [x] `dispatched` → `en_route` (tech starts travel)
+  - [x] `en_route` → `on_site` (tech arrives)
+  - [x] `on_site` → `in_progress` (work started)
+  - [x] `in_progress` → `completed` (work done)
+  - [x] Any → `cancelled`
+  - [x] Any → `on_hold`
+  - [x] Invalid transitions raise error
+- [x] **Implement:** State machine for job status
+- [x] **Implement:** `start_travel/1`, `arrive_on_site/1`, `start_work/1`, `complete_job/2`, `cancel_job/2`
 
-**Branch:** `feature/FH-015-job-status-workflow`
+**Branch:** `feature/FH-015-job-status-workflow` (merged to develop)
 
 ### FH-016: Job Events (Audit Trail)
 
