@@ -25,6 +25,7 @@ defmodule FieldHub.Jobs do
     |> where([j], j.organization_id == ^org_id)
     |> order_by([j], desc: j.inserted_at)
     |> Repo.all()
+    |> Repo.preload([:customer, :technician])
   end
 
   @doc """
@@ -64,7 +65,9 @@ defmodule FieldHub.Jobs do
 
   """
   def create_job(org_id, attrs) do
-    attrs = Map.put_new(attrs, :number, Job.generate_job_number(org_id))
+    # Normalize to string keys to avoid mixed keys error
+    attrs = for {key, val} <- attrs, into: %{}, do: {to_string(key), val}
+    attrs = Map.put_new(attrs, "number", Job.generate_job_number(org_id))
     job_changeset = %Job{organization_id: org_id} |> Job.changeset(attrs)
 
     Multi.new()
@@ -257,6 +260,35 @@ defmodule FieldHub.Jobs do
     end)
     |> run_transaction()
     |> broadcast_job_updated()
+  end
+
+  @doc """
+  Deletes a job.
+
+  ## Examples
+
+      iex> delete_job(job)
+      {:ok, %Job{}}
+
+      iex> delete_job(job)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_job(%Job{} = job) do
+    Repo.delete(job)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking job changes.
+
+  ## Examples
+
+      iex> change_job(job)
+      %Ecto.Changeset{data: %Job{}}
+
+  """
+  def change_job(%Job{} = job, attrs \\ %{}) do
+    Job.changeset(job, attrs)
   end
 
   defp run_transaction(multi) do

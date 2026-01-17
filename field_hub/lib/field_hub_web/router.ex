@@ -51,6 +51,11 @@ defmodule FieldHubWeb.Router do
       live "/customers/new", CustomerLive.Index, :new
       live "/customers/:id/edit", CustomerLive.Index, :edit
       live "/customers/:id", CustomerLive.Show, :show
+
+      live "/jobs", JobLive.Index, :index
+      live "/jobs/new", JobLive.Index, :new
+      live "/jobs/:id/edit", JobLive.Index, :edit
+      live "/jobs/:id", JobLive.Show, :show
     end
 
     post "/users/update-password", UserSessionController, :update_password
