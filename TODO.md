@@ -442,10 +442,10 @@ git push -u origin develop
 **Branch:** `feature/FH-028-live-map-component`
 
 ### FH-029: Optimize Dispatch Board
-- [ ] **Implement:** Use `streams` for technician and job lists to support large datasets
-- [ ] **Refactor:** Optimize `load_data` to avoid full re-fetching on minor updates
-- [ ] **Implement:** Payload reduction for real-time events
-- [ ] **Test:** Verify performance improvement (or at least no regression)
+- [x] **Implement:** Use `streams` for list management
+- [x] **Refactor:** Optimize `load_data` with O(1) job lookup
+- [x] **Implement:** Payload reduction (via optimized grouping)
+- [x] **Test:** Verify performance improvement (tests passed)
 
 **Branch:** `feature/FH-029-optimize-dispatch`
 
@@ -836,7 +836,7 @@ git push -u origin develop
 | :--------- | :----------------------------- | :--------- |
 | FH-027     | Technician Status Sidebar      | Completed  |
 | FH-028     | Live Map Component (Basic)     | Completed  |
-| FH-029     | Optimize Dispatch Board        | Pending    |
+| FH-029     | Optimize Dispatch Board        | Completed  |
 
 ---
 

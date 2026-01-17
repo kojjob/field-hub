@@ -81,14 +81,22 @@ defmodule FieldHubWeb.DispatchLive.Index do
       }
     end)
 
+    # Pre-process jobs into a map for fast lookup
+    scheduled_jobs_by_slot = Enum.group_by(scheduled_jobs, fn job ->
+      {job.technician_id, job.scheduled_start && job.scheduled_start.hour}
+    end)
+
     # Load unassigned jobs (no technician or no scheduled date)
     unassigned_jobs = Jobs.list_unassigned_jobs(org_id)
+    unassigned_jobs_count = length(unassigned_jobs)
 
     socket =
       socket
-      |> assign(:unassigned_jobs, unassigned_jobs)
+      |> stream(:unassigned_jobs, unassigned_jobs, reset: true)
+      |> assign(:unassigned_jobs_count, unassigned_jobs_count)
       |> assign(:technicians, technicians)
       |> assign(:scheduled_jobs, scheduled_jobs)
+      |> assign(:scheduled_jobs_by_slot, scheduled_jobs_by_slot)
       |> assign(:map_technicians, map_technicians)
       |> assign(:map_jobs, map_jobs)
       |> assign(:time_slots, time_slots())
@@ -304,13 +312,8 @@ defmodule FieldHubWeb.DispatchLive.Index do
     Calendar.strftime(date, "%A")
   end
 
-  defp jobs_for_technician_at_hour(jobs, technician_id, hour) do
-    jobs
-    |> Enum.filter(fn job ->
-      job.technician_id == technician_id &&
-        job.scheduled_start &&
-        job.scheduled_start.hour == hour
-    end)
+  defp jobs_for_technician_at_hour(jobs_map, technician_id, hour) do
+    Map.get(jobs_map, {technician_id, hour}, [])
   end
 
   defp job_duration_class(job) do
@@ -400,44 +403,47 @@ defmodule FieldHubWeb.DispatchLive.Index do
         <div class="w-64 bg-gray-50 border-r overflow-y-auto p-3">
           <h2 class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
             <span class="bg-orange-100 text-orange-800 px-2 py-0.5 rounded text-xs">
-              {length(@unassigned_jobs)}
+              {@unassigned_jobs_count}
             </span>
             Unassigned
           </h2>
 
-          <div id="unassigned-jobs" class="space-y-2" phx-hook="DragDrop" data-group="jobs" data-type="source">
-            <%= for job <- @unassigned_jobs do %>
-              <div
-                class={"drag-handle p-2 bg-white rounded-lg border shadow-sm cursor-grab hover:shadow-md transition-shadow #{priority_indicator(job.priority)}"}
-                data-job-id={job.id}
-              >
-                <div class="flex items-start justify-between gap-1">
-                  <div class="flex-1 min-w-0" phx-click="show_job_details" phx-value-job_id={job.id}>
-                    <div class="font-medium text-sm text-gray-900 truncate">{job.title}</div>
-                    <div class="text-xs text-gray-500">{job.customer.name}</div>
+          <%= if @unassigned_jobs_count == 0 do %>
+            <div id="unassigned-jobs-empty" class="text-sm text-gray-400 text-center py-4">
+              No unassigned jobs
+            </div>
+          <% else %>
+            <div id="unassigned-jobs" class="space-y-2" phx-hook="DragDrop" data-group="jobs" data-type="source" phx-update="stream">
+              <%= for {dom_id, job} <- @streams.unassigned_jobs do %>
+                <div
+                  id={dom_id}
+                  class={"drag-handle p-2 bg-white rounded-lg border shadow-sm cursor-grab hover:shadow-md transition-shadow #{priority_indicator(job.priority)}"}
+                  data-job-id={job.id}
+                >
+                  <div class="flex items-start justify-between gap-1">
+                    <div class="flex-1 min-w-0" phx-click="show_job_details" phx-value-job_id={job.id}>
+                      <div class="font-medium text-sm text-gray-900 truncate">{job.title}</div>
+                      <div class="text-xs text-gray-500">{job.customer.name}</div>
+                    </div>
+                    <button
+                      phx-click="quick_dispatch"
+                      phx-value-job_id={job.id}
+                      class="shrink-0 p-1 rounded hover:bg-blue-100 text-blue-600"
+                      title="Quick dispatch"
+                    >
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                      </svg>
+                    </button>
                   </div>
-                  <button
-                    phx-click="quick_dispatch"
-                    phx-value-job_id={job.id}
-                    class="shrink-0 p-1 rounded hover:bg-blue-100 text-blue-600"
-                    title="Quick dispatch"
-                  >
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                    </svg>
-                  </button>
+                  <div class="mt-1 flex items-center gap-1">
+                    <span class={"inline-block w-2 h-2 rounded-full #{if job.priority == "urgent", do: "bg-red-500", else: "bg-gray-400"}"}></span>
+                    <span class="text-xs text-gray-400 capitalize">{job.priority}</span>
+                  </div>
                 </div>
-                <div class="mt-1 flex items-center gap-1">
-                  <span class={"inline-block w-2 h-2 rounded-full #{if job.priority == "urgent", do: "bg-red-500", else: "bg-gray-400"}"}></span>
-                  <span class="text-xs text-gray-400 capitalize">{job.priority}</span>
-                </div>
-              </div>
-            <% end %>
-
-            <%= if Enum.empty?(@unassigned_jobs) do %>
-              <p class="text-sm text-gray-400 text-center py-4">No unassigned jobs</p>
-            <% end %>
-          </div>
+              <% end %>
+            </div>
+          <% end %>
         </div>
 
         <!-- Calendar Grid or Map -->
@@ -488,7 +494,7 @@ defmodule FieldHubWeb.DispatchLive.Index do
                       data-technician-id={tech.id}
                       data-hour={slot.hour}
                     >
-                      <%= for job <- jobs_for_technician_at_hour(@scheduled_jobs, tech.id, slot.hour) do %>
+                      <%= for job <- jobs_for_technician_at_hour(@scheduled_jobs_by_slot, tech.id, slot.hour) do %>
                         <div
                           class={"drag-handle #{job_duration_class(job)} #{status_color(job.status)} #{priority_indicator(job.priority)} w-full rounded p-1 border text-xs cursor-grab hover:shadow-md transition-shadow"}
                           data-job-id={job.id}
