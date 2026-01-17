@@ -29,6 +29,44 @@ defmodule FieldHub.Jobs do
   end
 
   @doc """
+  Returns the list of jobs scheduled for a specific date.
+
+  ## Examples
+
+      iex> list_jobs_for_date(org_id, ~D[2026-01-17])
+      [%Job{}, ...]
+
+  """
+  def list_jobs_for_date(org_id, date) do
+    Job
+    |> where([j], j.organization_id == ^org_id)
+    |> where([j], j.scheduled_date == ^date)
+    |> where([j], not is_nil(j.technician_id))
+    |> order_by([j], asc: j.scheduled_start)
+    |> Repo.all()
+    |> Repo.preload([:customer, :technician])
+  end
+
+  @doc """
+  Returns the list of unassigned jobs (no technician or no scheduled date).
+
+  ## Examples
+
+      iex> list_unassigned_jobs(org_id)
+      [%Job{}, ...]
+
+  """
+  def list_unassigned_jobs(org_id) do
+    Job
+    |> where([j], j.organization_id == ^org_id)
+    |> where([j], is_nil(j.technician_id) or is_nil(j.scheduled_date))
+    |> where([j], j.status not in ["completed", "cancelled"])
+    |> order_by([j], [desc: fragment("CASE WHEN ? = 'urgent' THEN 0 WHEN ? = 'high' THEN 1 ELSE 2 END", j.priority, j.priority), asc: j.inserted_at])
+    |> Repo.all()
+    |> Repo.preload([:customer, :technician])
+  end
+
+  @doc """
   Gets a single job scoped to an organization.
 
   Raises `Ecto.NoResultsError` if the job does not exist
@@ -104,39 +142,7 @@ defmodule FieldHub.Jobs do
     |> broadcast_job_updated()
   end
 
-  @doc """
-  Returns jobs scheduled for a specific date.
 
-  ## Examples
-
-      iex> list_jobs_for_date(org_id, ~D[2023-01-01])
-      [%Job{}, ...]
-
-  """
-  def list_jobs_for_date(org_id, date) do
-    Job
-    |> where([j], j.organization_id == ^org_id)
-    |> where([j], j.scheduled_date == ^date)
-    |> order_by([j], asc: j.scheduled_start)
-    |> Repo.all()
-  end
-
-  @doc """
-  Returns all unassigned (unscheduled) jobs.
-
-  ## Examples
-
-      iex> list_unassigned_jobs(org_id)
-      [%Job{}, ...]
-
-  """
-  def list_unassigned_jobs(org_id) do
-    Job
-    |> where([j], j.organization_id == ^org_id)
-    |> where([j], j.status == "unscheduled")
-    |> order_by([j], desc: j.inserted_at)
-    |> Repo.all()
-  end
 
   @doc """
   Assigns a technician to a job.

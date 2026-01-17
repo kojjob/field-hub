@@ -92,8 +92,11 @@ defmodule FieldHub.JobsTest do
       today = Date.utc_today()
       tomorrow = Date.add(today, 1)
 
-      job_today = job_fixture(org.id, customer.id, %{scheduled_date: today})
-      _job_tomorrow = job_fixture(org.id, customer.id, %{scheduled_date: tomorrow})
+      # Create a technician for scheduled jobs
+      {:ok, tech} = Dispatch.create_technician(org.id, %{name: "Tech Date", email: "td@example.com"})
+
+      job_today = job_fixture(org.id, customer.id, %{scheduled_date: today, technician_id: tech.id})
+      _job_tomorrow = job_fixture(org.id, customer.id, %{scheduled_date: tomorrow, technician_id: tech.id})
       _job_unscheduled = job_fixture(org.id, customer.id, %{scheduled_date: nil})
 
       jobs = Jobs.list_jobs_for_date(org.id, today)
@@ -104,14 +107,25 @@ defmodule FieldHub.JobsTest do
   end
 
   describe "list_unassigned_jobs/1" do
-    test "returns jobs with status unscheduled", %{org: org, customer: customer} do
-      unscheduled = job_fixture(org.id, customer.id, %{status: "unscheduled"})
-      _scheduled = job_fixture(org.id, customer.id, %{status: "scheduled", scheduled_date: Date.utc_today()})
+    test "returns jobs without technician or without scheduled date", %{org: org, customer: customer} do
+      # Job without technician (unscheduled by default)
+      unassigned = job_fixture(org.id, customer.id, %{status: "unscheduled"})
+
+      # Job with technician and scheduled date should NOT appear
+      {:ok, tech} = Dispatch.create_technician(org.id, %{name: "Tech 1", email: "t1@example.com"})
+      _assigned = job_fixture(org.id, customer.id, %{
+        status: "scheduled",
+        scheduled_date: Date.utc_today(),
+        technician_id: tech.id
+      })
+
+      # Completed job should NOT appear
+      _completed = job_fixture(org.id, customer.id, %{status: "completed"})
 
       jobs = Jobs.list_unassigned_jobs(org.id)
 
       assert length(jobs) == 1
-      assert hd(jobs).id == unscheduled.id
+      assert hd(jobs).id == unassigned.id
     end
   end
 
