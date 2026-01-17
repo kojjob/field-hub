@@ -262,21 +262,21 @@ git push -u origin develop
 
 **Branch:** `feature/FH-013-crm-context` (merged to develop)
 
-### FH-014: Jobs Context - Basic CRUD
+### FH-014: Jobs Context - Basic CRUD ✅
 
-- [ ] **Test First:** `test/field_hub/jobs_test.exs`
-  - [ ] `list_jobs/1` scoped to organization
-  - [ ] `list_jobs_for_date/2`
-  - [ ] `list_unassigned_jobs/1`
-  - [ ] `create_job/2` with auto-generated job number
-  - [ ] `update_job/2`
-  - [ ] `assign_job/3`
-  - [ ] `get_job!/1`
-- [ ] **Implement:** `lib/field_hub/jobs.ex` context
-- [ ] **Implement:** `lib/field_hub/jobs/job.ex` schema
-- [ ] **Implement:** Job number generation (per org sequence)
+- [x] **Test First:** `test/field_hub/jobs_test.exs`
+  - [x] `list_jobs/1` scoped to organization
+  - [x] `list_jobs_for_date/2`
+  - [x] `list_unassigned_jobs/1`
+  - [x] `create_job/2` with auto-generated job number
+  - [x] `update_job/2`
+  - [x] `assign_job/3`
+  - [x] `get_job!/1`
+- [x] **Implement:** `lib/field_hub/jobs.ex` context
+- [x] **Implement:** `lib/field_hub/jobs/job.ex` schema
+- [x] **Implement:** Job number generation (per org sequence)
 
-**Branch:** `feature/FH-014-jobs-context`
+**Branch:** `feature/FH-014-jobs-context` (merged to develop)
 
 ### FH-015: Jobs Context - Status Workflow
 
