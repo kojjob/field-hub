@@ -25,6 +25,7 @@ defmodule FieldHubWeb.DispatchLive.Index do
       |> assign(:current_user, user)
       |> assign(:selected_date, today)
       |> assign(:view_mode, :day)
+      |> assign(:selected_job, nil)
       |> load_data()
 
     {:ok, socket}
@@ -112,6 +113,60 @@ defmodule FieldHubWeb.DispatchLive.Index do
       {:error, _changeset} ->
         {:noreply, put_flash(socket, :error, "Failed to unassign job")}
     end
+  end
+
+  @impl true
+  def handle_event("change_status", %{"job_id" => job_id, "status" => status}, socket) do
+    org_id = socket.assigns.current_organization.id
+    job = Jobs.get_job!(org_id, job_id)
+
+    case Jobs.update_job(job, %{"status" => status}) do
+      {:ok, _updated_job} ->
+        {:noreply, socket |> put_flash(:info, "Status updated to #{status}") |> load_data()}
+      {:error, _changeset} ->
+        {:noreply, put_flash(socket, :error, "Failed to update status")}
+    end
+  end
+
+  @impl true
+  def handle_event("quick_dispatch", %{"job_id" => job_id}, socket) do
+    org_id = socket.assigns.current_organization.id
+    job = Jobs.get_job!(org_id, job_id)
+
+    # Find first available technician
+    available_tech = Dispatch.list_technicians(org_id)
+      |> Enum.find(fn t -> t.status == "available" end)
+
+    case available_tech do
+      nil ->
+        {:noreply, put_flash(socket, :error, "No available technicians")}
+      tech ->
+        update_params = %{
+          "technician_id" => tech.id,
+          "scheduled_date" => Date.to_string(socket.assigns.selected_date),
+          "status" => "scheduled"
+        }
+
+        case Jobs.update_job(job, update_params) do
+          {:ok, _updated_job} ->
+            {:noreply, socket |> put_flash(:info, "Job dispatched to #{tech.name}") |> load_data()}
+          {:error, _changeset} ->
+            {:noreply, put_flash(socket, :error, "Failed to dispatch job")}
+        end
+    end
+  end
+
+  @impl true
+  def handle_event("show_job_details", %{"job_id" => job_id}, socket) do
+    org_id = socket.assigns.current_organization.id
+    job = Jobs.get_job!(org_id, job_id) |> FieldHub.Repo.preload([:customer, :technician])
+
+    {:noreply, assign(socket, :selected_job, job)}
+  end
+
+  @impl true
+  def handle_event("close_job_details", _params, socket) do
+    {:noreply, assign(socket, :selected_job, nil)}
   end
 
   @impl true
@@ -250,8 +305,22 @@ defmodule FieldHubWeb.DispatchLive.Index do
                 class={"drag-handle p-2 bg-white rounded-lg border shadow-sm cursor-grab hover:shadow-md transition-shadow #{priority_indicator(job.priority)}"}
                 data-job-id={job.id}
               >
-                <div class="font-medium text-sm text-gray-900 truncate">{job.title}</div>
-                <div class="text-xs text-gray-500">{job.customer.name}</div>
+                <div class="flex items-start justify-between gap-1">
+                  <div class="flex-1 min-w-0" phx-click="show_job_details" phx-value-job_id={job.id}>
+                    <div class="font-medium text-sm text-gray-900 truncate">{job.title}</div>
+                    <div class="text-xs text-gray-500">{job.customer.name}</div>
+                  </div>
+                  <button
+                    phx-click="quick_dispatch"
+                    phx-value-job_id={job.id}
+                    class="shrink-0 p-1 rounded hover:bg-blue-100 text-blue-600"
+                    title="Quick dispatch"
+                  >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                  </button>
+                </div>
                 <div class="mt-1 flex items-center gap-1">
                   <span class={"inline-block w-2 h-2 rounded-full #{if job.priority == "urgent", do: "bg-red-500", else: "bg-gray-400"}"}></span>
                   <span class="text-xs text-gray-400 capitalize">{job.priority}</span>
@@ -305,6 +374,8 @@ defmodule FieldHubWeb.DispatchLive.Index do
                       <div
                         class={"drag-handle #{job_duration_class(job)} #{status_color(job.status)} #{priority_indicator(job.priority)} w-full rounded p-1 border text-xs cursor-grab hover:shadow-md transition-shadow"}
                         data-job-id={job.id}
+                        phx-click="show_job_details"
+                        phx-value-job_id={job.id}
                       >
                         <div class="font-medium truncate">{job.title}</div>
                         <div class="text-gray-600 truncate">{job.customer.name}</div>
@@ -317,7 +388,164 @@ defmodule FieldHubWeb.DispatchLive.Index do
           </div>
         </div>
       </div>
+
+      <!-- Job Details Slideout Panel -->
+      <%= if @selected_job do %>
+        <div class="fixed inset-0 bg-black/20 z-40" phx-click="close_job_details"></div>
+        <div class="fixed right-0 top-0 h-full w-96 bg-white shadow-xl z-50 overflow-y-auto">
+          <div class="p-4 border-b flex items-center justify-between">
+            <h2 class="text-lg font-semibold">Job Details</h2>
+            <button phx-click="close_job_details" class="p-1 rounded hover:bg-gray-100">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+            </button>
+          </div>
+
+          <div class="p-4 space-y-4">
+            <!-- Job Title & Priority -->
+            <div>
+              <div class="flex items-center gap-2 mb-1">
+                <span class={"inline-block px-2 py-0.5 rounded text-xs font-medium #{priority_badge(@selected_job.priority)}"}>
+                  {@selected_job.priority}
+                </span>
+                <span class={"inline-block px-2 py-0.5 rounded text-xs #{status_badge(@selected_job.status)}"}>
+                  {@selected_job.status}
+                </span>
+              </div>
+              <h3 class="text-xl font-semibold">{@selected_job.title}</h3>
+              <p class="text-gray-600 mt-1">{@selected_job.description}</p>
+            </div>
+
+            <!-- Customer Info -->
+            <div class="bg-gray-50 rounded-lg p-3">
+              <h4 class="text-sm font-medium text-gray-500 mb-1">Customer</h4>
+              <p class="font-medium">{@selected_job.customer.name}</p>
+              <%= if @selected_job.customer.phone do %>
+                <p class="text-sm text-gray-600">{@selected_job.customer.phone}</p>
+              <% end %>
+            </div>
+
+            <!-- Schedule Info -->
+            <div class="bg-gray-50 rounded-lg p-3">
+              <h4 class="text-sm font-medium text-gray-500 mb-1">Schedule</h4>
+              <%= if @selected_job.scheduled_date do %>
+                <p class="font-medium">{format_date(@selected_job.scheduled_date)}</p>
+                <%= if @selected_job.scheduled_start do %>
+                  <p class="text-sm text-gray-600">
+                    Starts at {format_time(@selected_job.scheduled_start)}
+                  </p>
+                <% end %>
+              <% else %>
+                <p class="text-gray-500 italic">Not scheduled</p>
+              <% end %>
+            </div>
+
+            <!-- Technician Info -->
+            <div class="bg-gray-50 rounded-lg p-3">
+              <h4 class="text-sm font-medium text-gray-500 mb-1">Technician</h4>
+              <%= if @selected_job.technician do %>
+                <div class="flex items-center gap-2">
+                  <div class="w-3 h-3 rounded-full" style={"background-color: #{@selected_job.technician.color}"}></div>
+                  <span class="font-medium">{@selected_job.technician.name}</span>
+                </div>
+              <% else %>
+                <p class="text-gray-500 italic">Unassigned</p>
+              <% end %>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="pt-4 border-t space-y-2">
+              <h4 class="text-sm font-medium text-gray-700">Quick Actions</h4>
+
+              <!-- Status Change Buttons -->
+              <div class="flex flex-wrap gap-2">
+                <%= if @selected_job.status != "en_route" do %>
+                  <button
+                    phx-click="change_status"
+                    phx-value-job_id={@selected_job.id}
+                    phx-value-status="en_route"
+                    class="px-3 py-1 bg-yellow-100 text-yellow-800 rounded text-sm hover:bg-yellow-200"
+                  >
+                    → En Route
+                  </button>
+                <% end %>
+                <%= if @selected_job.status != "on_site" do %>
+                  <button
+                    phx-click="change_status"
+                    phx-value-job_id={@selected_job.id}
+                    phx-value-status="on_site"
+                    class="px-3 py-1 bg-purple-100 text-purple-800 rounded text-sm hover:bg-purple-200"
+                  >
+                    → On Site
+                  </button>
+                <% end %>
+                <%= if @selected_job.status != "in_progress" do %>
+                  <button
+                    phx-click="change_status"
+                    phx-value-job_id={@selected_job.id}
+                    phx-value-status="in_progress"
+                    class="px-3 py-1 bg-indigo-100 text-indigo-800 rounded text-sm hover:bg-indigo-200"
+                  >
+                    → In Progress
+                  </button>
+                <% end %>
+                <%= if @selected_job.status != "completed" do %>
+                  <button
+                    phx-click="change_status"
+                    phx-value-job_id={@selected_job.id}
+                    phx-value-status="completed"
+                    class="px-3 py-1 bg-green-100 text-green-800 rounded text-sm hover:bg-green-200"
+                  >
+                    ✓ Complete
+                  </button>
+                <% end %>
+              </div>
+
+              <!-- Unassign Button -->
+              <%= if @selected_job.technician_id do %>
+                <button
+                  phx-click="unassign_job"
+                  phx-value-job_id={@selected_job.id}
+                  class="w-full px-3 py-2 border border-red-300 text-red-700 rounded text-sm hover:bg-red-50"
+                >
+                  Unassign from Technician
+                </button>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      <% end %>
     </div>
     """
   end
+
+  # Badge helpers for slideout panel
+  defp priority_badge(priority) do
+    case priority do
+      "urgent" -> "bg-red-100 text-red-800"
+      "high" -> "bg-orange-100 text-orange-800"
+      "normal" -> "bg-blue-100 text-blue-800"
+      "low" -> "bg-gray-100 text-gray-800"
+      _ -> "bg-gray-100 text-gray-800"
+    end
+  end
+
+  defp status_badge(status) do
+    case status do
+      "unscheduled" -> "bg-gray-100 text-gray-800"
+      "scheduled" -> "bg-blue-100 text-blue-800"
+      "en_route" -> "bg-yellow-100 text-yellow-800"
+      "on_site" -> "bg-purple-100 text-purple-800"
+      "in_progress" -> "bg-indigo-100 text-indigo-800"
+      "completed" -> "bg-green-100 text-green-800"
+      "cancelled" -> "bg-red-100 text-red-800"
+      _ -> "bg-gray-100 text-gray-800"
+    end
+  end
+
+  defp format_time(%Time{} = time) do
+    Calendar.strftime(time, "%I:%M %p")
+  end
+  defp format_time(_), do: ""
 end

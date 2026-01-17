@@ -174,4 +174,85 @@ defmodule FieldHubWeb.DispatchLiveTest do
       assert is_nil(updated_job.scheduled_date)
     end
   end
+
+  describe "Quick Actions" do
+    test "change_status event updates job status", %{conn: conn, user: user, org: org} do
+      customer = customer_fixture(org.id)
+      technician = technician_fixture(org.id)
+
+      {:ok, job} = FieldHub.Jobs.create_job(org.id, %{
+        title: "Status Test",
+        description: "Test",
+        job_type: "service_call",
+        priority: "normal",
+        status: "scheduled",
+        customer_id: customer.id,
+        technician_id: technician.id,
+        scheduled_date: Date.utc_today(),
+        created_by_id: user.id
+      })
+
+      {:ok, live, _html} = live(conn, ~p"/dispatch")
+
+      # Change status to en_route
+      render_hook(live, "change_status", %{
+        "job_id" => job.id,
+        "status" => "en_route"
+      })
+
+      # Verify status changed
+      updated_job = FieldHub.Jobs.get_job!(org.id, job.id)
+      assert updated_job.status == "en_route"
+    end
+
+    test "quick_dispatch assigns job to available technician", %{conn: conn, user: user, org: org} do
+      customer = customer_fixture(org.id)
+      technician = technician_fixture(org.id, %{status: "available"})
+
+      {:ok, job} = FieldHub.Jobs.create_job(org.id, %{
+        title: "Quick Dispatch Test",
+        description: "Test",
+        job_type: "service_call",
+        priority: "normal",
+        customer_id: customer.id,
+        created_by_id: user.id
+      })
+
+      {:ok, live, _html} = live(conn, ~p"/dispatch")
+
+      # Quick dispatch - auto-assign to available tech
+      render_hook(live, "quick_dispatch", %{"job_id" => job.id})
+
+      # Verify job was assigned
+      updated_job = FieldHub.Jobs.get_job!(org.id, job.id)
+      assert updated_job.technician_id == technician.id
+      assert updated_job.scheduled_date == Date.utc_today()
+    end
+
+    test "show_job_details opens slideout panel", %{conn: conn, user: user, org: org} do
+      customer = customer_fixture(org.id)
+      technician = technician_fixture(org.id)
+
+      {:ok, job} = FieldHub.Jobs.create_job(org.id, %{
+        title: "Details Test Job",
+        description: "View this job for more details",
+        job_type: "service_call",
+        priority: "normal",
+        customer_id: customer.id,
+        technician_id: technician.id,
+        scheduled_date: Date.utc_today(),
+        scheduled_start: ~T[10:00:00],
+        created_by_id: user.id
+      })
+
+      {:ok, live, _html} = live(conn, ~p"/dispatch")
+
+      # Open job details
+      html = render_hook(live, "show_job_details", %{"job_id" => job.id})
+
+      # Panel should show job details
+      assert html =~ "Details Test Job"
+      assert html =~ "View this job for more details"
+    end
+  end
 end

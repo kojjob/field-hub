@@ -406,15 +406,16 @@ git push -u origin develop
 **Branch:** `feature/FH-025-drag-drop-assignment`
 **PR:** [#5](https://github.com/kojjob/field-hub/pull/5)
 
-### FH-026: Dispatch Board - Quick Actions
+### FH-026: Dispatch Board - Quick Actions ✅
 
-- [ ] **Implement:** Quick dispatch button (auto-assign)
-- [ ] **Implement:** Job status change from board
-- [ ] **Implement:** Reschedule job (drag to different time/day)
-- [ ] **Implement:** View job details slideout panel
-- [ ] **Implement:** Keyboard shortcuts (n = new job, etc.)
+- [x] **Implement:** Quick dispatch button (auto-assign)
+- [x] **Implement:** Job status change from board
+- [ ] **Implement:** Reschedule job (drag to different time/day) - *deferred to FH-027*
+- [x] **Implement:** View job details slideout panel
+- [ ] **Implement:** Keyboard shortcuts (n = new job, etc.) - *deferred to FH-027*
 
 **Branch:** `feature/FH-026-dispatch-quick-actions`
+**PR:** [#6](https://github.com/kojjob/field-hub/pull/6)
 
 ### FH-027: Technician Status Sidebar
 
@@ -813,10 +814,14 @@ git push -u origin develop
 - [x] FH-022: Customer Management UI
 - [x] FH-023: Job Creation & Editing
 
-**Sprint 3 (Week 3):** Dispatch Board 🚧
+**Sprint 3 (Week 3):** Dispatch Board ✅
 - [x] FH-024: Dispatch Board - Calendar View
 - [x] FH-025: Dispatch Board - Drag & Drop Assignment
-- FH-026: Dispatch Board - Quick Actions
+- [x] FH-026: Dispatch Board - Quick Actions
+
+**Sprint 4 (Week 4):** Real-Time Features 🚧
+- FH-027: Technician Status Sidebar
+- FH-028: Live Map Component
 
 ---
 
