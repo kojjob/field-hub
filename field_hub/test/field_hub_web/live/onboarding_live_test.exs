@@ -120,7 +120,7 @@ defmodule FieldHubWeb.OnboardingLiveTest do
         |> follow_redirect(conn)
 
       # Should redirect to dashboard with success message
-      assert html =~ "Welcome to FieldHub!"
+      assert html =~ "Operations Dashboard"
 
       # Verify user is now owner of the organization
       updated_user = Accounts.get_user!(user.id)
