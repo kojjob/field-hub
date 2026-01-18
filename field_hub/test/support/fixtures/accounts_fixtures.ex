@@ -26,7 +26,11 @@ defmodule FieldHub.AccountsFixtures do
 
   def valid_user_attributes(attrs \\ %{}) do
     Enum.into(attrs, %{
-      email: unique_user_email()
+      email: unique_user_email(),
+      password: valid_user_password(),
+      terms_accepted: true,
+      name: "Test User",
+      company_name: "Test Company #{System.unique_integer([:positive])}"
     })
   end
 
@@ -35,6 +39,10 @@ defmodule FieldHub.AccountsFixtures do
       attrs
       |> valid_user_attributes()
       |> Accounts.register_user()
+
+    # The user won't have a password hash because registration_changeset handles setting it,
+    # but let's make sure we return the user.
+    # Note: register_user now uses registration_changeset which handles password.
 
     user
   end

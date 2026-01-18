@@ -37,7 +37,7 @@ defmodule FieldHubWeb.UserAuth do
 
     conn
     |> create_or_extend_session(user, params)
-    |> redirect(to: user_return_to || signed_in_path(conn))
+    |> redirect(to: user_return_to || signed_in_path(user))
   end
 
   @doc """
@@ -275,13 +275,32 @@ defmodule FieldHubWeb.UserAuth do
     end)
   end
 
+  alias FieldHub.Accounts.User
+
   @doc "Returns the path to redirect to after log in."
-  # the user was already logged in, redirect to settings
-  def signed_in_path(%Plug.Conn{assigns: %{current_scope: %Scope{user: %Accounts.User{}}}}) do
-    ~p"/users/settings"
+  def signed_in_path(%Plug.Conn{} = conn) do
+    user = conn.assigns[:current_scope] && conn.assigns.current_scope.user
+    signed_in_path(user)
   end
 
-  def signed_in_path(_), do: ~p"/"
+  def signed_in_path(%User{organization_id: org_id}) when not is_nil(org_id) do
+    # Efficiently check onboarding status without full preload if possible,
+    # or just fetch what we need. Since we need to know if we should redirect.
+    # For now, let's just fetch the organization.
+    org = Accounts.get_organization!(org_id)
+    if org.onboarding_completed_at do
+      ~p"/dashboard"
+    else
+      ~p"/onboarding"
+    end
+  end
+
+  def signed_in_path(%User{}) do
+    # No organization yet (shouldn't happen with new flow, but fallback)
+    ~p"/onboarding"
+  end
+
+  def signed_in_path(_), do: ~p"/onboarding"
 
   @doc """
   Plug for routes that require the user to be authenticated.

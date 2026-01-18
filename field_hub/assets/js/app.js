@@ -39,7 +39,27 @@ const Hooks = {
   SignaturePad: SignaturePadHook,
   PushNotifications: PushNotifications,
   Map: MapHook,
-  Geolocation: GeolocationHook
+  Geolocation: GeolocationHook,
+  PasswordToggle: {
+    mounted() {
+      this.el.addEventListener("click", () => {
+        const inputId = this.el.dataset.inputId;
+        const input = document.getElementById(inputId);
+        const iconVis = this.el.querySelector(".icon-vis");
+        const iconHid = this.el.querySelector(".icon-hid");
+        
+        if (input.type === "password") {
+          input.type = "text";
+          iconVis.style.display = "none";
+          iconHid.style.display = "block";
+        } else {
+          input.type = "password";
+          iconVis.style.display = "block";
+          iconHid.style.display = "none";
+        }
+      });
+    }
+  }
 }
 
 const csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
@@ -62,6 +82,25 @@ liveSocket.connect()
 // >> liveSocket.enableLatencySim(1000)  // enabled for duration of browser session
 // >> liveSocket.disableLatencySim()
 window.liveSocket = liveSocket
+
+// Theme Toggle Logic
+window.addEventListener("DOMContentLoaded", () => {
+  const btn = document.getElementById("themeToggle");
+  if (!btn) return;
+
+  const setTheme = (theme) => {
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem("phx:theme", theme);
+    // Dispatch event for LiveView if needed
+    window.dispatchEvent(new CustomEvent("phx:set-theme", { detail: { theme } }));
+  };
+
+  btn.addEventListener("click", () => {
+    const currentTheme = document.documentElement.getAttribute("data-theme") || 
+                         (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    setTheme(currentTheme === "dark" ? "light" : "dark");
+  });
+});
 
 // The lines below enable quality of life phoenix_live_reload
 // development features:

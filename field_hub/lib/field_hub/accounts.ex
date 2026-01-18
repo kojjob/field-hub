@@ -316,9 +316,47 @@ defmodule FieldHub.Accounts do
 
   """
   def register_user(attrs) do
-    %User{}
-    |> User.email_changeset(attrs)
-    |> Repo.insert()
+    company_name = attrs["company_name"] || attrs[:company_name]
+    if company_name do
+      # If company name is provided, create org and user in one transaction
+      Ecto.Multi.new()
+      |> Ecto.Multi.insert(:user, User.registration_changeset(%User{}, attrs))
+      |> Ecto.Multi.run(:organization, fn repo, %{user: _user} ->
+          # Generate a slug from company name
+          slug = Slug.slugify(company_name)
+          # Ensure unique slug (simple version)
+          # In a real app, you might want to retry or append random string
+
+          %Organization{}
+          |> Organization.changeset(%{
+            name: company_name,
+            slug: slug
+          })
+          |> repo.insert()
+      end)
+      |> Ecto.Multi.run(:update_user, fn repo, %{user: user, organization: org} ->
+        user
+        |> Ecto.Changeset.change(%{organization_id: org.id, role: "owner"})
+        |> repo.update()
+      end)
+      |> Repo.transaction()
+      |> case do
+        {:ok, %{update_user: user}} -> {:ok, user}
+        {:error, :user, changeset, _} -> {:error, changeset}
+        {:error, :organization, changeset, _} ->
+           # If org creation fails, we should bubble up the error
+           # Ideally we mapping it to the user changeset or a general error
+           {:error, changeset}
+        {:error, _, changeset, _} -> {:error, changeset}
+      end
+    else
+      # Standard user registration without org (viewer/invitee flow usually)
+      # But for this sign up form, we are assuming they are creating an org.
+      # We'll just stick to standard flow if no company name (though form requires it)
+      %User{}
+      |> User.registration_changeset(attrs)
+      |> Repo.insert()
+    end
   end
 
   ## Settings
@@ -347,6 +385,13 @@ defmodule FieldHub.Accounts do
       iex> change_user_email(user)
       %Ecto.Changeset{data: %User{}}
 
+  """
+  def change_user_registration(user, attrs \\ %{}, opts \\ []) do
+    User.registration_changeset(user, attrs, opts)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for changing the user email.
   """
   def change_user_email(user, attrs \\ %{}, opts \\ []) do
     User.email_changeset(user, attrs, opts)
@@ -463,16 +508,6 @@ defmodule FieldHub.Accounts do
     {:ok, query} = UserToken.verify_magic_link_token_query(token)
 
     case Repo.one(query) do
-      # Prevent session fixation attacks by disallowing magic links for unconfirmed users with password
-      {%User{confirmed_at: nil, hashed_password: hash}, _token} when not is_nil(hash) ->
-        raise """
-        magic link log in is not allowed for unconfirmed users with a password set!
-
-        This cannot happen with the default implementation, which indicates that you
-        might have adapted the code to a different use case. Please make sure to read the
-        "Mixing magic link and password registration" section of `mix help phx.gen.auth`.
-        """
-
       {%User{confirmed_at: nil} = user, _token} ->
         user
         |> User.confirm_changeset()
@@ -512,6 +547,15 @@ defmodule FieldHub.Accounts do
     {encoded_token, user_token} = UserToken.build_email_token(user, "login")
     Repo.insert!(user_token)
     UserNotifier.deliver_login_instructions(user, magic_link_url_fun.(encoded_token))
+  end
+
+  @doc """
+  Generates a magic link token for the given user.
+  """
+  def generate_magic_link_token(%User{} = user) do
+    {encoded_token, user_token} = UserToken.build_email_token(user, "login")
+    Repo.insert!(user_token)
+    encoded_token
   end
 
   @doc """

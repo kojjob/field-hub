@@ -14,6 +14,8 @@ defmodule FieldHub.Accounts.User do
     field :phone, :string
     field :role, :string, default: "viewer"
     field :avatar_url, :string
+    field :company_name, :string, virtual: true
+    field :terms_accepted, :boolean, virtual: true
 
     belongs_to :organization, FieldHub.Accounts.Organization
 
@@ -31,6 +33,14 @@ defmodule FieldHub.Accounts.User do
       uniqueness of the email, useful when displaying live validations.
       Defaults to `true`.
   """
+  def registration_changeset(user, attrs, opts \\ []) do
+    user
+    |> cast(attrs, [:email, :password, :name, :company_name, :terms_accepted])
+    |> validate_email(opts)
+    |> validate_password(opts)
+    |> validate_acceptance(:terms_accepted, message: "must be accepted")
+  end
+
   def email_changeset(user, attrs, opts \\ []) do
     user
     |> cast(attrs, [:email])

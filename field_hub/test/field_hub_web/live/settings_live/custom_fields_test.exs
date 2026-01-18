@@ -10,10 +10,10 @@ defmodule FieldHubWeb.SettingsLive.CustomFieldsTest do
       %{conn: log_in_user(build_conn(), user), user: user, org: org}
     end
 
-    test "lists custom fields", %{conn: conn, org: org} do
+    test "lists custom fields", %{conn: conn, org: _org} do
       {:ok, _view, html} = live(conn, ~p"/settings/custom-fields")
       assert html =~ "Custom Fields"
-      assert html =~ "Define custom data fields"
+      assert html =~ "Extend your data model"
     end
 
     test "can create a new custom field", %{conn: conn} do
@@ -56,7 +56,7 @@ defmodule FieldHubWeb.SettingsLive.CustomFieldsTest do
       assert render(view) =~ "Gate Code"
 
       view
-      |> element("button", "Delete")
+      |> element("button[phx-click='delete_field']")
       |> render_click()
 
       refute render(view) =~ "Gate Code"

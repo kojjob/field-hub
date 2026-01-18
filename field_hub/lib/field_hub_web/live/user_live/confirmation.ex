@@ -73,11 +73,12 @@ defmodule FieldHubWeb.UserLive.Confirmation do
   end
 
   @impl true
-  def mount(%{"token" => token}, _session, socket) do
+  def mount(%{"token" => token} = params, _session, socket) do
     if user = Accounts.get_user_by_magic_link_token(token) do
       form = to_form(%{"token" => token}, as: "user")
+      auto_submit = Map.get(params, "auto") == "true"
 
-      {:ok, assign(socket, user: user, form: form, trigger_submit: false),
+      {:ok, assign(socket, user: user, form: form, trigger_submit: auto_submit),
        temporary_assigns: [form: nil]}
     else
       {:ok,

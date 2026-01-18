@@ -35,6 +35,10 @@ defmodule FieldHub.Accounts.Organization do
 
     # Settings
     field :settings, :map, default: %{}
+    field :industry, :string
+    field :size, :string
+    field :currency, :string, default: "USD"
+    field :onboarding_completed_at, :utc_datetime
 
     # Industry-Agnostic Terminology
     field :terminology, :map, default: %{
@@ -93,7 +97,11 @@ defmodule FieldHub.Accounts.Organization do
       :logo_url,
       :primary_color,
       :secondary_color,
-      :job_status_config
+      :job_status_config,
+      :industry,
+      :size,
+      :currency,
+      :onboarding_completed_at
     ])
     |> validate_required([:name, :slug])
     |> validate_format(:slug, ~r/^[a-z0-9]+(?:-[a-z0-9]+)*$/,
