@@ -82,7 +82,8 @@ defmodule FieldHubWeb.Layouts do
   @doc """
   Renders the user dropdown menu for the navbar.
   """
-  attr :current_user, :any, required: true
+  attr :current_user, :map, required: true
+  attr :current_organization, :map, default: nil
 
   def user_dropdown(assigns) do
     ~H"""
@@ -90,7 +91,7 @@ defmodule FieldHubWeb.Layouts do
       <div>
         <button
           type="button"
-          class="flex items-center gap-x-3 rounded-xl p-1.5 text-sm font-semibold leading-6 text-zinc-900 dark:text-zinc-100 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all duration-200"
+          class="flex items-center gap-x-3 rounded-full p-1 lg:rounded-xl lg:p-1.5 lg:pr-2.5 text-sm font-semibold leading-6 text-zinc-900 dark:text-zinc-100 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all duration-200 group focus:outline-none focus:ring-2 focus:ring-primary/20"
           id="user-menu-button"
           phx-click={
             JS.toggle(
@@ -105,52 +106,129 @@ defmodule FieldHubWeb.Layouts do
           }
           phx-click-away={JS.hide(to: "#user-menu")}
         >
-          <img
-            class="h-8 w-8 rounded-full bg-zinc-50 border border-zinc-200 dark:border-zinc-700"
-            src={"https://ui-avatars.com/api/?name=#{@current_user.name || @current_user.email}&background=6366f1&color=fff"}
-            alt=""
-          />
-          <span class="hidden lg:flex lg:items-center">
-            <span class="mr-1 text-sm font-bold text-zinc-700 dark:text-zinc-200" aria-hidden="true">
+          <div class="relative h-9 w-9">
+             <img
+              class="h-9 w-9 rounded-full bg-zinc-50 border border-zinc-200 dark:border-zinc-700 object-cover"
+              src={@current_user[:avatar_url] || "https://ui-avatars.com/api/?name=#{@current_user.name || @current_user.email}&background=10b981&color=fff"}
+              alt=""
+            />
+            <span class="absolute bottom-0 right-0 block h-2.5 w-2.5 rounded-full bg-primary ring-2 ring-white dark:ring-zinc-900"></span>
+          </div>
+
+          <span class="hidden lg:flex lg:flex-col lg:items-start text-left">
+            <span class="text-sm font-bold text-zinc-700 dark:text-zinc-200 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors" aria-hidden="true">
               {@current_user.name || @current_user.email}
             </span>
-            <.icon name="hero-chevron-down" class="h-4 w-4 text-zinc-400" />
+            <span class="text-[10px] font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wide leading-none">
+              <%= if @current_organization, do: @current_organization.brand_name || "Enterprise", else: "Admin" %>
+            </span>
           </span>
+          <.icon name="hero-chevron-down" class="hidden lg:block h-4 w-4 text-zinc-400 group-hover:text-zinc-600 dark:text-zinc-500 dark:group-hover:text-zinc-300 transition-colors ml-1" />
         </button>
       </div>
 
       <div
         id="user-menu"
-        class="hidden absolute right-0 z-10 mt-2.5 w-48 origin-top-right rounded-xl bg-white dark:bg-zinc-900 py-2 shadow-xl ring-1 ring-zinc-900/5 focus:outline-none border border-zinc-100 dark:border-zinc-800"
+        class="hidden absolute right-0 z-20 mt-2.5 w-72 origin-top-right rounded-2xl bg-white dark:bg-zinc-900 shadow-2xl ring-1 ring-zinc-900/5 focus:outline-none border border-zinc-100 dark:border-zinc-800 divide-y divide-zinc-100 dark:divide-zinc-800 overflow-hidden"
         role="menu"
         aria-orientation="vertical"
         aria-labelledby="user-menu-button"
         tabindex="-1"
       >
-        <div class="px-4 py-2 border-b border-zinc-100 dark:border-zinc-800 mb-1">
-          <p class="text-xs font-semibold text-zinc-500 uppercase tracking-tight">Signed in as</p>
-          <p class="text-sm font-bold text-zinc-900 dark:text-zinc-100 truncate">
+        <!-- User Info Header -->
+        <div class="px-5 py-4 bg-zinc-50/50 dark:bg-zinc-800/30">
+          <p class="text-sm text-zinc-900 dark:text-zinc-100 font-bold truncate">
+            Signed in as
+          </p>
+          <p class="text-sm text-zinc-500 dark:text-zinc-400 font-medium truncate mt-0.5">
             {@current_user.email}
           </p>
         </div>
 
-        <.link
-          navigate={~p"/users/settings"}
-          class="block px-4 py-2 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 font-medium"
-          role="menuitem"
-          tabindex="-1"
-        >
-          Account Settings
-        </.link>
-
-        <div class="border-t border-zinc-100 dark:border-zinc-800 mt-1 pt-1">
-          <.link
-            href={~p"/users/log-out"}
-            method="delete"
-            class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 font-bold"
+        <!-- Account Section -->
+        <div class="py-1">
+          <div class="px-3 py-1.5 text-xs font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">
+            Account
+          </div>
+           <.link
+            navigate={~p"/users/settings"}
+            class="group flex items-center px-4 py-2 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
             role="menuitem"
             tabindex="-1"
           >
+            <.icon name="hero-user-circle" class="mr-3 h-5 w-5 text-zinc-400 group-hover:text-primary transition-colors" />
+            Your Profile
+          </.link>
+          <.link
+            navigate={~p"/users/settings"}
+            class="group flex items-center px-4 py-2 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
+            role="menuitem"
+            tabindex="-1"
+          >
+             <.icon name="hero-cog" class="mr-3 h-5 w-5 text-zinc-400 group-hover:text-primary transition-colors" />
+            Settings
+          </.link>
+        </div>
+
+        <!-- Organization Section -->
+        <%= if @current_organization do %>
+        <div class="py-1">
+          <div class="px-3 py-1.5 text-xs font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">
+            {@current_organization.brand_name || "Organization"}
+          </div>
+          <.link
+            navigate={~p"/settings/branding"}
+            class="group flex items-center px-4 py-2 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
+            role="menuitem"
+            tabindex="-1"
+          >
+            <.icon name="hero-building-office" class="mr-3 h-5 w-5 text-zinc-400 group-hover:text-primary transition-colors" />
+            Company Profile
+          </.link>
+           <.link
+            navigate={~p"/technicians"}
+            class="group flex items-center px-4 py-2 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
+            role="menuitem"
+            tabindex="-1"
+          >
+            <.icon name="hero-users" class="mr-3 h-5 w-5 text-zinc-400 group-hover:text-primary transition-colors" />
+            Team Members
+          </.link>
+        </div>
+        <% end %>
+
+        <!-- Help Section -->
+        <div class="py-1">
+           <.link
+            href="#"
+            class="group flex items-center px-4 py-2 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
+            role="menuitem"
+            tabindex="-1"
+          >
+             <.icon name="hero-lifebuoy" class="mr-3 h-5 w-5 text-zinc-400 group-hover:text-primary transition-colors" />
+            Help Center
+          </.link>
+          <.link
+            href="#"
+            class="group flex items-center px-4 py-2 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
+            role="menuitem"
+            tabindex="-1"
+          >
+             <.icon name="hero-book-open" class="mr-3 h-5 w-5 text-zinc-400 group-hover:text-primary transition-colors" />
+            API Documentation
+          </.link>
+        </div>
+
+        <!-- Logout -->
+        <div class="py-1">
+          <.link
+            href={~p"/users/log-out"}
+            method="delete"
+            class="group flex items-center px-4 py-2.5 text-sm font-semibold text-red-600 hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors"
+            role="menuitem"
+            tabindex="-1"
+          >
+            <.icon name="hero-arrow-right-on-rectangle" class="mr-3 h-5 w-5 text-red-500 group-hover:text-red-600 transition-colors" />
             Sign out
           </.link>
         </div>
