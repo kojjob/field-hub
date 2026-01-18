@@ -443,10 +443,10 @@ git push -u origin develop
 
 ### FH-030: Mobile Layout & PWA Setup
 
-- [ ] **Implement:** Mobile-first layout for tech views
-- [ ] **Implement:** PWA manifest.json
-- [ ] **Implement:** Service worker for offline caching
-- [ ] **Implement:** "Add to Home Screen" support
+- [x] **Implement:** Mobile-first layout for tech views (Bottom Nav implemented)
+- [x] **Implement:** PWA manifest.json
+- [x] **Implement:** Service worker for offline caching (Basic SW implemented)
+- [x] **Implement:** "Add to Home Screen" support (Meta tags added)
 - [ ] **Test:** Works on iOS Safari, Android Chrome
 
 **Branch:** `feature/FH-030-pwa-setup`

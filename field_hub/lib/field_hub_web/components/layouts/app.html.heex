@@ -207,11 +207,37 @@
     </div>
 
     <!-- Main Content -->
-    <main class="flex-1 overflow-y-auto bg-zinc-50 dark:bg-black/20">
+    <main class="flex-1 overflow-y-auto bg-zinc-50 dark:bg-black/20 pb-20 lg:pb-0">
       <div class="px-4 py-8 sm:px-6 lg:px-8">
         <.flash_group flash={@flash} />
         {render_slot(@inner_block)}
       </div>
     </main>
+
+    <!-- Mobile Bottom Navigation -->
+    <div class="fixed bottom-0 left-0 z-50 w-full h-16 bg-white dark:bg-zinc-900 border-t border-zinc-200 dark:border-zinc-800 lg:hidden block">
+      <div class="grid h-full max-w-lg grid-cols-4 mx-auto font-medium">
+        <.link navigate={~p"/dashboard"} class="inline-flex flex-col items-center justify-center px-5 hover:bg-zinc-50 dark:hover:bg-zinc-800 group">
+          <.icon name="hero-home" class="w-6 h-6 mb-1 text-zinc-500 dark:text-zinc-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-500" />
+          <span class="text-xs text-zinc-500 dark:text-zinc-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-500">Home</span>
+        </.link>
+        
+        <a href="#" class="inline-flex flex-col items-center justify-center px-5 hover:bg-zinc-50 dark:hover:bg-zinc-800 group">
+          <.icon name="hero-calendar" class="w-6 h-6 mb-1 text-zinc-500 dark:text-zinc-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-500" />
+          <span class="text-xs text-zinc-500 dark:text-zinc-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-500">Schedule</span>
+        </a>
+
+        <a href="#" class="inline-flex flex-col items-center justify-center px-5 hover:bg-zinc-50 dark:hover:bg-zinc-800 group">
+          <.icon name="hero-briefcase" class="w-6 h-6 mb-1 text-zinc-500 dark:text-zinc-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-500" />
+          <span class="text-xs text-zinc-500 dark:text-zinc-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-500">Jobs</span>
+        </a>
+
+        <button type="button" class="inline-flex flex-col items-center justify-center px-5 hover:bg-zinc-50 dark:hover:bg-zinc-800 group" 
+                phx-click={JS.show(to: "#mobile-sidebar") |> JS.show(to: "#mobile-sidebar-backdrop", transition: {"ease-linear duration-300", "opacity-0", "opacity-100"}) |> JS.show(to: "#mobile-sidebar-panel", transition: {"ease-in-out duration-300", "-translate-x-full", "translate-x-0"})}>
+          <.icon name="hero-bars-3" class="w-6 h-6 mb-1 text-zinc-500 dark:text-zinc-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-500" />
+          <span class="text-xs text-zinc-500 dark:text-zinc-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-500">Menu</span>
+        </button>
+      </div>
+    </div>
   </div>
 </div>
