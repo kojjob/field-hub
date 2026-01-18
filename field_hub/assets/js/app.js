@@ -59,6 +59,11 @@ const Hooks = {
         }
       });
     }
+  },
+  StopPropagation: {
+    mounted() {
+      this.el.addEventListener("click", e => e.stopPropagation());
+    }
   }
 }
 

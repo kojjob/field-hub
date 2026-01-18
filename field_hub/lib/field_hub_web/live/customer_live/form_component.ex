@@ -7,37 +7,128 @@ defmodule FieldHubWeb.CustomerLive.FormComponent do
   def render(assigns) do
     ~H"""
     <div>
-      <.header>
-        {@title}
-        <:subtitle>Use this form to manage customer records in your database.</:subtitle>
-      </.header>
-
       <.simple_form
         for={@form}
         id="customer-form"
         phx-target={@myself}
         phx-change="validate"
         phx-submit="save"
+        class="space-y-8"
       >
-        <.input field={@form[:name]} type="text" label="Name" />
-        <.input field={@form[:email]} type="email" label="Email" />
-        <.input field={@form[:phone]} type="tel" label="Phone" />
-
-        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <.input field={@form[:address_line1]} type="text" label="Address Line 1" />
-          <.input field={@form[:address_line2]} type="text" label="Address Line 2" />
-        </div>
-
-        <div class="grid grid-cols-2 gap-4 sm:grid-cols-4">
-          <div class="col-span-2">
-            <.input field={@form[:city]} type="text" label="City" />
+        <div class="space-y-6">
+          <!-- Contact Info Section -->
+          <div>
+            <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4 border-b border-slate-200 dark:border-slate-700 pb-2">
+              Contact Information
+            </h3>
+            <div class="grid grid-cols-1 gap-5">
+              <.input
+                field={@form[:name]}
+                type="text"
+                label="Customer Name"
+                placeholder="e.g. Acme Inc. or John Doe"
+                class="w-full rounded-lg border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:border-indigo-600 focus:ring-indigo-600 sm:text-sm p-3 transition-shadow shadow-sm"
+              />
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <.input
+                  field={@form[:email]}
+                  type="email"
+                  label="Email Address"
+                  placeholder="name@example.com"
+                  class="w-full rounded-lg border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:border-indigo-600 focus:ring-indigo-600 sm:text-sm p-3 transition-shadow shadow-sm"
+                />
+                <.input
+                  field={@form[:phone]}
+                  type="tel"
+                  label="Phone Number"
+                  placeholder="(555) 123-4567"
+                  class="w-full rounded-lg border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:border-indigo-600 focus:ring-indigo-600 sm:text-sm p-3 transition-shadow shadow-sm"
+                />
+              </div>
+            </div>
           </div>
-          <.input field={@form[:state]} type="text" label="State" />
-          <.input field={@form[:zip]} type="text" label="ZIP Code" />
+          
+    <!-- Address Section -->
+          <div>
+            <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4 border-b border-slate-200 dark:border-slate-700 pb-2">
+              Service Address
+            </h3>
+            <div class="grid grid-cols-1 gap-5">
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                <div class="md:col-span-2">
+                  <.input
+                    field={@form[:address_line1]}
+                    type="text"
+                    label="Street Address"
+                    placeholder="123 Main St"
+                    class="w-full rounded-lg border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:border-indigo-600 focus:ring-indigo-600 sm:text-sm p-3 transition-shadow shadow-sm"
+                  />
+                </div>
+                <.input
+                  field={@form[:address_line2]}
+                  type="text"
+                  label="Unit/Apt"
+                  placeholder="Unit B"
+                  class="w-full rounded-lg border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:border-indigo-600 focus:ring-indigo-600 sm:text-sm p-3 transition-shadow shadow-sm"
+                />
+              </div>
+
+              <div class="grid grid-cols-2 md:grid-cols-3 gap-5">
+                <.input
+                  field={@form[:city]}
+                  type="text"
+                  label="City"
+                  class="w-full rounded-lg border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:border-indigo-600 focus:ring-indigo-600 sm:text-sm p-3 transition-shadow shadow-sm"
+                />
+                <.input
+                  field={@form[:state]}
+                  type="text"
+                  label="State"
+                  class="w-full rounded-lg border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:border-indigo-600 focus:ring-indigo-600 sm:text-sm p-3 transition-shadow shadow-sm"
+                />
+                <div class="col-span-2 md:col-span-1">
+                  <.input
+                    field={@form[:zip]}
+                    type="text"
+                    label="ZIP Code"
+                    class="w-full rounded-lg border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:border-indigo-600 focus:ring-indigo-600 sm:text-sm p-3 transition-shadow shadow-sm"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+          
+    <!-- Access Info Section -->
+          <div>
+            <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4 border-b border-slate-200 dark:border-slate-700 pb-2">
+              Access Details
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <.input
+                field={@form[:gate_code]}
+                type="text"
+                label="Gate Code"
+                placeholder="#"
+                class="w-full rounded-lg border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:border-indigo-600 focus:ring-indigo-600 sm:text-sm p-3 transition-shadow shadow-sm"
+              />
+              <.input
+                field={@form[:special_instructions]}
+                type="textarea"
+                label="Instructions"
+                placeholder="e.g. Dog in backyard"
+                class="w-full rounded-lg border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:border-indigo-600 focus:ring-indigo-600 sm:text-sm p-3 transition-shadow shadow-sm min-h-[50px]"
+              />
+            </div>
+          </div>
         </div>
 
         <:actions>
-          <.button phx-disable-with="Saving...">Save Customer</.button>
+          <.button
+            phx-disable-with="Saving..."
+            class="w-full py-3 text-base font-bold bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-600/20 rounded-xl transition-all"
+          >
+            Save Customer
+          </.button>
         </:actions>
       </.simple_form>
     </div>

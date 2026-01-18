@@ -309,6 +309,7 @@ defmodule FieldHubWeb.CoreComponents do
     </p>
     """
   end
+
   @doc """
   Renders a simple form.
 
@@ -373,7 +374,11 @@ defmodule FieldHubWeb.CoreComponents do
       data-cancel={JS.exec(@on_cancel, "phx-remove")}
       class="relative z-50 hidden"
     >
-      <div id={"#{@id}-bg"} class="fixed inset-0 bg-zinc-50/90 dark:bg-zinc-900/90 transition-opacity" aria-hidden="true" />
+      <div
+        id={"#{@id}-bg"}
+        class="fixed inset-0 bg-zinc-50/90 dark:bg-zinc-900/90 transition-opacity"
+        aria-hidden="true"
+      />
       <div
         class="fixed inset-0 overflow-y-auto"
         aria-labelledby={"#{@id}-title"}
@@ -385,7 +390,7 @@ defmodule FieldHubWeb.CoreComponents do
           <div class="w-full max-w-3xl overflow-hidden rounded-2xl bg-white dark:bg-zinc-900 p-6 text-left align-middle shadow-xl transition-all sm:my-8">
             <header :if={@confirm != [] or @cancel != []} class="flex items-start justify-between">
               <div class="flex-1">
-                 {render_slot(@inner_block)}
+                {render_slot(@inner_block)}
               </div>
               <button
                 phx-click={JS.exec("data-cancel", to: "##{@id}")}
@@ -396,20 +401,20 @@ defmodule FieldHubWeb.CoreComponents do
               </button>
             </header>
             <div :if={@confirm == [] and @cancel == []}>
-               {render_slot(@inner_block)}
+              {render_slot(@inner_block)}
             </div>
-             <div :if={@confirm != [] or @cancel != []} class="mt-6 flex justify-end gap-x-3">
-               <button
-                  :for={cancel <- @cancel}
-                  phx-click={JS.exec("data-cancel", to: "##{@id}")}
-                  class="rounded-md bg-white dark:bg-zinc-800 px-3 py-2 text-sm font-semibold text-zinc-900 dark:text-zinc-100 shadow-sm ring-1 ring-inset ring-zinc-300 dark:ring-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-700"
-                >
-                  {render_slot(cancel)}
-                </button>
-                <div :for={confirm <- @confirm}>
-                  {render_slot(confirm)}
-                </div>
-             </div>
+            <div :if={@confirm != [] or @cancel != []} class="mt-6 flex justify-end gap-x-3">
+              <button
+                :for={cancel <- @cancel}
+                phx-click={JS.exec("data-cancel", to: "##{@id}")}
+                class="rounded-md bg-white dark:bg-zinc-800 px-3 py-2 text-sm font-semibold text-zinc-900 dark:text-zinc-100 shadow-sm ring-1 ring-inset ring-zinc-300 dark:ring-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-700"
+              >
+                {render_slot(cancel)}
+              </button>
+              <div :for={confirm <- @confirm}>
+                {render_slot(confirm)}
+              </div>
+            </div>
           </div>
         </div>
       </div>

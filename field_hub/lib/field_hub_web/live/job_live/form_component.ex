@@ -9,7 +9,7 @@ defmodule FieldHubWeb.JobLive.FormComponent do
     ~H"""
     <div>
       <.header>
-        <%= @title %>
+        {@title}
         <:subtitle>Use this form to manage job records.</:subtitle>
       </.header>
 

@@ -106,7 +106,7 @@ defmodule FieldHubWeb.TechnicianLive.FormComponent do
 
   defp parse_skills(params) do
     if input = params["skills_input"] do
-      skills = input |> String.split(",") |> Enum.map(&String.trim/1) |> Enum.reject(& &1 == "")
+      skills = input |> String.split(",") |> Enum.map(&String.trim/1) |> Enum.reject(&(&1 == ""))
       Map.put(params, "skills", skills)
     else
       params

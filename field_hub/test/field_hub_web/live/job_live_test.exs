@@ -5,7 +5,6 @@ defmodule FieldHubWeb.JobLiveTest do
   import FieldHub.JobsFixtures
   import FieldHub.CRMFixtures
 
-
   @create_attrs %{
     title: "Fix HVAC System",
     description: "System is making a loud noise",
@@ -33,7 +32,13 @@ defmodule FieldHubWeb.JobLiveTest do
 
   setup %{conn: conn} do
     unique_id = System.unique_integer([:positive])
-    {:ok, org} = FieldHub.Accounts.create_organization(%{name: "Test Org #{unique_id}", slug: "test-org-#{unique_id}"})
+
+    {:ok, org} =
+      FieldHub.Accounts.create_organization(%{
+        name: "Test Org #{unique_id}",
+        slug: "test-org-#{unique_id}"
+      })
+
     user = FieldHub.AccountsFixtures.user_fixture(%{organization_id: org.id})
 
     conn =

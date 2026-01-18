@@ -15,8 +15,14 @@ defmodule FieldHubWeb.TechnicianLive.Index do
       Broadcaster.subscribe_to_org(org_id)
     end
 
-    socket = assign(socket, :current_organization, %FieldHub.Accounts.Organization{id: org_id})
-    {:ok, stream(socket, :technicians, [])}
+    socket =
+      socket
+      |> assign(:current_organization, %FieldHub.Accounts.Organization{id: org_id})
+      |> assign(:current_nav, :technicians)
+      |> assign(:search, "")
+
+    technicians = load_technicians(socket)
+    {:ok, socket |> assign(:has_technicians, technicians != []) |> stream(:technicians, technicians)}
   end
 
   @impl true
@@ -40,7 +46,24 @@ defmodule FieldHubWeb.TechnicianLive.Index do
     socket
     |> assign(:page_title, "Technicians")
     |> assign(:technician, nil)
-    |> stream(:technicians, Dispatch.list_technicians(socket.assigns.current_organization.id), reset: true)
+    technicians = load_technicians(socket)
+
+    socket
+    |> assign(:page_title, "Technicians")
+    |> assign(:technician, nil)
+    |> assign(:has_technicians, technicians != [])
+    |> stream(:technicians, technicians, reset: true)
+  end
+
+  defp load_technicians(socket) do
+    org_id = socket.assigns.current_organization.id
+    search = socket.assigns.search
+
+    if search == "" do
+      Dispatch.list_technicians(org_id)
+    else
+      Dispatch.search_technicians(org_id, search)
+    end
   end
 
   @impl true
@@ -72,94 +95,191 @@ defmodule FieldHubWeb.TechnicianLive.Index do
     {:noreply, stream_delete(socket, :technicians, technician)}
   end
 
+  def handle_event("search", %{"search" => search}, socket) do
+    socket = assign(socket, :search, search)
+    technicians = load_technicians(socket)
+    {:noreply,
+     socket
+     |> assign(:has_technicians, technicians != [])
+     |> stream(:technicians, technicians, reset: true)}
+  end
+
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="px-4 py-8 sm:px-6 lg:px-8">
-      <div class="sm:flex sm:items-center">
-        <div class="sm:flex-auto">
-          <h1 class="text-base font-semibold leading-6 text-zinc-900 dark:text-zinc-100">Technicians</h1>
-          <p class="mt-2 text-sm text-zinc-700 dark:text-zinc-300">
-            A list of all the technicians in your organization including their name, status, and expertise.
-          </p>
-        </div>
-        <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-          <.link patch={~p"/technicians/new"}>
-            <button type="button" class="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-              New Technician
+    <div class="flex flex-col h-[calc(100vh-4rem)]">
+      <!-- Sub-header with search and actions -->
+      <div class="px-6 py-4 bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800">
+        <div class="flex items-center justify-between gap-4">
+          <form phx-change="search" id="search-form" class="flex-1 max-w-lg">
+            <div class="relative">
+              <.icon
+                name="hero-magnifying-glass"
+                class="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 size-5"
+              />
+              <input
+                type="text"
+                name="search"
+                value={@search}
+                placeholder="Search technicians by name, skill, or email..."
+                phx-debounce="300"
+                class="w-full pl-12 pr-4 py-2 bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-xl text-sm font-medium text-zinc-700 dark:text-zinc-200 placeholder:text-zinc-400 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-dashboard"
+              />
+            </div>
+          </form>
+
+          <div class="flex items-center gap-3">
+            <button class="flex items-center gap-2 px-3 py-2 text-xs font-bold text-zinc-600 dark:text-zinc-300 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-all">
+              <.icon name="hero-arrow-down-tray" class="size-4" /> Export
             </button>
-          </.link>
-        </div>
-      </div>
-      <div class="mt-8 flow-root">
-        <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-          <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-            <table class="min-w-full divide-y divide-zinc-300 dark:divide-zinc-700">
-              <thead>
-                <tr>
-                  <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-zinc-900 dark:text-zinc-100 sm:pl-0">Name</th>
-                  <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-zinc-900 dark:text-zinc-100">Status</th>
-                  <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-zinc-900 dark:text-zinc-100">Skills</th>
-                  <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-zinc-900 dark:text-zinc-100">Contact</th>
-                  <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-0">
-                    <span class="sr-only">Edit</span>
-                  </th>
-                </tr>
-              </thead>
-              <tbody phx-update="stream" id="technicians" class="divide-y divide-zinc-200 dark:divide-zinc-800">
-                <tr :for={{id, technician} <- @streams.technicians} id={id} class="group hover:bg-zinc-50 dark:hover:bg-zinc-800/50">
-                  <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-zinc-900 dark:text-zinc-100 sm:pl-0">
-                    <div class="flex items-center gap-x-3">
-                      <div class="h-8 w-8 rounded-full flex items-center justify-center text-xs font-bold text-white" style={"background-color: #{technician.color || "#6366f1"}"}>
-                        {String.slice(technician.name, 0, 2) |> String.upcase()}
-                      </div>
-                      {technician.name}
-                    </div>
-                  </td>
-                  <td class="whitespace-nowrap px-3 py-4 text-sm text-zinc-500 dark:text-zinc-400">
-                    <span class={[
-                      "inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset",
-                      technician.status == "available" && "bg-green-50 text-green-700 ring-green-600/20 dark:bg-green-900/30 dark:text-green-400 dark:ring-green-400/20",
-                      technician.status == "on_job" && "bg-blue-50 text-blue-700 ring-blue-600/20 dark:bg-blue-900/30 dark:text-blue-400 dark:ring-blue-400/20",
-                      technician.status == "offline" && "bg-gray-50 text-gray-700 ring-gray-600/20 dark:bg-gray-900/30 dark:text-gray-400 dark:ring-gray-400/20",
-                      technician.status == "off_duty" && "bg-zinc-50 text-zinc-700 ring-zinc-600/20 dark:bg-zinc-900/30 dark:text-zinc-400 dark:ring-zinc-400/20"
-                    ]}>
-                      {technician.status |> String.replace("_", " ") |> String.capitalize()}
-                    </span>
-                  </td>
-                  <td class="whitespace-nowrap px-3 py-4 text-sm text-zinc-500 dark:text-zinc-400">
-                    <div class="flex gap-1 flex-wrap">
-                      <span :for={skill <- technician.skills || []} class="inline-flex items-center rounded-sm bg-zinc-100 px-1.5 py-0.5 text-xs font-medium text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300">
-                        {skill}
-                      </span>
-                    </div>
-                  </td>
-                  <td class="whitespace-nowrap px-3 py-4 text-sm text-zinc-500 dark:text-zinc-400">
-                    <div>{technician.email}</div>
-                    <div class="text-xs">{technician.phone}</div>
-                  </td>
-                  <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
-                    <div class="flex items-center justify-end gap-2">
-                      <.link patch={~p"/technicians/#{technician}/edit"} class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300">
-                        Edit<span class="sr-only">, {technician.name}</span>
-                      </.link>
-                      <.link
-                        phx-click={JS.push("delete", value: %{id: technician.id}) |> hide("##{id}")}
-                        data-confirm="Are you sure?"
-                        class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
-                      >
-                        Delete
-                      </.link>
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+            <.link patch={~p"/technicians/new"}>
+              <button class="flex items-center gap-2 px-4 py-2 text-sm font-bold text-white bg-primary rounded-xl shadow-lg shadow-primary/20 hover:brightness-110 transition-all">
+                <.icon name="hero-plus" class="size-4" /> New Technician
+              </button>
+            </.link>
           </div>
         </div>
       </div>
 
-      <.modal :if={@live_action in [:new, :edit]} id="technician-modal" show on_cancel={JS.patch(~p"/technicians")}>
+    <!-- Content Area -->
+      <div class="flex-1 overflow-auto bg-zinc-50/50 dark:bg-zinc-900/50 p-6">
+        <div class="bg-white dark:bg-zinc-900 rounded-[24px] border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
+          <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-800">
+            <thead class="bg-zinc-50 dark:bg-zinc-800/50">
+              <tr>
+                <th
+                  scope="col"
+                  class="py-4 pl-6 pr-3 text-left text-[11px] font-black uppercase tracking-widest text-zinc-400"
+                >
+                  Technician
+                </th>
+                <th
+                  scope="col"
+                  class="px-3 py-4 text-left text-[11px] font-black uppercase tracking-widest text-zinc-400"
+                >
+                  Status
+                </th>
+                <th
+                  scope="col"
+                  class="px-3 py-4 text-left text-[11px] font-black uppercase tracking-widest text-zinc-400"
+                >
+                  Expertise / Skills
+                </th>
+                <th
+                  scope="col"
+                  class="px-3 py-4 text-left text-[11px] font-black uppercase tracking-widest text-zinc-400"
+                >
+                  Contact Details
+                </th>
+                <th scope="col" class="relative py-4 pl-3 pr-6 text-right">
+                  <span class="sr-only">Actions</span>
+                </th>
+              </tr>
+            </thead>
+            <tbody
+              phx-update="stream"
+              id="technicians"
+              class="divide-y divide-zinc-100 dark:divide-zinc-800"
+            >
+              <tr
+                :for={{id, technician} <- @streams.technicians}
+                id={id}
+                class="group hover:bg-primary/5 dark:hover:bg-primary/10 transition-colors"
+              >
+                <td class="whitespace-nowrap py-5 pl-6 pr-3">
+                  <div class="flex items-center gap-4">
+                    <div
+                      class="size-10 rounded-full flex items-center justify-center text-xs font-black text-white shadow-lg shadow-zinc-500/10"
+                      style={"background-color: #{technician.color || "#6366f1"}"}
+                    >
+                      {String.slice(technician.name, 0, 2) |> String.upcase()}
+                    </div>
+                    <div>
+                      <div class="text-sm font-bold text-zinc-900 dark:text-white group-hover:text-primary transition-colors">
+                        {technician.name}
+                      </div>
+                      <div class="text-[10px] font-bold text-zinc-400 uppercase tracking-tighter">
+                        ID: #{"#{technician.id}" |> String.slice(-4..-1)}
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td class="whitespace-nowrap px-3 py-5">
+                  <span class={[
+                    "inline-flex items-center rounded-lg px-2.5 py-1 text-[10px] font-black uppercase tracking-wider border",
+                    technician.status == "available" &&
+                      "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800/50",
+                    technician.status == "on_job" &&
+                      "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800/50",
+                    technician.status == "offline" &&
+                      "bg-zinc-50 text-zinc-600 border-zinc-200 dark:bg-zinc-800 dark:text-zinc-400 dark:border-zinc-700",
+                    technician.status == "off_duty" &&
+                      "bg-zinc-50 text-zinc-600 border-zinc-200 dark:bg-zinc-800 dark:text-zinc-400 dark:border-zinc-700"
+                  ]}>
+                    {technician.status |> String.replace("_", " ") |> String.capitalize()}
+                  </span>
+                </td>
+                <td class="px-3 py-5">
+                  <div class="flex gap-1.5 flex-wrap max-w-[200px]">
+                    <%= for skill <- technician.skills || [] do %>
+                      <span class="inline-flex items-center rounded-md bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 text-[10px] font-bold text-zinc-600 dark:text-zinc-300 uppercase tracking-tight">
+                        {skill}
+                      </span>
+                    <% end %>
+                  </div>
+                </td>
+                <td class="whitespace-nowrap px-3 py-5">
+                  <div class="flex flex-col gap-1">
+                    <div class="flex items-center gap-1.5 text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                      <.icon name="hero-envelope" class="size-3.5 text-zinc-400" />
+                      {technician.email}
+                    </div>
+                    <div class="flex items-center gap-1.5 text-xs text-zinc-400 font-medium">
+                      <.icon name="hero-phone" class="size-3.5" />
+                      {technician.phone}
+                    </div>
+                  </div>
+                </td>
+                <td class="relative whitespace-nowrap py-5 pl-3 pr-6 text-right">
+                  <div class="flex items-center justify-end gap-2">
+                    <.link
+                      patch={~p"/technicians/#{technician}/edit"}
+                      phx-hook="StopPropagation"
+                      class="p-2 rounded-xl hover:bg-white dark:hover:bg-zinc-800 hover:text-primary dark:text-zinc-400 dark:hover:text-primary transition-all"
+                    >
+                      <.icon name="hero-pencil-square" class="size-5" />
+                    </.link>
+                    <.link
+                      phx-click={JS.push("delete", value: %{id: technician.id}) |> hide("##{id}")}
+                      phx-hook="StopPropagation"
+                      data-confirm="Are you sure you want to retire this technician?"
+                      class="p-2 rounded-xl hover:bg-white dark:hover:bg-zinc-800 hover:text-red-600 dark:text-zinc-400 dark:hover:text-red-400 transition-all"
+                    >
+                      <.icon name="hero-trash" class="size-5" />
+                    </.link>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <%= if not @has_technicians do %>
+            <div class="flex flex-col items-center justify-center py-20 bg-white dark:bg-zinc-900">
+              <div class="size-16 rounded-2xl bg-zinc-50 dark:bg-zinc-800 flex items-center justify-center mb-4">
+                <.icon name="hero-magnifying-glass" class="size-8 text-zinc-300 dark:text-zinc-600" />
+              </div>
+              <h3 class="text-sm font-bold text-zinc-900 dark:text-white mb-1">No technicians found</h3>
+              <p class="text-xs text-zinc-500 dark:text-zinc-400">Try adjusting your search terms</p>
+            </div>
+          <% end %>
+        </div>
+      </div>
+
+      <.modal
+        :if={@live_action in [:new, :edit]}
+        id="technician-modal"
+        show
+        on_cancel={JS.patch(~p"/technicians")}
+      >
         <.live_component
           module={FieldHubWeb.TechnicianLive.FormComponent}
           id={@technician.id || :new}

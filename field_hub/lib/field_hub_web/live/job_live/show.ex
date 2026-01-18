@@ -37,8 +37,11 @@ defmodule FieldHubWeb.JobLive.Show do
   @impl true
   def handle_info({:job_updated, updated_job}, socket) do
     if updated_job.id == socket.assigns.job.id do
-       job = Jobs.get_job!(socket.assigns.current_organization.id, updated_job.id) |> FieldHub.Repo.preload([:customer, :technician])
-       {:noreply, assign(socket, :job, job)}
+      job =
+        Jobs.get_job!(socket.assigns.current_organization.id, updated_job.id)
+        |> FieldHub.Repo.preload([:customer, :technician])
+
+      {:noreply, assign(socket, :job, job)}
     else
       {:noreply, socket}
     end
@@ -46,8 +49,8 @@ defmodule FieldHubWeb.JobLive.Show do
 
   @impl true
   def handle_info({FieldHubWeb.JobLive.FormComponent, {:saved, job}}, socket) do
-     # The saved job might not have preloads, so reload.
-     handle_info({:job_updated, job}, socket)
+    # The saved job might not have preloads, so reload.
+    handle_info({:job_updated, job}, socket)
   end
 
   # Catch-all for other messages we might subscribe to but don't care about here
@@ -57,10 +60,13 @@ defmodule FieldHubWeb.JobLive.Show do
   def render(assigns) do
     ~H"""
     <.header>
-      Job <%= @job.number %>
+      Job {@job.number}
       <:subtitle>
-        <span class={["inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset", status_color(@job.status)]}>
-          <%= String.capitalize(@job.status) %>
+        <span class={[
+          "inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset",
+          status_color(@job.status)
+        ]}>
+          {String.capitalize(@job.status)}
         </span>
       </:subtitle>
       <:actions>
@@ -71,18 +77,18 @@ defmodule FieldHubWeb.JobLive.Show do
     </.header>
 
     <.list>
-      <:item title="Title"><%= @job.title %></:item>
-      <:item title="Description"><%= @job.description %></:item>
-      <:item title="Type"><%= String.capitalize(@job.job_type) %></:item>
-      <:item title="Priority"><%= String.capitalize(@job.priority) %></:item>
+      <:item title="Title">{@job.title}</:item>
+      <:item title="Description">{@job.description}</:item>
+      <:item title="Type">{String.capitalize(@job.job_type)}</:item>
+      <:item title="Priority">{String.capitalize(@job.priority)}</:item>
 
       <:item title="Scheduled Date">
-        <%= if @job.scheduled_date, do: @job.scheduled_date, else: "Unscheduled" %>
+        {if @job.scheduled_date, do: @job.scheduled_date, else: "Unscheduled"}
       </:item>
 
       <:item title="Customer">
         <%= if @job.customer do %>
-          <%= @job.customer.name %> (<%= @job.customer.phone %>)
+          {@job.customer.name} ({@job.customer.phone})
         <% else %>
           -
         <% end %>
@@ -91,8 +97,9 @@ defmodule FieldHubWeb.JobLive.Show do
       <:item title="Technician">
         <%= if @job.technician do %>
           <span class="flex items-center gap-2">
-            <span class="w-3 h-3 rounded-full" style={"background-color: #{@job.technician.color}"}></span>
-            <%= @job.technician.name %>
+            <span class="w-3 h-3 rounded-full" style={"background-color: #{@job.technician.color}"}>
+            </span>
+            {@job.technician.name}
           </span>
         <% else %>
           Unassigned

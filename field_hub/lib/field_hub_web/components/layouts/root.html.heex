@@ -4,25 +4,39 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="csrf-token" content={get_csrf_token()} />
-    <meta name="description" content={assigns[:page_description] || "FieldHub - The comprehensive white-label Field Service Management platform."} />
+    <meta
+      name="description"
+      content={
+        assigns[:page_description] ||
+          "FieldHub - The comprehensive white-label Field Service Management platform."
+      }
+    />
     <meta property="og:title" content={assigns[:page_title] || "FieldHub"} />
-    <meta property="og:description" content={assigns[:page_description] || "FieldHub - The comprehensive white-label Field Service Management platform."} />
+    <meta
+      property="og:description"
+      content={
+        assigns[:page_description] ||
+          "FieldHub - The comprehensive white-label Field Service Management platform."
+      }
+    />
     <.live_title default="FieldHub" suffix=" · Phoenix Framework">
       {assigns[:page_title]}
     </.live_title>
     <link phx-track-static rel="stylesheet" href={~p"/assets/css/app.css"} />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-    
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap"
+      rel="stylesheet"
+    />
+
     <%= if org = assigns[:current_organization] do %>
-    <style>
-      :root {
-        --brand-primary: <%= org.primary_color || "#3B82F6" %>;
-        --brand-secondary: <%= org.secondary_color || "#1E40AF" %>;
-      }
-    </style>
+      <style>
+        :root {
+          --brand-primary: <%= org.primary_color || "#4F46E5" %>;
+          --brand-secondary: <%= org.secondary_color || "#3730A3" %>;
+        }
+      </style>
     <% end %>
     <script defer phx-track-static type="text/javascript" src={~p"/assets/js/app.js"}>
     </script>
@@ -32,6 +46,11 @@
           if (theme === "system") {
             localStorage.removeItem("phx:theme");
             document.documentElement.removeAttribute("data-theme");
+          } else if (theme === "toggle") {
+            const current = document.documentElement.getAttribute("data-theme") || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+            const next = current === "dark" ? "light" : "dark";
+            localStorage.setItem("phx:theme", next);
+            document.documentElement.setAttribute("data-theme", next);
           } else {
             localStorage.setItem("phx:theme", theme);
             document.documentElement.setAttribute("data-theme", theme);

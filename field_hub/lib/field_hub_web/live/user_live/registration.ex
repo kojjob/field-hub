@@ -7,135 +7,164 @@ defmodule FieldHubWeb.UserLive.Registration do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="min-h-screen bg-white dark:bg-zinc-950 flex flex-col lg:flex-row font-dashboard overflow-hidden">
-      <!-- Left Side: Visual / Quote -->
-      <div class="lg:w-1/2 relative hidden lg:flex flex-col justify-end p-20 overflow-hidden">
-        <div class="absolute inset-0 z-0">
-          <img src="/images/registration_bg.png" class="w-full h-full object-cover scale-105" alt="Technician working" />
-          <div class="absolute inset-0 bg-gradient-to-t from-fsm-primary/90 via-fsm-primary/40 to-transparent"></div>
+    <div class="min-h-screen bg-zinc-50 dark:bg-zinc-950 flex font-dashboard">
+      <!-- Left Sidebar: Brand & Value -->
+      <div class="hidden lg:flex lg:w-[40%] bg-zinc-900 relative overflow-hidden flex-col justify-between p-12">
+        <div class="absolute inset-0 opacity-20">
+          <div class="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-indigo-500/30 rounded-full blur-[120px]">
+          </div>
+          <div class="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-emerald-500/20 rounded-full blur-[120px]">
+          </div>
         </div>
 
-        <div class="relative z-10 space-y-6 animate-in">
-          <div class="flex items-center gap-3 mb-10">
-            <div class="size-10 bg-white rounded-xl flex items-center justify-center text-fsm-primary shadow-xl">
-              <span class="material-symbols-outlined notranslate text-2xl">grid_view</span>
+        <div class="relative z-10">
+          <div class="flex items-center gap-3">
+            <div class="size-11 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-indigo-600/20">
+              <.icon name="hero-command-line" class="size-6" />
             </div>
-            <span class="text-2xl font-black tracking-tighter text-white">FieldHub</span>
+            <span class="text-2xl font-black tracking-tight text-white">FieldHub</span>
+          </div>
+        </div>
+
+        <div class="relative z-10 space-y-8">
+          <div class="space-y-4">
+            <h2 class="text-5xl font-black text-white leading-[1.1] tracking-tight">
+              Scale your service business with <span class="text-indigo-400">confidence.</span>
+            </h2>
+            <p class="text-lg text-zinc-400 font-medium leading-relaxed max-w-md">
+              The all-in-one platform for modern field service teams. Dispatch, track, and get paid faster.
+            </p>
           </div>
 
-          <p class="text-4xl font-black text-white tracking-tight leading-[1.1] font-display">
-            "FieldHub transformed how we manage our service fleet."
-          </p>
-          <p class="text-white/80 font-bold text-lg">
-            Join 2,000+ contractors scaling their business today.
-          </p>
+          <div class="flex items-center gap-4 text-white/60">
+            <div class="flex -space-x-3">
+              <img
+                :for={i <- 1..4}
+                src={"https://i.pravatar.cc/100?img=#{i+10}"}
+                class="size-10 rounded-full border-2 border-zinc-900"
+              />
+            </div>
+            <p class="text-sm font-bold">Joined by 2,000+ contractors</p>
+          </div>
+        </div>
+
+        <div class="relative z-10 text-zinc-500 text-sm font-bold">
+          &copy; {DateTime.utc_now().year} FieldHub Inc. All rights reserved.
         </div>
       </div>
-
-      <!-- Right Side: Registration Form -->
-      <div class="lg:w-1/2 flex flex-col items-center justify-center px-6 py-12 lg:px-24 overflow-y-auto bg-[#F8FAFB] dark:bg-zinc-950">
-        <div class="max-w-md w-full space-y-10 animate-fade">
-          <div class="lg:hidden flex items-center gap-3 mb-8">
-            <div class="size-10 bg-fsm-primary rounded-xl flex items-center justify-center text-white shadow-lg shadow-fsm-primary/20">
-              <span class="material-symbols-outlined notranslate text-2xl">grid_view</span>
+      
+    <!-- Right Side: Form -->
+      <div class="flex-1 flex flex-col items-center justify-center p-6 lg:p-24 bg-white dark:bg-zinc-950">
+        <div class="w-full max-w-md space-y-10">
+          <div class="lg:hidden flex justify-center mb-8">
+            <div class="flex items-center gap-2">
+              <div class="size-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white">
+                <.icon name="hero-command-line" class="size-5" />
+              </div>
+              <span class="text-xl font-black tracking-tight dark:text-white">FieldHub</span>
             </div>
-            <span class="text-2xl font-black tracking-tighter text-slate-900 dark:text-white">FieldHub</span>
           </div>
 
-          <div class="space-y-4">
-            <h1 class="text-4xl font-black text-slate-900 dark:text-white tracking-tighter font-display">Create Your Account</h1>
-            <p class="text-slate-500 dark:text-slate-400 font-medium">Join FieldHub and streamline your service business operations.</p>
+          <div class="space-y-2 text-center lg:text-left">
+            <h1 class="text-4xl font-black text-zinc-900 dark:text-white tracking-tight">
+              Get started for free
+            </h1>
+            <p class="text-zinc-500 dark:text-zinc-400 font-medium text-lg">
+              Create your professional account in seconds.
+            </p>
           </div>
 
-          <div class="grid grid-cols-2 gap-4">
-            <button class="flex items-center justify-center gap-3 px-6 py-4 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-[1.25rem] shadow-sm hover:bg-slate-50 dark:hover:bg-zinc-800/50 transition-all font-black text-sm text-slate-700 dark:text-slate-200">
-              <img src="https://www.google.com/favicon.ico" class="size-4" alt="Google" />
-              Google
-            </button>
-            <button class="flex items-center justify-center gap-3 px-6 py-4 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-[1.25rem] shadow-sm hover:bg-slate-50 dark:hover:bg-zinc-800/50 transition-all font-black text-sm text-slate-700 dark:text-slate-200">
-              <span class="material-symbols-outlined notranslate text-lg text-blue-600">grid_view</span>
-              Microsoft
-            </button>
-          </div>
-
-          <div class="relative py-4 flex items-center">
-            <div class="flex-grow border-t border-slate-200 dark:border-zinc-800"></div>
-            <span class="flex-shrink mx-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Or sign up with email</span>
-            <div class="flex-grow border-t border-slate-200 dark:border-zinc-800"></div>
-          </div>
-
-          <.form for={@form} id="registration_form" phx-submit="save" phx-change="validate" class="space-y-5">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <div class="space-y-1.5">
-                <label class="text-[11px] font-black uppercase tracking-widest text-slate-400 ml-1">Full Name</label>
+          <.form
+            for={@form}
+            id="registration_form"
+            phx-submit="save"
+            phx-change="validate"
+            class="space-y-6"
+          >
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div class="space-y-2">
+                <label class="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider ml-1">
+                  Full Name
+                </label>
                 <.input
                   field={@form[:name]}
-                  placeholder="e.g. Alex Johnson"
+                  placeholder="Alex Johnson"
                   required
-                  class="input input-bordered w-full !bg-white dark:!bg-zinc-900 !border-slate-200 dark:!border-zinc-800 !rounded-2xl !h-14 !pl-5 focus:!ring-2 focus:!ring-fsm-primary/20 focus:!border-fsm-primary transition-all font-bold text-slate-700 dark:text-slate-200"
+                  class="w-full !bg-zinc-50 dark:!bg-zinc-900 !border-zinc-200 dark:!border-zinc-800 !rounded-2xl !h-12 !px-4 focus:!ring-2 focus:!ring-indigo-500/20 focus:!border-indigo-500 transition-all font-semibold"
                 />
               </div>
-              <div class="space-y-1.5">
-                <label class="text-[11px] font-black uppercase tracking-widest text-slate-400 ml-1">Company Name</label>
+              <div class="space-y-2">
+                <label class="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider ml-1">
+                  Company
+                </label>
                 <.input
                   field={@form[:company_name]}
-                  placeholder="e.g. Apex Plumbing"
+                  placeholder="Apex Plumbing"
                   required
-                  class="input input-bordered w-full !bg-white dark:!bg-zinc-900 !border-slate-200 dark:!border-zinc-800 !rounded-2xl !h-14 !pl-5 focus:!ring-2 focus:!ring-fsm-primary/20 focus:!border-fsm-primary transition-all font-bold text-slate-700 dark:text-slate-200 outline-none"
+                  class="w-full !bg-zinc-50 dark:!bg-zinc-900 !border-zinc-200 dark:!border-zinc-800 !rounded-2xl !h-12 !px-4 focus:!ring-2 focus:!ring-indigo-500/20 focus:!border-indigo-500 transition-all font-semibold"
                 />
               </div>
             </div>
 
-            <div class="space-y-1.5">
-              <label class="text-[11px] font-black uppercase tracking-widest text-slate-400 ml-1">Work Email Address</label>
+            <div class="space-y-2">
+              <label class="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider ml-1">
+                Email Address
+              </label>
               <.input
                 field={@form[:email]}
                 type="email"
-                placeholder="work@email.com"
+                placeholder="alex@company.com"
                 required
-                class="input input-bordered w-full !bg-white dark:!bg-zinc-900 !border-slate-200 dark:!border-zinc-800 !rounded-2xl !h-14 !pl-5 focus:!ring-2 focus:!ring-fsm-primary/20 focus:!border-fsm-primary transition-all font-bold text-slate-700 dark:text-slate-200"
+                class="w-full !bg-zinc-50 dark:!bg-zinc-900 !border-zinc-200 dark:!border-zinc-800 !rounded-2xl !h-12 !px-4 focus:!ring-2 focus:!ring-indigo-500/20 focus:!border-indigo-500 transition-all font-semibold"
               />
             </div>
 
-            <div class="space-y-1.5">
-              <label class="text-[11px] font-black uppercase tracking-widest text-slate-400 ml-1">Password</label>
-              <div class="relative group">
-                <.input
-                  id="reg_password_input"
-                  field={@form[:password]}
-                  type="password"
-                  placeholder="Min. 8 characters"
-                  required
-                  class="input input-bordered w-full !bg-white dark:!bg-zinc-900 !border-slate-200 dark:!border-zinc-800 !rounded-2xl !h-14 !pl-5 focus:!ring-2 focus:!ring-fsm-primary/20 focus:!border-fsm-primary transition-all font-bold text-slate-700 dark:text-slate-200 pr-12"
-                />
-                <button
-                  type="button"
-                  phx-hook="PasswordToggle"
-                  id="reg_password_toggle"
-                  data-input-id="reg_password_input"
-                  class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-fsm-primary transition-colors"
-                >
-                  <span class="material-symbols-outlined notranslate text-xl icon-vis">visibility</span>
-                  <span class="material-symbols-outlined notranslate text-xl icon-hid" style="display: none;">visibility_off</span>
-                </button>
-              </div>
+            <div class="space-y-2">
+              <label class="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider ml-1">
+                Password
+              </label>
+              <.input
+                field={@form[:password]}
+                type="password"
+                placeholder="••••••••"
+                required
+                class="w-full !bg-zinc-50 dark:!bg-zinc-900 !border-zinc-200 dark:!border-zinc-800 !rounded-2xl !h-12 !px-4 focus:!ring-2 focus:!ring-indigo-500/20 focus:!border-indigo-500 transition-all font-semibold"
+              />
             </div>
 
-            <div class="flex items-start gap-3 px-1">
-              <.input field={@form[:terms_accepted]} type="checkbox" id="terms" class="size-5 mt-0.5 rounded-lg border-slate-200 text-fsm-primary focus:ring-fsm-primary/20" />
-              <label for="terms" class="text-sm font-bold text-slate-500 leading-tight">
-                I agree to the <a href="#" class="text-fsm-primary hover:underline">Terms of Service</a> and <a href="#" class="text-fsm-primary hover:underline">Privacy Policy</a>.
+            <div class="flex items-center gap-3">
+              <input
+                type="checkbox"
+                required
+                class="size-5 rounded-lg border-zinc-300 dark:border-zinc-800 text-indigo-600 focus:ring-indigo-500/20 dark:bg-zinc-900"
+              />
+              <label class="text-sm font-medium text-zinc-500 dark:text-zinc-400">
+                I agree to the
+                <a href="#" class="text-indigo-600 dark:text-indigo-400 hover:underline">Terms</a>
+                and
+                <a href="#" class="text-indigo-600 dark:text-indigo-400 hover:underline">
+                  Privacy Policy
+                </a>
               </label>
             </div>
 
-            <.button phx-disable-with="Creating account..." class="btn btn-primary w-full !bg-fsm-primary !border-fsm-primary !text-white !py-6 !rounded-[1.25rem] !text-base !font-black !tracking-tight shadow-xl shadow-fsm-primary/20 hover:brightness-110 hover:!bg-fsm-primary hover:!border-fsm-primary transition-all">
-              Create Account
-            </.button>
+            <button
+              type="submit"
+              class="w-full bg-indigo-600 text-white py-4 rounded-2xl text-base font-bold shadow-xl shadow-indigo-600/20 hover:bg-indigo-700 transition-all active:scale-[0.98]"
+            >
+              Create account
+            </button>
           </.form>
 
-          <div class="text-center pt-6">
-            <p class="text-sm font-bold text-slate-500">
-              Already have an account? <.link navigate={~p"/users/log-in"} class="text-fsm-primary hover:underline">Log in</.link>
+          <div class="text-center">
+            <p class="text-zinc-500 dark:text-zinc-400 font-medium">
+              Already have an account?
+              <.link
+                navigate={~p"/users/log-in"}
+                class="text-indigo-600 dark:text-indigo-400 font-bold hover:underline"
+              >
+                Log in
+              </.link>
             </p>
           </div>
         </div>
@@ -155,8 +184,7 @@ defmodule FieldHubWeb.UserLive.Registration do
 
         {:ok,
          socket
-         |> assign_form(changeset),
-         temporary_assigns: [form: nil]}
+         |> assign_form(changeset), temporary_assigns: [form: nil]}
     end
   end
 

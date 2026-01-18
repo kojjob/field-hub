@@ -61,15 +61,15 @@
   default: true;
   prefersdark: false;
   color-scheme: "light";
-  --color-base-100: oklch(98% 0 0);
-  --color-base-200: oklch(96% 0.001 286.375);
-  --color-base-300: oklch(92% 0.004 286.32);
-  --color-base-content: oklch(21% 0.006 285.885);
-  --color-primary: oklch(70% 0.213 47.604);
-  --color-primary-content: oklch(98% 0.016 73.684);
-  --color-secondary: oklch(55% 0.027 264.364);
+  --color-base-100: oklch(100% 0 0);           /* Pure White */
+  --color-base-200: oklch(98% 0 0);            /* Very Light Gray */
+  --color-base-300: oklch(96% 0.002 240);      /* Slate-50 equivalent */
+  --color-base-content: oklch(20% 0.01 240);   /* Dark Text */
+  --color-primary: oklch(50% 0.14 165);        /* FieldHub Green (Emerald/Teal) */
+  --color-primary-content: oklch(100% 0 0);    /* White Text on Primary */
+  --color-secondary: oklch(58% 0.233 277.117); /* Keep secondary or adjust if needed */
   --color-secondary-content: oklch(98% 0.002 247.839);
-  --color-accent: oklch(0% 0 0);
+  --color-accent: oklch(60% 0.15 160);         /* Lighter Green Accent */
   --color-accent-content: oklch(100% 0 0);
   --color-neutral: oklch(44% 0.017 285.786);
   --color-neutral-content: oklch(98% 0 0);
@@ -77,16 +77,16 @@
   --color-info-content: oklch(97% 0.014 254.604);
   --color-success: oklch(70% 0.14 182.503);
   --color-success-content: oklch(98% 0.014 180.72);
-  --color-warning: oklch(66% 0.179 58.318);
-  --color-warning-content: oklch(98% 0.022 95.277);
-  --color-error: oklch(58% 0.253 17.585);
-  --color-error-content: oklch(96% 0.015 12.422);
-  --radius-selector: 0.25rem;
-  --radius-field: 0.25rem;
-  --radius-box: 0.5rem;
-  --size-selector: 0.21875rem;
-  --size-field: 0.21875rem;
-  --border: 1.5px;
+  --color-warning: oklch(85% 0.16 85);         /* Brighter Amber */
+  --color-warning-content: oklch(20% 0.05 85);
+  --color-error: oklch(65% 0.22 25);
+  --color-error-content: oklch(98% 0 0);
+  --radius-selector: 0.5rem;
+  --radius-field: 0.5rem;
+  --radius-box: 1rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
   --depth: 1;
   --noise: 0;
 }
@@ -130,13 +130,12 @@
     to { opacity: 1; transform: translateY(0); }
   }
 
-  /* FieldHub Operations Dashboard Theme Colors */
-  --color-fsm-primary: #007061;
-  --color-fsm-bg-light: #f7f7f7;
-  --color-fsm-bg-dark: #181f2b;
-  --color-fsm-border-light: #dae7e5;
-  --color-fsm-sidebar-light: #ffffff;
-  --color-fsm-sidebar-dark: #0f172a; /* slate-900 */
+  @keyframes slide-in-right {
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
+  }
+
+
 }
 
 /* Landing Page Theme System */
@@ -184,6 +183,10 @@ h1, h2, h3, h4, .font-display {
 
 .animate-fade {
   animation: fade-in 1s ease-out forwards;
+}
+
+.slide-in-from-right {
+  animation: slide-in-right 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 /* Dashboard Specific Utilities */

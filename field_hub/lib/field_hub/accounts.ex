@@ -317,22 +317,23 @@ defmodule FieldHub.Accounts do
   """
   def register_user(attrs) do
     company_name = attrs["company_name"] || attrs[:company_name]
+
     if company_name do
       # If company name is provided, create org and user in one transaction
       Ecto.Multi.new()
       |> Ecto.Multi.insert(:user, User.registration_changeset(%User{}, attrs))
       |> Ecto.Multi.run(:organization, fn repo, %{user: _user} ->
-          # Generate a slug from company name
-          slug = Slug.slugify(company_name)
-          # Ensure unique slug (simple version)
-          # In a real app, you might want to retry or append random string
+        # Generate a slug from company name
+        slug = Slug.slugify(company_name)
+        # Ensure unique slug (simple version)
+        # In a real app, you might want to retry or append random string
 
-          %Organization{}
-          |> Organization.changeset(%{
-            name: company_name,
-            slug: slug
-          })
-          |> repo.insert()
+        %Organization{}
+        |> Organization.changeset(%{
+          name: company_name,
+          slug: slug
+        })
+        |> repo.insert()
       end)
       |> Ecto.Multi.run(:update_user, fn repo, %{user: user, organization: org} ->
         user
@@ -341,13 +342,19 @@ defmodule FieldHub.Accounts do
       end)
       |> Repo.transaction()
       |> case do
-        {:ok, %{update_user: user}} -> {:ok, user}
-        {:error, :user, changeset, _} -> {:error, changeset}
+        {:ok, %{update_user: user}} ->
+          {:ok, user}
+
+        {:error, :user, changeset, _} ->
+          {:error, changeset}
+
         {:error, :organization, changeset, _} ->
-           # If org creation fails, we should bubble up the error
-           # Ideally we mapping it to the user changeset or a general error
-           {:error, changeset}
-        {:error, _, changeset, _} -> {:error, changeset}
+          # If org creation fails, we should bubble up the error
+          # Ideally we mapping it to the user changeset or a general error
+          {:error, changeset}
+
+        {:error, _, changeset, _} ->
+          {:error, changeset}
       end
     else
       # Standard user registration without org (viewer/invitee flow usually)

@@ -82,13 +82,14 @@ defmodule FieldHub.AccountsTest do
       password = valid_user_password()
       company_name = "Acme Inc"
 
-      {:ok, user} = Accounts.register_user(%{
-        email: email,
-        password: password,
-        terms_accepted: true,
-        company_name: company_name,
-        name: "Test User"
-      })
+      {:ok, user} =
+        Accounts.register_user(%{
+          email: email,
+          password: password,
+          terms_accepted: true,
+          company_name: company_name,
+          name: "Test User"
+        })
 
       assert user.email == email
       assert user.hashed_password

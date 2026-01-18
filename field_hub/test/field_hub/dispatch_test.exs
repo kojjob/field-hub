@@ -90,7 +90,9 @@ defmodule FieldHub.DispatchTest do
       attrs = %{name: "John Doe", email: "john@example.com"}
       {:ok, _tech} = Dispatch.create_technician(org.id, attrs)
 
-      assert {:error, changeset} = Dispatch.create_technician(org.id, %{name: "Jane Doe", email: "john@example.com"})
+      assert {:error, changeset} =
+               Dispatch.create_technician(org.id, %{name: "Jane Doe", email: "john@example.com"})
+
       assert "has already been taken" in errors_on(changeset).email
     end
 
@@ -217,5 +219,4 @@ defmodule FieldHub.DispatchTest do
       assert Dispatch.count_technicians(org.id) == 2
     end
   end
-
 end

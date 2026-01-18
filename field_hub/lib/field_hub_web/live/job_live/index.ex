@@ -14,12 +14,18 @@ defmodule FieldHubWeb.JobLive.Index do
       Broadcaster.subscribe_to_org(org_id)
     end
 
+    jobs = load_jobs(socket)
+
     socket =
       socket
       |> assign(:current_organization, %FieldHub.Accounts.Organization{id: org_id})
+      |> assign(:current_nav, :jobs)
       |> assign(:current_user, current_user)
+      |> assign(:search, "")
+      |> assign(:has_jobs, jobs != [])
+      |> stream(:jobs, jobs)
 
-    {:ok, stream(socket, :jobs, load_jobs(socket))}
+    {:ok, socket}
   end
 
   @impl true
@@ -41,7 +47,7 @@ defmodule FieldHubWeb.JobLive.Index do
 
   defp apply_action(socket, :index, _params) do
     socket
-    |> assign(:page_title, "Listing Jobs")
+    |> assign(:page_title, "Job Directory")
     |> assign(:job, nil)
   end
 
@@ -74,80 +80,201 @@ defmodule FieldHubWeb.JobLive.Index do
     {:noreply, stream_delete(socket, :jobs, job)}
   end
 
+  def handle_event("search", %{"search" => search}, socket) do
+    socket = assign(socket, :search, search)
+    jobs = load_jobs(socket)
+    {:noreply,
+     socket
+     |> assign(:has_jobs, jobs != [])
+     |> stream(:jobs, jobs, reset: true)}
+  end
+
   defp load_jobs(socket) do
-    Jobs.list_jobs(socket.assigns.current_organization.id)
+    org_id = socket.assigns.current_organization.id
+    search = socket.assigns.search
+
+    if search == "" do
+      Jobs.list_jobs(org_id)
+    else
+      Jobs.search_jobs(org_id, search)
+    end
   end
 
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="px-4 sm:px-6 lg:px-8 py-8">
-      <div class="sm:flex sm:items-center">
-        <div class="sm:flex-auto">
-          <h1 class="text-2xl font-semibold text-gray-900">Jobs</h1>
-          <p class="mt-2 text-sm text-gray-700">
-            Manage your service jobs, work orders, and schedules.
-          </p>
-        </div>
-        <div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
-          <.link patch={~p"/jobs/new"}>
-            <.button>New Job</.button>
-          </.link>
+    <div class="flex flex-col h-[calc(100vh-4rem)]">
+      <!-- Sub-header with search and actions -->
+      <div class="px-6 py-4 bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800">
+        <div class="flex items-center justify-between gap-4">
+          <form phx-change="search" id="search-form" class="flex-1 max-w-lg">
+            <div class="relative">
+              <.icon
+                name="hero-magnifying-glass"
+                class="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 size-5"
+              />
+              <input
+                type="text"
+                name="search"
+                value={@search}
+                placeholder="Search jobs by ID, title, or status..."
+                phx-debounce="300"
+                class="w-full pl-12 pr-4 py-2 bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-xl text-sm font-medium text-zinc-700 dark:text-zinc-200 placeholder:text-zinc-400 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-dashboard"
+              />
+            </div>
+          </form>
+
+          <div class="flex items-center gap-3">
+            <button class="flex items-center gap-2 px-3 py-2 text-xs font-bold text-zinc-600 dark:text-zinc-300 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-all">
+              <.icon name="hero-arrow-down-tray" class="size-4" /> Export
+            </button>
+            <.link patch={~p"/jobs/new"}>
+              <button class="flex items-center gap-2 px-4 py-2 text-sm font-bold text-white bg-primary rounded-xl shadow-lg shadow-primary/20 hover:brightness-110 transition-all">
+                <.icon name="hero-plus" class="size-4" /> New Job
+              </button>
+            </.link>
+          </div>
         </div>
       </div>
 
-      <div class="mt-8 flow-root">
-        <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-          <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-            <.table
-              id="jobs"
-              rows={@streams.jobs}
-              row_click={fn {_id, job} -> JS.navigate(~p"/jobs/#{job}") end}
-            >
-              <:col :let={{_id, job}} label="Details">
-                <div class="flex items-center gap-x-3">
-                  <div class="flex-auto">
-                    <div class="font-semibold text-gray-900"><%= job.number %></div>
-                    <div class="text-sm text-gray-500"><%= job.title %></div>
-                  </div>
-                </div>
-              </:col>
-              <:col :let={{_id, job}} label="Customer">
-                <%= if job.customer do %>
-                  <div class="font-medium text-gray-900"><%= job.customer.name %></div>
-                  <div class="text-sm text-gray-500"><%= job.customer.email %></div>
-                <% else %>
-                  <span class="text-gray-400 italic">No customer</span>
-                <% end %>
-              </:col>
-              <:col :let={{_id, job}} label="Status">
-                <span class={["inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset", status_color(job.status)]}>
-                  <%= String.capitalize(job.status) %>
-                </span>
-              </:col>
-              <:col :let={{_id, job}} label="Date">
-                <%= if job.scheduled_date do %>
-                  <%= job.scheduled_date %>
-                <% else %>
-                  <span class="text-gray-400">Unscheduled</span>
-                <% end %>
-              </:col>
-              <:action :let={{_id, job}}>
-                <div class="sr-only">
-                  <.link navigate={~p"/jobs/#{job}"}>Show</.link>
-                </div>
-                <.link patch={~p"/jobs/#{job}/edit"}>Edit</.link>
-              </:action>
-              <:action :let={{id, job}}>
-                <.link
-                  phx-click={JS.push("delete", value: %{id: job.id}) |> hide("##{id}")}
-                  data-confirm="Are you sure?"
+    <!-- Content Area -->
+      <div class="flex-1 overflow-auto bg-zinc-50/50 dark:bg-zinc-900/50 p-6">
+        <div class="bg-white dark:bg-zinc-900 rounded-[24px] border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
+          <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-800">
+            <thead class="bg-zinc-50 dark:bg-zinc-800/50">
+              <tr>
+                <th
+                  scope="col"
+                  class="py-4 pl-6 pr-3 text-left text-[11px] font-black uppercase tracking-widest text-zinc-400"
                 >
-                  Delete
-                </.link>
-              </:action>
-            </.table>
-          </div>
+                  Job Details
+                </th>
+                <th
+                  scope="col"
+                  class="px-3 py-4 text-left text-[11px] font-black uppercase tracking-widest text-zinc-400"
+                >
+                  Customer
+                </th>
+                <th
+                  scope="col"
+                  class="px-3 py-4 text-left text-[11px] font-black uppercase tracking-widest text-zinc-400"
+                >
+                  Assignee
+                </th>
+                <th
+                  scope="col"
+                  class="px-3 py-4 text-left text-[11px] font-black uppercase tracking-widest text-zinc-400"
+                >
+                  Status
+                </th>
+                <th
+                  scope="col"
+                  class="px-3 py-4 text-left text-[11px] font-black uppercase tracking-widest text-zinc-400"
+                >
+                  Schedule
+                </th>
+                <th scope="col" class="relative py-4 pl-3 pr-6 text-right">
+                  <span class="sr-only">Actions</span>
+                </th>
+              </tr>
+            </thead>
+            <tbody phx-update="stream" id="jobs" class="divide-y divide-zinc-100 dark:divide-zinc-800">
+              <tr
+                :for={{id, job} <- @streams.jobs}
+                id={id}
+                phx-click={JS.navigate(~p"/jobs/#{job}")}
+                class="group hover:bg-primary/5 dark:hover:bg-primary/10 transition-colors cursor-pointer"
+              >
+                <td class="whitespace-nowrap py-5 pl-6 pr-3">
+                  <div class="flex items-center gap-4">
+                    <div class="size-10 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center text-primary border border-primary/20">
+                      <.icon name="hero-ticket" class="size-5" />
+                    </div>
+                    <div>
+                      <div class="text-sm font-bold text-zinc-900 dark:text-white group-hover:text-primary transition-colors">
+                        {job.number}
+                      </div>
+                      <div class="text-[11px] font-bold text-zinc-400 truncate max-w-[180px]">
+                        {job.title}
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td class="whitespace-nowrap px-3 py-5">
+                  <%= if job.customer do %>
+                    <div class="text-sm font-bold text-zinc-700 dark:text-zinc-300">
+                      {job.customer.name}
+                    </div>
+                    <div class="text-[10px] text-zinc-400 font-medium">{job.customer.email}</div>
+                  <% else %>
+                    <span class="text-zinc-400 italic text-sm">No customer</span>
+                  <% end %>
+                </td>
+                <td class="whitespace-nowrap px-3 py-5">
+                  <%= if job.technician do %>
+                    <div class="flex items-center gap-2">
+                      <div
+                        class="size-6 rounded-full"
+                        style={"background-color: #{job.technician.color || "#6366f1"}"}
+                      >
+                      </div>
+                      <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                        {job.technician.name}
+                      </span>
+                    </div>
+                  <% else %>
+                    <span class="text-zinc-400 italic text-sm">Unassigned</span>
+                  <% end %>
+                </td>
+                <td class="whitespace-nowrap px-3 py-5">
+                  <span class={[
+                    "inline-flex items-center rounded-lg px-2.5 py-1 text-[10px] font-black uppercase tracking-wider border",
+                    status_badge_theme(job.status)
+                  ]}>
+                    {String.capitalize(job.status)}
+                  </span>
+                </td>
+                <td class="whitespace-nowrap px-3 py-5">
+                  <div class="text-sm font-bold text-zinc-700 dark:text-zinc-300">
+                    <%= if job.scheduled_date do %>
+                      {job.scheduled_date}
+                    <% else %>
+                      <span class="text-zinc-400 font-medium italic">TBD</span>
+                    <% end %>
+                  </div>
+                </td>
+                <td class="relative whitespace-nowrap py-5 pl-3 pr-6 text-right">
+                  <div class="flex items-center justify-end gap-2">
+                    <.link
+                      patch={~p"/jobs/#{job}/edit"}
+                      phx-hook="StopPropagation"
+                      class="p-2 rounded-xl hover:bg-white dark:hover:bg-zinc-800 hover:text-primary dark:text-zinc-400 dark:hover:text-primary transition-all font-dashboard"
+                    >
+                      <.icon name="hero-pencil-square" class="size-5" />
+                    </.link>
+                    <.link
+                      phx-click={JS.push("delete", value: %{id: job.id}) |> hide("##{id}")}
+                      phx-hook="StopPropagation"
+                      data-confirm="Are you sure you want to delete this job?"
+                      class="p-2 rounded-xl hover:bg-white dark:hover:bg-zinc-800 hover:text-red-600 dark:text-zinc-400 dark:hover:text-red-400 transition-all"
+                    >
+                      <.icon name="hero-trash" class="size-5" />
+                    </.link>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+            </tbody>
+          </table>
+          <%= if not @has_jobs do %>
+            <div class="flex flex-col items-center justify-center py-20 bg-white dark:bg-zinc-900">
+              <div class="size-16 rounded-2xl bg-zinc-50 dark:bg-zinc-800 flex items-center justify-center mb-4">
+                <.icon name="hero-magnifying-glass" class="size-8 text-zinc-300 dark:text-zinc-600" />
+              </div>
+              <h3 class="text-sm font-bold text-zinc-900 dark:text-white mb-1">No jobs found</h3>
+              <p class="text-xs text-zinc-500 dark:text-zinc-400">Try adjusting your search terms</p>
+            </div>
+          <% end %>
         </div>
       </div>
 
@@ -167,13 +294,37 @@ defmodule FieldHubWeb.JobLive.Index do
     """
   end
 
-  defp status_color("unscheduled"), do: "bg-gray-50 text-gray-600 ring-gray-500/10"
-  defp status_color("scheduled"), do: "bg-blue-50 text-blue-700 ring-blue-700/10"
-  defp status_color("dispatched"), do: "bg-indigo-50 text-indigo-700 ring-indigo-700/10"
-  defp status_color("en_route"), do: "bg-purple-50 text-purple-700 ring-purple-700/10"
-  defp status_color("on_site"), do: "bg-yellow-50 text-yellow-800 ring-yellow-600/20"
-  defp status_color("in_progress"), do: "bg-green-50 text-green-700 ring-green-600/20"
-  defp status_color("completed"), do: "bg-emerald-50 text-emerald-700 ring-emerald-600/20"
-  defp status_color("cancelled"), do: "bg-red-50 text-red-700 ring-red-600/10"
-  defp status_color(_), do: "bg-gray-50 text-gray-600 ring-gray-500/10"
+  defp status_badge_theme("unscheduled"),
+    do:
+      "bg-zinc-50 text-zinc-600 border-zinc-200 dark:bg-zinc-800 dark:text-zinc-400 dark:border-zinc-700"
+
+  defp status_badge_theme("scheduled"),
+    do:
+      "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800/50"
+
+  defp status_badge_theme("dispatched"),
+    do:
+      "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800/50"
+
+  defp status_badge_theme("en_route"),
+    do:
+      "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-900/50"
+
+  defp status_badge_theme("on_site"),
+    do:
+      "bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-900/20 dark:text-purple-400 dark:border-purple-900/50"
+
+  defp status_badge_theme("in_progress"),
+    do:
+      "bg-blue-100 text-blue-900 border-blue-200 dark:bg-blue-800 dark:text-blue-100 dark:border-blue-700"
+
+  defp status_badge_theme("completed"),
+    do:
+      "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800/50"
+
+  defp status_badge_theme("cancelled"),
+    do:
+      "bg-red-50 text-red-700 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-900/50"
+
+  defp status_badge_theme(_), do: "bg-zinc-50 text-zinc-600 border-zinc-200"
 end
