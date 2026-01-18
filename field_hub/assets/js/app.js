@@ -9,6 +9,7 @@
 //
 //     import "../vendor/some-package.js"
 //
+
 // Alternatively, you can `npm install some-package --prefix assets` and import
 // them using a path starting with the package name:
 //
@@ -26,19 +27,24 @@ import {hooks as colocatedHooks} from "phoenix-colocated/field_hub"
 import topbar from "../vendor/topbar"
 import {DragDropHook} from "./hooks/drag_drop"
 import {SignaturePadHook} from "./hooks/signature_pad"
+import PushNotifications from "./hooks/push_notifications"
+import {MapHook} from "./hooks/map"
+import "leaflet/dist/leaflet.css"
 
 // Custom hooks
 const Hooks = {
   ...colocatedHooks,
   DragDrop: DragDropHook,
-  SignaturePad: SignaturePadHook
+  SignaturePad: SignaturePadHook,
+  PushNotifications: PushNotifications,
+  Map: MapHook
 }
 
 const csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 const liveSocket = new LiveSocket("/live", Socket, {
   longPollFallbackMs: 2500,
-  params: {_csrf_token: csrfToken},
   hooks: Hooks,
+  params: {_csrf_token: csrfToken}
 })
 
 // Show progress bar on live navigation and form submits
@@ -88,4 +94,12 @@ if (process.env.NODE_ENV === "development") {
 
     window.liveReloader = reloader
   })
+}
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then(registration => console.log('ServiceWorker registered'))
+      .catch(err => console.error('ServiceWorker registration failed:', err));
+  });
 }

@@ -7,6 +7,8 @@ defmodule FieldHubWeb.DispatchLive.Index do
   alias FieldHub.Jobs
   alias FieldHub.Dispatch
   alias FieldHub.Dispatch.Broadcaster
+  import Ecto.Query
+  alias FieldHub.Repo
 
   @impl true
   def mount(_params, _session, socket) do
@@ -26,6 +28,7 @@ defmodule FieldHubWeb.DispatchLive.Index do
       |> assign(:selected_date, today)
       |> assign(:view_mode, :day)
       |> assign(:selected_job, nil)
+      |> assign(:technician_filter, nil)
       |> load_data()
 
     {:ok, socket}
@@ -39,20 +42,70 @@ defmodule FieldHubWeb.DispatchLive.Index do
   defp load_data(socket) do
     org_id = socket.assigns.current_organization.id
     selected_date = socket.assigns.selected_date
+    tech_filter_id = socket.assigns.technician_filter
 
-    # Load technicians
-    technicians = Dispatch.list_technicians(org_id)
+    # Load technicians with active jobs
+    base_query = Dispatch.list_technicians(org_id)
+      |> Repo.preload(jobs: from(j in FieldHub.Jobs.Job, where: j.status == "in_progress", order_by: [desc: j.updated_at], limit: 1, preload: [:customer]))
+
+    technicians =
+      if tech_filter_id do
+        Enum.filter(base_query, fn t -> t.id == tech_filter_id end)
+      else
+        base_query
+      end
 
     # Load scheduled jobs for the selected date
     scheduled_jobs = Jobs.list_jobs_for_date(org_id, selected_date)
 
+    # Prepare map data
+    map_technicians = Enum.map(technicians, fn t ->
+      %{
+        id: t.id,
+        name: t.name,
+        status: t.status,
+        color: t.color,
+        current_lat: t.current_lat,
+        current_lng: t.current_lng
+      }
+    end)
+
+    map_jobs = Enum.map(scheduled_jobs, fn j ->
+      %{
+        id: j.id,
+        number: j.number,
+        title: j.title,
+        status: j.status,
+        service_lat: j.service_lat,
+        service_lng: j.service_lng
+      }
+    end)
+
+    # Pre-process jobs into a map for fast lookup
+    scheduled_jobs_by_slot = Enum.group_by(scheduled_jobs, fn job ->
+      {job.technician_id, job.scheduled_start && job.scheduled_start.hour}
+    end)
+
     # Load unassigned jobs (no technician or no scheduled date)
     unassigned_jobs = Jobs.list_unassigned_jobs(org_id)
+    unassigned_jobs_count = length(unassigned_jobs)
 
-    socket
-    |> assign(:technicians, technicians)
-    |> assign(:scheduled_jobs, scheduled_jobs)
-    |> assign(:unassigned_jobs, unassigned_jobs)
+    socket =
+      socket
+      |> stream(:unassigned_jobs, unassigned_jobs, reset: true)
+      |> assign(:unassigned_jobs_count, unassigned_jobs_count)
+      |> assign(:technicians, technicians)
+      |> assign(:scheduled_jobs, scheduled_jobs)
+      |> assign(:scheduled_jobs_by_slot, scheduled_jobs_by_slot)
+      |> assign(:map_technicians, map_technicians)
+      |> assign(:map_jobs, map_jobs)
+      |> assign(:time_slots, time_slots())
+
+    if socket.assigns.view_mode == :map do
+      push_event(socket, "update_map_data", %{technicians: map_technicians, jobs: map_jobs})
+    else
+      socket
+    end
   end
 
   @impl true
@@ -76,6 +129,11 @@ defmodule FieldHubWeb.DispatchLive.Index do
   end
 
   @impl true
+  def handle_event("set_view_mode", %{"mode" => mode}, socket) do
+    {:noreply, assign(socket, :view_mode, String.to_existing_atom(mode))}
+  end
+
+  @impl true
   def handle_event("assign_job", %{"job_id" => job_id, "technician_id" => tech_id} = params, socket) do
     org_id = socket.assigns.current_organization.id
     job = Jobs.get_job!(org_id, job_id)
@@ -88,7 +146,8 @@ defmodule FieldHubWeb.DispatchLive.Index do
 
     # Add scheduled time if hour is provided
     update_params = if params["hour"] do
-      hour = params["hour"]
+      hour_val = params["hour"]
+      hour = if is_integer(hour_val), do: hour_val, else: String.to_integer(hour_val)
       Map.put(update_params, "scheduled_start", Time.new!(hour, 0, 0) |> Time.to_string())
     else
       update_params
@@ -165,6 +224,48 @@ defmodule FieldHubWeb.DispatchLive.Index do
   end
 
   @impl true
+  def handle_event("update_tech_status", %{"technician_id" => tech_id, "status" => status}, socket) do
+    org_id = socket.assigns.current_organization.id
+    technician = Dispatch.get_technician!(org_id, tech_id)
+
+    case Dispatch.update_technician(technician, %{status: status}) do
+      {:ok, _tech} ->
+        {:noreply, socket}
+
+      {:error, _changeset} ->
+        {:noreply, put_flash(socket, :error, "Failed to update status")}
+    end
+  end
+
+  @impl true
+  def handle_event("view_tech_schedule", %{"tech_id" => tech_id}, socket) do
+    {:noreply,
+     socket
+     |> assign(:technician_filter, String.to_integer(tech_id))
+     |> load_data()}
+  end
+
+  @impl true
+  def handle_event("clear_tech_filter", _params, socket) do
+    {:noreply,
+     socket
+     |> assign(:technician_filter, nil)
+     |> load_data()}
+  end
+
+  @impl true
+  def handle_event("keydown", %{"key" => key}, socket) do
+    case key do
+      "n" -> {:noreply, push_navigate(socket, to: ~p"/jobs/new")}
+      "Escape" -> handle_event("close_job_details", nil, socket)
+      "ArrowLeft" -> handle_event("prev_day", nil, socket)
+      "ArrowRight" -> handle_event("next_day", nil, socket)
+      "t" -> handle_event("today", nil, socket)
+      _ -> {:noreply, socket}
+    end
+  end
+
+  @impl true
   def handle_event("close_job_details", _params, socket) do
     {:noreply, assign(socket, :selected_job, nil)}
   end
@@ -176,6 +277,11 @@ defmodule FieldHubWeb.DispatchLive.Index do
 
   @impl true
   def handle_info({:job_updated, _job}, socket) do
+    {:noreply, load_data(socket)}
+  end
+
+  @impl true
+  def handle_info({:technician_updated, _tech}, socket) do
     {:noreply, load_data(socket)}
   end
 
@@ -206,13 +312,8 @@ defmodule FieldHubWeb.DispatchLive.Index do
     Calendar.strftime(date, "%A")
   end
 
-  defp jobs_for_technician_at_hour(jobs, technician_id, hour) do
-    jobs
-    |> Enum.filter(fn job ->
-      job.technician_id == technician_id &&
-        job.scheduled_start &&
-        job.scheduled_start.hour == hour
-    end)
+  defp jobs_for_technician_at_hour(jobs_map, technician_id, hour) do
+    Map.get(jobs_map, {technician_id, hour}, [])
   end
 
   defp job_duration_class(job) do
@@ -252,7 +353,7 @@ defmodule FieldHubWeb.DispatchLive.Index do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="h-full flex flex-col">
+    <div class="h-full flex flex-col" phx-window-keydown="keydown">
       <!-- Header -->
       <div class="bg-white border-b px-4 py-3 flex items-center justify-between">
         <div>
@@ -263,11 +364,19 @@ defmodule FieldHubWeb.DispatchLive.Index do
         <div class="flex items-center gap-2">
           <!-- View Toggle -->
           <div class="flex rounded-lg border border-gray-300 p-1">
-            <button class={"px-3 py-1 text-sm rounded #{if @view_mode == :day, do: "bg-primary text-white", else: "text-gray-600 hover:bg-gray-100"}"}>
+            <button
+              phx-click="set_view_mode"
+              phx-value-mode="day"
+              class={"px-3 py-1 text-sm rounded #{if @view_mode == :day, do: "bg-primary text-white", else: "text-gray-600 hover:bg-gray-100"}"}
+            >
               Day
             </button>
-            <button class={"px-3 py-1 text-sm rounded #{if @view_mode == :week, do: "bg-primary text-white", else: "text-gray-600 hover:bg-gray-100"}"} disabled>
-              Week
+            <button
+              phx-click="set_view_mode"
+              phx-value-mode="map"
+              class={"px-3 py-1 text-sm rounded #{if @view_mode == :map, do: "bg-primary text-white", else: "text-gray-600 hover:bg-gray-100"}"}
+            >
+              Map
             </button>
           </div>
 
@@ -294,100 +403,162 @@ defmodule FieldHubWeb.DispatchLive.Index do
         <div class="w-64 bg-gray-50 border-r overflow-y-auto p-3">
           <h2 class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
             <span class="bg-orange-100 text-orange-800 px-2 py-0.5 rounded text-xs">
-              {length(@unassigned_jobs)}
+              {@unassigned_jobs_count}
             </span>
             Unassigned
           </h2>
 
-          <div id="unassigned-jobs" class="space-y-2" phx-hook="DragDrop" data-group="jobs" data-type="source">
-            <%= for job <- @unassigned_jobs do %>
-              <div
-                class={"drag-handle p-2 bg-white rounded-lg border shadow-sm cursor-grab hover:shadow-md transition-shadow #{priority_indicator(job.priority)}"}
-                data-job-id={job.id}
-              >
-                <div class="flex items-start justify-between gap-1">
-                  <div class="flex-1 min-w-0" phx-click="show_job_details" phx-value-job_id={job.id}>
-                    <div class="font-medium text-sm text-gray-900 truncate">{job.title}</div>
-                    <div class="text-xs text-gray-500">{job.customer.name}</div>
+          <%= if @unassigned_jobs_count == 0 do %>
+            <div id="unassigned-jobs-empty" class="text-sm text-gray-400 text-center py-4">
+              No unassigned jobs
+            </div>
+          <% else %>
+            <div id="unassigned-jobs" class="space-y-2" phx-hook="DragDrop" data-group="jobs" data-type="source" phx-update="stream">
+              <%= for {dom_id, job} <- @streams.unassigned_jobs do %>
+                <div
+                  id={dom_id}
+                  class={"drag-handle p-2 bg-white rounded-lg border shadow-sm cursor-grab hover:shadow-md transition-shadow #{priority_indicator(job.priority)}"}
+                  data-job-id={job.id}
+                >
+                  <div class="flex items-start justify-between gap-1">
+                    <div class="flex-1 min-w-0" phx-click="show_job_details" phx-value-job_id={job.id}>
+                      <div class="font-medium text-sm text-gray-900 truncate">{job.title}</div>
+                      <div class="text-xs text-gray-500">{job.customer.name}</div>
+                    </div>
+                    <button
+                      phx-click="quick_dispatch"
+                      phx-value-job_id={job.id}
+                      class="shrink-0 p-1 rounded hover:bg-blue-100 text-blue-600"
+                      title="Quick dispatch"
+                    >
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                      </svg>
+                    </button>
                   </div>
-                  <button
-                    phx-click="quick_dispatch"
-                    phx-value-job_id={job.id}
-                    class="shrink-0 p-1 rounded hover:bg-blue-100 text-blue-600"
-                    title="Quick dispatch"
-                  >
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                    </svg>
-                  </button>
-                </div>
-                <div class="mt-1 flex items-center gap-1">
-                  <span class={"inline-block w-2 h-2 rounded-full #{if job.priority == "urgent", do: "bg-red-500", else: "bg-gray-400"}"}></span>
-                  <span class="text-xs text-gray-400 capitalize">{job.priority}</span>
-                </div>
-              </div>
-            <% end %>
-
-            <%= if Enum.empty?(@unassigned_jobs) do %>
-              <p class="text-sm text-gray-400 text-center py-4">No unassigned jobs</p>
-            <% end %>
-          </div>
-        </div>
-
-        <!-- Calendar Grid -->
-        <div class="flex-1 overflow-auto">
-          <div class="min-w-max">
-            <!-- Technician Headers -->
-            <div class="flex sticky top-0 bg-white z-10 border-b">
-              <div class="w-20 shrink-0 border-r bg-gray-50"></div>
-              <%= for tech <- @technicians do %>
-                <div class="w-48 shrink-0 border-r p-2">
-                  <div class="flex items-center gap-2">
-                    <div class="w-3 h-3 rounded-full" style={"background-color: #{tech.color}"}></div>
-                    <span class="font-medium text-sm">{tech.name}</span>
+                  <div class="mt-1 flex items-center gap-1">
+                    <span class={"inline-block w-2 h-2 rounded-full #{if job.priority == "urgent", do: "bg-red-500", else: "bg-gray-400"}"}></span>
+                    <span class="text-xs text-gray-400 capitalize">{job.priority}</span>
                   </div>
-                  <div class="text-xs text-gray-500 capitalize">{tech.status}</div>
                 </div>
               <% end %>
             </div>
+          <% end %>
+        </div>
 
-            <!-- Time Slots -->
-            <%= for slot <- time_slots() do %>
-              <div class="flex border-b hover:bg-gray-50/50">
-                <!-- Time Label -->
-                <div class="w-20 shrink-0 border-r bg-gray-50 p-2 text-xs text-gray-500 text-right">
-                  {slot.label}
-                </div>
-
-                <!-- Technician Columns -->
+        <!-- Calendar Grid or Map -->
+        <div class="flex-1 overflow-auto relative">
+          <%= if @view_mode == :map do %>
+            <div
+              id="map-view"
+              class="absolute inset-0 z-0 bg-gray-100"
+              phx-hook="Map"
+              phx-update="ignore"
+              data-lat="37.7749"
+              data-lng="-122.4194"
+              data-technicians={Jason.encode!(@map_technicians)}
+              data-jobs={Jason.encode!(@map_jobs)}
+            ></div>
+          <% else %>
+            <div class="min-w-max">
+              <!-- Technician Headers -->
+              <div class="flex sticky top-0 bg-white z-10 border-b">
+                <div class="w-20 shrink-0 border-r bg-gray-50"></div>
                 <%= for tech <- @technicians do %>
-                  <div
-                    id={"slot-#{tech.id}-#{slot.hour}"}
-                    class="w-48 shrink-0 border-r p-1 min-h-[60px] relative"
-                    phx-hook="DragDrop"
-                    data-group="jobs"
-                    data-type="target"
-                    data-technician-id={tech.id}
-                    data-hour={slot.hour}
-                  >
-                    <%= for job <- jobs_for_technician_at_hour(@scheduled_jobs, tech.id, slot.hour) do %>
-                      <div
-                        class={"drag-handle #{job_duration_class(job)} #{status_color(job.status)} #{priority_indicator(job.priority)} w-full rounded p-1 border text-xs cursor-grab hover:shadow-md transition-shadow"}
-                        data-job-id={job.id}
-                        phx-click="show_job_details"
-                        phx-value-job_id={job.id}
-                      >
-                        <div class="font-medium truncate">{job.title}</div>
-                        <div class="text-gray-600 truncate">{job.customer.name}</div>
-                      </div>
-                    <% end %>
+                  <div class="w-48 shrink-0 border-r p-2">
+                    <div class="flex items-center gap-2">
+                      <div class="w-3 h-3 rounded-full" style={"background-color: #{tech.color}"}></div>
+                      <span class="font-medium text-sm">{tech.name}</span>
+                    </div>
+                    <div class="text-xs text-gray-500 capitalize">{tech.status}</div>
                   </div>
                 <% end %>
               </div>
-            <% end %>
-          </div>
+
+              <!-- Time Slots -->
+              <%= for slot <- time_slots() do %>
+                <div class="flex border-b hover:bg-gray-50/50">
+                  <!-- Time Label -->
+                  <div class="w-20 shrink-0 border-r bg-gray-50 p-2 text-xs text-gray-500 text-right">
+                    {slot.label}
+                  </div>
+
+                  <!-- Technician Columns -->
+                  <%= for tech <- @technicians do %>
+                    <div
+                      id={"slot-#{tech.id}-#{slot.hour}"}
+                      class="w-48 shrink-0 border-r p-1 min-h-[60px] relative"
+                      phx-hook="DragDrop"
+                      data-group="jobs"
+                      data-type="target"
+                      data-technician-id={tech.id}
+                      data-hour={slot.hour}
+                    >
+                      <%= for job <- jobs_for_technician_at_hour(@scheduled_jobs_by_slot, tech.id, slot.hour) do %>
+                        <div
+                          class={"drag-handle #{job_duration_class(job)} #{status_color(job.status)} #{priority_indicator(job.priority)} w-full rounded p-1 border text-xs cursor-grab hover:shadow-md transition-shadow"}
+                          data-job-id={job.id}
+                          phx-click="show_job_details"
+                          phx-value-job_id={job.id}
+                        >
+                          <div class="font-medium truncate">{job.title}</div>
+                          <div class="text-gray-600 truncate">{job.customer.name}</div>
+                        </div>
+                      <% end %>
+                    </div>
+                  <% end %>
+                </div>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+        <!-- Technician Status Sidebar -->
+      <div class="w-72 bg-white border-l flex flex-col shrink-0">
+        <div class="p-4 border-b flex items-center justify-between">
+          <h2 class="font-semibold text-gray-800">Technician Status</h2>
+          <%= if @technician_filter do %>
+            <button phx-click="clear_tech_filter" class="text-xs text-blue-600 hover:text-blue-800 font-medium">
+              Clear Filter
+            </button>
+          <% end %>
+        </div>
+        <div class="flex-1 overflow-y-auto p-4 space-y-4">
+          <%= for tech <- @technicians do %>
+            <div
+              class={"bg-gray-50 rounded-lg p-3 border hover:bg-gray-100 cursor-pointer transition-colors #{if @technician_filter == tech.id, do: "ring-2 ring-primary ring-offset-2"}"}
+              phx-click="view_tech_schedule"
+              phx-value-tech_id={tech.id}
+            >
+              <div class="flex items-center gap-3 mb-2">
+                <div class="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold" style={"background-color: #{tech.color}"}>
+                  {initials(tech.name)}
+                </div>
+                <div>
+                  <div class="font-medium text-sm">{tech.name}</div>
+                  <div class="flex items-center gap-1.5 mt-0.5">
+                    <div class={"w-2 h-2 rounded-full #{tech_status_dot(tech.status)}"}></div>
+                    <span class={"text-xs px-1.5 py-0.5 rounded #{tech_status_color(tech.status)}"}>
+                      {String.replace(tech.status, "_", " ")}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Current Active Job -->
+              <%= if tech.status == "on_job" || tech.status == "traveling" do %>
+                <%= if active_job = List.first(tech.jobs) do %>
+                  <div class="mt-2 text-xs bg-white rounded p-2 border shadow-sm">
+                    <div class="text-gray-500 mb-0.5">Current Job:</div>
+                    <div class="font-medium truncate">{active_job.title}</div>
+                    <div class="text-gray-500 truncate">{active_job.customer.name}</div>
+                  </div>
+                <% end %>
+              <% end %>
+            </div>
+          <% end %>
         </div>
       </div>
+    </div>
 
       <!-- Job Details Slideout Panel -->
       <%= if @selected_job do %>
@@ -548,4 +719,35 @@ defmodule FieldHubWeb.DispatchLive.Index do
     Calendar.strftime(time, "%I:%M %p")
   end
   defp format_time(_), do: ""
+
+  defp tech_status_color(status) do
+    case status do
+      "available" -> "bg-green-100 text-green-800"
+      "on_job" -> "bg-blue-100 text-blue-800"
+      "traveling" -> "bg-yellow-100 text-yellow-800"
+      "break" -> "bg-orange-100 text-orange-800"
+      "off_duty" -> "bg-gray-100 text-gray-800"
+      _ -> "bg-gray-100 text-gray-800"
+    end
+  end
+
+  defp tech_status_dot(status) do
+    case status do
+      "available" -> "bg-green-500"
+      "on_job" -> "bg-blue-500"
+      "traveling" -> "bg-yellow-500"
+      "break" -> "bg-orange-500"
+      "off_duty" -> "bg-gray-400"
+      _ -> "bg-gray-400"
+    end
+  end
+
+  defp initials(name) do
+    name
+    |> String.split(" ")
+    |> Enum.take(2)
+    |> Enum.map(&String.at(&1, 0))
+    |> Enum.join("")
+    |> String.upcase()
+  end
 end

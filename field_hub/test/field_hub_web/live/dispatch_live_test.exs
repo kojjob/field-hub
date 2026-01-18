@@ -255,4 +255,100 @@ defmodule FieldHubWeb.DispatchLiveTest do
       assert html =~ "View this job for more details"
     end
   end
+
+  describe "Technician Status Sidebar" do
+    test "displays technicians with their current status", %{conn: conn, org: org} do
+      technician_fixture(org.id, %{name: "John Smith", status: "available"})
+      technician_fixture(org.id, %{name: "Jane Doe", status: "on_job"})
+
+      {:ok, _live, html} = live(conn, ~p"/dispatch")
+
+      # Both technicians should appear with status
+      assert html =~ "John Smith"
+      assert html =~ "Jane Doe"
+      assert html =~ "available"
+      assert html =~ "on_job"
+    end
+
+    test "shows current job for technicians on a job", %{conn: conn, user: user, org: org} do
+      customer = customer_fixture(org.id)
+      technician = technician_fixture(org.id, %{name: "Active Tech", status: "on_job"})
+
+      {:ok, _job} = FieldHub.Jobs.create_job(org.id, %{
+        title: "Current Active Job",
+        description: "This job is in progress",
+        job_type: "service_call",
+        priority: "normal",
+        status: "in_progress",
+        customer_id: customer.id,
+        technician_id: technician.id,
+        scheduled_date: Date.utc_today(),
+        created_by_id: user.id
+      })
+
+      {:ok, _live, html} = live(conn, ~p"/dispatch")
+
+      # Should show the technician and their current job
+      assert html =~ "Active Tech"
+      assert html =~ "Current Active Job"
+    end
+
+    test "update_tech_status changes technician status", %{conn: conn, org: org} do
+      technician = technician_fixture(org.id, %{name: "Status Test", status: "available"})
+
+      {:ok, live, _html} = live(conn, ~p"/dispatch")
+
+      # Change technician status
+      render_hook(live, "update_tech_status", %{
+        "technician_id" => technician.id,
+        "status" => "on_job"
+      })
+
+      # Verify status changed
+      updated_tech = FieldHub.Dispatch.get_technician!(org.id, technician.id)
+      assert updated_tech.status == "on_job"
+    end
+  end
+  describe "Map View" do
+    test "toggles to map view and displays map container", %{conn: conn} do
+      {:ok, live, _html} = live(conn, ~p"/dispatch")
+
+      # Initial view should not have map
+      refute has_element?(live, "#map-view")
+
+      # Switch to map view
+      html = live |> element("button", "Map") |> render_click()
+
+      # Map container should be present
+      assert html =~ "id=\"map-view\""
+      assert html =~ "phx-hook=\"Map\""
+    end
+
+    test "includes technician and job data in map container", %{conn: conn, user: user, org: org} do
+      customer = customer_fixture(org.id)
+      technician = technician_fixture(org.id, %{name: "Map Tech", current_lat: 37.77, current_lng: -122.42})
+
+      {:ok, job} = FieldHub.Jobs.create_job(org.id, %{
+        title: "Map Job",
+        job_type: "service_call",
+        customer_id: customer.id,
+        technician_id: technician.id,
+        scheduled_date: Date.utc_today(),
+        service_lat: 37.78,
+        service_lng: -122.43,
+        created_by_id: user.id
+      })
+
+      {:ok, live, _html} = live(conn, ~p"/dispatch")
+
+      # Switch to map view
+      html = live |> element("button", "Map") |> render_click()
+
+      # Check for data attributes (checking for JSON strings might be brittle due to encoding, but checking unique values works)
+      assert html =~ "Map Tech"
+      assert html =~ "Map Job"
+      assert html =~ "37.77"
+      assert html =~ "37.78"
+    end
+  end
 end
