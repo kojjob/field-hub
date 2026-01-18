@@ -58,6 +58,9 @@ defmodule FieldHubWeb.Router do
       live "/jobs/:id", JobLive.Show, :show
 
       live "/dispatch", DispatchLive.Index, :index
+
+      # Technician Mobile Views
+      live "/tech/dashboard", TechLive.Dashboard, :index
     end
 
     post "/users/update-password", UserSessionController, :update_password

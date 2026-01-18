@@ -48,6 +48,18 @@ defmodule FieldHub.Jobs do
   end
 
   @doc """
+  Returns the list of jobs assigned to a technician for a specific date.
+  """
+  def list_jobs_for_technician(technician_id, date) do
+    Job
+    |> where([j], j.technician_id == ^technician_id)
+    |> where([j], j.scheduled_date == ^date)
+    |> order_by([j], asc: j.scheduled_start)
+    |> Repo.all()
+    |> Repo.preload([:customer])
+  end
+
+  @doc """
   Returns the list of unassigned jobs (no technician or no scheduled date).
 
   ## Examples

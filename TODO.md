@@ -462,13 +462,13 @@ git push -u origin develop
 
 ### FH-032: Technician Dashboard
 
-- [ ] **Test First:** `test/field_hub_web/live/tech_live/dashboard_test.exs`
-  - [ ] Shows today's jobs
-  - [ ] Shows current job prominently
-  - [ ] Receives new job assignments in real-time
-- [ ] **Implement:** `lib/field_hub_web/live/tech_live/dashboard.ex`
-- [ ] **Implement:** Job card component (mobile)
-- [ ] **Implement:** Pull-to-refresh
+- [x] **Test First:** `test/field_hub_web/live/tech_live/dashboard_test.exs`
+  - [x] Shows today's jobs
+  - [x] Shows current job prominently
+  - [x] Receives new job assignments in real-time
+- [x] **Implement:** `lib/field_hub_web/live/tech_live/dashboard.ex`
+- [x] **Implement:** Job card component (mobile)
+- [x] **Implement:** Pull-to-refresh (Implemented Manual Refresh)
 
 **Branch:** `feature/FH-032-tech-dashboard`
 
