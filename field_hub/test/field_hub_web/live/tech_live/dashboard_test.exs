@@ -2,9 +2,9 @@ defmodule FieldHubWeb.TechLive.DashboardTest do
   use FieldHubWeb.ConnCase
 
   import Phoenix.LiveViewTest
-  import FieldHub.DispatchFixtures
   import FieldHub.JobsFixtures
   import FieldHub.AccountsFixtures
+  import FieldHub.CRMFixtures
 
   describe "Technician Dashboard" do
     setup %{conn: conn} do
@@ -26,15 +26,18 @@ defmodule FieldHubWeb.TechLive.DashboardTest do
     test "disconnected and connected render", %{conn: conn, user: user} do
       IO.inspect(user.id, label: "Test User ID passed to live")
       {:ok, page_live, disconnected_html} = live(conn, "/tech/dashboard")
-      assert disconnected_html =~ "Today's Jobs"
-      assert render(page_live) =~ "Today's Jobs"
+      assert disconnected_html =~ "Today&#39;s Jobs"
+      assert render(page_live) =~ "Today&#39;s Jobs"
     end
 
     test "lists assigned jobs", %{conn: conn, technician: technician, org: org} do
+      customer = customer_fixture(org.id)
       # Create a job assigned to this technician
-      job = job_fixture(org.id, %{
+      _job = job_fixture(org.id, %{
+        customer_id: customer.id,
         technician_id: technician.id,
         title: "Fix AC Unit",
+        scheduled_date: Date.utc_today(),
         scheduled_start: DateTime.utc_now() |> DateTime.add(3600, :second) |> DateTime.truncate(:second),
         scheduled_end: DateTime.utc_now() |> DateTime.add(7200, :second) |> DateTime.truncate(:second)
       })

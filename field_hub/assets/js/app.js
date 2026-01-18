@@ -25,11 +25,13 @@ import {LiveSocket} from "phoenix_live_view"
 import {hooks as colocatedHooks} from "phoenix-colocated/field_hub"
 import topbar from "../vendor/topbar"
 import {DragDropHook} from "./hooks/drag_drop"
+import {SignaturePadHook} from "./hooks/signature_pad"
 
 // Custom hooks
 const Hooks = {
   ...colocatedHooks,
-  DragDrop: DragDropHook
+  DragDrop: DragDropHook,
+  SignaturePad: SignaturePadHook
 }
 
 const csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")

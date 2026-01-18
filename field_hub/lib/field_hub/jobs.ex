@@ -60,6 +60,17 @@ defmodule FieldHub.Jobs do
   end
 
   @doc """
+  Returns the list of jobs for a customer, ordered by newest first.
+  """
+  def list_jobs_for_customer(customer_id) do
+    Job
+    |> where([j], j.customer_id == ^customer_id)
+    |> order_by([j], desc: j.inserted_at)
+    |> Repo.all()
+    |> Repo.preload([:technician])
+  end
+
+  @doc """
   Returns the list of unassigned jobs (no technician or no scheduled date).
 
   ## Examples
@@ -205,6 +216,9 @@ defmodule FieldHub.Jobs do
   def start_travel(%Job{} = job) do
     Multi.new()
     |> Multi.update(:job, Job.start_travel_changeset(job))
+    |> Multi.run(:tech_status, fn repo, %{job: updated_job} ->
+      update_tech_status(repo, updated_job, "en_route")
+    end)
     |> Multi.insert(:event, fn %{job: updated_job} ->
       JobEvent.build_event_changeset(updated_job, "travel_started", %{
         old_value: %{status: job.status},
@@ -221,6 +235,9 @@ defmodule FieldHub.Jobs do
   def arrive_on_site(%Job{} = job) do
     Multi.new()
     |> Multi.update(:job, Job.arrive_changeset(job))
+    |> Multi.run(:tech_status, fn repo, %{job: updated_job} ->
+      update_tech_status(repo, updated_job, "on_site")
+    end)
     |> Multi.insert(:event, fn %{job: updated_job} ->
       JobEvent.build_event_changeset(updated_job, "arrived", %{
         old_value: %{status: job.status},
@@ -237,6 +254,9 @@ defmodule FieldHub.Jobs do
   def start_work(%Job{} = job) do
     Multi.new()
     |> Multi.update(:job, Job.start_work_changeset(job))
+    |> Multi.run(:tech_status, fn repo, %{job: updated_job} ->
+      update_tech_status(repo, updated_job, "busy")
+    end)
     |> Multi.insert(:event, fn %{job: updated_job} ->
       JobEvent.build_event_changeset(updated_job, "work_started", %{
         old_value: %{status: job.status},
@@ -247,12 +267,29 @@ defmodule FieldHub.Jobs do
     |> broadcast_job_updated()
   end
 
+  defp update_tech_status(repo, job, status) do
+    if job.technician_id do
+      case repo.get(FieldHub.Dispatch.Technician, job.technician_id) do
+        nil -> {:ok, nil}
+        tech ->
+          tech
+          |> FieldHub.Dispatch.Technician.status_changeset(status)
+          |> repo.update()
+      end
+    else
+      {:ok, nil}
+    end
+  end
+
   @doc """
   Completes a job with required details.
   """
   def complete_job(%Job{} = job, attrs) do
     Multi.new()
     |> Multi.update(:job, Job.complete_changeset(job, attrs))
+    |> Multi.run(:tech_status, fn repo, %{job: updated_job} ->
+      update_tech_status(repo, updated_job, "available")
+    end)
     |> Multi.insert(:event, fn %{job: updated_job} ->
       JobEvent.build_event_changeset(updated_job, "completed", %{
         old_value: %{status: job.status},
@@ -307,6 +344,13 @@ defmodule FieldHub.Jobs do
   """
   def change_job(%Job{} = job, attrs \\ %{}) do
     Job.changeset(job, attrs)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking job completion changes.
+  """
+  def change_complete_job(%Job{} = job, attrs \\ %{}) do
+    Job.complete_changeset(job, attrs)
   end
 
   defp run_transaction(multi) do

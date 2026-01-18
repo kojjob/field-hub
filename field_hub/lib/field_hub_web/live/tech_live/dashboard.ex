@@ -91,7 +91,7 @@ defmodule FieldHubWeb.TechLive.Dashboard do
         </div>
         <div class="flex items-center gap-2">
           <.icon name="hero-map-pin" class="w-4 h-4 text-gray-400 shrink-0" />
-          <span class="truncate"><%= @job.location_address || "No address provided" %></span>
+          <span class="truncate"><%= @job.service_address || @job.customer.address_line1 || "No address provided" %></span>
         </div>
       </div>
     </div>

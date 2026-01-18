@@ -138,6 +138,19 @@ defmodule FieldHub.Dispatch do
   end
 
   @doc """
+  Updates a technician's device token for push notifications.
+  """
+  def update_technician_device_token(%Technician{} = technician, type, token) do
+    attrs = case type do
+      "fcm" -> %{fcm_token: token}
+      "apns" -> %{apns_token: token}
+      _ -> %{}
+    end
+
+    update_technician(technician, attrs)
+  end
+
+  @doc """
   Updates a technician's current location.
 
   ## Examples
