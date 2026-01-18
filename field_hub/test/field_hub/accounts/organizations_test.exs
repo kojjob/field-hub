@@ -293,7 +293,9 @@ defmodule FieldHub.Accounts.OrganizationsTest do
       attrs
       |> Enum.into(%{
         email: "test#{System.unique_integer([:positive])}@example.com",
-        password: "validpassword123"
+        password: "validpassword123",
+        terms_accepted: true,
+        name: "Test User"
       })
       |> FieldHub.Accounts.register_user()
 

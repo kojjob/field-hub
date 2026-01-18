@@ -10,117 +10,92 @@ defmodule FieldHubWeb.DashboardLive do
   def mount(_params, _session, socket) do
     {:ok,
      socket
-     |> assign(:page_title, "Dashboard")}
+     |> assign(:page_title, "Operations Overview")}
   end
 
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="py-8 px-4 max-w-7xl mx-auto">
-      <div class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
-          Welcome to FieldHub!
-        </h1>
-        <p class="mt-2 text-gray-600 dark:text-gray-400">
-          Your field service dispatch hub is ready. Let's get started!
-        </p>
-      </div>
+    <div class="flex h-screen overflow-hidden bg-fsm-bg-light dark:bg-fsm-bg-dark font-dashboard text-slate-900 dark:text-slate-100">
+      <!-- Sidebar Navigation -->
+      <FieldHubWeb.DashboardComponents.sidebar current_user={@current_scope.user} current_organization={@current_organization} />
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
-          <div class="flex items-center">
-            <div class="flex-shrink-0 p-3 bg-blue-100 dark:bg-blue-900 rounded-lg">
-              <svg
-                class="h-6 w-6 text-blue-600 dark:text-blue-400"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-                />
-              </svg>
-            </div>
-            <div class="ml-4">
-              <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Today's Jobs</p>
-              <p class="text-2xl font-bold text-gray-900 dark:text-white">0</p>
-            </div>
-          </div>
-        </div>
+      <!-- Main Content Area -->
+      <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+        <FieldHubWeb.DashboardComponents.header current_user={@current_scope.user} />
 
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
-          <div class="flex items-center">
-            <div class="flex-shrink-0 p-3 bg-green-100 dark:bg-green-900 rounded-lg">
-              <svg
-                class="h-6 w-6 text-green-600 dark:text-green-400"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M17 20h5v-2a3 3 0 00-3-3h-2m-3-2a3 3 0 100-6 3 3 0 000 6z"
-                />
-              </svg>
+        <main class="flex-1 overflow-y-auto bg-slate-50/30 dark:bg-fsm-bg-dark p-8 space-y-10 scrollbar-hide pb-20">
+            <%
+              org = @current_organization
+              task_plural = FieldHub.Config.Terminology.get_label(org, :task, :plural)
+              task_singular = FieldHub.Config.Terminology.get_label(org, :task, :singular)
+            %>
+          <!-- Page Heading -->
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-[10px] font-black text-fsm-primary uppercase tracking-[0.2em] mb-1">
+                Management Overview
+              </p>
+              <h2 class="text-3xl font-black tracking-tighter text-slate-900 dark:text-white">
+                <%= task_singular %> Operations
+              </h2>
             </div>
-            <div class="ml-4">
-              <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Active Technicians</p>
-              <p class="text-2xl font-bold text-gray-900 dark:text-white">0</p>
+            <div class="flex items-center gap-3">
+              <button class="bg-white dark:bg-slate-800 border border-fsm-border-light dark:border-slate-700 text-slate-600 dark:text-slate-300 px-4 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-slate-50 transition-all">
+                <span class="material-symbols-outlined text-[20px]">calendar_today</span>
+                Jan 16, 2024
+              </button>
+              <button class="bg-slate-900 dark:bg-fsm-primary text-white px-4 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 hover:brightness-110 transition-all">
+                <span class="material-symbols-outlined text-[20px]">filter_list</span>
+                Filters
+              </button>
             </div>
           </div>
-        </div>
 
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
-          <div class="flex items-center">
-            <div class="flex-shrink-0 p-3 bg-purple-100 dark:bg-purple-900 rounded-lg">
-              <svg
-                class="h-6 w-6 text-purple-600 dark:text-purple-400"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-            </div>
-            <div class="ml-4">
-              <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Weekly Revenue</p>
-              <p class="text-2xl font-bold text-gray-900 dark:text-white">$0</p>
-            </div>
+          <!-- KPI Cards Grid -->
+          <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+            <FieldHubWeb.DashboardComponents.kpi_card
+              label="Today's Revenue"
+              value="$12,840.00"
+              change="+14.2%"
+              icon="payments"
+              variant={:simple}
+            />
+            <FieldHubWeb.DashboardComponents.kpi_card
+              label="Customer Satisfaction"
+              value="4.9/5.0"
+              icon="star"
+              variant={:stars}
+            />
+            <FieldHubWeb.DashboardComponents.kpi_card
+              label={"Open #{task_plural}"}
+              value="18"
+              progress={65}
+              variant={:progress}
+              icon="confirmation_number"
+              subtext="65% toward daily goal"
+            />
+            <FieldHubWeb.DashboardComponents.kpi_card
+              label="Monthly Growth"
+              value="+28%"
+              icon="trending_up"
+              variant={:avatars}
+            />
           </div>
-        </div>
-      </div>
 
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 text-center">
-        <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-          Get Started with FieldHub
-        </h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl mx-auto">
-          <div class="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
-            <div class="text-3xl mb-2">👷</div>
-            <h3 class="font-medium">Add Technicians</h3>
-            <p class="text-sm text-gray-500">Add your field workers</p>
+          <!-- Middle Section: Utilization & Activity -->
+          <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
+            <div class="xl:col-span-2">
+              <FieldHubWeb.DashboardComponents.utilization_chart />
+            </div>
+            <div class="xl:col-span-1">
+              <FieldHubWeb.DashboardComponents.live_activity_feed />
+            </div>
           </div>
-          <div class="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
-            <div class="text-3xl mb-2">🏢</div>
-            <h3 class="font-medium">Add Customers</h3>
-            <p class="text-sm text-gray-500">Import your customer base</p>
-          </div>
-          <div class="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
-            <div class="text-3xl mb-2">📋</div>
-            <h3 class="font-medium">Create Jobs</h3>
-            <p class="text-sm text-gray-500">Schedule your first job</p>
-          </div>
-        </div>
+
+          <!-- Bottom Section: Priority Jobs -->
+          <FieldHubWeb.DashboardComponents.priority_jobs_table />
+        </main>
       </div>
     </div>
     """

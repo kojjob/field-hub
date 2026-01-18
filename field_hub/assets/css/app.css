@@ -129,6 +129,14 @@
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
   }
+
+  /* FieldHub Operations Dashboard Theme Colors */
+  --color-fsm-primary: #007061;
+  --color-fsm-bg-light: #f7f7f7;
+  --color-fsm-bg-dark: #181f2b;
+  --color-fsm-border-light: #dae7e5;
+  --color-fsm-sidebar-light: #ffffff;
+  --color-fsm-sidebar-dark: #0f172a; /* slate-900 */
 }
 
 /* Landing Page Theme System */
@@ -176,4 +184,22 @@ h1, h2, h3, h4, .font-display {
 
 .animate-fade {
   animation: fade-in 1s ease-out forwards;
+}
+
+/* Dashboard Specific Utilities */
+.custom-shadow {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.font-dashboard {
+  font-family: "Manrope", sans-serif;
 }
