@@ -799,10 +799,10 @@ git push -u origin develop
 - [x] Update templates to use dynamic terminology
 - [x] Add terminology settings UI
 
-**Phase B: Custom Status Workflows**
-- [ ] Create `job_status_configs` schema
-- [ ] Build workflow builder UI
-- [ ] Replace fixed status enum with dynamic transitions
+**Phase B: Custom Status Workflows** ✅
+- [x] Create `job_status_configs` schema
+- [x] Build workflow builder UI
+- [x] Replace fixed status enum with dynamic transitions
 
 **Phase C: Dynamic Custom Fields**
 - [ ] Create `custom_field_definitions` schema
@@ -815,9 +815,9 @@ git push -u origin develop
 - [x] Add branding settings UI
 - [x] Update layouts to use org branding
 
-**Phase E: Industry Templates**
-- [ ] Create template seed data
-- [ ] Add template selection to onboarding flow
+**Phase E: Industry Templates** ✅
+- [x] Create template seed data
+- [x] Add template selection to onboarding flow
 
 ---
 

@@ -130,7 +130,7 @@ defmodule FieldHub.Jobs.Job do
     |> validate_required([:organization_id, :title, :number])
     |> validate_inclusion(:job_type, @job_types)
     |> validate_inclusion(:priority, @priorities)
-    |> validate_inclusion(:status, @statuses)
+    |> validate_status()
     |> validate_inclusion(:payment_status, @payment_statuses)
     |> validate_number(:estimated_duration_minutes, greater_than: 0)
     |> validate_number(:quoted_amount, greater_than_or_equal_to: 0)
@@ -240,8 +240,48 @@ defmodule FieldHub.Jobs.Job do
 
   @doc """
   Returns list of valid statuses.
+  For backward compatibility, returns default statuses.
+  Use statuses/1 with an organization for dynamic statuses.
   """
   def statuses, do: @statuses
+
+  @doc """
+  Returns list of valid statuses for an organization.
+  Includes both default and custom statuses configured for the org.
+  """
+  def statuses(nil), do: @statuses
+  def statuses(org) do
+    custom_keys =
+      org
+      |> FieldHub.Config.Workflows.get_statuses()
+      |> Enum.map(fn status -> Map.get(status, :key) || Map.get(status, "key") end)
+
+    Enum.uniq(@statuses ++ custom_keys)
+  end
+
+  # Validates status - accepts both default and custom statuses
+  defp validate_status(changeset) do
+    status = get_field(changeset, :status)
+    org_id = get_field(changeset, :organization_id)
+
+    # Build list of valid statuses
+    valid_statuses =
+      if org_id do
+        # Try to get org and its custom statuses
+        case FieldHub.Accounts.get_organization(org_id) do
+          {:ok, org} -> statuses(org)
+          _ -> @statuses
+        end
+      else
+        @statuses
+      end
+
+    if status && status not in valid_statuses do
+      add_error(changeset, :status, "is invalid")
+    else
+      changeset
+    end
+  end
 
   @doc """
   Returns list of valid job types.

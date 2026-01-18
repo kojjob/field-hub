@@ -53,6 +53,9 @@ defmodule FieldHub.Accounts.Organization do
     field :primary_color, :string, default: "#3B82F6"
     field :secondary_color, :string, default: "#1E40AF"
 
+    # Custom Workflow Configuration
+    field :job_status_config, {:array, :map}, default: []
+
     # Associations
     has_many :users, FieldHub.Accounts.User
     has_many :technicians, FieldHub.Dispatch.Technician
@@ -88,7 +91,8 @@ defmodule FieldHub.Accounts.Organization do
       :brand_name,
       :logo_url,
       :primary_color,
-      :secondary_color
+      :secondary_color,
+      :job_status_config
     ])
     |> validate_required([:name, :slug])
     |> validate_format(:slug, ~r/^[a-z0-9]+(?:-[a-z0-9]+)*$/,
