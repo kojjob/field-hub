@@ -12,6 +12,18 @@ defmodule FieldHub.AccountsFixtures do
   def unique_user_email, do: "user#{System.unique_integer()}@example.com"
   def valid_user_password, do: "hello world!"
 
+  def organization_fixture(attrs \\ %{}) do
+    {:ok, org} =
+      attrs
+      |> Enum.into(%{
+        name: "Test Organization #{System.unique_integer([:positive])}",
+        slug: "test-org-#{System.unique_integer([:positive])}"
+      })
+      |> Accounts.create_organization()
+
+    org
+  end
+
   def valid_user_attributes(attrs \\ %{}) do
     Enum.into(attrs, %{
       email: unique_user_email()
@@ -30,6 +42,21 @@ defmodule FieldHub.AccountsFixtures do
   def user_fixture(attrs \\ %{}) do
     user = unconfirmed_user_fixture(attrs)
 
+    # Manually update organization if provided since register_user doesn't handle it
+    org_id = attrs[:organization_id] || attrs[:current_organization_id]
+
+    user =
+      if org_id do
+        {:ok, updated_user} =
+          user
+          |> Ecto.Changeset.change(organization_id: org_id)
+          |> FieldHub.Repo.update()
+
+        updated_user
+      else
+        user
+      end
+
     token =
       extract_user_token(fn url ->
         Accounts.deliver_login_instructions(user, url)
@@ -37,6 +64,8 @@ defmodule FieldHub.AccountsFixtures do
 
     {:ok, {user, _expired_tokens}} =
       Accounts.login_user_by_magic_link(token)
+
+
 
     user
   end

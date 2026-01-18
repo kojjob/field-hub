@@ -4,10 +4,25 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="csrf-token" content={get_csrf_token()} />
+    <meta name="description" content={assigns[:page_description] || "FieldHub - The comprehensive white-label Field Service Management platform."} />
+    <meta property="og:title" content={assigns[:page_title] || "FieldHub"} />
+    <meta property="og:description" content={assigns[:page_description] || "FieldHub - The comprehensive white-label Field Service Management platform."} />
     <.live_title default="FieldHub" suffix=" · Phoenix Framework">
       {assigns[:page_title]}
     </.live_title>
     <link phx-track-static rel="stylesheet" href={~p"/assets/css/app.css"} />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+    
+    <%= if org = assigns[:current_organization] do %>
+    <style>
+      :root {
+        --brand-primary: <%= org.primary_color || "#3B82F6" %>;
+        --brand-secondary: <%= org.secondary_color || "#1E40AF" %>;
+      }
+    </style>
+    <% end %>
     <script defer phx-track-static type="text/javascript" src={~p"/assets/js/app.js"}>
     </script>
     <script>
@@ -31,6 +46,7 @@
     </script>
   </head>
   <body>
+    <%= unless assigns[:hide_navbar] do %>
     <ul class="menu menu-horizontal w-full relative z-10 flex items-center gap-4 px-4 sm:px-6 lg:px-8 justify-end">
       <%= if @current_scope do %>
         <li>
@@ -51,6 +67,7 @@
         </li>
       <% end %>
     </ul>
+    <% end %>
     {@inner_content}
   </body>
 </html>

@@ -8,7 +8,7 @@ defmodule FieldHub.Dispatch.Technician do
   use Ecto.Schema
   import Ecto.Changeset
 
-  @statuses ~w(available on_job traveling break off_duty)
+  @statuses ~w(available on_job traveling en_route on_site busy break off_duty)
   @hex_color_regex ~r/^#[0-9A-Fa-f]{6}$/
 
   schema "technicians" do
@@ -35,6 +35,7 @@ defmodule FieldHub.Dispatch.Technician do
 
     # Soft delete
     field :archived_at, :utc_datetime
+    field :custom_fields, :map, default: %{}
 
     # Associations
     belongs_to :organization, FieldHub.Accounts.Organization
@@ -63,7 +64,8 @@ defmodule FieldHub.Dispatch.Technician do
       :hourly_rate,
       :fcm_token,
       :apns_token,
-      :archived_at
+      :archived_at,
+      :custom_fields
     ])
     |> validate_required([:organization_id, :name])
     |> validate_inclusion(:status, @statuses)

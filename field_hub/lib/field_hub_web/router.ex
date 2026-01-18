@@ -43,6 +43,33 @@ defmodule FieldHubWeb.Router do
 
       # Main application routes (require organization)
       live "/dashboard", DashboardLive, :index
+    live "/technicians", TechnicianLive.Index, :index
+    live "/technicians/new", TechnicianLive.Index, :new
+    live "/technicians/:id/edit", TechnicianLive.Index, :edit
+
+      live "/customers", CustomerLive.Index, :index
+      live "/customers/new", CustomerLive.Index, :new
+      live "/customers/:id/edit", CustomerLive.Index, :edit
+      live "/customers/:id", CustomerLive.Show, :show
+
+      live "/jobs", JobLive.Index, :index
+      live "/jobs/new", JobLive.Index, :new
+      live "/jobs/:id/edit", JobLive.Index, :edit
+      live "/jobs/:id", JobLive.Show, :show
+
+      live "/dispatch", DispatchLive.Index, :index
+
+      # Technician Mobile Views
+      live "/tech/dashboard", TechLive.Dashboard, :index
+      live "/tech/jobs/:id", TechLive.JobShow, :show
+      live "/tech/jobs/:id/complete", TechLive.JobComplete, :complete
+
+      # Settings
+      live "/settings/terminology", SettingsLive.Terminology, :index
+      live "/settings/branding", SettingsLive.Branding, :index
+      live "/settings/workflows", SettingsLive.Workflows, :index
+      live "/settings/custom-fields", SettingsLive.CustomFields, :index
+      live "/settings/custom-fields/new", SettingsLive.CustomFields, :new
     end
 
     post "/users/update-password", UserSessionController, :update_password
@@ -60,5 +87,14 @@ defmodule FieldHubWeb.Router do
 
     post "/users/log-in", UserSessionController, :create
     delete "/users/log-out", UserSessionController, :delete
+  end
+
+  # Enable Swoosh mailbox preview in development
+  if Mix.env() == :dev do
+    scope "/dev" do
+      pipe_through :browser
+
+      forward "/mailbox", Plug.Swoosh.MailboxPreview
+    end
   end
 end

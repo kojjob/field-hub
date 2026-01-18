@@ -103,3 +103,77 @@
 [data-phx-session], [data-phx-teleported-src] { display: contents }
 
 /* This file is for your main application CSS */
+
+@theme {
+  --animate-gradient-x: gradient-x 15s ease infinite;
+  --animate-fade-in: fade-in 1s ease-out forwards;
+  --animate-slide-up: slide-up 0.8s ease-out forwards;
+
+  @keyframes gradient-x {
+    0%, 100% {
+      background-size: 200% 200%;
+      background-position: left center;
+    }
+    50% {
+      background-size: 200% 200%;
+      background-position: right center;
+    }
+  }
+
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes slide-up {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+}
+
+/* Landing Page Theme System */
+:root {
+  --bg: 248 250 252;        /* slate-50 */
+  --bg2: 241 245 249;       /* slate-100 */
+  --panel: 255 255 255;     /* white */
+  --panel2: 248 250 252;    /* slate-50 */
+  --fg: 15 23 42;           /* slate-900 */
+  --muted: 71 85 105;       /* slate-600 */
+  --muted2: 100 116 139;    /* slate-500 */
+  --border: 226 232 240;    /* slate-200 */
+  --ring: 99 102 241;       /* indigo-500 */
+  --shadow: 15 23 42;       /* slate-900 */
+}
+
+[data-theme="dark"] {
+  --bg: 2 4 12;             /* Deepest Midnight */
+  --bg2: 8 10 20;           /* Slate-950+ */
+  --panel: 12 16 33;        /* Slate-900+ */
+  --panel2: 6 8 18;         /* Dark Panel Accent */
+  --fg: 248 250 252;        /* slate-50 */
+  --muted: 148 163 184;     /* slate-400 */
+  --muted2: 100 116 139;    /* slate-500 */
+  --border: 30 41 59;       /* slate-800 */
+  --ring: 99 102 241;       /* indigo-500 */
+  --shadow: 0 0 0;          /* not used */
+}
+
+
+body {
+  font-family: "Plus Jakarta Sans", sans-serif;
+  background-color: rgb(var(--bg));
+  color: rgb(var(--fg));
+}
+
+h1, h2, h3, h4, .font-display {
+  font-family: "Outfit", sans-serif;
+}
+
+/* Animation Utilities */
+.animate-in {
+  animation: slide-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-fade {
+  animation: fade-in 1s ease-out forwards;
+}

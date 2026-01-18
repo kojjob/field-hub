@@ -47,6 +47,8 @@ defmodule FieldHub.CRM.Customer do
     # Soft delete
     field :archived_at, :utc_datetime
 
+    field :custom_fields, :map, default: %{}
+
     # Associations
     belongs_to :organization, FieldHub.Accounts.Organization
     has_many :jobs, FieldHub.Jobs.Job
@@ -80,7 +82,8 @@ defmodule FieldHub.CRM.Customer do
       :special_instructions,
       :source,
       :referred_by,
-      :archived_at
+      :archived_at,
+      :custom_fields
     ])
     |> validate_required([:organization_id, :name])
     |> validate_format(:email, ~r/^[^\s]+@[^\s]+\.[^\s]+$/, message: "has invalid format")

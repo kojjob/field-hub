@@ -9,6 +9,7 @@
 //
 //     import "../vendor/some-package.js"
 //
+
 // Alternatively, you can `npm install some-package --prefix assets` and import
 // them using a path starting with the package name:
 //
@@ -24,12 +25,28 @@ import {Socket} from "phoenix"
 import {LiveSocket} from "phoenix_live_view"
 import {hooks as colocatedHooks} from "phoenix-colocated/field_hub"
 import topbar from "../vendor/topbar"
+import {DragDropHook} from "./hooks/drag_drop"
+import {SignaturePadHook} from "./hooks/signature_pad"
+import PushNotifications from "./hooks/push_notifications"
+import {MapHook} from "./hooks/map"
+import {GeolocationHook} from "./hooks/geolocation"
+import "leaflet/dist/leaflet.css"
+
+// Custom hooks
+const Hooks = {
+  ...colocatedHooks,
+  DragDrop: DragDropHook,
+  SignaturePad: SignaturePadHook,
+  PushNotifications: PushNotifications,
+  Map: MapHook,
+  Geolocation: GeolocationHook
+}
 
 const csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 const liveSocket = new LiveSocket("/live", Socket, {
   longPollFallbackMs: 2500,
-  params: {_csrf_token: csrfToken},
-  hooks: {...colocatedHooks},
+  hooks: Hooks,
+  params: {_csrf_token: csrfToken}
 })
 
 // Show progress bar on live navigation and form submits
@@ -45,6 +62,25 @@ liveSocket.connect()
 // >> liveSocket.enableLatencySim(1000)  // enabled for duration of browser session
 // >> liveSocket.disableLatencySim()
 window.liveSocket = liveSocket
+
+// Theme Toggle Logic
+window.addEventListener("DOMContentLoaded", () => {
+  const btn = document.getElementById("themeToggle");
+  if (!btn) return;
+
+  const setTheme = (theme) => {
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem("phx:theme", theme);
+    // Dispatch event for LiveView if needed
+    window.dispatchEvent(new CustomEvent("phx:set-theme", { detail: { theme } }));
+  };
+
+  btn.addEventListener("click", () => {
+    const currentTheme = document.documentElement.getAttribute("data-theme") || 
+                         (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    setTheme(currentTheme === "dark" ? "light" : "dark");
+  });
+});
 
 // The lines below enable quality of life phoenix_live_reload
 // development features:
@@ -81,3 +117,10 @@ if (process.env.NODE_ENV === "development") {
   })
 }
 
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then(registration => console.log('ServiceWorker registered'))
+      .catch(err => console.error('ServiceWorker registration failed:', err));
+  });
+}

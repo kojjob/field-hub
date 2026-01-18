@@ -19,7 +19,11 @@ config :field_hub, FieldHub.Repo,
 config :field_hub, FieldHubWeb.Endpoint,
   # Binding to loopback ipv4 address prevents access from other machines.
   # Change to `ip: {0, 0, 0, 0}` to allow access from other machines.
-  http: [ip: {127, 0, 0, 1}],
+  http: [
+    ip: {127, 0, 0, 1},
+    port: 4000,
+    http_1_options: [max_header_length: 32_768]
+  ],
   check_origin: false,
   code_reloader: true,
   debug_errors: true,

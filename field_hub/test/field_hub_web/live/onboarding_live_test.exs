@@ -13,24 +13,75 @@ defmodule FieldHubWeb.OnboardingLiveTest do
     end
   end
 
-  describe "Onboarding - authenticated user without organization" do
+  describe "Onboarding - Step 1: Template Selection" do
     setup %{conn: conn} do
       user = user_fixture()
       %{conn: log_in_user(conn, user), user: user}
     end
 
-    test "mounts successfully for user without organization", %{conn: conn} do
+    test "mounts on step 1 with template selection", %{conn: conn} do
       {:ok, view, html} = live(conn, ~p"/onboarding")
 
+      assert html =~ "Select Your Industry"
+      assert has_element?(view, "button[phx-value-template=field_service]")
+      assert has_element?(view, "button[phx-value-template=healthcare]")
+    end
+
+    test "can select a template", %{conn: conn} do
+      {:ok, view, _html} = live(conn, ~p"/onboarding")
+
+      html =
+        view
+        |> element("button[phx-value-template=healthcare]")
+        |> render_click()
+
+      assert html =~ "border-blue-600"
+    end
+
+    test "can skip template selection", %{conn: conn} do
+      {:ok, view, _html} = live(conn, ~p"/onboarding")
+
+      html =
+        view
+        |> element("button", "Skip for now")
+        |> render_click()
+
       assert html =~ "Create Your Organization"
-      # Note: apostrophe gets HTML escaped
-      assert html =~ "get your business set up"
       assert has_element?(view, "input#organization_name")
-      assert has_element?(view, "input#organization_email")
+    end
+
+    test "can continue with selected template", %{conn: conn} do
+      {:ok, view, _html} = live(conn, ~p"/onboarding")
+
+      view
+      |> element("button[phx-value-template=healthcare]")
+      |> render_click()
+
+      html =
+        view
+        |> element("button", "Continue")
+        |> render_click()
+
+      assert html =~ "Create Your Organization"
+      assert html =~ "Home Healthcare"
+    end
+  end
+
+  describe "Onboarding - Step 2: Organization Details" do
+    setup %{conn: conn} do
+      user = user_fixture()
+      %{conn: log_in_user(conn, user), user: user}
+    end
+
+    defp go_to_step_2(view) do
+      view
+      |> element("button", "Skip for now")
+      |> render_click()
     end
 
     test "validates organization name is required", %{conn: conn} do
       {:ok, view, _html} = live(conn, ~p"/onboarding")
+      go_to_step_2(view)
 
       result =
         view
@@ -42,6 +93,7 @@ defmodule FieldHubWeb.OnboardingLiveTest do
 
     test "validates email format", %{conn: conn} do
       {:ok, view, _html} = live(conn, ~p"/onboarding")
+      go_to_step_2(view)
 
       result =
         view
@@ -53,6 +105,7 @@ defmodule FieldHubWeb.OnboardingLiveTest do
 
     test "creates organization and redirects to dashboard", %{conn: conn, user: user} do
       {:ok, view, _html} = live(conn, ~p"/onboarding")
+      go_to_step_2(view)
 
       {:ok, _view, html} =
         view
@@ -83,6 +136,7 @@ defmodule FieldHubWeb.OnboardingLiveTest do
 
     test "auto-generates slug from name", %{conn: conn, user: user} do
       {:ok, view, _html} = live(conn, ~p"/onboarding")
+      go_to_step_2(view)
 
       {:ok, _view, _html} =
         view
@@ -99,6 +153,7 @@ defmodule FieldHubWeb.OnboardingLiveTest do
 
     test "shows organization preview as user types", %{conn: conn} do
       {:ok, view, _html} = live(conn, ~p"/onboarding")
+      go_to_step_2(view)
 
       html =
         view
@@ -106,6 +161,55 @@ defmodule FieldHubWeb.OnboardingLiveTest do
         |> render_change()
 
       assert html =~ "ace-hvac"
+    end
+
+    test "can go back to step 1", %{conn: conn} do
+      {:ok, view, _html} = live(conn, ~p"/onboarding")
+      go_to_step_2(view)
+
+      html =
+        view
+        |> element("button", "Back")
+        |> render_click()
+
+      assert html =~ "Select Your Industry"
+    end
+  end
+
+  describe "Onboarding - With Template Applied" do
+    setup %{conn: conn} do
+      user = user_fixture()
+      %{conn: log_in_user(conn, user), user: user}
+    end
+
+    test "applies healthcare template terminology", %{conn: conn, user: user} do
+      {:ok, view, _html} = live(conn, ~p"/onboarding")
+
+      # Select healthcare template
+      view
+      |> element("button[phx-value-template=healthcare]")
+      |> render_click()
+
+      view
+      |> element("button", "Continue")
+      |> render_click()
+
+      # Create organization
+      {:ok, _view, _html} =
+        view
+        |> form("#onboarding-form", %{
+          organization: %{name: "Care Plus Home Health"}
+        })
+        |> render_submit()
+        |> follow_redirect(conn)
+
+      # Verify template was applied
+      updated_user = Accounts.get_user!(user.id)
+      {:ok, org} = Accounts.get_organization(updated_user.organization_id)
+
+      assert org.terminology["worker_label"] == "Caregiver"
+      assert org.terminology["client_label"] == "Patient"
+      assert org.primary_color == "#10B981"
     end
   end
 
