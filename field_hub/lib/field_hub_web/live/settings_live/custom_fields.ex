@@ -53,13 +53,13 @@ defmodule FieldHubWeb.SettingsLive.CustomFields do
           <.button
             patch={~p"/settings/custom-fields/new?target=#{@active_tab}"}
             variant="primary"
-            class="gap-2 shadow-lg shadow-indigo-600/20"
+            class="gap-2 shadow-lg shadow-primary/20"
           >
             <.icon name="hero-plus" class="size-4" /> Add Field
           </.button>
         </div>
       </div>
-      
+
     <!-- Tabs -->
       <div class="flex p-1 bg-zinc-100 dark:bg-zinc-800/50 rounded-2xl mb-8 border border-zinc-200 dark:border-zinc-700/50">
         <%= for {tab, label, icon} <- [
@@ -72,7 +72,7 @@ defmodule FieldHubWeb.SettingsLive.CustomFields do
             phx-value-tab={tab}
             class={[
               "flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-bold transition-all rounded-xl",
-              @active_tab == tab && "bg-white dark:bg-zinc-800 text-indigo-600 shadow-sm",
+              @active_tab == tab && "bg-white dark:bg-zinc-800 text-primary shadow-sm",
               @active_tab != tab && "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300"
             ]}
           >
@@ -81,7 +81,7 @@ defmodule FieldHubWeb.SettingsLive.CustomFields do
           </button>
         <% end %>
       </div>
-      
+
     <!-- Field List -->
       <div class="bg-white dark:bg-zinc-800/50 rounded-[24px] shadow-sm border border-zinc-200 dark:border-zinc-700/50 overflow-hidden">
         <%= if Enum.empty?(@fields) do %>
@@ -104,9 +104,9 @@ defmodule FieldHubWeb.SettingsLive.CustomFields do
         <% else %>
           <div class="divide-y divide-zinc-100 dark:divide-zinc-700/50">
             <%= for field <- @fields do %>
-              <div class="group flex items-center justify-between p-6 hover:bg-indigo-50/30 dark:hover:bg-indigo-900/10 transition-all">
+              <div class="group flex items-center justify-between p-6 hover:bg-primary/5 dark:hover:bg-primary/10 transition-all">
                 <div class="flex items-center gap-5">
-                  <div class="size-12 rounded-2xl bg-zinc-100 dark:bg-zinc-900 flex items-center justify-center text-zinc-400 group-hover:bg-white dark:group-hover:bg-zinc-800 group-hover:text-indigo-600 transition-colors border border-transparent group-hover:border-zinc-200 dark:group-hover:border-zinc-700 shadow-sm">
+                  <div class="size-12 rounded-2xl bg-zinc-100 dark:bg-zinc-900 flex items-center justify-center text-zinc-400 group-hover:bg-white dark:group-hover:bg-zinc-800 group-hover:text-primary transition-colors border border-transparent group-hover:border-zinc-200 dark:group-hover:border-zinc-700 shadow-sm">
                     <.icon name={get_field_icon(field.type)} class="size-6" />
                   </div>
                   <div>
@@ -227,15 +227,14 @@ defmodule FieldHubWeb.SettingsLive.CustomFields do
                   Enter options separated by commas (e.g. Small, Medium, Large)
                 </p>
                 <input
-                  type="text"
                   name="custom_field_definition[options_string]"
                   value={Enum.join(Ecto.Changeset.get_field(@form.source, :options) || [], ", ")}
-                  class="w-full px-4 py-3 border border-zinc-300 dark:border-zinc-700 rounded-xl bg-white dark:bg-zinc-800 focus:ring-2 focus:ring-indigo-600 outline-none"
+                  class="w-full px-4 py-3 border border-zinc-300 dark:border-zinc-700 rounded-xl bg-white dark:bg-zinc-800 focus:ring-2 focus:ring-primary outline-none"
                   placeholder="Option 1, Option 2, Option 3"
                 />
               </div>
             <% end %>
-            
+
     <!-- Hidden fields -->
             <.input field={@form[:target]} type="hidden" />
             <.input field={@form[:organization_id]} type="hidden" />
@@ -252,7 +251,7 @@ defmodule FieldHubWeb.SettingsLive.CustomFields do
                 type="submit"
                 variant="primary"
                 phx-disable-with="Saving..."
-                class="px-8 shadow-lg shadow-indigo-600/20"
+                class="px-8 shadow-lg shadow-primary/20"
               >
                 Create Field
               </.button>

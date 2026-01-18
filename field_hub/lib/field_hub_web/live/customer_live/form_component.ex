@@ -27,7 +27,7 @@ defmodule FieldHubWeb.CustomerLive.FormComponent do
                 type="text"
                 label="Customer Name"
                 placeholder="e.g. Acme Inc. or John Doe"
-                class="w-full rounded-lg border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:border-indigo-600 focus:ring-indigo-600 sm:text-sm p-3 transition-shadow shadow-sm"
+                class="w-full rounded-lg border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:border-primary focus:ring-primary sm:text-sm p-3 transition-shadow shadow-sm"
               />
               <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <.input
@@ -35,19 +35,19 @@ defmodule FieldHubWeb.CustomerLive.FormComponent do
                   type="email"
                   label="Email Address"
                   placeholder="name@example.com"
-                  class="w-full rounded-lg border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:border-indigo-600 focus:ring-indigo-600 sm:text-sm p-3 transition-shadow shadow-sm"
+                  class="w-full rounded-lg border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:border-primary focus:ring-primary sm:text-sm p-3 transition-shadow shadow-sm"
                 />
                 <.input
                   field={@form[:phone]}
                   type="tel"
                   label="Phone Number"
                   placeholder="(555) 123-4567"
-                  class="w-full rounded-lg border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:border-indigo-600 focus:ring-indigo-600 sm:text-sm p-3 transition-shadow shadow-sm"
+                  class="w-full rounded-lg border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:border-primary focus:ring-primary sm:text-sm p-3 transition-shadow shadow-sm"
                 />
               </div>
             </div>
           </div>
-          
+
     <!-- Address Section -->
           <div>
             <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4 border-b border-slate-200 dark:border-slate-700 pb-2">
@@ -61,7 +61,7 @@ defmodule FieldHubWeb.CustomerLive.FormComponent do
                     type="text"
                     label="Street Address"
                     placeholder="123 Main St"
-                    class="w-full rounded-lg border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:border-indigo-600 focus:ring-indigo-600 sm:text-sm p-3 transition-shadow shadow-sm"
+                    class="w-full rounded-lg border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:border-primary focus:ring-primary sm:text-sm p-3 transition-shadow shadow-sm"
                   />
                 </div>
                 <.input
@@ -69,7 +69,7 @@ defmodule FieldHubWeb.CustomerLive.FormComponent do
                   type="text"
                   label="Unit/Apt"
                   placeholder="Unit B"
-                  class="w-full rounded-lg border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:border-indigo-600 focus:ring-indigo-600 sm:text-sm p-3 transition-shadow shadow-sm"
+                  class="w-full rounded-lg border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:border-primary focus:ring-primary sm:text-sm p-3 transition-shadow shadow-sm"
                 />
               </div>
 
@@ -78,46 +78,58 @@ defmodule FieldHubWeb.CustomerLive.FormComponent do
                   field={@form[:city]}
                   type="text"
                   label="City"
-                  class="w-full rounded-lg border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:border-indigo-600 focus:ring-indigo-600 sm:text-sm p-3 transition-shadow shadow-sm"
+                  class="w-full rounded-lg border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:border-primary focus:ring-primary sm:text-sm p-3 transition-shadow shadow-sm"
                 />
                 <.input
                   field={@form[:state]}
                   type="text"
                   label="State"
-                  class="w-full rounded-lg border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:border-indigo-600 focus:ring-indigo-600 sm:text-sm p-3 transition-shadow shadow-sm"
+                  class="w-full rounded-lg border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:border-primary focus:ring-primary sm:text-sm p-3 transition-shadow shadow-sm"
                 />
                 <div class="col-span-2 md:col-span-1">
                   <.input
                     field={@form[:zip]}
                     type="text"
                     label="ZIP Code"
-                    class="w-full rounded-lg border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:border-indigo-600 focus:ring-indigo-600 sm:text-sm p-3 transition-shadow shadow-sm"
+                    class="w-full rounded-lg border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:border-primary focus:ring-primary sm:text-sm p-3 transition-shadow shadow-sm"
                   />
                 </div>
               </div>
             </div>
           </div>
-          
+
     <!-- Access Info Section -->
-          <div>
-            <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4 border-b border-slate-200 dark:border-slate-700 pb-2">
-              Access Details
-            </h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <.input
-                field={@form[:gate_code]}
-                type="text"
-                label="Gate Code"
-                placeholder="#"
-                class="w-full rounded-lg border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:border-indigo-600 focus:ring-indigo-600 sm:text-sm p-3 transition-shadow shadow-sm"
-              />
-              <.input
-                field={@form[:special_instructions]}
-                type="textarea"
-                label="Instructions"
-                placeholder="e.g. Dog in backyard"
-                class="w-full rounded-lg border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:border-indigo-600 focus:ring-indigo-600 sm:text-sm p-3 transition-shadow shadow-sm min-h-[50px]"
-              />
+          <div class="bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 relative overflow-hidden group">
+            <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity pointer-events-none">
+              <.icon name="hero-lock-closed" class="w-24 h-24 text-slate-400 dark:text-slate-500 -rotate-12" />
+            </div>
+
+            <div class="relative z-10">
+              <div class="flex items-center gap-2 mb-4">
+                <div class="p-2 bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-100 dark:border-slate-700 text-primary">
+                   <.icon name="hero-key" class="w-4 h-4" />
+                </div>
+                <h3 class="text-sm font-bold text-slate-900 dark:text-white">
+                  Access & Security
+                </h3>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <.input
+                  field={@form[:gate_code]}
+                  type="text"
+                  label="Gate / Door Code"
+                  placeholder="e.g. #1234"
+                  class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 focus:border-primary focus:ring-primary sm:text-sm p-3.5 transition-shadow shadow-sm font-mono text-center tracking-widest text-primary font-bold"
+                />
+                <.input
+                  field={@form[:special_instructions]}
+                  type="textarea"
+                  label="Technician Notes"
+                  placeholder="Key location, dog warning, etc."
+                  class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 focus:border-primary focus:ring-primary sm:text-sm p-3.5 transition-shadow shadow-sm min-h-[80px]"
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -125,7 +137,7 @@ defmodule FieldHubWeb.CustomerLive.FormComponent do
         <:actions>
           <.button
             phx-disable-with="Saving..."
-            class="w-full py-3 text-base font-bold bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-600/20 rounded-xl transition-all"
+            class="w-full py-3 text-base font-bold bg-primary hover:bg-primary/90 shadow-lg shadow-primary/20 rounded-xl transition-all text-white"
           >
             Save Customer
           </.button>

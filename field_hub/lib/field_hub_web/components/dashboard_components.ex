@@ -16,7 +16,7 @@ defmodule FieldHubWeb.DashboardComponents do
     ~H"""
     <div class="bg-white dark:bg-zinc-900 p-6 rounded-[24px] border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-col gap-5 group transition-all hover:translate-y-[-2px]">
       <div class="flex items-center justify-between">
-        <div class="size-11 rounded-xl bg-indigo-600/10 flex items-center justify-center">
+        <div class="size-11 rounded-xl bg-primary/10 flex items-center justify-center">
           <.icon
             name={
               Map.get(
@@ -30,7 +30,7 @@ defmodule FieldHubWeb.DashboardComponents do
                 "hero-chart-bar"
               )
             }
-            class="text-indigo-600 size-6"
+            class="text-primary size-6"
           />
         </div>
         <%= if @change do %>
@@ -51,7 +51,7 @@ defmodule FieldHubWeb.DashboardComponents do
 
       <div :if={@variant == :progress} class="space-y-2 mt-auto">
         <div class="w-full h-1.5 bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
-          <div class="h-full bg-indigo-600 rounded-full" style={"width: #{@progress}%"}></div>
+          <div class="h-full bg-primary rounded-full" style={"width: #{@progress}%"}></div>
         </div>
         <p
           :if={@subtext}
@@ -75,7 +75,7 @@ defmodule FieldHubWeb.DashboardComponents do
       <div :if={@variant == :stars} class="flex items-center gap-1 mt-auto">
         <.icon :for={_ <- 1..5} name="hero-star" class="text-amber-400 size-4 fill-current" />
       </div>
-      
+
     <!-- Mini Chart Placeholder (for Revenue) -->
       <div
         :if={@variant == :simple && @icon == "payments"}
@@ -83,11 +83,11 @@ defmodule FieldHubWeb.DashboardComponents do
       >
         <div
           :for={h <- [40, 60, 30, 80, 50]}
-          class="flex-1 bg-indigo-600/20 group-hover:bg-indigo-600/40 rounded-sm transition-colors"
+          class="flex-1 bg-primary/20 group-hover:bg-primary/40 rounded-sm transition-colors"
           style={"height: #{h}%"}
         >
         </div>
-        <div class="flex-1 bg-indigo-600 rounded-sm" style="height: 100%"></div>
+        <div class="flex-1 bg-primary rounded-sm" style="height: 100%"></div>
       </div>
     </div>
     """
@@ -110,7 +110,7 @@ defmodule FieldHubWeb.DashboardComponents do
         </div>
         <div class="flex items-center gap-4">
           <div class="flex items-center gap-2 text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
-            <div class="size-2 rounded-full bg-indigo-600"></div>
+            <div class="size-2 rounded-full bg-primary"></div>
             North
           </div>
           <div class="flex items-center gap-2 text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
@@ -125,12 +125,12 @@ defmodule FieldHubWeb.DashboardComponents do
           <div class="flex-1 flex flex-col items-center gap-4 group h-full">
             <div class="w-full flex-1 flex flex-col-reverse gap-0.5 min-h-[140px]">
               <div
-                class="w-full bg-indigo-600 rounded-t-lg group-hover:brightness-110 transition-all"
+                class="w-full bg-primary rounded-t-lg group-hover:brightness-110 transition-all"
                 style={"height: #{h1}%"}
               >
               </div>
               <div
-                class="w-full bg-indigo-600/20 dark:bg-indigo-600/10 rounded-b-lg"
+                class="w-full bg-primary/20 dark:bg-primary/10 rounded-b-lg"
                 style={"height: #{h2}%"}
               >
               </div>
@@ -158,7 +158,7 @@ defmodule FieldHubWeb.DashboardComponents do
             Live Activity
           </h3>
         </div>
-        <button class="text-[10px] font-black text-indigo-600 hover:underline uppercase tracking-widest">
+        <button class="text-[10px] font-black text-primary hover:underline uppercase tracking-widest">
           View All
         </button>
       </div>
@@ -185,7 +185,7 @@ defmodule FieldHubWeb.DashboardComponents do
           title="Tech Arrived: Sarah L."
           time="18 mins ago"
           icon="hero-map-pin"
-          icon_color="text-indigo-600"
+          icon_color="text-primary"
         >
           Job #12811 • Client: Henderson Residence
         </.activity_feed_item>
@@ -236,7 +236,7 @@ defmodule FieldHubWeb.DashboardComponents do
         <h3 class="text-lg font-black text-zinc-900 dark:text-white tracking-tight">
           Next 5 Priority Jobs
         </h3>
-        <button class="flex items-center gap-2 text-xs font-bold text-zinc-400 hover:text-indigo-600 transition-colors">
+        <button class="flex items-center gap-2 text-xs font-bold text-zinc-400 hover:text-primary transition-colors">
           Sorted by Priority <.icon name="hero-chevron-down" class="size-4" />
         </button>
       </div>
@@ -254,7 +254,7 @@ defmodule FieldHubWeb.DashboardComponents do
           <tbody class="divide-y divide-zinc-50 dark:divide-zinc-800/50">
             <%= for {id, name, loc, tech, time, status, status_class, color} <- [
               {"#12818", "HVAC Repair", "Downtown Medical Center", "Elena Rossi", "Today, 14:00", "ON THE WAY", "text-amber-600 bg-amber-500/10 border-amber-500/20", "bg-red-500"},
-              {"#12819", "Electrical Panel", "Sunrise Apartments", "James Wilson", "Today, 15:30", "SCHEDULED", "text-indigo-600 bg-indigo-600/10 border-indigo-600/20", "bg-indigo-600"}
+              {"#12819", "Electrical Panel", "Sunrise Apartments", "James Wilson", "Today, 15:30", "SCHEDULED", "text-primary bg-primary/10 border-primary/20", "bg-primary"}
             ] do %>
               <tr class="group hover:bg-zinc-50 dark:hover:bg-zinc-800/20 transition-colors">
                 <td class="px-8 py-6">
@@ -317,14 +317,14 @@ defmodule FieldHubWeb.DashboardComponents do
   attr :title, :string, required: true
   attr :time, :string, required: true
   attr :icon, :string, required: true
-  attr :icon_class, :string, default: "text-indigo-600"
+  attr :icon_class, :string, default: "text-primary"
   slot :description, required: true
   slot :tags
 
   def activity_item(assigns) do
     ~H"""
     <div class="p-5 flex items-start gap-4 hover:bg-zinc-50 dark:hover:bg-zinc-800/30 transition-all group">
-      <div class="size-11 rounded-2xl bg-zinc-50 dark:bg-zinc-800/50 flex items-center justify-center flex-shrink-0 border border-zinc-200 dark:border-zinc-800 group-hover:border-indigo-500/30 transition-colors">
+      <div class="size-11 rounded-2xl bg-zinc-50 dark:bg-zinc-800/50 flex items-center justify-center flex-shrink-0 border border-zinc-200 dark:border-zinc-800 group-hover:border-primary/30 transition-colors">
         <.icon name={@icon} class={["size-5", @icon_class]} />
       </div>
       <div class="flex-1 min-w-0">
@@ -350,11 +350,11 @@ defmodule FieldHubWeb.DashboardComponents do
   attr :wait_time, :string, required: true
   attr :title, :string, required: true
   attr :location, :string, required: true
-  attr :status_class, :string, default: "text-indigo-600 bg-indigo-600/10"
+  attr :status_class, :string, default: "text-primary bg-primary/10"
 
   def queue_job_card(assigns) do
     ~H"""
-    <div class="bg-white dark:bg-zinc-900 p-5 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm hover:border-indigo-500/30 transition-all group">
+    <div class="bg-white dark:bg-zinc-900 p-5 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm hover:border-primary/30 transition-all group">
       <div class="flex justify-between items-start mb-3">
         <span class={[
           "text-[10px] font-black px-2.5 py-1 rounded-lg uppercase tracking-tight",
@@ -366,7 +366,7 @@ defmodule FieldHubWeb.DashboardComponents do
           {@wait_time}
         </span>
       </div>
-      <h4 class="text-[15px] font-bold text-zinc-900 dark:text-white leading-snug group-hover:text-indigo-600 transition-colors cursor-pointer">
+      <h4 class="text-[15px] font-bold text-zinc-900 dark:text-white leading-snug group-hover:text-primary transition-colors cursor-pointer">
         {@title}
       </h4>
       <p class="text-xs text-zinc-500 mt-1.5 line-clamp-1 flex items-center gap-1">
@@ -374,7 +374,7 @@ defmodule FieldHubWeb.DashboardComponents do
         {@location}
       </p>
       <div class="mt-5 pt-5 border-t border-zinc-100 dark:border-zinc-800 flex gap-2">
-        <button class="flex-1 text-xs font-bold py-2.5 rounded-xl bg-indigo-600 text-white hover:brightness-110 shadow-lg shadow-indigo-600/15 transition-all">
+        <button class="flex-1 text-xs font-bold py-2.5 rounded-xl bg-primary text-white hover:brightness-110 shadow-lg shadow-primary/15 transition-all">
           Quick Assign
         </button>
         <button class="px-3 py-2 border border-zinc-200 dark:border-zinc-800 rounded-xl hover:bg-zinc-50 dark:hover:bg-zinc-800 text-zinc-400 hover:text-zinc-600 transition-all">

@@ -1,7 +1,7 @@
 defmodule FieldHubWeb.OnboardingLive do
   @moduledoc """
   LiveView for organization onboarding wizard.
-  Beautiful multi-step onboarding with indigo theme.
+  Beautiful multi-step onboarding with primary theme.
   """
   use FieldHubWeb, :live_view
 
@@ -173,13 +173,13 @@ defmodule FieldHubWeb.OnboardingLive do
           <li :for={step <- 1..4} class="flex-1">
             <div class={[
               "h-1.5 rounded-full transition-all duration-700",
-              @step >= step && "bg-indigo-600 shadow-[0_0_10px_rgba(79,70,229,0.3)]",
+              @step >= step && "bg-primary shadow-[0_0_10px_rgba(16,185,129,0.3)]",
               @step < step && "bg-zinc-200 dark:bg-zinc-800"
             ]} />
             <div class="mt-4 flex flex-col items-center sm:items-start">
               <span class={[
                 "text-[10px] font-black uppercase tracking-[0.15em]",
-                @step >= step && "text-indigo-600 dark:text-indigo-400",
+                @step >= step && "text-primary dark:text-primary",
                 @step < step && "text-zinc-500"
               ]}>
                 Step 0{step}
@@ -228,7 +228,7 @@ defmodule FieldHubWeb.OnboardingLive do
     ~H"""
     <div class="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div class="text-center mb-10">
-        <div class="inline-flex items-center gap-2 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest mb-4">
+        <div class="inline-flex items-center gap-2 bg-primary/10 dark:bg-primary/20 text-primary dark:text-primary px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest mb-4">
           <.icon name="hero-sparkles" class="size-4" /> Getting Started
         </div>
         <h1 class="text-4xl lg:text-5xl font-black text-zinc-900 dark:text-white tracking-tight mb-3">
@@ -245,10 +245,10 @@ defmodule FieldHubWeb.OnboardingLive do
             type="button"
             phx-click="select_industry"
             phx-value-template={template.key}
-            class={"group relative p-6 rounded-3xl border-2 transition-all text-left #{if @selected == to_string(template.key), do: "border-indigo-500 bg-indigo-50/30 dark:bg-indigo-900/10 shadow-xl shadow-indigo-500/10", else: "border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50 hover:border-indigo-500/50 hover:bg-white dark:hover:bg-zinc-800/80"}"}
+            class={"group relative p-6 rounded-3xl border-2 transition-all text-left #{if @selected == to_string(template.key), do: "border-primary bg-primary/5 dark:bg-primary/10 shadow-xl shadow-primary/10", else: "border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50 hover:border-primary/50 hover:bg-white dark:hover:bg-zinc-800/80"}"}
           >
             <div class="flex items-start gap-4">
-              <div class={"size-14 rounded-2xl flex items-center justify-center flex-shrink-0 transition-all shadow-sm #{if @selected == to_string(template.key), do: "bg-indigo-600 text-white shadow-indigo-600/20", else: "bg-white dark:bg-zinc-800 text-zinc-500 group-hover:bg-indigo-600 group-hover:text-white"}"}>
+              <div class={"size-14 rounded-2xl flex items-center justify-center flex-shrink-0 transition-all shadow-sm #{if @selected == to_string(template.key), do: "bg-primary text-white shadow-primary/20", else: "bg-white dark:bg-zinc-800 text-zinc-500 group-hover:bg-primary group-hover:text-white"}"}>
                 <.icon name={template.icon} class="size-7 text-inherit" />
               </div>
               <div class="flex-1">
@@ -260,7 +260,7 @@ defmodule FieldHubWeb.OnboardingLive do
                 </p>
               </div>
               <%= if @selected == to_string(template.key) do %>
-                <div class="absolute top-4 right-4 size-6 bg-indigo-600 rounded-full flex items-center justify-center text-white">
+                <div class="absolute top-4 right-4 size-6 bg-primary rounded-full flex items-center justify-center text-white">
                   <.icon name="hero-check" class="size-4 stroke-[3]" />
                 </div>
               <% end %>
@@ -274,7 +274,7 @@ defmodule FieldHubWeb.OnboardingLive do
           type="button"
           phx-click="next_step"
           disabled={is_nil(@selected)}
-          class={"group flex items-center gap-2 px-8 py-4 rounded-2xl font-bold text-base transition-all active:scale-[0.98] #{if @selected, do: "bg-indigo-600 text-white shadow-xl shadow-indigo-600/20 hover:bg-indigo-700", else: "bg-zinc-100 dark:bg-zinc-800 text-zinc-400 cursor-not-allowed"}"}
+          class={"group flex items-center gap-2 px-8 py-4 rounded-2xl font-bold text-base transition-all active:scale-[0.98] #{if @selected, do: "bg-primary text-white shadow-xl shadow-primary/20 hover:bg-primary/90", else: "bg-zinc-100 dark:bg-zinc-800 text-zinc-400 cursor-not-allowed"}"}
         >
           Continue
           <.icon
@@ -292,7 +292,7 @@ defmodule FieldHubWeb.OnboardingLive do
     ~H"""
     <div class="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div class="mb-10 text-center lg:text-left">
-        <div class="inline-flex items-center gap-2 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest mb-4">
+        <div class="inline-flex items-center gap-2 bg-primary/10 dark:bg-primary/20 text-primary dark:text-primary px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest mb-4">
           <.icon name="hero-building-office-2" class="size-4" /> Company Profile
         </div>
         <h1 class="text-4xl lg:text-5xl font-black text-zinc-900 dark:text-white tracking-tight mb-3">
@@ -313,7 +313,7 @@ defmodule FieldHubWeb.OnboardingLive do
         <!-- Basic Info Section -->
         <div class="bg-zinc-50/50 dark:bg-zinc-800/30 rounded-3xl border border-zinc-100 dark:border-zinc-800 p-8 space-y-8">
           <div class="flex items-center gap-4">
-            <div class="size-10 bg-indigo-600 text-white rounded-xl flex items-center justify-center shadow-lg shadow-indigo-600/20">
+            <div class="size-10 bg-primary text-white rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
               <.icon name="hero-identification" class="size-6" />
             </div>
             <div>
@@ -373,11 +373,11 @@ defmodule FieldHubWeb.OnboardingLive do
             </div>
           </div>
         </div>
-        
+
     <!-- Address Section -->
         <div class="bg-zinc-50/50 dark:bg-zinc-800/30 rounded-3xl border border-zinc-100 dark:border-zinc-800 p-8 space-y-8">
           <div class="flex items-center gap-4">
-            <div class="size-10 bg-indigo-600 text-white rounded-xl flex items-center justify-center shadow-lg shadow-indigo-600/20">
+            <div class="size-10 bg-primary text-white rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
               <.icon name="hero-map-pin" class="size-6" />
             </div>
             <div>
@@ -454,7 +454,7 @@ defmodule FieldHubWeb.OnboardingLive do
             </div>
           </div>
         </div>
-        
+
     <!-- Navigation Buttons -->
         <div class="pt-6 flex justify-between items-center">
           <button
@@ -469,7 +469,7 @@ defmodule FieldHubWeb.OnboardingLive do
           </button>
           <.button
             type="submit"
-            class="group flex items-center gap-2 !bg-indigo-600 !text-white !px-8 !py-4 !rounded-2xl !font-bold !text-base shadow-xl shadow-indigo-600/20 hover:bg-indigo-700 transition-all active:scale-[0.98]"
+            class="group flex items-center gap-2 !bg-primary !text-white !px-8 !py-4 !rounded-2xl !font-bold !text-base shadow-xl shadow-primary/20 hover:bg-primary/90 transition-all active:scale-[0.98]"
           >
             Continue to Branding
             <.icon
@@ -488,7 +488,7 @@ defmodule FieldHubWeb.OnboardingLive do
     ~H"""
     <div class="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div class="mb-10 text-center lg:text-left">
-        <div class="inline-flex items-center gap-2 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest mb-4">
+        <div class="inline-flex items-center gap-2 bg-primary/10 dark:bg-primary/20 text-primary dark:text-primary px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest mb-4">
           <.icon name="hero-swatch" class="size-4" /> Brand Identity
         </div>
         <h1 class="text-4xl lg:text-5xl font-black text-zinc-900 dark:text-white tracking-tight mb-3">
@@ -511,7 +511,7 @@ defmodule FieldHubWeb.OnboardingLive do
             <!-- Color Settings -->
             <div class="space-y-8">
               <div class="flex items-center gap-4">
-                <div class="size-10 bg-indigo-600 text-white rounded-xl flex items-center justify-center shadow-lg shadow-indigo-600/20">
+                <div class="size-10 bg-primary text-white rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
                   <.icon name="hero-paint-brush" class="size-6" />
                 </div>
                 <div>
@@ -533,11 +533,11 @@ defmodule FieldHubWeb.OnboardingLive do
                     <.input
                       field={@form[:primary_color]}
                       type="color"
-                      value="#4F46E5"
+                      value="#10B981"
                       class="!h-14 !w-24 !p-1.5 !rounded-2xl !border-2 !border-zinc-100 dark:!border-zinc-800 cursor-pointer shadow-sm shadow-zinc-200/50 dark:shadow-none bg-white dark:bg-zinc-900"
                     />
                     <span class="text-sm font-mono font-bold text-zinc-400 bg-zinc-100 dark:bg-zinc-800 px-3 py-1.5 rounded-lg">
-                      #4F46E5
+                      #10B981
                     </span>
                   </div>
                 </div>
@@ -574,11 +574,11 @@ defmodule FieldHubWeb.OnboardingLive do
                 </p>
               </div>
             </div>
-            
+
     <!-- Live Preview -->
             <div class="space-y-6">
               <div class="flex items-center gap-4 mb-4">
-                <div class="size-10 bg-indigo-600 text-white rounded-xl flex items-center justify-center shadow-lg shadow-indigo-600/20">
+                <div class="size-10 bg-primary text-white rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
                   <.icon name="hero-eye" class="size-6" />
                 </div>
                 <div>
@@ -593,10 +593,10 @@ defmodule FieldHubWeb.OnboardingLive do
 
               <div class="bg-zinc-100 dark:bg-zinc-800/50 rounded-3xl p-8 border border-zinc-100/50 dark:border-zinc-800/50">
                 <div class="bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl shadow-zinc-900/10 dark:shadow-none overflow-hidden border border-zinc-100 dark:border-zinc-800">
-                  <div class="h-4 bg-indigo-600"></div>
+                  <div class="h-4 bg-primary"></div>
                   <div class="p-6">
                     <div class="flex items-center gap-3 mb-6">
-                      <div class="size-10 bg-indigo-600 rounded-xl shadow-lg shadow-indigo-600/20">
+                      <div class="size-10 bg-primary rounded-xl shadow-lg shadow-primary/20">
                       </div>
                       <div class="h-4 w-32 bg-zinc-200 dark:bg-zinc-700 rounded-full"></div>
                     </div>
@@ -606,7 +606,7 @@ defmodule FieldHubWeb.OnboardingLive do
                       <div class="h-3 w-4/6 bg-zinc-100 dark:bg-zinc-800 rounded-full"></div>
                     </div>
                     <div class="mt-8 flex justify-end">
-                      <div class="px-6 py-2.5 bg-indigo-600 text-white text-xs font-black uppercase tracking-widest rounded-xl shadow-lg shadow-indigo-600/20">
+                      <div class="px-6 py-2.5 bg-primary text-white text-xs font-black uppercase tracking-widest rounded-xl shadow-lg shadow-primary/20">
                         Primary Button
                       </div>
                     </div>
@@ -616,7 +616,7 @@ defmodule FieldHubWeb.OnboardingLive do
             </div>
           </div>
         </div>
-        
+
     <!-- Navigation -->
         <div class="pt-6 flex justify-between items-center">
           <button
@@ -631,7 +631,7 @@ defmodule FieldHubWeb.OnboardingLive do
           </button>
           <.button
             type="submit"
-            class="group flex items-center gap-2 !bg-indigo-600 !text-white !px-8 !py-4 !rounded-2xl !font-bold !text-base shadow-xl shadow-indigo-600/20 hover:bg-indigo-700 transition-all active:scale-[0.98]"
+            class="group flex items-center gap-2 !bg-primary !text-white !px-8 !py-4 !rounded-2xl !font-bold !text-base shadow-xl shadow-primary/20 hover:bg-primary/90 transition-all active:scale-[0.98]"
           >
             Almost Done!
             <.icon
@@ -651,13 +651,13 @@ defmodule FieldHubWeb.OnboardingLive do
     <div class="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <div class="text-center py-8">
         <div class="relative inline-block mb-10">
-          <div class="absolute inset-0 bg-indigo-400/30 rounded-full blur-3xl animate-pulse"></div>
-          <div class="relative size-32 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-full flex items-center justify-center shadow-2xl shadow-indigo-500/30">
+          <div class="absolute inset-0 bg-primary/30 rounded-full blur-3xl animate-pulse"></div>
+          <div class="relative size-32 bg-gradient-to-br from-primary to-emerald-600 rounded-full flex items-center justify-center shadow-2xl shadow-primary/30">
             <.icon name="hero-rocket-launch" class="size-16 text-white" />
           </div>
         </div>
 
-        <div class="inline-flex items-center gap-2 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 px-5 py-2.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-6">
+        <div class="inline-flex items-center gap-2 bg-primary/10 dark:bg-primary/30 text-primary dark:text-primary px-5 py-2.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-6">
           <.icon name="hero-sparkles" class="size-4" /> Setup Complete
         </div>
 
@@ -668,11 +668,11 @@ defmodule FieldHubWeb.OnboardingLive do
           Your workspace is configured and ready. Start managing your field operations like a pro.
         </p>
       </div>
-      
+
     <!-- Quick Start Cards -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="bg-white dark:bg-zinc-800/30 rounded-[2rem] border border-zinc-100 dark:border-zinc-800 p-8 text-center group hover:border-indigo-500/50 hover:bg-indigo-50/10 transition-all shadow-sm">
-          <div class="size-14 bg-indigo-50 dark:bg-indigo-900/20 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-indigo-600 group-hover:text-white transition-all text-indigo-600 dark:text-indigo-400 shadow-sm">
+        <div class="bg-white dark:bg-zinc-800/30 rounded-[2rem] border border-zinc-100 dark:border-zinc-800 p-8 text-center group hover:border-primary/50 hover:bg-primary/10 transition-all shadow-sm">
+          <div class="size-14 bg-primary/10 dark:bg-primary/20 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-primary group-hover:text-white transition-all text-primary dark:text-primary shadow-sm">
             <.icon name="hero-user-group" class="size-7" />
           </div>
           <h3 class="font-bold text-zinc-900 dark:text-white mb-2 tracking-tight">Invite Team</h3>
@@ -680,7 +680,7 @@ defmodule FieldHubWeb.OnboardingLive do
             Add technicians and admin staff
           </p>
         </div>
-        <div class="bg-white dark:bg-zinc-800/30 rounded-[2rem] border border-zinc-100 dark:border-zinc-800 p-8 text-center group hover:border-indigo-500/50 hover:bg-indigo-50/10 transition-all shadow-sm">
+        <div class="bg-white dark:bg-zinc-800/30 rounded-[2rem] border border-zinc-100 dark:border-zinc-800 p-8 text-center group hover:border-emerald-500/50 hover:bg-emerald-50/10 transition-all shadow-sm">
           <div class="size-14 bg-emerald-50 dark:bg-emerald-900/20 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-emerald-600 group-hover:text-white transition-all text-emerald-600 dark:text-emerald-400 shadow-sm">
             <.icon name="hero-user-plus" class="size-7" />
           </div>
@@ -689,7 +689,7 @@ defmodule FieldHubWeb.OnboardingLive do
             Import your existing client base
           </p>
         </div>
-        <div class="bg-white dark:bg-zinc-800/30 rounded-[2rem] border border-zinc-100 dark:border-zinc-800 p-8 text-center group hover:border-indigo-500/50 hover:bg-indigo-50/10 transition-all shadow-sm">
+        <div class="bg-white dark:bg-zinc-800/30 rounded-[2rem] border border-zinc-100 dark:border-zinc-800 p-8 text-center group hover:border-amber-500/50 hover:bg-amber-50/10 transition-all shadow-sm">
           <div class="size-14 bg-amber-50 dark:bg-amber-900/20 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-amber-600 group-hover:text-white transition-all text-amber-600 dark:text-amber-400 shadow-sm">
             <.icon name="hero-calendar" class="size-7" />
           </div>
@@ -704,7 +704,7 @@ defmodule FieldHubWeb.OnboardingLive do
         <button
           type="button"
           phx-click="finish_onboarding"
-          class="group flex items-center gap-3 bg-indigo-600 text-white px-12 py-5 rounded-2xl font-black text-lg shadow-2xl shadow-indigo-600/30 hover:bg-indigo-700 hover:scale-[1.02] transition-all active:scale-[0.98]"
+          class="group flex items-center gap-3 bg-primary text-white px-12 py-5 rounded-2xl font-black text-lg shadow-2xl shadow-primary/30 hover:bg-primary/90 hover:scale-[1.02] transition-all active:scale-[0.98]"
         >
           Launch Dashboard
           <.icon

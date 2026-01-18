@@ -14,14 +14,17 @@ defmodule FieldHubWeb.JobLive.Index do
       Broadcaster.subscribe_to_org(org_id)
     end
 
-    jobs = load_jobs(socket)
-
     socket =
       socket
       |> assign(:current_organization, %FieldHub.Accounts.Organization{id: org_id})
       |> assign(:current_nav, :jobs)
       |> assign(:current_user, current_user)
       |> assign(:search, "")
+
+    jobs = load_jobs(socket)
+
+    socket =
+      socket
       |> assign(:has_jobs, jobs != [])
       |> stream(:jobs, jobs)
 
@@ -103,39 +106,44 @@ defmodule FieldHubWeb.JobLive.Index do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="flex flex-col h-[calc(100vh-4rem)]">
-      <!-- Sub-header with search and actions -->
-      <div class="px-6 py-4 bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800">
-        <div class="flex items-center justify-between gap-4">
-          <form phx-change="search" id="search-form" class="flex-1 max-w-lg">
-            <div class="relative">
-              <.icon
-                name="hero-magnifying-glass"
-                class="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 size-5"
-              />
-              <input
-                type="text"
-                name="search"
-                value={@search}
-                placeholder="Search jobs by ID, title, or status..."
-                phx-debounce="300"
-                class="w-full pl-12 pr-4 py-2 bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-xl text-sm font-medium text-zinc-700 dark:text-zinc-200 placeholder:text-zinc-400 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-dashboard"
-              />
-            </div>
-          </form>
 
-          <div class="flex items-center gap-3">
-            <button class="flex items-center gap-2 px-3 py-2 text-xs font-bold text-zinc-600 dark:text-zinc-300 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-all">
-              <.icon name="hero-arrow-down-tray" class="size-4" /> Export
-            </button>
-            <.link patch={~p"/jobs/new"}>
-              <button class="flex items-center gap-2 px-4 py-2 text-sm font-bold text-white bg-primary rounded-xl shadow-lg shadow-primary/20 hover:brightness-110 transition-all">
-                <.icon name="hero-plus" class="size-4" /> New Job
+      <div class="flex h-[calc(100vh-4rem)] overflow-hidden relative">
+      <!-- Main Content Area -->
+      <div class={[
+        "flex-1 flex flex-col min-w-0 transition-all duration-300",
+        @live_action in [:new, :edit] && "lg:mr-[480px]"
+      ]}>
+        <div class="px-6 py-4 bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800">
+          <div class="flex items-center justify-between gap-4">
+            <form phx-change="search" id="search-form" class="flex-1 max-w-lg">
+              <div class="relative">
+                <.icon
+                  name="hero-magnifying-glass"
+                  class="absolute left-4 top-1/2 -tranzinc-y-1/2 text-zinc-400 size-5"
+                />
+                <input
+                  type="text"
+                  name="search"
+                  value={@search}
+                  placeholder="Search by title, location, or customer..."
+                  phx-debounce="300"
+                  class="w-full pl-12 pr-4 py-2 bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-xl text-sm font-medium text-zinc-700 dark:text-zinc-200 placeholder:text-zinc-400 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-dashboard"
+                />
+              </div>
+            </form>
+
+            <div class="flex items-center gap-3">
+              <button class="flex items-center gap-2 px-3 py-2 text-xs font-bold text-zinc-600 dark:text-zinc-300 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-all">
+                <.icon name="hero-arrow-down-tray" class="size-4" /> Export
               </button>
-            </.link>
+              <.link patch={~p"/jobs/new"}>
+                <button class="flex items-center gap-2 px-4 py-2 text-sm font-bold text-white bg-primary rounded-xl shadow-lg shadow-primary/20 hover:brightness-110 transition-all">
+                  <.icon name="hero-plus" class="size-4" /> Add Job
+                </button>
+              </.link>
+            </div>
           </div>
         </div>
-      </div>
 
     <!-- Content Area -->
       <div class="flex-1 overflow-auto bg-zinc-50/50 dark:bg-zinc-900/50 p-6">
@@ -274,21 +282,41 @@ defmodule FieldHubWeb.JobLive.Index do
               <p class="text-xs text-zinc-500 dark:text-zinc-400">Try adjusting your search terms</p>
             </div>
           <% end %>
+      </div>
+      </div>
+    </div>
+
+      <!-- Slide-over Panel -->
+      <div
+        :if={@live_action in [:new, :edit]}
+        class="fixed top-16 bottom-0 right-0 w-[480px] bg-white dark:bg-zinc-900 border-l border-zinc-200 dark:border-zinc-800 shadow-2xl z-40 animate-in slide-in-from-right duration-300"
+      >
+        <div class="h-full flex flex-col">
+          <!-- Slide-over Header -->
+          <div class="flex items-center justify-between px-6 py-4 border-b border-zinc-200 dark:border-zinc-800">
+            <h2 class="text-lg font-bold text-zinc-900 dark:text-white">
+              <%= if @live_action == :new, do: "New Job", else: "Edit Job" %>
+            </h2>
+            <.link patch={~p"/jobs"} class="p-2 -mr-2 text-zinc-400 hover:text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors">
+              <.icon name="hero-x-mark" class="size-5" />
+            </.link>
+          </div>
+
+          <!-- Slide-over Content -->
+          <div class="flex-1 overflow-y-auto p-6">
+            <.live_component
+              module={FieldHubWeb.JobLive.FormComponent}
+              id={@job.id || :new}
+              title={@page_title}
+              action={@live_action}
+              job={@job}
+              current_organization={@current_organization}
+              current_user={@current_user}
+              patch={~p"/jobs"}
+            />
+          </div>
         </div>
       </div>
-
-      <.modal :if={@live_action in [:new, :edit]} id="job-modal" show on_cancel={JS.patch(~p"/jobs")}>
-        <.live_component
-          module={FieldHubWeb.JobLive.FormComponent}
-          id={@job.id || :new}
-          title={@page_title}
-          action={@live_action}
-          job={@job}
-          current_organization={@current_organization}
-          current_user={@current_user}
-          patch={~p"/jobs"}
-        />
-      </.modal>
     </div>
     """
   end

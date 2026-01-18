@@ -1,4 +1,4 @@
-<div class="min-h-screen overflow-x-hidden selection:bg-indigo-500 selection:text-white">
+<div class="min-h-screen overflow-x-hidden selection:bg-primary selection:text-white">
   <!-- Navigation Header Component -->
   <FieldHubWeb.LandingComponents.header
     current_user={assigns[:current_user]}
@@ -24,13 +24,13 @@
       <div class="mx-auto max-w-3xl text-center">
         <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[rgb(var(--border))]
                     bg-[rgb(var(--panel))]/60 text-[rgb(var(--muted))] text-xs font-extrabold uppercase tracking-wide">
-          <span class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
+          <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
           AI Dispatch • Offline Mobile • White-label
         </div>
 
         <h1 class="mt-7 text-5xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight leading-[1.05] animate-in">
           Run field operations
-          <span class="block text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-purple-500 to-emerald-500">
+          <span class="block text-transparent bg-clip-text bg-gradient-to-r from-primary via-teal-500 to-emerald-500">
             with real-time precision.
           </span>
         </h1>
@@ -45,8 +45,8 @@
           <a
             href={~p"/users/register"}
             class="inline-flex items-center justify-center px-8 py-4 text-base font-extrabold text-white
-                   bg-indigo-600 rounded-full hover:bg-indigo-500 transition
-                   shadow-xl shadow-indigo-600/25 hover:-translate-y-0.5"
+                   bg-primary rounded-full hover:bg-primary/90 transition
+                   shadow-xl shadow-primary/25 hover:-translate-y-0.5"
           >
             Start free trial
             <span class="ml-2 text-white/80 text-sm font-semibold">(no card)</span>
@@ -100,7 +100,7 @@
       
 <!-- Hero mockup -->
       <div id="demo" class="mt-14 relative max-w-6xl mx-auto animate-fade">
-        <div class="absolute -inset-2 rounded-3xl blur opacity-30 bg-gradient-to-r from-indigo-500 via-purple-500 to-emerald-500">
+        <div class="absolute -inset-2 rounded-3xl blur opacity-30 bg-gradient-to-r from-primary via-teal-500 to-emerald-500">
         </div>
         <div class="relative rounded-2xl overflow-hidden border border-[rgb(var(--border))] bg-[rgb(var(--panel))]/70 backdrop-blur shadow-2xl">
           <div class="h-9 border-b border-[rgb(var(--border))] bg-[rgb(var(--panel2))]/70 flex items-center px-4 gap-2">
@@ -149,7 +149,7 @@
   <section id="features" class="py-24">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="text-center max-w-3xl mx-auto mb-14">
-        <div class="text-xs font-extrabold uppercase tracking-widest text-indigo-500">
+        <div class="text-xs font-extrabold uppercase tracking-widest text-primary">
           Core features
         </div>
         <h2 class="mt-3 text-3xl sm:text-4xl font-extrabold tracking-tight font-display">
@@ -162,9 +162,9 @@
 
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
         <div class="group relative p-8 rounded-2xl border border-[rgb(var(--border))] bg-[rgb(var(--panel))]/60 hover:bg-[rgb(var(--panel))] transition shadow-sm hover:shadow-xl animate-in [animation-delay:100ms]">
-          <div class="w-12 h-12 rounded-xl bg-indigo-500/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+          <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
             <svg
-              class="w-6 h-6 text-indigo-500"
+              class="w-6 h-6 text-primary"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -349,9 +349,9 @@
               </div>
             </div>
             <div class="flex items-start gap-4 p-4 rounded-xl border border-[rgb(var(--border))] bg-[rgb(var(--panel))]/40">
-              <div class="w-6 h-6 rounded-full bg-indigo-500/10 flex items-center justify-center shrink-0 mt-1">
+              <div class="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-1">
                 <svg
-                  class="w-4 h-4 text-indigo-500"
+                  class="w-4 h-4 text-primary"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -414,7 +414,7 @@ config :field_hub, :terminology,
   <section id="how" class="py-24 border-t border-[rgb(var(--border))] bg-[rgb(var(--panel))]/20">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="max-w-3xl mx-auto text-center">
-        <div class="text-xs font-extrabold uppercase tracking-widest text-indigo-500">
+        <div class="text-xs font-extrabold uppercase tracking-widest text-primary">
           How it works
         </div>
         <h2 class="mt-3 text-3xl sm:text-4xl font-extrabold font-display">
@@ -427,21 +427,21 @@ config :field_hub, :terminology,
 
       <div class="mt-14 grid grid-cols-1 md:grid-cols-3 gap-7">
         <div class="rounded-2xl border border-[rgb(var(--border))] bg-[rgb(var(--panel))]/60 p-8 shadow-sm">
-          <div class="text-sm font-extrabold text-indigo-500">01</div>
+          <div class="text-sm font-extrabold text-primary">01</div>
           <div class="mt-2 text-xl font-extrabold font-display">Schedule</div>
           <p class="mt-2 text-[rgb(var(--muted))] text-sm">
             Drop jobs onto the board. FieldHub suggests the best technician and flags conflicts.
           </p>
         </div>
         <div class="rounded-2xl border border-[rgb(var(--border))] bg-[rgb(var(--panel))]/60 p-8 shadow-sm">
-          <div class="text-sm font-extrabold text-indigo-500">02</div>
+          <div class="text-sm font-extrabold text-primary">02</div>
           <div class="mt-2 text-xl font-extrabold font-display">Execute</div>
           <p class="mt-2 text-[rgb(var(--muted))] text-sm">
             Technicians follow checklists, capture proof, and update status — even offline.
           </p>
         </div>
         <div class="rounded-2xl border border-[rgb(var(--border))] bg-[rgb(var(--panel))]/60 p-8 shadow-sm">
-          <div class="text-sm font-extrabold text-indigo-500">03</div>
+          <div class="text-sm font-extrabold text-primary">03</div>
           <div class="mt-2 text-xl font-extrabold font-display">Close + invoice</div>
           <p class="mt-2 text-[rgb(var(--muted))] text-sm">
             Job records are ready for billing, disputes, and compliance — automatically.
@@ -458,7 +458,7 @@ config :field_hub, :terminology,
   >
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="max-w-3xl mx-auto text-center">
-        <div class="text-xs font-extrabold uppercase tracking-widest text-indigo-500">
+        <div class="text-xs font-extrabold uppercase tracking-widest text-primary">
           Pricing
         </div>
         <h2 class="mt-3 text-3xl sm:text-4xl font-extrabold font-display">
@@ -480,13 +480,13 @@ config :field_hub, :terminology,
           </p>
           <ul class="mt-6 space-y-3 text-sm text-[rgb(var(--muted))]">
             <li class="flex items-center gap-2">
-              <span class="w-1 h-1 rounded-full bg-indigo-500"></span> Dispatch board
+              <span class="w-1 h-1 rounded-full bg-primary"></span> Dispatch board
             </li>
             <li class="flex items-center gap-2">
-              <span class="w-1 h-1 rounded-full bg-indigo-500"></span> Mobile jobs + proof
+              <span class="w-1 h-1 rounded-full bg-primary"></span> Mobile jobs + proof
             </li>
             <li class="flex items-center gap-2">
-              <span class="w-1 h-1 rounded-full bg-indigo-500"></span> Customer notifications
+              <span class="w-1 h-1 rounded-full bg-primary"></span> Customer notifications
             </li>
           </ul>
           <a
@@ -498,11 +498,11 @@ config :field_hub, :terminology,
           </a>
         </div>
 
-        <div class="relative rounded-2xl border border-indigo-500/40 bg-[rgb(var(--panel))]/70 p-8 shadow-2xl">
-          <div class="absolute -top-3 right-6 rounded-full bg-indigo-600 text-white text-xs font-extrabold px-3 py-1">
+        <div class="relative rounded-2xl border border-primary/40 bg-[rgb(var(--panel))]/70 p-8 shadow-2xl">
+          <div class="absolute -top-3 right-6 rounded-full bg-primary text-white text-xs font-extrabold px-3 py-1">
             Most popular
           </div>
-          <div class="text-sm font-extrabold text-indigo-500">Pro</div>
+          <div class="text-sm font-extrabold text-primary">Pro</div>
           <div class="mt-2 text-4xl font-extrabold font-display">
             £149<span class="text-base font-semibold text-[rgb(var(--muted))]">/mo</span>
           </div>
@@ -511,22 +511,22 @@ config :field_hub, :terminology,
           </p>
           <ul class="mt-6 space-y-3 text-sm text-[rgb(var(--muted))]">
             <li class="flex items-center gap-2">
-              <span class="w-1 h-1 rounded-full bg-indigo-500"></span> Everything in Starter
+              <span class="w-1 h-1 rounded-full bg-primary"></span> Everything in Starter
             </li>
             <li class="flex items-center gap-2">
-              <span class="w-1 h-1 rounded-full bg-indigo-500"></span> Route + map insights
+              <span class="w-1 h-1 rounded-full bg-primary"></span> Route + map insights
             </li>
             <li class="flex items-center gap-2">
-              <span class="w-1 h-1 rounded-full bg-indigo-500"></span> Advanced RBAC
+              <span class="w-1 h-1 rounded-full bg-primary"></span> Advanced RBAC
             </li>
             <li class="flex items-center gap-2">
-              <span class="w-1 h-1 rounded-full bg-indigo-500"></span> Checklists + templates
+              <span class="w-1 h-1 rounded-full bg-primary"></span> Checklists + templates
             </li>
           </ul>
           <a
             href={~p"/users/register"}
             class="mt-7 inline-flex w-full items-center justify-center rounded-full px-6 py-3 font-extrabold
-                                              bg-indigo-600 text-white hover:bg-indigo-500 transition shadow-lg shadow-indigo-600/25"
+                                              bg-primary text-white hover:bg-primary/90 transition shadow-lg shadow-primary/25"
           >
             Start Pro
           </a>
@@ -542,13 +542,13 @@ config :field_hub, :terminology,
           </p>
           <ul class="mt-6 space-y-3 text-sm text-[rgb(var(--muted))]">
             <li class="flex items-center gap-2">
-              <span class="w-1 h-1 rounded-full bg-indigo-500"></span> White-label
+              <span class="w-1 h-1 rounded-full bg-primary"></span> White-label
             </li>
             <li class="flex items-center gap-2">
-              <span class="w-1 h-1 rounded-full bg-indigo-500"></span> SSO / SCIM (optional)
+              <span class="w-1 h-1 rounded-full bg-primary"></span> SSO / SCIM (optional)
             </li>
             <li class="flex items-center gap-2">
-              <span class="w-1 h-1 rounded-full bg-indigo-500"></span> Dedicated support
+              <span class="w-1 h-1 rounded-full bg-primary"></span> Dedicated support
             </li>
           </ul>
           <a
@@ -567,7 +567,7 @@ config :field_hub, :terminology,
   <section id="faq" class="py-24">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="max-w-3xl mx-auto text-center mb-14">
-        <div class="text-xs font-extrabold uppercase tracking-widest text-indigo-500">FAQ</div>
+        <div class="text-xs font-extrabold uppercase tracking-widest text-primary">FAQ</div>
         <h2 class="mt-3 text-3xl sm:text-4xl font-extrabold font-display">
           Questions, answered.
         </h2>
@@ -621,7 +621,7 @@ config :field_hub, :terminology,
           <a
             href={~p"/users/register"}
             class="inline-flex items-center justify-center rounded-full px-10 py-4 font-extrabold
-                                              bg-indigo-600 text-white hover:bg-indigo-500 transition shadow-xl shadow-indigo-600/25"
+                                              bg-primary text-white hover:bg-primary/90 transition shadow-xl shadow-primary/25"
           >
             Get started for free
           </a>

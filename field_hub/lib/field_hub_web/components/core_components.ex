@@ -347,6 +347,112 @@ defmodule FieldHubWeb.CoreComponents do
   end
 
   @doc """
+  Renders a slide-in panel from the right side of the screen.
+  Perfect for forms, edit views, and detail panels.
+
+  ## Examples
+
+      <.slide_panel id="edit-user" show={@show_panel} on_close={JS.patch(~p"/users")}>
+        <:header>Edit User</:header>
+        <:subtitle>Update user information</:subtitle>
+        <.live_component module={UserFormComponent} id={@user.id} user={@user} />
+      </.slide_panel>
+  """
+  attr :id, :string, required: true
+  attr :show, :boolean, default: false
+  attr :on_close, :any, default: nil
+  attr :width, :string, default: "480px"
+  slot :header, required: true
+  slot :subtitle
+  slot :inner_block, required: true
+  slot :footer
+
+  def slide_panel(assigns) do
+    ~H"""
+    <div
+      :if={@show}
+      id={@id}
+      class="fixed inset-0 z-50"
+      phx-mounted={show_panel(@id)}
+      phx-remove={hide_panel(@id)}
+    >
+      <!-- Backdrop -->
+      <div
+        id={"#{@id}-backdrop"}
+        class="absolute inset-0 bg-zinc-900/60 backdrop-blur-sm transition-opacity duration-300 opacity-0"
+        phx-click={@on_close}
+        aria-hidden="true"
+      />
+
+      <!-- Panel -->
+      <div
+        id={"#{@id}-panel"}
+        class={"fixed top-0 right-0 bottom-0 bg-white dark:bg-zinc-900 border-l border-zinc-200 dark:border-zinc-800 shadow-2xl flex flex-col transform translate-x-full transition-transform duration-300 ease-out"}
+        style={"width: #{@width}; max-width: 90vw;"}
+      >
+        <!-- Header -->
+        <div class="flex items-center justify-between px-6 py-5 border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-800/30">
+          <div>
+            <h2 class="text-xl font-bold text-zinc-900 dark:text-white tracking-tight">
+              {render_slot(@header)}
+            </h2>
+            <p :if={@subtitle != []} class="text-sm text-zinc-500 dark:text-zinc-400 mt-0.5">
+              {render_slot(@subtitle)}
+            </p>
+          </div>
+          <button
+            type="button"
+            phx-click={@on_close}
+            class="p-2 -mr-2 text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-xl transition-all"
+          >
+            <.icon name="hero-x-mark" class="size-5" />
+          </button>
+        </div>
+
+        <!-- Content -->
+        <div class="flex-1 overflow-y-auto p-6">
+          {render_slot(@inner_block)}
+        </div>
+
+        <!-- Footer -->
+        <div :if={@footer != []} class="p-6 border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-800/30">
+          {render_slot(@footer)}
+        </div>
+      </div>
+    </div>
+    """
+  end
+
+  def show_panel(js \\ %JS{}, id) when is_binary(id) do
+    js
+    |> JS.show(
+      to: "##{id}-backdrop",
+      transition: {"transition-opacity duration-300", "opacity-0", "opacity-100"}
+    )
+    |> JS.remove_class("translate-x-full",
+      to: "##{id}-panel",
+      transition: {"transition-transform duration-300 ease-out", "translate-x-full", "translate-x-0"}
+    )
+    |> JS.add_class("overflow-hidden", to: "body")
+    |> JS.focus_first(to: "##{id}-panel")
+  end
+
+  def hide_panel(js \\ %JS{}, id) when is_binary(id) do
+    js
+    |> JS.hide(
+      to: "##{id}-backdrop",
+      transition: {"transition-opacity duration-200", "opacity-100", "opacity-0"}
+    )
+    |> JS.add_class("translate-x-full",
+      to: "##{id}-panel",
+      transition: {"transition-transform duration-200 ease-in", "translate-x-0", "translate-x-full"}
+    )
+    |> JS.remove_class("overflow-hidden", to: "body")
+    |> JS.hide(to: "##{id}", transition: {"block", "block", "hidden"})
+    |> JS.pop_focus()
+  end
+
+  @doc """
   Renders a modal.
 
   ## Examples
@@ -376,8 +482,9 @@ defmodule FieldHubWeb.CoreComponents do
     >
       <div
         id={"#{@id}-bg"}
-        class="fixed inset-0 bg-zinc-50/90 dark:bg-zinc-900/90 transition-opacity"
+        class="fixed inset-0 bg-zinc-900/60 backdrop-blur-sm transition-opacity duration-300"
         aria-hidden="true"
+        phx-click={JS.exec("data-cancel", to: "##{@id}")}
       />
       <div
         class="fixed inset-0 overflow-y-auto"
@@ -386,28 +493,36 @@ defmodule FieldHubWeb.CoreComponents do
         role="dialog"
         tabindex="0"
       >
-        <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
-          <div class="w-full max-w-3xl overflow-hidden rounded-2xl bg-white dark:bg-zinc-900 p-6 text-left align-middle shadow-xl transition-all sm:my-8">
-            <header :if={@confirm != [] or @cancel != []} class="flex items-start justify-between">
-              <div class="flex-1">
+        <div class="flex min-h-full items-center justify-center p-4 sm:p-0">
+          <div
+            id={"#{@id}-container"}
+            class="w-full max-w-2xl overflow-hidden rounded-3xl bg-white dark:bg-zinc-900 text-left shadow-2xl ring-1 ring-zinc-200 dark:ring-zinc-800 transition-all duration-300 transform scale-95 opacity-0 sm:my-8"
+          >
+            <!-- Modal Header -->
+            <div class="flex items-center justify-between px-6 py-5 border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-800/30">
+              <div class="flex-1" id={"#{@id}-content"}>
                 {render_slot(@inner_block)}
               </div>
               <button
                 phx-click={JS.exec("data-cancel", to: "##{@id}")}
-                class="-m-2.5 p-2.5 text-zinc-400 hover:text-zinc-500"
+                class="p-2 -mr-2 text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-xl transition-all"
                 aria-label="close"
               >
-                <.icon name="hero-x-mark" class="h-6 w-6" />
+                <.icon name="hero-x-mark" class="size-5" />
               </button>
-            </header>
-            <div :if={@confirm == [] and @cancel == []}>
+            </div>
+
+            <!-- Modal Body (for forms without confirm/cancel) -->
+            <div :if={@confirm == [] and @cancel == []} class="p-6">
               {render_slot(@inner_block)}
             </div>
-            <div :if={@confirm != [] or @cancel != []} class="mt-6 flex justify-end gap-x-3">
+
+            <!-- Modal Footer (for confirm dialogs) -->
+            <div :if={@confirm != [] or @cancel != []} class="flex justify-end gap-3 px-6 py-4 bg-zinc-50/50 dark:bg-zinc-800/30 border-t border-zinc-200 dark:border-zinc-800">
               <button
                 :for={cancel <- @cancel}
                 phx-click={JS.exec("data-cancel", to: "##{@id}")}
-                class="rounded-md bg-white dark:bg-zinc-800 px-3 py-2 text-sm font-semibold text-zinc-900 dark:text-zinc-100 shadow-sm ring-1 ring-inset ring-zinc-300 dark:ring-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-700"
+                class="px-5 py-2.5 rounded-xl text-sm font-bold text-zinc-700 dark:text-zinc-300 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-all"
               >
                 {render_slot(cancel)}
               </button>
@@ -427,9 +542,12 @@ defmodule FieldHubWeb.CoreComponents do
     |> JS.show(to: "##{id}")
     |> JS.show(
       to: "##{id}-bg",
-      transition: {"transition-all transform ease-out duration-300", "opacity-0", "opacity-100"}
+      transition: {"transition-opacity duration-300", "opacity-0", "opacity-100"}
     )
-    |> show("##{id}-container")
+    |> JS.show(
+      to: "##{id}-container",
+      transition: {"transition-all duration-300 ease-out", "opacity-0 scale-95 translate-y-4", "opacity-100 scale-100 translate-y-0"}
+    )
     |> JS.add_class("overflow-hidden", to: "body")
     |> JS.focus_first(to: "##{id}-content")
   end
@@ -438,9 +556,12 @@ defmodule FieldHubWeb.CoreComponents do
     js
     |> JS.hide(
       to: "##{id}-bg",
-      transition: {"transition-all transform ease-in duration-200", "opacity-100", "opacity-0"}
+      transition: {"transition-opacity duration-200", "opacity-100", "opacity-0"}
     )
-    |> hide("##{id}-container")
+    |> JS.hide(
+      to: "##{id}-container",
+      transition: {"transition-all duration-200 ease-in", "opacity-100 scale-100 translate-y-0", "opacity-0 scale-95 translate-y-4"}
+    )
     |> JS.hide(to: "##{id}", transition: {"block", "block", "hidden"})
     |> JS.remove_class("overflow-hidden", to: "body")
     |> JS.pop_focus()

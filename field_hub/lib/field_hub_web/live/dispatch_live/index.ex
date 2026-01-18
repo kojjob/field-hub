@@ -367,7 +367,7 @@ defmodule FieldHubWeb.DispatchLive.Index do
         "bg-zinc-100 border-zinc-200 dark:bg-zinc-800 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400"
 
       "scheduled" ->
-        "bg-indigo-50 border-indigo-200 dark:bg-indigo-900/30 dark:border-indigo-800/50 text-indigo-700 dark:text-indigo-300"
+        "bg-teal-50 border-teal-200 dark:bg-teal-900/30 dark:border-teal-800/50 text-teal-700 dark:text-teal-300"
 
       "en_route" ->
         "bg-amber-50 border-amber-200 dark:bg-amber-900/30 dark:border-amber-800/50 text-amber-700 dark:text-amber-300"
@@ -393,7 +393,7 @@ defmodule FieldHubWeb.DispatchLive.Index do
     case priority do
       "urgent" -> "border-l-4 border-l-red-500"
       "high" -> "border-l-4 border-l-amber-500"
-      "normal" -> "border-l-4 border-l-indigo-500"
+      "normal" -> "border-l-4 border-l-teal-500"
       "low" -> "border-l-4 border-l-zinc-300 dark:border-l-zinc-600"
       _ -> ""
     end
@@ -418,7 +418,7 @@ defmodule FieldHubWeb.DispatchLive.Index do
               phx-value-mode="day"
               class={[
                 "px-4 py-1.5 text-xs font-black rounded-lg transition-all",
-                @view_mode == :day && "bg-white dark:bg-zinc-700 text-indigo-600 shadow-sm",
+                @view_mode == :day && "bg-white dark:bg-zinc-700 text-primary shadow-sm",
                 @view_mode != :day && "text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300"
               ]}
             >
@@ -429,14 +429,14 @@ defmodule FieldHubWeb.DispatchLive.Index do
               phx-value-mode="map"
               class={[
                 "px-4 py-1.5 text-xs font-black rounded-lg transition-all",
-                @view_mode == :map && "bg-white dark:bg-zinc-700 text-indigo-600 shadow-sm",
+                @view_mode == :map && "bg-white dark:bg-zinc-700 text-primary shadow-sm",
                 @view_mode != :map && "text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300"
               ]}
             >
               Map
             </button>
           </div>
-          
+
     <!-- Date Navigation -->
           <div class="flex items-center gap-2">
             <button
@@ -460,7 +460,7 @@ defmodule FieldHubWeb.DispatchLive.Index do
           </div>
         </div>
       </div>
-      
+
     <!-- Main Content -->
       <div class="flex-1 flex overflow-hidden rounded-[24px] border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm">
         <!-- Unassigned Jobs Sidebar -->
@@ -468,7 +468,7 @@ defmodule FieldHubWeb.DispatchLive.Index do
           <div class="flex items-center justify-between mb-6">
             <h2 class="text-xs font-black text-zinc-900 dark:text-white uppercase tracking-widest flex items-center gap-2">
               Unassigned
-              <span class="bg-indigo-600 text-white px-2 py-0.5 rounded-lg text-[10px] font-bold">
+              <span class="bg-primary text-white px-2 py-0.5 rounded-lg text-[10px] font-bold">
                 {@unassigned_jobs_count}
               </span>
             </h2>
@@ -493,12 +493,12 @@ defmodule FieldHubWeb.DispatchLive.Index do
               <%= for {dom_id, job} <- @streams.unassigned_jobs do %>
                 <div
                   id={dom_id}
-                  class={"drag-handle group p-3 bg-white dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-700 shadow-sm cursor-grab hover:shadow-md hover:border-indigo-500/30 transition-all #{priority_indicator(job.priority)}"}
+                  class={"drag-handle group p-3 bg-white dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-700 shadow-sm cursor-grab hover:shadow-md hover:border-primary/30 transition-all #{priority_indicator(job.priority)}"}
                   data-job-id={job.id}
                 >
                   <div class="flex items-start justify-between gap-2">
                     <div class="flex-1 min-w-0" phx-click="show_job_details" phx-value-job_id={job.id}>
-                      <div class="font-bold text-sm text-zinc-900 dark:text-white truncate group-hover:text-indigo-600 transition-colors">
+                      <div class="font-bold text-sm text-zinc-900 dark:text-white truncate group-hover:text-primary transition-colors">
                         {job.title}
                       </div>
                       <div class="text-[11px] text-zinc-500 dark:text-zinc-400 font-medium truncate">
@@ -508,7 +508,7 @@ defmodule FieldHubWeb.DispatchLive.Index do
                     <button
                       phx-click="quick_dispatch"
                       phx-value-job_id={job.id}
-                      class="shrink-0 p-1.5 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/30 text-indigo-600 transition-colors"
+                      class="shrink-0 p-1.5 rounded-lg hover:bg-primary/10 dark:hover:bg-primary/20 text-primary transition-colors"
                       title="Quick dispatch"
                     >
                       <.icon name="hero-bolt" class="size-4" />
@@ -531,7 +531,7 @@ defmodule FieldHubWeb.DispatchLive.Index do
             </div>
           <% end %>
         </div>
-        
+
     <!-- Calendar Grid or Map -->
         <div class="flex-1 overflow-auto relative bg-zinc-50/50 dark:bg-zinc-900/50 scrollbar-hide">
           <%= if @view_mode == :map do %>
@@ -556,7 +556,7 @@ defmodule FieldHubWeb.DispatchLive.Index do
                   <div class="w-56 shrink-0 border-r border-zinc-200 dark:border-zinc-800 p-4">
                     <div class="flex items-center gap-3">
                       <div
-                        class="size-8 rounded-full flex items-center justify-center text-white text-[10px] font-black shadow-lg shadow-indigo-500/10"
+                        class="size-8 rounded-full flex items-center justify-center text-white text-[10px] font-black shadow-lg shadow-primary/10"
                         style={"background-color: #{tech.color}"}
                       >
                         {initials(tech.name)}
@@ -576,7 +576,7 @@ defmodule FieldHubWeb.DispatchLive.Index do
                   </div>
                 <% end %>
               </div>
-              
+
     <!-- Time Slots -->
               <%= for slot <- time_slots() do %>
                 <div class="flex border-b border-zinc-100 dark:border-zinc-800 group hover:bg-zinc-50 dark:hover:bg-zinc-800/20 transition-colors">
@@ -584,7 +584,7 @@ defmodule FieldHubWeb.DispatchLive.Index do
                   <div class="w-20 shrink-0 border-r border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/50 p-4 text-[10px] font-black text-zinc-400 text-right sticky left-0 z-10">
                     {slot.label}
                   </div>
-                  
+
     <!-- Technician Columns -->
                   <%= for tech <- @technicians do %>
                     <div
@@ -616,7 +616,7 @@ defmodule FieldHubWeb.DispatchLive.Index do
             </div>
           <% end %>
         </div>
-        
+
     <!-- Technician Status Sidebar (Right) -->
         <div class="w-80 bg-white dark:bg-zinc-900 border-l border-zinc-200 dark:border-zinc-800 flex flex-col shrink-0">
           <div class="p-5 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between bg-zinc-50/50 dark:bg-zinc-800/30">
@@ -626,7 +626,7 @@ defmodule FieldHubWeb.DispatchLive.Index do
             <%= if @technician_filter do %>
               <button
                 phx-click="clear_tech_filter"
-                class="text-[10px] font-black text-indigo-600 hover:text-indigo-800 uppercase tracking-widest"
+                class="text-[10px] font-black text-primary hover:text-primary/80 uppercase tracking-widest"
               >
                 Clear
               </button>
@@ -635,19 +635,19 @@ defmodule FieldHubWeb.DispatchLive.Index do
           <div class="flex-1 overflow-y-auto p-4 space-y-4">
             <%= for tech <- @technicians do %>
               <div
-                class={"group bg-white dark:bg-zinc-800 rounded-[20px] p-4 border border-zinc-200 dark:border-zinc-700 hover:border-indigo-500/30 cursor-pointer transition-all shadow-sm hover:shadow-md #{if @technician_filter == tech.id, do: "ring-2 ring-indigo-600 ring-offset-2 dark:ring-offset-zinc-900"}"}
+                class={"group bg-white dark:bg-zinc-800 rounded-[20px] p-4 border border-zinc-200 dark:border-zinc-700 hover:border-primary/30 cursor-pointer transition-all shadow-sm hover:shadow-md #{if @technician_filter == tech.id, do: "ring-2 ring-primary ring-offset-2 dark:ring-offset-zinc-900"}"}
                 phx-click="view_tech_schedule"
                 phx-value-tech_id={tech.id}
               >
                 <div class="flex items-center gap-4 mb-3">
                   <div
-                    class="size-10 rounded-full flex items-center justify-center text-white text-xs font-black shadow-lg shadow-indigo-500/10"
+                    class="size-10 rounded-full flex items-center justify-center text-white text-xs font-black shadow-lg shadow-primary/10"
                     style={"background-color: #{tech.color}"}
                   >
                     {initials(tech.name)}
                   </div>
                   <div>
-                    <div class="font-bold text-sm text-zinc-900 dark:text-white group-hover:text-indigo-600 transition-colors">
+                    <div class="font-bold text-sm text-zinc-900 dark:text-white group-hover:text-primary transition-colors">
                       {tech.name}
                     </div>
                     <div class="flex items-center gap-2 mt-1">
@@ -658,7 +658,7 @@ defmodule FieldHubWeb.DispatchLive.Index do
                     </div>
                   </div>
                 </div>
-                
+
     <!-- Current Active Job -->
                 <%= if tech.status == "on_job" || tech.status == "traveling" do %>
                   <%= if active_job = List.first(tech.jobs) do %>
@@ -680,7 +680,7 @@ defmodule FieldHubWeb.DispatchLive.Index do
           </div>
         </div>
       </div>
-      
+
     <!-- Job Details Slideout Panel -->
       <%= if @selected_job do %>
         <div
@@ -724,7 +724,7 @@ defmodule FieldHubWeb.DispatchLive.Index do
               <!-- Customer Info -->
               <div class="bg-zinc-50 dark:bg-zinc-800/50 rounded-[24px] p-5 border border-zinc-100 dark:border-zinc-800">
                 <div class="flex items-center gap-3 mb-3">
-                  <div class="size-9 rounded-xl bg-indigo-600/10 flex items-center justify-center text-indigo-600">
+                  <div class="size-9 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
                     <.icon name="hero-user" class="size-5" />
                   </div>
                   <h4 class="text-xs font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
@@ -741,7 +741,7 @@ defmodule FieldHubWeb.DispatchLive.Index do
                   </p>
                 <% end %>
               </div>
-              
+
     <!-- Schedule Info -->
               <div class="bg-zinc-50 dark:bg-zinc-800/50 rounded-[24px] p-5 border border-zinc-100 dark:border-zinc-800">
                 <div class="flex items-center gap-3 mb-3">
@@ -768,7 +768,7 @@ defmodule FieldHubWeb.DispatchLive.Index do
                   <p class="text-zinc-500 italic font-medium">Not yet scheduled</p>
                 <% end %>
               </div>
-              
+
     <!-- Technician Info -->
               <div class="bg-zinc-50 dark:bg-zinc-800/50 rounded-[24px] p-5 border border-zinc-100 dark:border-zinc-800">
                 <div class="flex items-center gap-3 mb-3">
@@ -782,7 +782,7 @@ defmodule FieldHubWeb.DispatchLive.Index do
                 <%= if @selected_job.technician do %>
                   <div class="flex items-center gap-3">
                     <div
-                      class="size-8 rounded-full shadow-lg shadow-indigo-500/10"
+                      class="size-8 rounded-full shadow-lg shadow-primary/10"
                       style={"background-color: #{@selected_job.technician.color}"}
                     >
                     </div>
@@ -795,13 +795,13 @@ defmodule FieldHubWeb.DispatchLive.Index do
                 <% end %>
               </div>
             </div>
-            
+
     <!-- Quick Actions -->
             <div class="pt-8 border-t border-zinc-200 dark:border-zinc-800 space-y-4">
               <h4 class="text-xs font-black text-zinc-900 dark:text-white uppercase tracking-[0.2em]">
                 Management Actions
               </h4>
-              
+
     <!-- Status Change Buttons -->
               <div class="grid grid-cols-2 gap-3">
                 <%= if @selected_job.status != "en_route" do %>
@@ -845,7 +845,7 @@ defmodule FieldHubWeb.DispatchLive.Index do
                   </button>
                 <% end %>
               </div>
-              
+
     <!-- Unassign Button -->
               <%= if @selected_job.technician_id do %>
                 <button
@@ -874,7 +874,7 @@ defmodule FieldHubWeb.DispatchLive.Index do
         "bg-amber-50 text-amber-600 border-amber-200 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-900/50"
 
       "normal" ->
-        "bg-indigo-50 text-indigo-600 border-indigo-200 dark:bg-indigo-900/20 dark:text-indigo-400 dark:border-indigo-900/50"
+        "bg-teal-50 text-teal-600 border-teal-200 dark:bg-teal-900/20 dark:text-teal-400 dark:border-teal-900/50"
 
       "low" ->
         "bg-zinc-50 text-zinc-600 border-zinc-200 dark:bg-zinc-800 dark:text-zinc-400 dark:border-zinc-700"
@@ -890,7 +890,7 @@ defmodule FieldHubWeb.DispatchLive.Index do
         "bg-zinc-50 text-zinc-600 border-zinc-200 dark:bg-zinc-800 dark:text-zinc-400 dark:border-zinc-700"
 
       "scheduled" ->
-        "bg-indigo-50 text-indigo-600 border-indigo-200 dark:bg-indigo-900/20 dark:text-indigo-400 dark:border-indigo-900/50"
+        "bg-teal-50 text-teal-600 border-teal-200 dark:bg-teal-900/20 dark:text-teal-400 dark:border-teal-900/50"
 
       "en_route" ->
         "bg-amber-50 text-amber-600 border-amber-200 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-900/50"
@@ -921,7 +921,7 @@ defmodule FieldHubWeb.DispatchLive.Index do
   defp tech_status_color(status) do
     case status do
       "available" -> "bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400"
-      "on_job" -> "bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20 dark:text-indigo-400"
+      "on_job" -> "bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary"
       "traveling" -> "bg-amber-50 text-amber-600 dark:bg-amber-900/20 dark:text-amber-400"
       "break" -> "bg-purple-50 text-purple-600 dark:bg-purple-900/20 dark:text-purple-400"
       "off_duty" -> "bg-zinc-50 text-zinc-400 dark:bg-zinc-800 dark:text-zinc-500"
@@ -932,7 +932,7 @@ defmodule FieldHubWeb.DispatchLive.Index do
   defp tech_status_dot(status) do
     case status do
       "available" -> "bg-emerald-500"
-      "on_job" -> "bg-indigo-500"
+      "on_job" -> "bg-primary"
       "traveling" -> "bg-amber-500"
       "break" -> "bg-purple-500"
       "off_duty" -> "bg-zinc-400"

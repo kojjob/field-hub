@@ -48,7 +48,7 @@ defmodule FieldHubWeb.SettingsLive.Workflows do
             type="button"
             phx-click="save_all"
             variant="primary"
-            class="gap-2 shadow-lg shadow-indigo-600/20"
+            class="gap-2 shadow-lg shadow-primary/20"
           >
             <.icon name="hero-check" class="size-4" /> Save Workflow
           </.button>
@@ -75,7 +75,7 @@ defmodule FieldHubWeb.SettingsLive.Workflows do
                     <button
                       phx-click="move_up"
                       phx-value-index={index}
-                      class="hover:text-indigo-600 disabled:opacity-30"
+                      class="hover:text-primary disabled:opacity-30"
                       disabled={index == 0}
                     >
                       <.icon name="hero-chevron-up" class="size-4" />
@@ -83,7 +83,7 @@ defmodule FieldHubWeb.SettingsLive.Workflows do
                     <button
                       phx-click="move_down"
                       phx-value-index={index}
-                      class="hover:text-indigo-600 disabled:opacity-30"
+                      class="hover:text-primary disabled:opacity-30"
                       disabled={index == length(@statuses) - 1}
                     >
                       <.icon name="hero-chevron-down" class="size-4" />
@@ -112,7 +112,7 @@ defmodule FieldHubWeb.SettingsLive.Workflows do
                       type="button"
                       phx-click="edit_status"
                       phx-value-index={index}
-                      class="p-2 text-zinc-500 hover:text-indigo-600"
+                      class="p-2 text-zinc-500 hover:text-primary"
                     >
                       <.icon name="hero-pencil-square" class="size-4" />
                     </button>
@@ -142,7 +142,7 @@ defmodule FieldHubWeb.SettingsLive.Workflows do
               </div>
             <% end %>
           </div>
-          
+
     <!-- Visual Workflow Preview -->
           <div class="bg-white dark:bg-zinc-800/50 rounded-[24px] shadow-sm border border-zinc-200 dark:border-zinc-700/50 p-6 overflow-hidden">
             <h2 class="text-base font-semibold text-zinc-900 dark:text-white mb-6">
@@ -174,12 +174,12 @@ defmodule FieldHubWeb.SettingsLive.Workflows do
             </div>
           </div>
         </div>
-        
+
     <!-- Sidebar / Presets -->
         <div class="lg:col-span-4 space-y-6">
           <div class="bg-white dark:bg-zinc-800 rounded-2xl shadow-sm border border-zinc-200 dark:border-zinc-700/50 p-6">
             <h2 class="text-lg font-semibold text-zinc-900 dark:text-white mb-4 flex items-center gap-2">
-              <.icon name="hero-sparkles" class="size-5 text-indigo-600" /> Industry Templates
+              <.icon name="hero-sparkles" class="size-5 text-primary" /> Industry Templates
             </h2>
             <p class="text-sm text-zinc-500 dark:text-zinc-400 mb-6">
               Kickstart your workflow with these optimized presets.
@@ -191,10 +191,10 @@ defmodule FieldHubWeb.SettingsLive.Workflows do
                   type="button"
                   phx-click="apply_preset"
                   phx-value-preset={preset.key |> Atom.to_string()}
-                  class="w-full p-4 rounded-xl border border-zinc-100 dark:border-zinc-700 hover:border-indigo-600 hover:bg-indigo-600/5 dark:hover:bg-indigo-600/10 transition-all text-left group"
+                  class="w-full p-4 rounded-xl border border-zinc-100 dark:border-zinc-700 hover:border-primary hover:bg-primary/5 dark:hover:bg-primary/10 transition-all text-left group"
                 >
                   <div class="flex items-center justify-between mb-1">
-                    <span class="text-sm font-bold text-zinc-900 dark:text-white group-hover:text-indigo-600">
+                    <span class="text-sm font-bold text-zinc-900 dark:text-white group-hover:text-primary">
                       {preset.name}
                     </span>
                     <.icon
@@ -208,12 +208,12 @@ defmodule FieldHubWeb.SettingsLive.Workflows do
             </div>
           </div>
 
-          <div class="bg-indigo-600/5 border border-indigo-500/10 rounded-2xl p-6">
+          <div class="bg-primary/5 border border-primary/10 rounded-2xl p-6">
             <div class="flex gap-3">
-              <.icon name="hero-light-bulb" class="size-6 text-indigo-600 shrink-0" />
+              <.icon name="hero-light-bulb" class="size-6 text-primary shrink-0" />
               <div>
-                <h3 class="text-sm font-bold text-indigo-900 dark:text-indigo-400">Pro Tip</h3>
-                <p class="text-xs text-indigo-800/80 dark:text-indigo-400/80 mt-1 leading-relaxed">
+                <h3 class="text-sm font-bold text-zinc-900 dark:text-primary">Pro Tip</h3>
+                <p class="text-xs text-zinc-600 dark:text-primary/80 mt-1 leading-relaxed">
                   The order of statuses defines the default progression. Status keys like
                   <span class="font-mono">completed</span>
                   or <span class="font-mono">cancelled</span>
@@ -255,7 +255,7 @@ defmodule FieldHubWeb.SettingsLive.Workflows do
                   type="text"
                   name="label"
                   value={@editing_status.label}
-                  class="w-full px-4 py-3 border border-zinc-300 dark:border-zinc-700 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 focus:ring-2 focus:ring-indigo-600 outline-none transition-all"
+                  class="w-full px-4 py-3 border border-zinc-300 dark:border-zinc-700 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 focus:ring-2 focus:ring-primary outline-none transition-all"
                   placeholder="e.g. In Progress"
                   required
                 />
@@ -269,7 +269,7 @@ defmodule FieldHubWeb.SettingsLive.Workflows do
                   type="text"
                   name="key"
                   value={@editing_status.key}
-                  class="w-full px-4 py-3 border border-zinc-300 dark:border-zinc-700 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 focus:ring-2 focus:ring-indigo-600 outline-none transition-all font-mono text-sm"
+                  class="w-full px-4 py-3 border border-zinc-300 dark:border-zinc-700 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 focus:ring-2 focus:ring-primary outline-none transition-all font-mono text-sm"
                   placeholder="in_progress"
                   pattern="[a-z_]+"
                   required

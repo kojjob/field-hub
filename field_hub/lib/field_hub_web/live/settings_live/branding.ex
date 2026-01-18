@@ -44,9 +44,9 @@ defmodule FieldHubWeb.SettingsLive.Branding do
           <.form for={@form} phx-submit="save" phx-change="validate" class="space-y-6">
             <!-- Brand Name & Logo -->
             <div class="bg-white dark:bg-zinc-800/50 rounded-2xl shadow-sm border border-zinc-200 dark:border-zinc-700/50 p-6 overflow-hidden relative">
-              <div class="absolute top-0 left-0 w-1 h-full bg-indigo-500"></div>
+              <div class="absolute top-0 left-0 w-1 h-full bg-primary"></div>
               <h2 class="text-lg font-semibold text-zinc-900 dark:text-white mb-6 flex items-center gap-2">
-                <.icon name="hero-identification" class="size-5 text-indigo-500" /> Identity
+                <.icon name="hero-identification" class="size-5 text-primary" /> Identity
               </h2>
 
               <div class="space-y-4">
@@ -68,12 +68,12 @@ defmodule FieldHubWeb.SettingsLive.Branding do
                 </p>
               </div>
             </div>
-            
+
     <!-- Colors -->
             <div class="bg-white dark:bg-zinc-800/50 rounded-2xl shadow-sm border border-zinc-200 dark:border-zinc-700/50 p-6 overflow-hidden relative">
-              <div class="absolute top-0 left-0 w-1 h-full bg-indigo-600"></div>
+              <div class="absolute top-0 left-0 w-1 h-full bg-primary"></div>
               <h2 class="text-lg font-semibold text-zinc-900 dark:text-white mb-6 flex items-center gap-2">
-                <.icon name="hero-swatch" class="size-5 text-indigo-600" /> Visual Theme
+                <.icon name="hero-swatch" class="size-5 text-primary" /> Visual Theme
               </h2>
 
               <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -137,7 +137,7 @@ defmodule FieldHubWeb.SettingsLive.Branding do
             </div>
           </.form>
         </div>
-        
+
     <!-- Preview Column -->
         <div class="lg:col-span-5">
           <div class="sticky top-8 space-y-6">
@@ -163,7 +163,7 @@ defmodule FieldHubWeb.SettingsLive.Branding do
                     </div>
                     <div class="size-8 rounded-lg bg-zinc-200 dark:bg-zinc-800"></div>
                     <div class="size-8 rounded-lg bg-zinc-200 dark:bg-zinc-800"></div>
-                    <div class="mt-auto size-8 rounded-full bg-indigo-500/20 border border-indigo-500/30">
+                    <div class="mt-auto size-8 rounded-full bg-primary/20 border border-primary/30">
                     </div>
                   </div>
 

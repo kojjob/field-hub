@@ -16,7 +16,7 @@ defmodule FieldHubWeb.LandingComponents do
         <div class="flex justify-between items-center h-20">
           <!-- Logo -->
           <div class="flex items-center gap-2">
-            <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+            <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-teal-600 flex items-center justify-center shadow-lg shadow-primary/20">
               <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path
                   stroke-linecap="round"
@@ -31,7 +31,7 @@ defmodule FieldHubWeb.LandingComponents do
               <div class="text-xs text-[rgb(var(--muted2))] -mt-0.5">Dispatch • Mobile • Billing</div>
             </div>
           </div>
-          
+
     <!-- Desktop Menu -->
           <div class="hidden md:flex items-center gap-8">
             <a
@@ -59,7 +59,7 @@ defmodule FieldHubWeb.LandingComponents do
               FAQ
             </a>
           </div>
-          
+
     <!-- Right actions -->
           <div class="flex items-center gap-3">
             <!-- Theme toggle -->
@@ -123,7 +123,7 @@ defmodule FieldHubWeb.LandingComponents do
                 <div class="flex gap-3">
                   <a
                     href={~p"/dashboard"}
-                    class="hidden sm:block text-xs font-bold text-[rgb(var(--fg))] hover:text-indigo-500 transition-colors"
+                    class="hidden sm:block text-xs font-bold text-[rgb(var(--fg))] hover:text-primary transition-colors"
                   >
                     Dashboard
                   </a>
@@ -154,8 +154,8 @@ defmodule FieldHubWeb.LandingComponents do
             <a
               href="/users/register"
               class="group relative inline-flex items-center justify-center px-6 py-2.5 text-sm font-extrabold text-white
-                     bg-indigo-600 rounded-full hover:bg-indigo-500 transition-all duration-200
-                     shadow-lg shadow-indigo-600/25 focus:outline-none focus:ring-2 focus:ring-[rgb(var(--ring))] focus:ring-offset-2 focus:ring-offset-[rgb(var(--bg))]"
+                     bg-primary rounded-full hover:bg-primary/90 transition-all duration-200
+                     shadow-lg shadow-primary/25 focus:outline-none focus:ring-2 focus:ring-[rgb(var(--ring))] focus:ring-offset-2 focus:ring-offset-[rgb(var(--bg))]"
             >
               <span class="absolute inset-0 rounded-full opacity-0 group-hover:opacity-25 bg-[linear-gradient(110deg,rgba(255,255,255,.55),transparent_45%)] transition-opacity">
               </span>
@@ -192,7 +192,7 @@ defmodule FieldHubWeb.LandingComponents do
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
           <div class="flex items-center gap-3">
-            <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+            <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-emerald-600 flex items-center justify-center">
               <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path
                   stroke-linecap="round"

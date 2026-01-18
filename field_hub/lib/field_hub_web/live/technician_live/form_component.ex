@@ -7,34 +7,49 @@ defmodule FieldHubWeb.TechnicianLive.FormComponent do
   def render(assigns) do
     ~H"""
     <div>
-      <.header>
-        {@title}
-        <:subtitle>Use this form to manage technician records in your database.</:subtitle>
-      </.header>
-
       <.simple_form
         for={@form}
         id="technician-form"
         phx-target={@myself}
         phx-change="validate"
         phx-submit="save"
+        class="space-y-6"
       >
-        <.input field={@form[:name]} type="text" label="Name" />
-        <.input field={@form[:email]} type="email" label="Email" />
-        <.input field={@form[:phone]} type="tel" label="Phone" />
-        <.input field={@form[:hourly_rate]} type="number" step="0.01" label="Hourly Rate ($)" />
-        <.input field={@form[:color]} type="color" label="Avatar Color" />
+        <div class="space-y-4">
+          <!-- Avatar Color Selection with Label -->
+           <div class="flex items-center gap-4">
+            <div class="relative">
+               <.input field={@form[:color]} type="color" label="Avatar" class="h-12 w-12 p-1 rounded-full overflow-hidden cursor-pointer" />
+            </div>
+             <div class="flex-1">
+              <.input field={@form[:name]} type="text" label="Full Name" placeholder="e.g. Jane Doe" />
+            </div>
+           </div>
 
-        <.input
-          field={@form[:skills]}
-          type="text"
-          label="Skills (comma separated)"
-          value={if @form[:skills].value, do: Enum.join(@form[:skills].value, ", "), else: ""}
-          name="technician[skills_input]"
-        />
+          <div class="grid grid-cols-2 gap-4">
+            <.input field={@form[:email]} type="email" label="Email Address" placeholder="jane@example.com" />
+            <.input field={@form[:phone]} type="tel" label="Phone Number" placeholder="+1 (555) 000-0000" />
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <.input field={@form[:hourly_rate]} type="number" step="0.01" label="Hourly Rate ($)" placeholder="0.00" />
+          </div>
+
+          <.input
+            field={@form[:skills]}
+            type="text"
+            label="Skills & Expertise"
+            value={if @form[:skills].value, do: Enum.join(@form[:skills].value, ", "), else: ""}
+            name="technician[skills_input]"
+            placeholder="e.g. Electrical, HVAC, Plumbing (comma separated)"
+            class="w-full"
+          />
+        </div>
 
         <:actions>
-          <.button phx-disable-with="Saving...">Save Technician</.button>
+          <.button phx-disable-with="Saving..." class="w-full bg-primary hover:bg-primary/90 text-white font-bold py-3 rounded-xl shadow-lg shadow-primary/20 transition-all">
+            Save Technician Record
+          </.button>
         </:actions>
       </.simple_form>
     </div>

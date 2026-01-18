@@ -62,7 +62,7 @@ defmodule FieldHubWeb.Layouts do
     <button
       id="theme-toggle-btn"
       type="button"
-      class="group relative inline-flex h-9 w-9 items-center justify-center rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-500 hover:text-indigo-600 dark:text-zinc-400 dark:hover:text-indigo-400 transition-all duration-200"
+      class="group relative inline-flex h-9 w-9 items-center justify-center rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-500 hover:text-primary dark:text-zinc-400 dark:hover:text-primary transition-all duration-200"
       phx-click={JS.dispatch("phx:set-theme")}
       data-phx-theme="toggle"
     >
@@ -109,7 +109,7 @@ defmodule FieldHubWeb.Layouts do
           <div class="relative h-9 w-9">
              <img
               class="h-9 w-9 rounded-full bg-zinc-50 border border-zinc-200 dark:border-zinc-700 object-cover"
-              src={@current_user[:avatar_url] || "https://ui-avatars.com/api/?name=#{@current_user.name || @current_user.email}&background=10b981&color=fff"}
+              src={@current_user.avatar_url || "https://ui-avatars.com/api/?name=#{@current_user.name || @current_user.email}&background=10b981&color=fff"}
               alt=""
             />
             <span class="absolute bottom-0 right-0 block h-2.5 w-2.5 rounded-full bg-primary ring-2 ring-white dark:ring-zinc-900"></span>
@@ -246,7 +246,7 @@ defmodule FieldHubWeb.Layouts do
       <div>
         <button
           type="button"
-          class="relative p-2 text-zinc-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-xl transition-all duration-200"
+          class="relative p-2 text-zinc-400 hover:text-primary dark:hover:text-primary hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-xl transition-all duration-200"
           id="notifications-button"
           phx-click={
             JS.toggle(
@@ -264,9 +264,9 @@ defmodule FieldHubWeb.Layouts do
           <span class="sr-only">View notifications</span>
           <.icon name="hero-bell" class="h-5 w-5 sm:h-6 sm:w-6" />
           <span class="absolute top-2 right-2 flex h-2 w-2">
-            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75">
             </span>
-            <span class="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
           </span>
         </button>
       </div>
@@ -281,7 +281,7 @@ defmodule FieldHubWeb.Layouts do
       >
         <div class="px-4 py-3 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
           <h3 class="text-sm font-bold text-zinc-900 dark:text-zinc-100">Notifications</h3>
-          <span class="text-[10px] font-black uppercase tracking-wider text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 px-2 py-0.5 rounded-full">
+          <span class="text-[10px] font-black uppercase tracking-wider text-primary dark:text-primary bg-primary/10 dark:bg-primary/20 px-2 py-0.5 rounded-full">
             3 New
           </span>
         </div>
@@ -293,8 +293,8 @@ defmodule FieldHubWeb.Layouts do
             class="px-4 py-3 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 cursor-pointer border-b border-zinc-50 dark:border-zinc-800/50 last:border-0 transition-colors"
           >
             <div class="flex gap-3">
-              <div class="size-8 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center shrink-0">
-                <.icon name="hero-check-circle" class="size-5 text-indigo-600 dark:text-indigo-400" />
+              <div class="size-8 rounded-full bg-primary/10 dark:bg-primary/20 flex items-center justify-center shrink-0">
+                <.icon name="hero-check-circle" class="size-5 text-primary dark:text-primary" />
               </div>
               <div class="space-y-1">
                 <p class="text-sm text-zinc-900 dark:text-zinc-100 font-semibold leading-tight">
@@ -310,7 +310,7 @@ defmodule FieldHubWeb.Layouts do
         </div>
 
         <div class="p-3 bg-zinc-50 dark:bg-zinc-800/50 text-center border-t border-zinc-100 dark:border-zinc-800">
-          <a href="#" class="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline">
+          <a href="#" class="text-xs font-bold text-primary dark:text-primary hover:underline">
             View all notifications
           </a>
         </div>

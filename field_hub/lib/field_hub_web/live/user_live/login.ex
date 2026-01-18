@@ -10,15 +10,15 @@ defmodule FieldHubWeb.UserLive.Login do
       <!-- Left Sidebar: Brand & Value -->
       <div class="hidden lg:flex lg:w-[40%] bg-zinc-900 relative overflow-hidden flex-col justify-between p-12">
         <div class="absolute inset-0 opacity-20">
-          <div class="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-indigo-500/30 rounded-full blur-[120px]">
+          <div class="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-primary/30 rounded-full blur-[120px]">
           </div>
-          <div class="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-emerald-500/20 rounded-full blur-[120px]">
+          <div class="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-primary/20 rounded-full blur-[120px]">
           </div>
         </div>
 
         <div class="relative z-10">
           <div class="flex items-center gap-3">
-            <div class="size-11 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-indigo-600/20">
+            <div class="size-11 bg-primary rounded-2xl flex items-center justify-center text-white shadow-xl shadow-primary/20">
               <.icon name="hero-command-line" class="size-6" />
             </div>
             <span class="text-2xl font-black tracking-tight text-white">FieldHub</span>
@@ -28,7 +28,7 @@ defmodule FieldHubWeb.UserLive.Login do
         <div class="relative z-10 space-y-8">
           <div class="space-y-4">
             <h2 class="text-5xl font-black text-white leading-[1.1] tracking-tight">
-              Welcome back to <span class="text-indigo-400">FieldHub.</span>
+              Welcome back to <span class="text-primary">FieldHub.</span>
             </h2>
             <p class="text-lg text-zinc-400 font-medium leading-relaxed max-w-md">
               Sign in to manage your team, track jobs in real-time, and scale your operations.
@@ -40,13 +40,13 @@ defmodule FieldHubWeb.UserLive.Login do
           &copy; {DateTime.utc_now().year} FieldHub Inc. All rights reserved.
         </div>
       </div>
-      
+
     <!-- Right Side: Form -->
       <div class="flex-1 flex flex-col items-center justify-center p-6 lg:p-24 bg-white dark:bg-zinc-950">
         <div class="w-full max-w-md space-y-10">
           <div class="lg:hidden flex justify-center mb-8">
             <div class="flex items-center gap-2">
-              <div class="size-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white">
+              <div class="size-10 bg-primary rounded-xl flex items-center justify-center text-white">
                 <.icon name="hero-command-line" class="size-5" />
               </div>
               <span class="text-xl font-black tracking-tight dark:text-white">FieldHub</span>
@@ -81,7 +81,7 @@ defmodule FieldHubWeb.UserLive.Login do
                 type="email"
                 placeholder="alex@company.com"
                 required
-                class="w-full !bg-zinc-50 dark:!bg-zinc-900 !border-zinc-200 dark:!border-zinc-800 !rounded-2xl !h-12 !px-4 focus:!ring-2 focus:!ring-indigo-500/20 focus:!border-indigo-500 transition-all font-semibold"
+                class="w-full !bg-zinc-50 dark:!bg-zinc-900 !border-zinc-200 dark:!border-zinc-800 !rounded-2xl !h-12 !px-4 focus:!ring-2 focus:!ring-primary/20 focus:!border-primary transition-all font-semibold"
               />
             </div>
 
@@ -92,7 +92,7 @@ defmodule FieldHubWeb.UserLive.Login do
                 </label>
                 <.link
                   navigate={~p"/users/settings"}
-                  class="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline"
+                  class="text-xs font-bold text-primary hover:underline"
                 >
                   Forgot?
                 </.link>
@@ -102,7 +102,7 @@ defmodule FieldHubWeb.UserLive.Login do
                 type="password"
                 placeholder="••••••••"
                 required
-                class="w-full !bg-zinc-50 dark:!bg-zinc-900 !border-zinc-200 dark:!border-zinc-800 !rounded-2xl !h-12 !px-4 focus:!ring-2 focus:!ring-indigo-500/20 focus:!border-indigo-500 transition-all font-semibold"
+                class="w-full !bg-zinc-50 dark:!bg-zinc-900 !border-zinc-200 dark:!border-zinc-800 !rounded-2xl !h-12 !px-4 focus:!ring-2 focus:!ring-primary/20 focus:!border-primary transition-all font-semibold"
               />
             </div>
 
@@ -112,7 +112,7 @@ defmodule FieldHubWeb.UserLive.Login do
                   type="checkbox"
                   id="remember_me"
                   name={f[:remember_me].name}
-                  class="size-5 rounded-lg border-zinc-300 dark:border-zinc-800 text-indigo-600 focus:ring-indigo-500/20 dark:bg-zinc-900"
+                  class="size-5 rounded-lg border-zinc-300 dark:border-zinc-800 text-primary focus:ring-primary/20 dark:bg-zinc-900"
                 />
                 <label for="remember_me" class="text-sm font-medium text-zinc-500 dark:text-zinc-400">
                   Remember me
@@ -122,7 +122,7 @@ defmodule FieldHubWeb.UserLive.Login do
 
             <button
               type="submit"
-              class="w-full bg-zinc-900 dark:bg-indigo-600 text-white py-4 rounded-2xl text-base font-bold shadow-xl shadow-zinc-900/10 dark:shadow-indigo-600/20 hover:bg-zinc-800 dark:hover:bg-indigo-700 transition-all active:scale-[0.98]"
+              class="w-full bg-primary text-white py-4 rounded-2xl text-base font-bold shadow-xl shadow-primary/20 hover:bg-primary/90 transition-all active:scale-[0.98]"
             >
               Sign in
             </button>
@@ -133,7 +133,7 @@ defmodule FieldHubWeb.UserLive.Login do
               Don't have an account?
               <.link
                 navigate={~p"/users/register"}
-                class="text-indigo-600 dark:text-indigo-400 font-bold hover:underline"
+                class="text-primary font-bold hover:underline"
               >
                 Create account
               </.link>

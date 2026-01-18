@@ -24,7 +24,7 @@ defmodule FieldHubWeb.DashboardLive do
       <!-- Page Heading -->
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <p class="text-[10px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-[0.2em] mb-1">
+          <p class="text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-1">
             Management Overview
           </p>
           <h2 class="text-3xl font-black tracking-tighter text-zinc-900 dark:text-white">
@@ -39,13 +39,13 @@ defmodule FieldHubWeb.DashboardLive do
             <.icon name="hero-funnel" class="size-5" /> Filters
           </button>
           <.link navigate={~p"/jobs/new"}>
-            <button class="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:brightness-110 text-white rounded-xl font-bold text-sm shadow-xl shadow-indigo-600/20 transition-all border-b-4 border-indigo-800 active:border-b-0 active:translate-y-1">
+            <button class="flex items-center gap-2 px-5 py-2.5 bg-primary hover:brightness-110 text-white rounded-xl font-bold text-sm shadow-xl shadow-primary/20 transition-all border-b-4 border-emerald-800 active:border-b-0 active:translate-y-1">
               <.icon name="hero-plus" class="size-5" /> Create New Job
             </button>
           </.link>
         </div>
       </div>
-      
+
     <!-- KPI Cards Grid -->
       <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
         <FieldHubWeb.DashboardComponents.kpi_card
@@ -76,7 +76,7 @@ defmodule FieldHubWeb.DashboardLive do
           variant={:avatars}
         />
       </div>
-      
+
     <!-- Middle Section: Utilization & Activity -->
       <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
         <div class="xl:col-span-2">
@@ -86,7 +86,7 @@ defmodule FieldHubWeb.DashboardLive do
           <FieldHubWeb.DashboardComponents.live_activity_feed />
         </div>
       </div>
-      
+
     <!-- Bottom Section: Priority Jobs -->
       <FieldHubWeb.DashboardComponents.priority_jobs_table />
     </div>

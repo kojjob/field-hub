@@ -59,34 +59,34 @@ defmodule FieldHubWeb.TechLive.JobShow do
             </div>
           </div>
         </div>
-        
+
     <!-- Action Bar (Sticky Bottom in Mobile) -->
         <div class="fixed bottom-0 left-0 right-0 p-4 bg-white/80 backdrop-blur-md border-t border-gray-200 z-20">
           <div class="max-w-2xl mx-auto flex space-x-3">
             {render_actions(assigns)}
           </div>
         </div>
-        
+
     <!-- Description -->
         <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
           <h3 class="text-sm font-bold text-gray-900 mb-2 flex items-center">
-            <.icon name="hero-document-text" class="w-4 h-4 mr-2 text-indigo-500" /> Description
+            <.icon name="hero-document-text" class="w-4 h-4 mr-2 text-primary" /> Description
           </h3>
           <p class="text-gray-700 text-sm leading-relaxed">
             {@job.description || "No description provided."}
           </p>
         </div>
-        
+
     <!-- Customer Card -->
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
           <div class="px-4 py-3 bg-gray-50 border-b border-gray-200 flex justify-between items-center">
             <h3 class="text-sm font-bold text-gray-900 flex items-center">
-              <.icon name="hero-user" class="w-4 h-4 mr-2 text-indigo-500" /> Customer
+              <.icon name="hero-user" class="w-4 h-4 mr-2 text-primary" /> Customer
             </h3>
             <div class="flex space-x-2">
               <a
                 href={"tel:#{@job.customer.phone}"}
-                class="p-2.5 bg-indigo-50 text-indigo-600 rounded-xl hover:bg-indigo-100 active:scale-95 transition-all"
+                class="p-2.5 bg-primary/10 text-primary rounded-xl hover:bg-primary/20 active:scale-95 transition-all"
               >
                 <.icon name="hero-phone" class="w-5 h-5" />
               </a>
@@ -109,14 +109,14 @@ defmodule FieldHubWeb.TechLive.JobShow do
               <a
                 href={"#{map_link(@job)}"}
                 target="_blank"
-                class="w-full flex justify-center items-center px-4 py-2.5 border border-indigo-600 shadow-sm text-sm font-bold rounded-xl text-indigo-600 bg-white hover:bg-indigo-50 active:scale-[0.98] transition-all"
+                class="w-full flex justify-center items-center px-4 py-2.5 border border-primary shadow-sm text-sm font-bold rounded-xl text-primary bg-white hover:bg-primary/5 active:scale-[0.98] transition-all"
               >
                 <.icon name="hero-map" class="w-4 h-4 mr-2" /> Navigate to Job
               </a>
             </div>
           </div>
         </div>
-        
+
     <!-- Notes Section -->
         <%= if @job.technician_notes || @job.internal_notes do %>
           <div class="bg-yellow-50 p-4 rounded-xl shadow-sm border border-yellow-100 space-y-3">
@@ -137,12 +137,12 @@ defmodule FieldHubWeb.TechLive.JobShow do
             <% end %>
           </div>
         <% end %>
-        
+
     <!-- History Section -->
         <div class="bg-white rounded-xl shadow-sm border border-gray-200">
           <div class="px-4 py-3 border-b border-gray-100">
             <h3 class="text-sm font-bold text-gray-900 flex items-center">
-              <.icon name="hero-clock" class="w-4 h-4 mr-2 text-indigo-500" /> Service History
+              <.icon name="hero-clock" class="w-4 h-4 mr-2 text-primary" /> Service History
             </h3>
           </div>
           <div class="divide-y divide-gray-50">
@@ -180,14 +180,14 @@ defmodule FieldHubWeb.TechLive.JobShow do
       <% "scheduled" -> %>
         <button
           phx-click="start_travel"
-          class="flex-1 bg-indigo-600 text-white font-bold py-3.5 rounded-2xl shadow-lg shadow-indigo-200 active:scale-[0.98] transition-all"
+          class="flex-1 bg-primary text-white font-bold py-3.5 rounded-2xl shadow-lg shadow-primary/30 active:scale-[0.98] transition-all"
         >
           Start Travel
         </button>
       <% "dispatched" -> %>
         <button
           phx-click="start_travel"
-          class="flex-1 bg-indigo-600 text-white font-bold py-3.5 rounded-2xl shadow-lg shadow-indigo-200 active:scale-[0.98] transition-all"
+          class="flex-1 bg-primary text-white font-bold py-3.5 rounded-2xl shadow-lg shadow-primary/30 active:scale-[0.98] transition-all"
         >
           Start Travel
         </button>
@@ -284,7 +284,7 @@ defmodule FieldHubWeb.TechLive.JobShow do
     {:noreply, push_navigate(socket, to: ~p"/tech/jobs/#{socket.assigns.job.id}/complete")}
   end
 
-  defp status_color("scheduled"), do: "bg-blue-100 text-blue-700 border border-blue-200"
+  defp status_color("scheduled"), do: "bg-primary/10 text-primary border border-primary/20"
   defp status_color("en_route"), do: "bg-purple-100 text-purple-700 border border-purple-200"
   defp status_color("in_progress"), do: "bg-yellow-100 text-yellow-700 border border-yellow-200"
   defp status_color("completed"), do: "bg-green-100 text-green-700 border border-green-200"

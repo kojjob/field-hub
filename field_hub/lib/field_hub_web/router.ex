@@ -60,6 +60,9 @@ defmodule FieldHubWeb.Router do
 
       live "/dispatch", DispatchLive.Index, :index
 
+      # Reports
+      live "/reports", ReportLive.Index, :index
+
       # Technician Mobile Views
       live "/tech/dashboard", TechLive.Dashboard, :index
       live "/tech/jobs/:id", TechLive.JobShow, :show

@@ -109,7 +109,16 @@ defmodule FieldHubWeb.JobLive.Show do
 
     <.back navigate={~p"/jobs"}>Back to jobs</.back>
 
-    <.modal :if={@live_action == :edit} id="job-modal" show on_cancel={JS.patch(~p"/jobs/#{@job}")}>
+    <!-- Slide-in Form Panel -->
+    <.slide_panel
+      :if={@live_action == :edit}
+      id="job-edit-panel"
+      show={@live_action == :edit}
+      on_close={JS.patch(~p"/jobs/#{@job}")}
+      width="520px"
+    >
+      <:header>Edit Job</:header>
+      <:subtitle>Update job details and assignment</:subtitle>
       <.live_component
         module={FieldHubWeb.JobLive.FormComponent}
         id={@job.id}
@@ -120,7 +129,7 @@ defmodule FieldHubWeb.JobLive.Show do
         current_user={@current_user}
         patch={~p"/jobs/#{@job}"}
       />
-    </.modal>
+    </.slide_panel>
     """
   end
 
@@ -129,7 +138,7 @@ defmodule FieldHubWeb.JobLive.Show do
 
   defp status_color("unscheduled"), do: "bg-gray-50 text-gray-600 ring-gray-500/10"
   defp status_color("scheduled"), do: "bg-blue-50 text-blue-700 ring-blue-700/10"
-  defp status_color("dispatched"), do: "bg-indigo-50 text-indigo-700 ring-indigo-700/10"
+  defp status_color("dispatched"), do: "bg-teal-50 text-teal-700 ring-teal-700/10"
   defp status_color("en_route"), do: "bg-purple-50 text-purple-700 ring-purple-700/10"
   defp status_color("on_site"), do: "bg-yellow-50 text-yellow-800 ring-yellow-600/20"
   defp status_color("in_progress"), do: "bg-green-50 text-green-700 ring-green-600/20"

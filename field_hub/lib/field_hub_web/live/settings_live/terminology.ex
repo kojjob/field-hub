@@ -62,7 +62,7 @@ defmodule FieldHubWeb.SettingsLive.Terminology do
                 Examples: Technician, Instructor, Caregiver, Driver, Specialist.
               </p>
             </div>
-            
+
     <!-- Clients Section -->
             <div class="bg-white dark:bg-zinc-800/50 rounded-2xl shadow-sm border border-zinc-200 dark:border-zinc-700/50 p-6 overflow-hidden relative">
               <div class="absolute top-0 left-0 w-1 h-full bg-emerald-500"></div>
@@ -88,7 +88,7 @@ defmodule FieldHubWeb.SettingsLive.Terminology do
                 Examples: Customer, Patient, Property, Resident, Site.
               </p>
             </div>
-            
+
     <!-- Tasks Section -->
             <div class="bg-white dark:bg-zinc-800/50 rounded-2xl shadow-sm border border-zinc-200 dark:border-zinc-700/50 p-6 overflow-hidden relative">
               <div class="absolute top-0 left-0 w-1 h-full bg-amber-500"></div>
@@ -137,7 +137,7 @@ defmodule FieldHubWeb.SettingsLive.Terminology do
         <div class="lg:col-span-4 space-y-6">
           <div class="bg-white dark:bg-zinc-800 rounded-2xl shadow-sm border border-zinc-200 dark:border-zinc-700/50 p-6">
             <h2 class="text-lg font-semibold text-zinc-900 dark:text-white mb-4 flex items-center gap-2">
-              <.icon name="hero-bolt" class="size-5 text-indigo-600" /> Quick Presets
+              <.icon name="hero-bolt" class="size-5 text-primary" /> Quick Presets
             </h2>
             <p class="text-sm text-zinc-500 dark:text-zinc-400 mb-6">
               Apply industry-standard terminology with one click.
@@ -149,28 +149,28 @@ defmodule FieldHubWeb.SettingsLive.Terminology do
                   type="button"
                   phx-click="apply_preset"
                   phx-value-preset={preset}
-                  class="flex items-center justify-between px-4 py-3 rounded-xl border border-zinc-100 dark:border-zinc-700 hover:border-indigo-600 hover:bg-indigo-600/5 dark:hover:bg-indigo-600/10 transition-all group text-left"
+                  class="flex items-center justify-between px-4 py-3 rounded-xl border border-zinc-100 dark:border-zinc-700 hover:border-primary hover:bg-primary/5 dark:hover:bg-primary/10 transition-all group text-left"
                 >
-                  <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-indigo-600">
+                  <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-primary">
                     {preset |> Atom.to_string() |> String.replace("_", " ") |> String.capitalize()}
                   </span>
                   <.icon
                     name="hero-chevron-right"
-                    class="size-4 text-zinc-400 group-hover:text-indigo-600 transition-transform group-hover:translate-x-0.5"
+                    class="size-4 text-zinc-400 group-hover:text-primary transition-transform group-hover:translate-x-0.5"
                   />
                 </button>
               <% end %>
             </div>
           </div>
 
-          <div class="bg-indigo-600/5 border border-indigo-500/10 rounded-2xl p-6">
+          <div class="bg-primary/5 border border-primary/10 rounded-2xl p-6">
             <div class="flex gap-3">
-              <.icon name="hero-information-circle" class="size-6 text-indigo-500 shrink-0" />
+              <.icon name="hero-information-circle" class="size-6 text-primary shrink-0" />
               <div>
-                <h3 class="text-sm font-bold text-indigo-900 dark:text-indigo-400">
+                <h3 class="text-sm font-bold text-zinc-900 dark:text-primary">
                   Why change this?
                 </h3>
-                <p class="text-xs text-indigo-800/80 dark:text-indigo-400/80 mt-1 leading-relaxed">
+                <p class="text-xs text-zinc-600 dark:text-primary/80 mt-1 leading-relaxed">
                   Using industry-specific terms makes your team feel at home and simplifies training. These labels will be updated across all menus, forms, and headers.
                 </p>
               </div>
