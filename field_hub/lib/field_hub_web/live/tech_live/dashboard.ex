@@ -40,10 +40,10 @@ defmodule FieldHubWeb.TechLive.Dashboard do
       <div class="flex items-center justify-between">
         <h1 class="text-2xl font-bold text-gray-900">Today's Jobs</h1>
         <div class="flex items-center gap-2">
-           <button phx-click="refresh" class="text-gray-500 hover:text-gray-900 p-1">
-             <.icon name="hero-arrow-path" class="w-5 h-5" />
-           </button>
-           <div class="text-sm text-gray-500"><%= Calendar.strftime(Date.utc_today(), "%a, %b %d") %></div>
+          <button phx-click="refresh" class="text-gray-500 hover:text-gray-900 p-1">
+            <.icon name="hero-arrow-path" class="w-5 h-5" />
+          </button>
+          <div class="text-sm text-gray-500">{Calendar.strftime(Date.utc_today(), "%a, %b %d")}</div>
         </div>
       </div>
 
@@ -72,11 +72,11 @@ defmodule FieldHubWeb.TechLive.Dashboard do
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 active:bg-gray-50 transition-colors">
       <div class="flex justify-between items-start mb-2">
         <div class="flex-1 min-w-0 mr-2">
-          <h3 class="font-semibold text-gray-900 truncate"><%= @job.title %></h3>
-          <p class="text-sm text-gray-500 truncate"><%= @job.customer.name %></p>
+          <h3 class="font-semibold text-gray-900 truncate">{@job.title}</h3>
+          <p class="text-sm text-gray-500 truncate">{@job.customer.name}</p>
         </div>
         <span class={"px-2 py-1 rounded-full text-xs font-medium shrink-0 " <> status_color(@job.status)}>
-          <%= String.capitalize(@job.status) %>
+          {String.capitalize(@job.status)}
         </span>
       </div>
 
@@ -84,15 +84,19 @@ defmodule FieldHubWeb.TechLive.Dashboard do
         <div class="flex items-center gap-2">
           <.icon name="hero-clock" class="w-4 h-4 text-gray-400 shrink-0" />
           <span>
-            <%= if @job.scheduled_start, do: Calendar.strftime(@job.scheduled_start, "%H:%M"), else: "TBD" %>
+            {if @job.scheduled_start,
+              do: Calendar.strftime(@job.scheduled_start, "%H:%M"),
+              else: "TBD"}
             <%= if @job.scheduled_end do %>
-               - <%= Calendar.strftime(@job.scheduled_end, "%H:%M") %>
+              - {Calendar.strftime(@job.scheduled_end, "%H:%M")}
             <% end %>
           </span>
         </div>
         <div class="flex items-center gap-2">
           <.icon name="hero-map-pin" class="w-4 h-4 text-gray-400 shrink-0" />
-          <span class="truncate"><%= @job.service_address || @job.customer.address_line1 || "No address provided" %></span>
+          <span class="truncate">
+            {@job.service_address || @job.customer.address_line1 || "No address provided"}
+          </span>
         </div>
       </div>
     </div>
@@ -124,7 +128,7 @@ defmodule FieldHubWeb.TechLive.Dashboard do
 
   @impl true
   def handle_event("location_error", params, socket) do
-    IO.puts "Location error for technician #{socket.assigns.technician.id}: #{inspect(params)}"
+    IO.puts("Location error for technician #{socket.assigns.technician.id}: #{inspect(params)}")
     {:noreply, socket}
   end
 

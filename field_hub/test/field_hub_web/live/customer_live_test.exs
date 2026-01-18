@@ -17,7 +17,12 @@ defmodule FieldHubWeb.CustomerLiveTest do
   @invalid_attrs %{name: nil, email: nil}
 
   setup %{conn: conn} do
-    {:ok, org} = Accounts.create_organization(%{name: "Test Org", slug: "test-org-#{System.unique_integer([:positive])}"})
+    {:ok, org} =
+      Accounts.create_organization(%{
+        name: "Test Org",
+        slug: "test-org-#{System.unique_integer([:positive])}"
+      })
+
     user = FieldHub.AccountsFixtures.user_fixture(%{organization_id: org.id})
     conn = log_in_user(conn, user)
 

@@ -9,7 +9,10 @@ defmodule FieldHub.JobsTest do
 
   setup do
     {:ok, org} = Accounts.create_organization(%{name: "Job Test Org", slug: "job-test-org"})
-    {:ok, customer} = CRM.create_customer(org.id, %{name: "Test Customer", email: "c@example.com"})
+
+    {:ok, customer} =
+      CRM.create_customer(org.id, %{name: "Test Customer", email: "c@example.com"})
+
     %{org: org, customer: customer}
   end
 
@@ -26,7 +29,9 @@ defmodule FieldHub.JobsTest do
     end
 
     test "does not return jobs from other organizations", %{org: org, customer: customer} do
-      {:ok, other_org} = Accounts.create_organization(%{name: "Other Org", slug: "other-org-jobs"})
+      {:ok, other_org} =
+        Accounts.create_organization(%{name: "Other Org", slug: "other-org-jobs"})
+
       {:ok, other_cust} = CRM.create_customer(other_org.id, %{name: "Other C"})
       _other_job = job_fixture(other_org.id, other_cust.id, %{title: "Other Job"})
       my_job = job_fixture(org.id, customer.id, %{title: "My Job"})
@@ -68,7 +73,8 @@ defmodule FieldHub.JobsTest do
       assert job.title == "Fix AC"
       assert job.organization_id == org.id
       assert job.customer_id == customer.id
-      assert job.number =~ "JOB-" # Starts with JOB-
+      # Starts with JOB-
+      assert job.number =~ "JOB-"
     end
 
     test "returns error with invalid data", %{org: org} do
@@ -93,10 +99,15 @@ defmodule FieldHub.JobsTest do
       tomorrow = Date.add(today, 1)
 
       # Create a technician for scheduled jobs
-      {:ok, tech} = Dispatch.create_technician(org.id, %{name: "Tech Date", email: "td@example.com"})
+      {:ok, tech} =
+        Dispatch.create_technician(org.id, %{name: "Tech Date", email: "td@example.com"})
 
-      job_today = job_fixture(org.id, customer.id, %{scheduled_date: today, technician_id: tech.id})
-      _job_tomorrow = job_fixture(org.id, customer.id, %{scheduled_date: tomorrow, technician_id: tech.id})
+      job_today =
+        job_fixture(org.id, customer.id, %{scheduled_date: today, technician_id: tech.id})
+
+      _job_tomorrow =
+        job_fixture(org.id, customer.id, %{scheduled_date: tomorrow, technician_id: tech.id})
+
       _job_unscheduled = job_fixture(org.id, customer.id, %{scheduled_date: nil})
 
       jobs = Jobs.list_jobs_for_date(org.id, today)
@@ -107,17 +118,22 @@ defmodule FieldHub.JobsTest do
   end
 
   describe "list_unassigned_jobs/1" do
-    test "returns jobs without technician or without scheduled date", %{org: org, customer: customer} do
+    test "returns jobs without technician or without scheduled date", %{
+      org: org,
+      customer: customer
+    } do
       # Job without technician (unscheduled by default)
       unassigned = job_fixture(org.id, customer.id, %{status: "unscheduled"})
 
       # Job with technician and scheduled date should NOT appear
       {:ok, tech} = Dispatch.create_technician(org.id, %{name: "Tech 1", email: "t1@example.com"})
-      _assigned = job_fixture(org.id, customer.id, %{
-        status: "scheduled",
-        scheduled_date: Date.utc_today(),
-        technician_id: tech.id
-      })
+
+      _assigned =
+        job_fixture(org.id, customer.id, %{
+          status: "scheduled",
+          scheduled_date: Date.utc_today(),
+          technician_id: tech.id
+        })
 
       # Completed job should NOT appear
       _completed = job_fixture(org.id, customer.id, %{status: "completed"})
@@ -146,16 +162,21 @@ defmodule FieldHub.JobsTest do
 
       # Schedule
       tomorrow = Date.add(Date.utc_today(), 1)
-      assert {:ok, scheduled} = Jobs.schedule_job(job, %{
-        scheduled_date: tomorrow,
-        scheduled_start: ~T[09:00:00],
-        scheduled_end: ~T[11:00:00]
-      })
+
+      assert {:ok, scheduled} =
+               Jobs.schedule_job(job, %{
+                 scheduled_date: tomorrow,
+                 scheduled_start: ~T[09:00:00],
+                 scheduled_end: ~T[11:00:00]
+               })
+
       assert scheduled.status == "scheduled"
       assert scheduled.scheduled_date == tomorrow
 
       # Assign
-      {:ok, tech} = Dispatch.create_technician(org.id, %{name: "Tech Flow", email: "flow@example.com"})
+      {:ok, tech} =
+        Dispatch.create_technician(org.id, %{name: "Tech Flow", email: "flow@example.com"})
+
       assert {:ok, dispatched} = Jobs.assign_job(scheduled, tech.id)
       assert dispatched.status == "dispatched"
 
@@ -175,11 +196,13 @@ defmodule FieldHub.JobsTest do
       assert working.started_at
 
       # Complete
-      assert {:ok, completed} = Jobs.complete_job(working, %{
-        work_performed: "Fixed it",
-        customer_signature: "Sig",
-        actual_amount: 150
-      })
+      assert {:ok, completed} =
+               Jobs.complete_job(working, %{
+                 work_performed: "Fixed it",
+                 customer_signature: "Sig",
+                 actual_amount: 150
+               })
+
       assert completed.status == "completed"
       assert completed.completed_at
     end

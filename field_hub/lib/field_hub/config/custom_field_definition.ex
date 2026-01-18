@@ -5,8 +5,10 @@ defmodule FieldHub.Config.CustomFieldDefinition do
   schema "custom_field_definitions" do
     field :name, :string
     field :key, :string
-    field :type, :string # text, number, date, boolean, select
-    field :target, :string # job, customer, technician
+    # text, number, date, boolean, select
+    field :type, :string
+    # job, customer, technician
+    field :target, :string
     field :required, :boolean, default: false
     field :options, {:array, :string}, default: []
 
@@ -24,7 +26,9 @@ defmodule FieldHub.Config.CustomFieldDefinition do
     |> validate_required([:name, :key, :type, :target, :organization_id])
     |> validate_inclusion(:type, @types)
     |> validate_inclusion(:target, @targets)
-    |> validate_format(:key, ~r/^[a-z0-9_]+$/, message: "must be lowercase alphanumeric with underscores")
+    |> validate_format(:key, ~r/^[a-z0-9_]+$/,
+      message: "must be lowercase alphanumeric with underscores"
+    )
     |> unique_constraint([:organization_id, :target, :key])
     |> foreign_key_constraint(:organization_id)
   end

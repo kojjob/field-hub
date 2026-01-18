@@ -9,22 +9,26 @@ defmodule FieldHubWeb.TechLive.LocationTrackingTest do
     org = organization_fixture()
     user = user_fixture(organization_id: org.id)
 
-    technician = %FieldHub.Dispatch.Technician{
-      organization_id: org.id,
-      user_id: user.id,
-      name: "Track Tech",
-      status: "available",
-      email: "tech-#{System.unique_integer([:positive])}@example.com"
-    } |> FieldHub.Repo.insert!()
+    technician =
+      %FieldHub.Dispatch.Technician{
+        organization_id: org.id,
+        user_id: user.id,
+        name: "Track Tech",
+        status: "available",
+        email: "tech-#{System.unique_integer([:positive])}@example.com"
+      }
+      |> FieldHub.Repo.insert!()
 
     customer = customer_fixture(org.id)
-    job = job_fixture(org.id, %{
-      customer_id: customer.id,
-      technician_id: technician.id,
-      scheduled_date: Date.utc_today(),
-      scheduled_start: DateTime.utc_now(),
-      scheduled_end: DateTime.add(DateTime.utc_now(), 3600, :second)
-    })
+
+    job =
+      job_fixture(org.id, %{
+        customer_id: customer.id,
+        technician_id: technician.id,
+        scheduled_date: Date.utc_today(),
+        scheduled_start: DateTime.utc_now(),
+        scheduled_end: DateTime.add(DateTime.utc_now(), 3600, :second)
+      })
 
     %{conn: log_in_user(conn, user), technician: technician, job: job}
   end
@@ -42,7 +46,11 @@ defmodule FieldHubWeb.TechLive.LocationTrackingTest do
     assert updated_tech.location_updated_at != nil
   end
 
-  test "TechLive.JobShow receives location updates", %{conn: conn, job: job, technician: technician} do
+  test "TechLive.JobShow receives location updates", %{
+    conn: conn,
+    job: job,
+    technician: technician
+  } do
     {:ok, view, _html} = live(conn, ~p"/tech/jobs/#{job.id}")
 
     # Push the update_location event
@@ -54,7 +62,11 @@ defmodule FieldHubWeb.TechLive.LocationTrackingTest do
     assert_in_delta updated_tech.current_lng, -74.0060, 0.0001
   end
 
-  test "TechLive.JobComplete receives location updates", %{conn: conn, job: job, technician: technician} do
+  test "TechLive.JobComplete receives location updates", %{
+    conn: conn,
+    job: job,
+    technician: technician
+  } do
     # Job must be in on_site or in_progress status
     {:ok, job} = FieldHub.Jobs.arrive_on_site(job)
 

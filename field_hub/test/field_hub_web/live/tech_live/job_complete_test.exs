@@ -13,12 +13,13 @@ defmodule FieldHubWeb.TechLive.JobCompleteTest do
     customer = customer_fixture(org.id)
 
     # Create a job in progress
-    job = job_fixture(org.id, %{
-      customer_id: customer.id,
-      technician_id: technician.id,
-      status: "in_progress",
-      scheduled_date: Date.utc_today()
-    })
+    job =
+      job_fixture(org.id, %{
+        customer_id: customer.id,
+        technician_id: technician.id,
+        status: "in_progress",
+        scheduled_date: Date.utc_today()
+      })
 
     conn = log_in_user(conn, user)
     {:ok, conn: conn, org: org, user: user, technician: technician, job: job, customer: customer}
@@ -49,11 +50,13 @@ defmodule FieldHubWeb.TechLive.JobCompleteTest do
       {:ok, view, _html} = live(conn, ~p"/tech/jobs/#{job.id}/complete")
 
       view
-      |> form("#job-completion-form", job: %{
-        work_performed: "Fixed the AC leak and recharged refrigerant.",
-        actual_amount: "150.00",
-        customer_signature: "data:image/png;base64,sample"
-      })
+      |> form("#job-completion-form",
+        job: %{
+          work_performed: "Fixed the AC leak and recharged refrigerant.",
+          actual_amount: "150.00",
+          customer_signature: "data:image/png;base64,sample"
+        }
+      )
       |> render_submit()
       |> follow_redirect(conn, ~p"/tech/dashboard")
 
@@ -70,16 +73,24 @@ defmodule FieldHubWeb.TechLive.JobCompleteTest do
       assert updated_tech.status == "available"
     end
 
-    test "redirects if job is not in a completion-ready state", %{conn: conn, org: org, customer: customer, technician: technician} do
+    test "redirects if job is not in a completion-ready state", %{
+      conn: conn,
+      org: org,
+      customer: customer,
+      technician: technician
+    } do
       # Job is still scheduled
-      job = job_fixture(org.id, %{
-        customer_id: customer.id,
-        technician_id: technician.id,
-        status: "scheduled",
-        scheduled_date: Date.utc_today()
-      })
+      job =
+        job_fixture(org.id, %{
+          customer_id: customer.id,
+          technician_id: technician.id,
+          status: "scheduled",
+          scheduled_date: Date.utc_today()
+        })
 
-      assert {:error, {:live_redirect, %{to: path, flash: flash}}} = live(conn, ~p"/tech/jobs/#{job.id}/complete")
+      assert {:error, {:live_redirect, %{to: path, flash: flash}}} =
+               live(conn, ~p"/tech/jobs/#{job.id}/complete")
+
       assert path == ~p"/tech/jobs/#{job.id}"
       assert flash["error"] =~ "must be started"
     end

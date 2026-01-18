@@ -252,6 +252,7 @@ defmodule FieldHub.Jobs.Job do
   Includes both default and custom statuses configured for the org.
   """
   def statuses(nil), do: @statuses
+
   def statuses(org) do
     custom_keys =
       org

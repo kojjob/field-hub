@@ -54,7 +54,7 @@ defmodule FieldHub.Dispatch.BroadcasterTest do
       assert_receive {:technician_location_updated, ^tech}
     end
 
-     test "broadcast_technician_status/1 broadcasts to org topic" do
+    test "broadcast_technician_status/1 broadcasts to org topic" do
       tech = %Technician{id: 789, organization_id: 123, status: "busy"}
       topic = "org:123"
 

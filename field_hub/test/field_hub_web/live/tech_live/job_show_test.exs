@@ -12,31 +12,41 @@ defmodule FieldHubWeb.TechLive.JobShowTest do
       org = organization_fixture()
       user = user_fixture(organization_id: org.id)
 
-      technician = %FieldHub.Dispatch.Technician{
-        organization_id: org.id,
-        user_id: user.id,
-        name: "Test Tech",
-        status: "available",
-        email: "tech-#{System.unique_integer()}@example.com"
-      } |> FieldHub.Repo.insert!()
+      technician =
+        %FieldHub.Dispatch.Technician{
+          organization_id: org.id,
+          user_id: user.id,
+          name: "Test Tech",
+          status: "available",
+          email: "tech-#{System.unique_integer()}@example.com"
+        }
+        |> FieldHub.Repo.insert!()
 
       customer = customer_fixture(org.id)
 
-      job = job_fixture(
-        org.id,
-        %{
-          customer_id: customer.id,
-          technician_id: technician.id,
-          title: "Fix HVAC Unit",
-          description: "Unit is making a loud noise",
-          status: "scheduled",
-          scheduled_date: Date.utc_today(),
-          scheduled_start: DateTime.utc_now(),
-          scheduled_end: DateTime.add(DateTime.utc_now(), 3600, :second)
-        }
-      )
+      job =
+        job_fixture(
+          org.id,
+          %{
+            customer_id: customer.id,
+            technician_id: technician.id,
+            title: "Fix HVAC Unit",
+            description: "Unit is making a loud noise",
+            status: "scheduled",
+            scheduled_date: Date.utc_today(),
+            scheduled_start: DateTime.utc_now(),
+            scheduled_end: DateTime.add(DateTime.utc_now(), 3600, :second)
+          }
+        )
 
-      %{conn: log_in_user(conn, user), user: user, technician: technician, job: job, customer: customer, org: org}
+      %{
+        conn: log_in_user(conn, user),
+        user: user,
+        technician: technician,
+        job: job,
+        customer: customer,
+        org: org
+      }
     end
 
     test "renders job details", %{conn: conn, job: job} do
@@ -89,7 +99,10 @@ defmodule FieldHubWeb.TechLive.JobShowTest do
       assert render(view) =~ "Arrived On Site"
     end
 
-    test "handles status action sequence: start_travel -> arrive -> start_work", %{conn: conn, job: job} do
+    test "handles status action sequence: start_travel -> arrive -> start_work", %{
+      conn: conn,
+      job: job
+    } do
       {:ok, view, _html} = live(conn, ~p"/tech/jobs/#{job.id}")
 
       view |> element("button", "Start Travel") |> render_click()

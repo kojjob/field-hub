@@ -7,136 +7,196 @@ defmodule FieldHubWeb.UserLive.Registration do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="min-h-screen bg-white dark:bg-zinc-950 flex flex-col lg:flex-row font-dashboard overflow-hidden">
-      <!-- Left Side: Visual / Quote -->
-      <div class="lg:w-1/2 relative hidden lg:flex flex-col justify-end p-20 overflow-hidden">
-        <div class="absolute inset-0 z-0">
-          <img src="/images/registration_bg.png" class="w-full h-full object-cover scale-105" alt="Technician working" />
-          <div class="absolute inset-0 bg-gradient-to-t from-fsm-primary/90 via-fsm-primary/40 to-transparent"></div>
+    <div class="min-h-screen bg-white font-dashboard flex">
+      <!-- Left Side: Photo with Testimonial -->
+      <div class="hidden lg:flex lg:w-[50%] relative bg-slate-900 overflow-hidden">
+        <!-- Background Image -->
+        <img
+          src="https://images.unsplash.com/photo-1621905252507-b35492cc74b4?w=1200&h=1600&fit=crop"
+          class="absolute inset-0 w-full h-full object-cover opacity-80"
+          alt="Technician working"
+        />
+        <!-- Overlay Gradient -->
+        <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent"></div>
+
+        <!-- Header Logo -->
+        <div class="absolute top-8 left-8 z-10">
+          <.link navigate={~p"/"} class="flex items-center gap-2.5">
+            <div class="size-9 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center text-white">
+              <.icon name="hero-command-line" class="size-5" />
+            </div>
+            <span class="text-xl font-black tracking-tight text-white">FieldHub</span>
+          </.link>
         </div>
 
-        <div class="relative z-10 space-y-6 animate-in">
-          <div class="flex items-center gap-3 mb-10">
-            <div class="size-10 bg-white rounded-xl flex items-center justify-center text-fsm-primary shadow-xl">
-              <span class="material-symbols-outlined notranslate text-2xl">grid_view</span>
-            </div>
-            <span class="text-2xl font-black tracking-tighter text-white">FieldHub</span>
-          </div>
-
-          <p class="text-4xl font-black text-white tracking-tight leading-[1.1] font-display">
-            "FieldHub transformed how we manage our service fleet."
-          </p>
-          <p class="text-white/80 font-bold text-lg">
-            Join 2,000+ contractors scaling their business today.
-          </p>
+        <!-- Testimonial -->
+        <div class="absolute bottom-0 left-0 right-0 p-10 z-10">
+          <blockquote class="space-y-4">
+            <p class="text-2xl font-bold text-white leading-relaxed">
+              "FieldHub transformed how we manage our service fleet."
+            </p>
+            <p class="text-slate-300 text-sm">
+              Join 2,000+ contractors scaling their business today.
+            </p>
+          </blockquote>
         </div>
       </div>
 
-      <!-- Right Side: Registration Form -->
-      <div class="lg:w-1/2 flex flex-col items-center justify-center px-6 py-12 lg:px-24 overflow-y-auto bg-[#F8FAFB] dark:bg-zinc-950">
-        <div class="max-w-md w-full space-y-10 animate-fade">
-          <div class="lg:hidden flex items-center gap-3 mb-8">
-            <div class="size-10 bg-fsm-primary rounded-xl flex items-center justify-center text-white shadow-lg shadow-fsm-primary/20">
-              <span class="material-symbols-outlined notranslate text-2xl">grid_view</span>
+      <!-- Right Side: Form -->
+      <div class="flex-1 flex flex-col overflow-y-auto">
+        <!-- Mobile Header -->
+        <div class="lg:hidden bg-white border-b border-slate-200 px-6 py-4">
+          <.link navigate={~p"/"} class="flex items-center gap-2.5">
+            <div class="size-9 bg-primary rounded-xl flex items-center justify-center text-white shadow-lg shadow-primary/20">
+              <.icon name="hero-command-line" class="size-5" />
             </div>
-            <span class="text-2xl font-black tracking-tighter text-slate-900 dark:text-white">FieldHub</span>
-          </div>
+            <span class="text-xl font-black tracking-tight text-slate-900">FieldHub</span>
+          </.link>
+        </div>
 
-          <div class="space-y-4">
-            <h1 class="text-4xl font-black text-slate-900 dark:text-white tracking-tighter font-display">Create Your Account</h1>
-            <p class="text-slate-500 dark:text-slate-400 font-medium">Join FieldHub and streamline your service business operations.</p>
-          </div>
+        <div class="flex-1 flex items-center justify-center p-8 lg:p-12">
+          <div class="w-full max-w-md space-y-8">
+            <div class="space-y-2">
+              <h1 class="text-3xl font-black text-slate-900 tracking-tight">
+                Create Your Account
+              </h1>
+              <p class="text-slate-500">
+                Join FieldHub and streamline your service business operations.
+              </p>
+            </div>
 
-          <div class="grid grid-cols-2 gap-4">
-            <button class="flex items-center justify-center gap-3 px-6 py-4 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-[1.25rem] shadow-sm hover:bg-slate-50 dark:hover:bg-zinc-800/50 transition-all font-black text-sm text-slate-700 dark:text-slate-200">
-              <img src="https://www.google.com/favicon.ico" class="size-4" alt="Google" />
-              Google
-            </button>
-            <button class="flex items-center justify-center gap-3 px-6 py-4 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-[1.25rem] shadow-sm hover:bg-slate-50 dark:hover:bg-zinc-800/50 transition-all font-black text-sm text-slate-700 dark:text-slate-200">
-              <span class="material-symbols-outlined notranslate text-lg text-blue-600">grid_view</span>
-              Microsoft
-            </button>
-          </div>
+            <!-- Social Login Buttons -->
+            <div class="grid grid-cols-2 gap-3">
+              <button type="button" class="flex items-center justify-center gap-2 px-4 py-3 border border-slate-200 rounded-lg hover:bg-slate-50 transition-all font-semibold text-sm text-slate-700">
+                <svg class="size-5" viewBox="0 0 24 24">
+                  <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                  <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                  <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                  <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                </svg>
+                Google
+              </button>
+              <button type="button" class="flex items-center justify-center gap-2 px-4 py-3 border border-slate-200 rounded-lg hover:bg-slate-50 transition-all font-semibold text-sm text-slate-700">
+                <svg class="size-5" viewBox="0 0 24 24" fill="#00A4EF">
+                  <path d="M11.4 24H0V12.6h11.4V24zM24 24H12.6V12.6H24V24zM11.4 11.4H0V0h11.4v11.4zm12.6 0H12.6V0H24v11.4z"/>
+                </svg>
+                Microsoft
+              </button>
+            </div>
 
-          <div class="relative py-4 flex items-center">
-            <div class="flex-grow border-t border-slate-200 dark:border-zinc-800"></div>
-            <span class="flex-shrink mx-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Or sign up with email</span>
-            <div class="flex-grow border-t border-slate-200 dark:border-zinc-800"></div>
-          </div>
-
-          <.form for={@form} id="registration_form" phx-submit="save" phx-change="validate" class="space-y-5">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <div class="space-y-1.5">
-                <label class="text-[11px] font-black uppercase tracking-widest text-slate-400 ml-1">Full Name</label>
-                <.input
-                  field={@form[:name]}
-                  placeholder="e.g. Alex Johnson"
-                  required
-                  class="input input-bordered w-full !bg-white dark:!bg-zinc-900 !border-slate-200 dark:!border-zinc-800 !rounded-2xl !h-14 !pl-5 focus:!ring-2 focus:!ring-fsm-primary/20 focus:!border-fsm-primary transition-all font-bold text-slate-700 dark:text-slate-200"
-                />
+            <!-- Divider -->
+            <div class="relative">
+              <div class="absolute inset-0 flex items-center">
+                <div class="w-full border-t border-slate-200"></div>
               </div>
-              <div class="space-y-1.5">
-                <label class="text-[11px] font-black uppercase tracking-widest text-slate-400 ml-1">Company Name</label>
-                <.input
-                  field={@form[:company_name]}
-                  placeholder="e.g. Apex Plumbing"
-                  required
-                  class="input input-bordered w-full !bg-white dark:!bg-zinc-900 !border-slate-200 dark:!border-zinc-800 !rounded-2xl !h-14 !pl-5 focus:!ring-2 focus:!ring-fsm-primary/20 focus:!border-fsm-primary transition-all font-bold text-slate-700 dark:text-slate-200 outline-none"
-                />
+              <div class="relative flex justify-center text-xs uppercase">
+                <span class="bg-white px-4 text-slate-400 font-bold tracking-wider">Or sign up with email</span>
               </div>
             </div>
 
-            <div class="space-y-1.5">
-              <label class="text-[11px] font-black uppercase tracking-widest text-slate-400 ml-1">Work Email Address</label>
-              <.input
-                field={@form[:email]}
-                type="email"
-                placeholder="work@email.com"
-                required
-                class="input input-bordered w-full !bg-white dark:!bg-zinc-900 !border-slate-200 dark:!border-zinc-800 !rounded-2xl !h-14 !pl-5 focus:!ring-2 focus:!ring-fsm-primary/20 focus:!border-fsm-primary transition-all font-bold text-slate-700 dark:text-slate-200"
-              />
-            </div>
+            <.form
+              for={@form}
+              id="registration_form"
+              phx-submit="save"
+              phx-change="validate"
+              class="space-y-5"
+            >
+              <div class="grid grid-cols-2 gap-4">
+                <div class="space-y-1.5">
+                  <label class="text-sm font-semibold text-slate-700">
+                    Full Name
+                  </label>
+                  <.input
+                    field={@form[:name]}
+                    placeholder="e.g. Alex Johnson"
+                    required
+                    class="w-full !bg-white border border-slate-300 !rounded-lg !h-12 !px-4 focus:!ring-2 focus:!ring-primary/20 focus:!border-primary transition-all"
+                  />
+                </div>
+                <div class="space-y-1.5">
+                  <label class="text-sm font-semibold text-slate-700">
+                    Company Name
+                  </label>
+                  <.input
+                    field={@form[:company_name]}
+                    placeholder="e.g. Apex Plumbing"
+                    required
+                    class="w-full !bg-white border border-slate-300 !rounded-lg !h-12 !px-4 focus:!ring-2 focus:!ring-primary/20 focus:!border-primary transition-all"
+                  />
+                </div>
+              </div>
 
-            <div class="space-y-1.5">
-              <label class="text-[11px] font-black uppercase tracking-widest text-slate-400 ml-1">Password</label>
-              <div class="relative group">
+              <div class="space-y-1.5">
+                <label class="text-sm font-semibold text-slate-700">
+                  Work Email Address
+                </label>
                 <.input
-                  id="reg_password_input"
-                  field={@form[:password]}
-                  type="password"
-                  placeholder="Min. 8 characters"
+                  field={@form[:email]}
+                  type="email"
+                  placeholder="alex@email.com"
                   required
-                  class="input input-bordered w-full !bg-white dark:!bg-zinc-900 !border-slate-200 dark:!border-zinc-800 !rounded-2xl !h-14 !pl-5 focus:!ring-2 focus:!ring-fsm-primary/20 focus:!border-fsm-primary transition-all font-bold text-slate-700 dark:text-slate-200 pr-12"
+                  class="w-full !bg-white border border-slate-300 !rounded-lg !h-12 !px-4 focus:!ring-2 focus:!ring-primary/20 focus:!border-primary transition-all"
                 />
-                <button
-                  type="button"
-                  phx-hook="PasswordToggle"
-                  id="reg_password_toggle"
-                  data-input-id="reg_password_input"
-                  class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-fsm-primary transition-colors"
+              </div>
+
+              <div class="space-y-1.5">
+                <label class="text-sm font-semibold text-slate-700">
+                  Password
+                </label>
+                <div class="relative" id="reg-password-field-wrapper" phx-hook="PasswordToggle">
+                  <input
+                    type="password"
+                    name={@form[:password].name}
+                    id="reg-password-input"
+                    placeholder="Min. 8 characters"
+                    required
+                    class="w-full bg-white border border-slate-300 rounded-lg h-12 px-4 pr-12 focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none transition-all"
+                  />
+                  <button
+                    type="button"
+                    class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                  >
+                    <span id="eye-open"><.icon name="hero-eye" class="size-5" /></span>
+                    <span id="eye-closed" class="hidden"><.icon name="hero-eye-slash" class="size-5" /></span>
+                  </button>
+                </div>
+              </div>
+
+
+
+              <div class="flex items-start gap-3">
+                <input
+                  type="checkbox"
+                  required
+                  class="size-4 rounded border-slate-300 text-primary focus:ring-primary/20 mt-0.5"
+                />
+                <label class="text-sm text-slate-600 leading-tight">
+                  I agree to the
+                  <a href="#" class="text-primary hover:underline font-semibold">Terms of Service</a>
+                  and
+                  <a href="#" class="text-primary hover:underline font-semibold">Privacy Policy</a>
+                </label>
+              </div>
+
+              <button
+                type="submit"
+                class="w-full bg-primary text-white py-3.5 rounded-lg text-sm font-bold shadow-lg shadow-primary/20 hover:brightness-110 transition-all active:scale-[0.99]"
+              >
+                Create Account
+              </button>
+            </.form>
+
+            <div class="text-center">
+              <p class="text-slate-500 text-sm">
+                Already have an account?
+                <.link
+                  navigate={~p"/users/log-in"}
+                  class="text-primary font-semibold hover:underline"
                 >
-                  <span class="material-symbols-outlined notranslate text-xl icon-vis">visibility</span>
-                  <span class="material-symbols-outlined notranslate text-xl icon-hid" style="display: none;">visibility_off</span>
-                </button>
-              </div>
+                  Log in
+                </.link>
+              </p>
             </div>
-
-            <div class="flex items-start gap-3 px-1">
-              <.input field={@form[:terms_accepted]} type="checkbox" id="terms" class="size-5 mt-0.5 rounded-lg border-slate-200 text-fsm-primary focus:ring-fsm-primary/20" />
-              <label for="terms" class="text-sm font-bold text-slate-500 leading-tight">
-                I agree to the <a href="#" class="text-fsm-primary hover:underline">Terms of Service</a> and <a href="#" class="text-fsm-primary hover:underline">Privacy Policy</a>.
-              </label>
-            </div>
-
-            <.button phx-disable-with="Creating account..." class="btn btn-primary w-full !bg-fsm-primary !border-fsm-primary !text-white !py-6 !rounded-[1.25rem] !text-base !font-black !tracking-tight shadow-xl shadow-fsm-primary/20 hover:brightness-110 hover:!bg-fsm-primary hover:!border-fsm-primary transition-all">
-              Create Account
-            </.button>
-          </.form>
-
-          <div class="text-center pt-6">
-            <p class="text-sm font-bold text-slate-500">
-              Already have an account? <.link navigate={~p"/users/log-in"} class="text-fsm-primary hover:underline">Log in</.link>
-            </p>
           </div>
         </div>
       </div>
@@ -155,9 +215,14 @@ defmodule FieldHubWeb.UserLive.Registration do
 
         {:ok,
          socket
-         |> assign_form(changeset),
-         temporary_assigns: [form: nil]}
+         |> assign(:show_password, false)
+         |> assign_form(changeset), temporary_assigns: [form: nil]}
     end
+  end
+
+  @impl true
+  def handle_event("toggle_password", _params, socket) do
+    {:noreply, assign(socket, :show_password, !socket.assigns.show_password)}
   end
 
   @impl true

@@ -17,12 +17,42 @@ defmodule FieldHub.CRM do
       [%Customer{}, ...]
 
   """
+  def list_customers(nil), do: []
+
   def list_customers(org_id) do
     Customer
     |> where([c], c.organization_id == ^org_id)
     |> where([c], is_nil(c.archived_at))
     |> order_by([c], c.name)
     |> Repo.all()
+  end
+
+  def list_customers(org_id, params) do
+    page = Map.get(params, :page, 1)
+    page_size = Map.get(params, :page_size, 10)
+    offset = (page - 1) * page_size
+
+    query =
+      Customer
+      |> where([c], c.organization_id == ^org_id)
+      |> where([c], is_nil(c.archived_at))
+      |> order_by([c], c.name)
+
+    total_entries = Repo.aggregate(query, :count, :id)
+
+    entries =
+      query
+      |> limit(^page_size)
+      |> offset(^offset)
+      |> Repo.all()
+
+    %{
+      entries: entries,
+      page_number: page,
+      page_size: page_size,
+      total_entries: total_entries,
+      total_pages: ceil(total_entries / page_size)
+    }
   end
 
   @doc """
@@ -63,8 +93,6 @@ defmodule FieldHub.CRM do
   """
   alias FieldHub.CRM.Broadcaster
 
-  # ...
-
   def create_customer(org_id, attrs) do
     %Customer{organization_id: org_id}
     |> Customer.changeset(attrs)
@@ -87,33 +115,79 @@ defmodule FieldHub.CRM do
     |> broadcast_customer_archived()
   end
 
-  defp broadcast_customer_created({:ok, customer}), do: Broadcaster.broadcast_customer_created(customer)
+  defp broadcast_customer_created({:ok, customer}),
+    do: Broadcaster.broadcast_customer_created(customer)
+
   defp broadcast_customer_created(error), do: error
 
-  defp broadcast_customer_updated({:ok, customer}), do: Broadcaster.broadcast_customer_updated(customer)
+  defp broadcast_customer_updated({:ok, customer}),
+    do: Broadcaster.broadcast_customer_updated(customer)
+
   defp broadcast_customer_updated(error), do: error
 
-  defp broadcast_customer_archived({:ok, customer}), do: Broadcaster.broadcast_customer_archived(customer)
+  defp broadcast_customer_archived({:ok, customer}),
+    do: Broadcaster.broadcast_customer_archived(customer)
+
   defp broadcast_customer_archived(error), do: error
 
   @doc """
   Searches customers by name, email, phone, or address.
   """
+  def search_customers(nil, _search_term), do: []
+
   def search_customers(org_id, search_term) do
     search = "%#{search_term}%"
 
     Customer
     |> where([c], c.organization_id == ^org_id)
     |> where([c], is_nil(c.archived_at))
-    |> where([c],
+    |> where(
+      [c],
       ilike(c.name, ^search) or
-      ilike(c.email, ^search) or
-      ilike(c.phone, ^search) or
-      ilike(c.address_line1, ^search) or
-      ilike(c.city, ^search)
+        ilike(c.email, ^search) or
+        ilike(c.phone, ^search) or
+        ilike(c.address_line1, ^search) or
+        ilike(c.city, ^search)
     )
     |> order_by([c], c.name)
     |> Repo.all()
+  end
+
+  def search_customers(org_id, search_term, params) do
+    search = "%#{search_term}%"
+    page = Map.get(params, :page, 1)
+    page_size = Map.get(params, :page_size, 10)
+    offset = (page - 1) * page_size
+
+    query =
+      Customer
+      |> where([c], c.organization_id == ^org_id)
+      |> where([c], is_nil(c.archived_at))
+      |> where(
+        [c],
+        ilike(c.name, ^search) or
+          ilike(c.email, ^search) or
+          ilike(c.phone, ^search) or
+          ilike(c.address_line1, ^search) or
+          ilike(c.city, ^search)
+      )
+      |> order_by([c], c.name)
+
+    total_entries = Repo.aggregate(query, :count, :id)
+
+    entries =
+      query
+      |> limit(^page_size)
+      |> offset(^offset)
+      |> Repo.all()
+
+    %{
+      entries: entries,
+      page_number: page,
+      page_size: page_size,
+      total_entries: total_entries,
+      total_pages: ceil(total_entries / page_size)
+    }
   end
 
   @doc """

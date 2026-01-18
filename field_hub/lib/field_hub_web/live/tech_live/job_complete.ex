@@ -56,13 +56,13 @@ defmodule FieldHubWeb.TechLive.JobComplete do
           <!-- Customer/Job Summary -->
           <div class="bg-blue-50 rounded-xl p-4 border border-blue-100 mb-6">
             <p class="text-xs font-semibold text-blue-600 uppercase tracking-wider mb-1">
-              Job #<%= @job.number %>
+              Job #{@job.number}
             </p>
-            <h2 class="text-lg font-bold text-gray-900"><%= @customer.name %></h2>
-            <p class="text-sm text-gray-600"><%= @job.title %></p>
+            <h2 class="text-lg font-bold text-gray-900">{@customer.name}</h2>
+            <p class="text-sm text-gray-600">{@job.title}</p>
           </div>
-
-          <!-- Work Performed -->
+          
+    <!-- Work Performed -->
           <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-200">
             <h3 class="flex items-center gap-2 font-bold text-gray-900 mb-4">
               <.icon name="hero-clipboard-document-check" class="w-5 h-5 text-blue-500" />
@@ -77,18 +77,17 @@ defmodule FieldHubWeb.TechLive.JobComplete do
               rows="5"
             />
           </div>
-
-          <!-- Financials -->
+          
+    <!-- Financials -->
           <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-200">
             <h3 class="flex items-center gap-2 font-bold text-gray-900 mb-4">
-              <.icon name="hero-banknotes" class="w-5 h-5 text-green-500" />
-              Final Amount
+              <.icon name="hero-banknotes" class="w-5 h-5 text-green-500" /> Final Amount
             </h3>
             <div class="space-y-4">
               <div class="flex justify-between items-center text-sm">
                 <span class="text-gray-500">Quoted Amount:</span>
                 <span class="font-medium">
-                  <%= if @job.quoted_amount, do: "$#{@job.quoted_amount}", else: "N/A" %>
+                  {if @job.quoted_amount, do: "$#{@job.quoted_amount}", else: "N/A"}
                 </span>
               </div>
               <.input
@@ -100,12 +99,11 @@ defmodule FieldHubWeb.TechLive.JobComplete do
               />
             </div>
           </div>
-
-          <!-- Photos -->
+          
+    <!-- Photos -->
           <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-200">
             <h3 class="flex items-center gap-2 font-bold text-gray-900 mb-4">
-              <.icon name="hero-camera" class="w-5 h-5 text-purple-500" />
-              Job Photos
+              <.icon name="hero-camera" class="w-5 h-5 text-purple-500" /> Job Photos
             </h3>
 
             <div
@@ -141,12 +139,11 @@ defmodule FieldHubWeb.TechLive.JobComplete do
               <% end %>
             </div>
           </div>
-
-          <!-- Signature -->
+          
+    <!-- Signature -->
           <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-200">
             <h3 class="flex items-center gap-2 font-bold text-gray-900 mb-4">
-              <.icon name="hero-pencil-square" class="w-5 h-5 text-orange-500" />
-              Customer Signature
+              <.icon name="hero-pencil-square" class="w-5 h-5 text-orange-500" /> Customer Signature
             </h3>
 
             <div class="relative bg-gray-50 border rounded-lg overflow-hidden">
@@ -155,7 +152,8 @@ defmodule FieldHubWeb.TechLive.JobComplete do
                 phx-hook="SignaturePad"
                 data-target-id="customer-signature-input"
                 class="w-full h-48 touch-none cursor-crosshair"
-              ></canvas>
+              >
+              </canvas>
               <button
                 type="button"
                 id="clear-signature"
@@ -164,14 +162,14 @@ defmodule FieldHubWeb.TechLive.JobComplete do
                 Clear
               </button>
             </div>
-              <textarea
-                name="job[customer_signature]"
-                id="customer-signature-input"
-                class="hidden"
-              ><%= @form[:customer_signature].value %></textarea>
-            </div>
-
-          <!-- Actions -->
+            <textarea
+              name="job[customer_signature]"
+              id="customer-signature-input"
+              class="hidden"
+            ><%= @form[:customer_signature].value %></textarea>
+          </div>
+          
+    <!-- Actions -->
           <div class="fixed bottom-0 left-0 right-0 p-4 bg-white shadow-[0_-4px_10px_rgba(0,0,0,0.05)] flex gap-3">
             <button
               type="button"
@@ -214,13 +212,14 @@ defmodule FieldHubWeb.TechLive.JobComplete do
   @impl true
   def handle_event("save", %{"job" => params}, socket) do
     # Handle photos
-    photo_urls = consume_uploaded_entries(socket, :photos, fn _meta, entry ->
-      # In a real app, we would upload to S3 here.
-      # For now, we'll simulate by returning a dummy path.
-      # Since we don't have a static file server configured for uploads yet,
-      # we'll just use the filenames or dummy IDs.
-      {:ok, "/uploads/jobs/#{socket.assigns.job.id}/#{entry.client_name}"}
-    end)
+    photo_urls =
+      consume_uploaded_entries(socket, :photos, fn _meta, entry ->
+        # In a real app, we would upload to S3 here.
+        # For now, we'll simulate by returning a dummy path.
+        # Since we don't have a static file server configured for uploads yet,
+        # we'll just use the filenames or dummy IDs.
+        {:ok, "/uploads/jobs/#{socket.assigns.job.id}/#{entry.client_name}"}
+      end)
 
     # Merge photos into params
     params = Map.put(params, "photos", photo_urls)
@@ -243,12 +242,13 @@ defmodule FieldHubWeb.TechLive.JobComplete do
     if socket.assigns.technician do
       FieldHub.Dispatch.update_technician_location(socket.assigns.technician, lat, lng)
     end
+
     {:noreply, socket}
   end
 
   @impl true
   def handle_event("location_error", params, socket) do
-    IO.puts "Location error for technician #{socket.assigns.technician.id}: #{inspect(params)}"
+    IO.puts("Location error for technician #{socket.assigns.technician.id}: #{inspect(params)}")
     {:noreply, socket}
   end
 

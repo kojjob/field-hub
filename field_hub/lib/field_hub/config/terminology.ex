@@ -22,9 +22,11 @@ defmodule FieldHub.Config.Terminology do
   Returns the full terminology map for an organization, with defaults.
   """
   def get_terminology(%Organization{terminology: nil}), do: @default_terminology
+
   def get_terminology(%Organization{terminology: terms}) when is_map(terms) do
     Map.merge(@default_terminology, terms)
   end
+
   def get_terminology(_), do: @default_terminology
 
   @doc """

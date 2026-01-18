@@ -141,11 +141,12 @@ defmodule FieldHub.Dispatch do
   Updates a technician's device token for push notifications.
   """
   def update_technician_device_token(%Technician{} = technician, type, token) do
-    attrs = case type do
-      "fcm" -> %{fcm_token: token}
-      "apns" -> %{apns_token: token}
-      _ -> %{}
-    end
+    attrs =
+      case type do
+        "fcm" -> %{fcm_token: token}
+        "apns" -> %{apns_token: token}
+        _ -> %{}
+      end
 
     update_technician(technician, attrs)
   end
@@ -287,40 +288,47 @@ defmodule FieldHub.Dispatch do
     Technician
     |> where([t], t.organization_id == ^org_id)
     |> where([t], is_nil(t.archived_at))
-    |> where([t], ilike(t.name, ^search) or ilike(t.email, ^search))
+    |> where(
+      [t],
+      ilike(t.name, ^search) or ilike(t.email, ^search) or
+        fragment("?::text ILIKE ?", t.skills, ^search)
+    )
     |> order_by([t], t.name)
     |> Repo.all()
   end
-
-
 
   defp broadcast_technician_status({:ok, tech}) do
     Broadcaster.broadcast_technician_status(tech)
     {:ok, tech}
   end
+
   defp broadcast_technician_status(error), do: error
 
   defp broadcast_technician_location({:ok, tech}) do
     Broadcaster.broadcast_technician_location(tech)
     {:ok, tech}
   end
+
   defp broadcast_technician_location(error), do: error
 
   defp broadcast_technician_created({:ok, tech}) do
     Broadcaster.broadcast_technician_created(tech)
     {:ok, tech}
   end
+
   defp broadcast_technician_created(error), do: error
 
   defp broadcast_technician_updated({:ok, tech}) do
     Broadcaster.broadcast_technician_updated(tech)
     {:ok, tech}
   end
+
   defp broadcast_technician_updated(error), do: error
 
   defp broadcast_technician_archived({:ok, tech}) do
     Broadcaster.broadcast_technician_archived(tech)
     {:ok, tech}
   end
+
   defp broadcast_technician_archived(error), do: error
 end

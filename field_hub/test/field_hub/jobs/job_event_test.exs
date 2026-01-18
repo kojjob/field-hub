@@ -126,6 +126,7 @@ defmodule FieldHub.Jobs.JobEventTest do
       assert Enum.map(events, & &1.event_type) == ["created", "scheduled", "assigned"]
     end
   end
+
   describe "integration with FieldHub.Jobs context" do
     alias FieldHub.Dispatch.Technician
 

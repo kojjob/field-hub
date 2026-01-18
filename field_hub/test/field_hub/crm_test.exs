@@ -97,7 +97,9 @@ defmodule FieldHub.CRMTest do
 
     test "returns error with invalid data", %{org: org} do
       customer = customer_fixture(org.id)
-      assert {:error, %Ecto.Changeset{}} = CRM.update_customer(customer, %{email: "invalid-email"})
+
+      assert {:error, %Ecto.Changeset{}} =
+               CRM.update_customer(customer, %{email: "invalid-email"})
     end
   end
 

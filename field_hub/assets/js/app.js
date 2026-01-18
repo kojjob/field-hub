@@ -42,22 +42,31 @@ const Hooks = {
   Geolocation: GeolocationHook,
   PasswordToggle: {
     mounted() {
-      this.el.addEventListener("click", () => {
-        const inputId = this.el.dataset.inputId;
-        const input = document.getElementById(inputId);
-        const iconVis = this.el.querySelector(".icon-vis");
-        const iconHid = this.el.querySelector(".icon-hid");
-        
-        if (input.type === "password") {
-          input.type = "text";
-          iconVis.style.display = "none";
-          iconHid.style.display = "block";
-        } else {
-          input.type = "password";
-          iconVis.style.display = "block";
-          iconHid.style.display = "none";
-        }
-      });
+      const wrapper = this.el;
+      const input = wrapper.querySelector("input[type='password'], input[type='text']");
+      const button = wrapper.querySelector("button");
+      const eyeOpen = wrapper.querySelector("#eye-open");
+      const eyeClosed = wrapper.querySelector("#eye-closed");
+      
+      if (button && input) {
+        button.addEventListener("click", (e) => {
+          e.preventDefault();
+          if (input.type === "password") {
+            input.type = "text";
+            if (eyeOpen) eyeOpen.classList.add("hidden");
+            if (eyeClosed) eyeClosed.classList.remove("hidden");
+          } else {
+            input.type = "password";
+            if (eyeOpen) eyeOpen.classList.remove("hidden");
+            if (eyeClosed) eyeClosed.classList.add("hidden");
+          }
+        });
+      }
+    }
+  },
+  StopPropagation: {
+    mounted() {
+      this.el.addEventListener("click", e => e.stopPropagation());
     }
   }
 }

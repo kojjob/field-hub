@@ -73,8 +73,6 @@ defmodule FieldHub.AccountsFixtures do
     {:ok, {user, _expired_tokens}} =
       Accounts.login_user_by_magic_link(token)
 
-
-
     user
   end
 
