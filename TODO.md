@@ -786,12 +786,12 @@ git push -u origin develop
 | 0 - Foundation | 17 | 17 | 100% |
 | 1 - Core Domain | 32 | 32 | 100% |
 | 2 - Dispatcher Dashboard | 36 | 15 | 42% |
-| 3 - Technician Mobile | 28 | 0 | 0% |
+| 3 - Technician Mobile | 28 | 15 | 54% |
 | 4 - Customer Portal | 12 | 0 | 0% |
 | 5 - Notifications | 20 | 0 | 0% |
 | 6 - Billing & Polish | 16 | 0 | 0% |
 | 7 - Launch Prep | 24 | 0 | 0% |
-| **TOTAL** | **185** | **64** | **35%** |
+| **TOTAL** | **185** | **78** | **42%** |
 
 ---
 
