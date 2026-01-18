@@ -18,13 +18,18 @@ defmodule FieldHubWeb.DashboardLive do
     ~H"""
     <div class="flex h-screen overflow-hidden bg-fsm-bg-light dark:bg-fsm-bg-dark font-dashboard text-slate-900 dark:text-slate-100">
       <!-- Sidebar Navigation -->
-      <FieldHubWeb.DashboardComponents.sidebar current_user={@current_scope.user} />
+      <FieldHubWeb.DashboardComponents.sidebar current_user={@current_scope.user} current_organization={@current_organization} />
 
       <!-- Main Content Area -->
       <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
         <FieldHubWeb.DashboardComponents.header current_user={@current_scope.user} />
 
         <main class="flex-1 overflow-y-auto bg-slate-50/30 dark:bg-fsm-bg-dark p-8 space-y-10 scrollbar-hide pb-20">
+            <%
+              org = @current_organization
+              task_plural = FieldHub.Config.Terminology.get_label(org, :task, :plural)
+              task_singular = FieldHub.Config.Terminology.get_label(org, :task, :singular)
+            %>
           <!-- Page Heading -->
           <div class="flex items-center justify-between">
             <div>
@@ -32,7 +37,7 @@ defmodule FieldHubWeb.DashboardLive do
                 Management Overview
               </p>
               <h2 class="text-3xl font-black tracking-tighter text-slate-900 dark:text-white">
-                Operations Dashboard
+                <%= task_singular %> Operations
               </h2>
             </div>
             <div class="flex items-center gap-3">
@@ -63,7 +68,7 @@ defmodule FieldHubWeb.DashboardLive do
               variant={:stars}
             />
             <FieldHubWeb.DashboardComponents.kpi_card
-              label="Open Job Tickets"
+              label={"Open #{task_plural}"}
               value="18"
               progress={65}
               variant={:progress}

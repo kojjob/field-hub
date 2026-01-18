@@ -61,6 +61,15 @@ defmodule FieldHub.Config.Terminology do
   def dispatch_label(org), do: get(org, "dispatch_label")
 
   @doc """
+  Retrieves a specific label from the organization's terminology settings.
+  """
+  def get_label(org, target, type, default \\ nil) do
+    key = "#{target}_label"
+    key = if type == :plural, do: "#{key}_plural", else: key
+    get(org, key) || default
+  end
+
+  @doc """
   Returns the default terminology map.
   """
   def defaults, do: @default_terminology

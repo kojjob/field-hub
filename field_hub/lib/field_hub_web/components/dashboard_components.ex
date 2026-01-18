@@ -5,33 +5,56 @@ defmodule FieldHubWeb.DashboardComponents do
   Sidebar navigation for the dashboard.
   """
   attr :current_user, :any, required: true
+  attr :current_organization, :any, required: true
   def sidebar(assigns) do
     ~H"""
     <aside class="w-68 flex-shrink-0 border-r border-fsm-border-light dark:border-slate-800 bg-white dark:bg-fsm-sidebar-dark flex flex-col hidden lg:flex">
       <div class="p-6 border-b border-fsm-border-light dark:border-slate-800">
         <div class="flex items-center gap-3">
-          <div class="size-9 bg-fsm-primary rounded-xl flex items-center justify-center text-white shadow-lg shadow-fsm-primary/20">
-            <span class="material-symbols-outlined notranslate text-[22px]">grid_view</span>
-          </div>
-          <div class="flex flex-col">
-            <h1 class="text-lg font-extrabold leading-tight text-slate-900 dark:text-white tracking-tight">
-              FieldHub
-            </h1>
-            <p class="text-[10px] text-fsm-primary font-bold tracking-[0.1em] uppercase leading-none mt-0.5">
-              Enterprise
-            </p>
-          </div>
+          <%= if org = @current_organization do %>
+            <%= if org.logo_url do %>
+              <img src={org.logo_url} class="h-9 w-auto" alt={org.brand_name || org.name} />
+            <% else %>
+              <div class="size-9 bg-fsm-primary rounded-xl flex items-center justify-center text-white shadow-lg shadow-fsm-primary/20">
+                <span class="material-symbols-outlined notranslate text-[22px]">grid_view</span>
+              </div>
+            <% end %>
+            <div class="flex flex-col">
+              <h1 class="text-lg font-extrabold leading-tight text-slate-900 dark:text-white tracking-tight">
+                <%= org.brand_name || org.name %>
+              </h1>
+              <p class="text-[10px] text-fsm-primary font-bold tracking-[0.1em] uppercase leading-none mt-0.5">
+                Workspace
+              </p>
+            </div>
+          <% else %>
+            <div class="size-9 bg-fsm-primary rounded-xl flex items-center justify-center text-white shadow-lg shadow-fsm-primary/20">
+              <span class="material-symbols-outlined notranslate text-[22px]">grid_view</span>
+            </div>
+            <div class="flex flex-col">
+              <h1 class="text-lg font-extrabold leading-tight text-slate-900 dark:text-white tracking-tight">
+                FieldHub
+              </h1>
+            </div>
+          <% end %>
         </div>
       </div>
 
       <nav class="flex-1 px-4 py-8 space-y-1 overflow-y-auto scrollbar-hide">
+        <%
+          org = @current_organization
+          worker_label = FieldHub.Config.Terminology.get_label(org, :worker, :plural)
+          client_label = FieldHub.Config.Terminology.get_label(org, :client, :plural)
+          task_label = FieldHub.Config.Terminology.get_label(org, :task, :plural)
+          dispatch_label = FieldHub.Config.Terminology.get_label(org, :dispatch, :singular)
+        %>
         <.nav_heading label="Core" />
         <.nav_item icon="dashboard" label="Dashboard" uri={~p"/dashboard"} active={true} />
         <.nav_item icon="calendar_month" label="Schedule" uri={~p"/dispatch"} />
-        <.nav_item icon="map" label="Dispatch Map" uri={~p"/dispatch"} />
-        <.nav_item icon="confirmation_number" label="Jobs" uri={~p"/jobs"} />
-        <.nav_item icon="engineering" label="Technicians" uri={~p"/technicians"} />
-        <.nav_item icon="people" label="Customers" uri={~p"/customers"} />
+        <.nav_item icon="map" label={dispatch_label} uri={~p"/dispatch"} />
+        <.nav_item icon="confirmation_number" label={task_label} uri={~p"/jobs"} />
+        <.nav_item icon="engineering" label={worker_label} uri={~p"/technicians"} />
+        <.nav_item icon="people" label={client_label} uri={~p"/customers"} />
         <.nav_item icon="bar_chart" label="Reports" uri="#" />
 
         <div class="pt-6">
@@ -40,7 +63,7 @@ defmodule FieldHubWeb.DashboardComponents do
           <.nav_item icon="palette" label="Branding" uri={~p"/settings/branding"} />
           <.nav_item icon="account_tree" label="Workflows" uri={~p"/settings/workflows"} />
           <.nav_item icon="tune" label="Custom Fields" uri={~p"/settings/custom-fields"} />
-          <.nav_item icon="settings" label="Settings" uri="#" />
+          <.nav_item icon="settings" label="Global Settings" uri="#" />
         </div>
       </nav>
 

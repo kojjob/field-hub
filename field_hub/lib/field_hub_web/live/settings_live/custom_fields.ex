@@ -1,23 +1,31 @@
 defmodule FieldHubWeb.SettingsLive.CustomFields do
+  @moduledoc """
+  Settings page for defining custom data fields for various entities.
+  """
   use FieldHubWeb, :live_view
   alias FieldHub.Config.CustomFields
   alias FieldHub.Config.CustomFieldDefinition
+  alias FieldHub.Config.Terminology
 
   def mount(_params, _session, socket) do
-    if connected?(socket) do
-      # Subscribe to updates if needed
-    end
+    org = socket.assigns.current_organization
+
+    # Get labels for tabs from terminology
+    worker_label = Terminology.get_label(org, :worker, :singular)
+    client_label = Terminology.get_label(org, :client, :singular)
+    task_label = Terminology.get_label(org, :task, :singular)
 
     socket =
       socket
       |> assign(:active_tab, "job")
       |> assign(:page_title, "Custom Fields")
+      |> assign(:worker_label, worker_label)
+      |> assign(:client_label, client_label)
+      |> assign(:task_label, task_label)
       |> assign_fields()
 
     {:ok, socket}
   end
-
-
 
   defp assign_fields(socket) do
     fields = CustomFields.list_definitions(
@@ -29,128 +37,181 @@ defmodule FieldHubWeb.SettingsLive.CustomFields do
 
   def render(assigns) do
     ~H"""
-    <div class="mx-auto max-w-4xl">
-      <div class="md:flex md:items-center md:justify-between mb-6">
-        <div class="min-w-0 flex-1">
-          <h2 class="text-2xl font-bold leading-7 text-gray-900 dark:text-white sm:truncate sm:text-3xl sm:tracking-tight">
-            Custom Fields
-          </h2>
-          <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            Define custom data fields for your jobs, customers, and technicians.
+    <div class="max-w-4xl mx-auto">
+      <div class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <h1 class="text-3xl font-bold text-zinc-900 dark:text-white tracking-tight">Custom Fields</h1>
+          <p class="mt-2 text-zinc-600 dark:text-zinc-400">
+            Extend your data model with custom fields tailored to your <%= @current_organization.name %> operations.
           </p>
         </div>
-        <div class="mt-4 flex md:ml-4 md:mt-0">
-          <.link patch={~p"/settings/custom-fields/new?target=#{@active_tab}"} class="ml-3 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-            Add Field
-          </.link>
+        <div>
+          <.button patch={~p"/settings/custom-fields/new?target=#{@active_tab}"} variant="primary" class="gap-2 shadow-lg shadow-fsm-primary/20">
+            <.icon name="hero-plus" class="size-4" /> Add Field
+          </.button>
         </div>
       </div>
 
       <!-- Tabs -->
-      <div class="border-b border-gray-200 dark:border-gray-700 mb-6">
-        <nav class="-mb-px flex space-x-8" aria-label="Tabs">
-          <%= for tab <- ["job", "customer", "technician"] do %>
-            <button
-              phx-click="change_tab"
-              phx-value-tab={tab}
-              class={"#{if @active_tab == tab, do: "border-indigo-500 text-indigo-600 dark:text-indigo-400", else: "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400"} whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium capitalize"}
-            >
-              <%= tab %> Fields
-            </button>
-          <% end %>
-        </nav>
+      <div class="flex p-1 bg-zinc-100 dark:bg-zinc-800/50 rounded-2xl mb-8 border border-zinc-200 dark:border-zinc-700/50">
+        <%= for {tab, label, icon} <- [
+          {"job", @task_label, "hero-briefcase"},
+          {"customer", @client_label, "hero-building-office"},
+          {"technician", @worker_label, "hero-user-group"}
+        ] do %>
+          <button
+            phx-click="change_tab"
+            phx-value-tab={tab}
+            class={["flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-bold transition-all rounded-xl",
+              @active_tab == tab && "bg-white dark:bg-zinc-800 text-fsm-primary shadow-sm",
+              @active_tab != tab && "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300"
+            ]}
+          >
+            <.icon name={icon} class="size-4" />
+            <%= label %>s
+          </button>
+        <% end %>
       </div>
 
       <!-- Field List -->
-      <div class="bg-white dark:bg-gray-800 shadow sm:rounded-md">
-        <ul role="list" class="divide-y divide-gray-100 dark:divide-gray-700">
-          <%= if Enum.empty?(@fields) do %>
-            <div class="text-center py-12">
-              <p class="text-sm text-gray-500 dark:text-gray-400">No custom fields defined for <%= @active_tab %>s.</p>
+      <div class="bg-white dark:bg-zinc-800/50 rounded-3xl shadow-sm border border-zinc-200 dark:border-zinc-700/50 overflow-hidden">
+        <%= if Enum.empty?(@fields) do %>
+          <div class="py-20 text-center">
+            <div class="size-20 rounded-full bg-zinc-50 dark:bg-zinc-900 flex items-center justify-center mx-auto mb-6">
+               <.icon name="hero-document-plus" class="size-10 text-zinc-300" />
             </div>
-          <% else %>
+            <h3 class="text-zinc-900 dark:text-white font-bold text-lg">No custom fields yet</h3>
+            <p class="text-zinc-500 max-w-sm mx-auto mt-2">
+              Add fields to capture specific details for your <%= @active_tab %>s that aren't available by default.
+            </p>
+            <.button patch={~p"/settings/custom-fields/new?target=#{@active_tab}"} variant="outline" class="mt-8">
+              Click to add your first field
+            </.button>
+          </div>
+        <% else %>
+          <div class="divide-y divide-zinc-100 dark:divide-zinc-700/50">
             <%= for field <- @fields do %>
-              <li class="flex items-center justify-between gap-x-6 py-5 px-6 hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                <div class="min-w-0">
-                  <div class="flex items-start gap-x-3">
-                    <p class="text-sm font-semibold leading-6 text-gray-900 dark:text-white"><%= field.name %></p>
-                    <p class={"rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset #{if field.required, do: "text-red-700 bg-red-50 ring-red-600/10 dark:text-red-400 dark:bg-red-400/10", else: "text-gray-600 bg-gray-50 ring-gray-500/10 dark:text-gray-400 dark:bg-gray-400/10"}"}>
-                      <%= if field.required, do: "Required", else: "Optional" %>
-                    </p>
-                  </div>
-                  <div class="mt-1 flex items-center gap-x-2 text-xs leading-5 text-gray-500 dark:text-gray-400">
-                    <p class="font-mono bg-gray-100 dark:bg-gray-700 px-1 py-0.5 rounded"><%= field.key %></p>
-                    <p>&middot;</p>
-                    <p class="capitalize"><%= field.type %></p>
-                  </div>
+              <div class="group flex items-center justify-between p-6 hover:bg-zinc-50 dark:hover:bg-zinc-900/30 transition-all">
+                <div class="flex items-center gap-5">
+                   <div class="size-12 rounded-2xl bg-zinc-100 dark:bg-zinc-900 flex items-center justify-center text-zinc-400 group-hover:bg-white dark:group-hover:bg-zinc-800 group-hover:text-fsm-primary transition-colors border border-transparent group-hover:border-zinc-200 dark:group-hover:border-zinc-700 shadow-sm">
+                      <.icon name={get_field_icon(field.type)} class="size-6" />
+                   </div>
+                   <div>
+                      <div class="flex items-center gap-2 mb-1">
+                        <h4 class="font-bold text-zinc-900 dark:text-white"><%= field.name %></h4>
+                        <%= if field.required do %>
+                           <span class="text-[10px] font-bold bg-red-100 dark:bg-red-900/30 text-red-600 px-1.5 py-0.5 rounded-full uppercase tracking-tighter">Required</span>
+                        <% end %>
+                      </div>
+                      <div class="flex items-center gap-3">
+                         <span class="text-xs font-mono bg-zinc-100 dark:bg-zinc-900 text-zinc-500 px-1.5 py-0.5 rounded inline-block"><%= field.key %></span>
+                         <span class="text-xs text-zinc-400 capitalize"><%= field.type %> field</span>
+                         <%= if field.type == "select" && field.options do %>
+                           <span class="text-xs text-zinc-400">&middot; <%= length(field.options) %> options</span>
+                         <% end %>
+                      </div>
+                   </div>
                 </div>
-                <div class="flex flex-none items-center gap-x-4">
-                  <button phx-click="delete_field" phx-value-id={field.id} data-confirm="Are you sure?" class="text-sm font-semibold leading-6 text-red-600 hover:text-red-500">
-                    Delete
-                  </button>
+
+                <div class="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                   <button phx-click="delete_field" phx-value-id={field.id} data-confirm="Permanently delete this custom field?" class="p-2.5 rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20 text-zinc-400 hover:text-red-500 transition-all">
+                      <.icon name="hero-trash" class="size-5" />
+                   </button>
                 </div>
-              </li>
+              </div>
             <% end %>
-          <% end %>
-        </ul>
+          </div>
+        <% end %>
+      </div>
+
+      <div class="mt-8 p-6 bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-900/30 rounded-3xl flex gap-4">
+         <.icon name="hero-exclamation-triangle" class="size-6 text-amber-600 dark:text-amber-500 shrink-0" />
+         <div>
+            <h5 class="text-sm font-bold text-amber-900 dark:text-amber-400">Important Note</h5>
+            <p class="text-xs text-amber-800/80 dark:text-amber-500/70 mt-1 leading-relaxed">
+              Custom fields are globally available to your team. Deleting a field will also remove any data stored in it for existing records. Proceed with caution.
+            </p>
+         </div>
       </div>
     </div>
 
-    <.modal
-      :if={@live_action in [:new, :edit]}
-      id="custom-field-modal"
-      show
-      on_cancel={JS.patch(~p"/settings/custom-fields?tab=#{@active_tab}")}
-    >
-      <.header>
-        <%= @page_title %>
-        <:subtitle>Add a new custom field for <%= @active_tab %>s.</:subtitle>
-      </.header>
+    <!-- Field Modal -->
+    <%= if @live_action in [:new, :edit] do %>
+      <div class="fixed inset-0 bg-zinc-950/20 dark:bg-zinc-950/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" phx-click={JS.patch(~p"/settings/custom-fields?tab=#{@active_tab}")}>
+        <div class="bg-white dark:bg-zinc-900 rounded-3xl shadow-2xl border border-zinc-200 dark:border-zinc-800 w-full max-w-xl overflow-hidden" phx-click-away={JS.patch(~p"/settings/custom-fields?tab=#{@active_tab}")}>
+          <div class="px-8 pt-8 pb-6 bg-zinc-50/50 dark:bg-zinc-950/50 border-b border-zinc-100 dark:border-zinc-800">
+             <h3 class="text-2xl font-bold text-zinc-900 dark:text-white">New Custom Field</h3>
+             <p class="text-sm text-zinc-500 mt-1">Add a new attribute to your <%= @active_tab %> model.</p>
+          </div>
 
-      <.simple_form
-        for={@form}
-        id="custom-field-form"
-        phx-change="validate"
-        phx-submit="save"
-      >
-        <.input field={@form[:name]} label="Field Label" placeholder="e.g. Gate Code" />
-        <.input field={@form[:key]} label="Database Key" placeholder="e.g. gate_code" />
-        <.input
-          field={@form[:type]}
-          type="select"
-          label="Data Type"
-          options={[
-            {"Text", "text"},
-            {"Number", "number"},
-            {"Date", "date"},
-            {"Checkbox (True/False)", "boolean"},
-            {"Select Dropdown", "select"}
-          ]}
-        />
+          <.form for={@form} phx-change="validate" phx-submit="save" class="p-8 space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <.input field={@form[:name]} label="Field Label" placeholder="e.g. Serial Number" class="input-bordered" />
+              <.input field={@form[:key]} label="System Key" placeholder="e.g. serial_number" class="input-bordered" />
+            </div>
 
-        <%= if Ecto.Changeset.get_field(@form.source, :type) == "select" do %>
-           <.input
-             field={@form[:options]}
-             label="Options (comma separated)"
-             value={Enum.join(Ecto.Changeset.get_field(@form.source, :options) || [], ", ")}
-             name="custom_field_definition[options_string]"
-             placeholder="Option A, Option B, Option C"
-           />
-        <% end %>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-end">
+              <.input
+                field={@form[:type]}
+                type="select"
+                label="Field Type"
+                options={[
+                  {"Text Input", "text"},
+                  {"Number", "number"},
+                  {"Date Picker", "date"},
+                  {"Checkbox (Yes/No)", "boolean"},
+                  {"Dropdown Menu", "select"}
+                ]}
+                class="select-bordered"
+              />
+              <div class="flex items-center h-12">
+                 <.input field={@form[:required]} type="checkbox" label="Make this field mandatory" />
+              </div>
+            </div>
 
-        <.input field={@form[:required]} type="checkbox" label="Required Field" />
+            <%= if Ecto.Changeset.get_field(@form.source, :type) == "select" do %>
+               <div class="bg-zinc-50 dark:bg-zinc-950 p-6 rounded-2xl border-2 border-dashed border-zinc-200 dark:border-zinc-800">
+                  <label class="block text-sm font-bold text-zinc-700 dark:text-zinc-300 mb-2">Dropdown Options</label>
+                  <p class="text-xs text-zinc-500 mb-4">Enter options separated by commas (e.g. Small, Medium, Large)</p>
+                  <input
+                    type="text"
+                    name="custom_field_definition[options_string]"
+                    value={Enum.join(Ecto.Changeset.get_field(@form.source, :options) || [], ", ")}
+                    class="w-full px-4 py-3 border border-zinc-300 dark:border-zinc-700 rounded-xl bg-white dark:bg-zinc-800 focus:ring-2 focus:ring-fsm-primary outline-none"
+                    placeholder="Option 1, Option 2, Option 3"
+                  />
+               </div>
+            <% end %>
 
-        <!-- Hidden fields -->
-        <.input field={@form[:target]} type="hidden" />
-        <.input field={@form[:organization_id]} type="hidden" />
+            <!-- Hidden fields -->
+            <.input field={@form[:target]} type="hidden" />
+            <.input field={@form[:organization_id]} type="hidden" />
 
-        <:actions>
-          <.button phx-disable-with="Saving...">Save Field</.button>
-        </:actions>
-      </.simple_form>
-    </.modal>
+            <div class="flex justify-end gap-3 pt-6 border-t border-zinc-100 dark:border-zinc-800">
+              <button
+                type="button"
+                phx-click={JS.patch(~p"/settings/custom-fields?tab=#{@active_tab}")}
+                class="px-5 py-2.5 text-sm font-semibold text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white"
+              >
+                Cancel
+              </button>
+              <.button type="submit" variant="primary" phx-disable-with="Saving..." class="px-8 shadow-lg shadow-fsm-primary/20">
+                Create Field
+              </.button>
+            </div>
+          </.form>
+        </div>
+      </div>
+    <% end %>
     """
   end
+
+  defp get_field_icon("text"), do: "hero-pencil"
+  defp get_field_icon("number"), do: "hero-hashtag"
+  defp get_field_icon("date"), do: "hero-calendar"
+  defp get_field_icon("boolean"), do: "hero-check-circle"
+  defp get_field_icon("select"), do: "hero-chevron-down"
+  defp get_field_icon(_), do: "hero-variable"
 
   def handle_event("change_tab", %{"tab" => tab}, socket) do
     {:noreply,
