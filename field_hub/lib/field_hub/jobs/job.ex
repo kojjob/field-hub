@@ -70,6 +70,7 @@ defmodule FieldHub.Jobs.Job do
     # Metadata
     field :tags, {:array, :string}, default: []
     field :metadata, :map, default: %{}
+    field :custom_fields, :map, default: %{}
 
     # Associations
     belongs_to :organization, FieldHub.Accounts.Organization
@@ -125,7 +126,8 @@ defmodule FieldHub.Jobs.Job do
       :recurring_job_id,
       :recurrence_rule,
       :tags,
-      :metadata
+      :metadata,
+      :custom_fields
     ])
     |> validate_required([:organization_id, :title, :number])
     |> validate_inclusion(:job_type, @job_types)

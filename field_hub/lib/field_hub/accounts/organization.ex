@@ -58,6 +58,7 @@ defmodule FieldHub.Accounts.Organization do
 
     # Associations
     has_many :users, FieldHub.Accounts.User
+    has_many :custom_field_definitions, FieldHub.Config.CustomFieldDefinition
     has_many :technicians, FieldHub.Dispatch.Technician
     has_many :customers, FieldHub.CRM.Customer
     has_many :jobs, FieldHub.Jobs.Job

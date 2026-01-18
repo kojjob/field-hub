@@ -35,6 +35,7 @@ defmodule FieldHub.Dispatch.Technician do
 
     # Soft delete
     field :archived_at, :utc_datetime
+    field :custom_fields, :map, default: %{}
 
     # Associations
     belongs_to :organization, FieldHub.Accounts.Organization
@@ -63,7 +64,8 @@ defmodule FieldHub.Dispatch.Technician do
       :hourly_rate,
       :fcm_token,
       :apns_token,
-      :archived_at
+      :archived_at,
+      :custom_fields
     ])
     |> validate_required([:organization_id, :name])
     |> validate_inclusion(:status, @statuses)

@@ -68,6 +68,8 @@ defmodule FieldHubWeb.Router do
       live "/settings/terminology", SettingsLive.Terminology, :index
       live "/settings/branding", SettingsLive.Branding, :index
       live "/settings/workflows", SettingsLive.Workflows, :index
+      live "/settings/custom-fields", SettingsLive.CustomFields, :index
+      live "/settings/custom-fields/new", SettingsLive.CustomFields, :new
     end
 
     post "/users/update-password", UserSessionController, :update_password
