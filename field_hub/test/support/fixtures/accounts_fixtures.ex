@@ -12,6 +12,18 @@ defmodule FieldHub.AccountsFixtures do
   def unique_user_email, do: "user#{System.unique_integer()}@example.com"
   def valid_user_password, do: "hello world!"
 
+  def organization_fixture(attrs \\ %{}) do
+    {:ok, org} =
+      attrs
+      |> Enum.into(%{
+        name: "Test Organization #{System.unique_integer([:positive])}",
+        slug: "test-org-#{System.unique_integer([:positive])}"
+      })
+      |> Accounts.create_organization()
+
+    org
+  end
+
   def valid_user_attributes(attrs \\ %{}) do
     Enum.into(attrs, %{
       email: unique_user_email()

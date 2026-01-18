@@ -466,10 +466,10 @@ git push -u origin develop
 
 ### FH-031: Technician Authentication
 
-- [ ] **Test First:** Tech can log in with credentials
-- [ ] **Implement:** Tech login page (mobile-optimized)
-- [ ] **Implement:** Remember device token
-- [ ] **Implement:** Session persistence across app restarts
+- [x] **Test First:** Tech can log in with credentials
+- [x] **Implement:** Tech login page (mobile-optimized)
+- [x] **Implement:** Remember device token (Schema, Context, JS Hook)
+- [x] **Implement:** Session persistence across app restarts (Standard Auth)
 
 **Branch:** `feature/FH-031-tech-auth`
 

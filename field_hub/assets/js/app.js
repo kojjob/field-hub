@@ -25,6 +25,7 @@ import {LiveSocket} from "phoenix_live_view"
 import {hooks as colocatedHooks} from "phoenix-colocated/field_hub"
 import topbar from "../vendor/topbar"
 import {DragDropHook} from "./hooks/drag_drop"
+import PushNotifications from "./hooks/push_notifications"
 import {MapHook} from "./hooks/map"
 import "leaflet/dist/leaflet.css"
 
@@ -32,6 +33,7 @@ import "leaflet/dist/leaflet.css"
 const Hooks = {
   ...colocatedHooks,
   DragDrop: DragDropHook,
+  PushNotifications: PushNotifications,
   Map: MapHook
 }
 
@@ -89,4 +91,12 @@ if (process.env.NODE_ENV === "development") {
 
     window.liveReloader = reloader
   })
+}
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then(registration => console.log('ServiceWorker registered'))
+      .catch(err => console.error('ServiceWorker registration failed:', err));
+  });
 }
