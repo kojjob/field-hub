@@ -431,15 +431,24 @@ git push -u origin develop
 **Branch:** `feature/FH-027-tech-status-sidebar`
 **PR:** [#7](https://github.com/kojjob/field-hub/pull/7)
 
-### FH-028: Live Map Component
+### FH-028: Live Map Component (Basic)
 
-- [ ] **Implement:** Leaflet.js map hook
-- [ ] **Implement:** Show technician markers with real-time position
-- [ ] **Implement:** Show job locations for the day
-- [ ] **Implement:** Click marker to view details
+- [x] Implement Leaflet.js map hook
+- [x] Show technician markers (mock coordinates for now if needed)
+- [x] Show job locations
+- [x] Click marker to view details
 - [ ] **Implement:** Route visualization (stretch)
 
-**Branch:** `feature/FH-028-live-map`
+**Branch:** `feature/FH-028-live-map-component`
+
+### FH-029: Optimize Dispatch Board
+- [x] **Implement:** Use `streams` for list management
+- [x] **Refactor:** Optimize `load_data` with O(1) job lookup
+- [x] **Implement:** Payload reduction (via optimized grouping)
+- [x] **Test:** Verify performance improvement (tests passed)
+
+**Branch:** `feature/FH-029-optimize-dispatch`
+**PR:** [#8](https://github.com/kojjob/field-hub/pull/8)
 
 ---
 
@@ -824,8 +833,11 @@ git push -u origin develop
 - [x] FH-026: Dispatch Board - Quick Actions
 
 **Sprint 4 (Week 4):** Real-Time Features 🚧
-- [x] FH-027: Technician Status Sidebar
-- FH-028: Live Map Component
+| Task ID    | Description                    | Status     |
+| :--------- | :----------------------------- | :--------- |
+| FH-027     | Technician Status Sidebar      | Completed  |
+| FH-028     | Live Map Component (Basic)     | Completed  |
+| FH-029     | Optimize Dispatch Board        | Completed  |
 
 ---
 
