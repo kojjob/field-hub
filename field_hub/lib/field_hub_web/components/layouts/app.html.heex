@@ -30,7 +30,7 @@
         <div class="flex grow flex-col gap-y-5 overflow-y-auto px-6 pb-4 bg-zinc-900">
           <div class="flex h-16 shrink-0 items-center">
              <img class="h-8 w-auto" src={~p"/images/logo.svg"} alt="FieldHub">
-             <span class="ml-2 text-xl font-bold text-white tracking-tight">FieldHub</span>
+             <span class="ml-2 text-xl font-bold text-white tracking-tight"><%= assigns[:current_organization] && assigns[:current_organization].brand_name || "FieldHub" %></span>
           </div>
           <nav class="flex flex-1 flex-col">
             <ul role="list" class="flex flex-1 flex-col gap-y-7">
@@ -58,13 +58,13 @@
                   <li>
                     <a href="#" class="text-zinc-400 hover:text-white hover:bg-zinc-800 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold">
                       <.icon name="hero-briefcase" class="h-6 w-6 shrink-0" />
-                      Jobs
+                      <%= (assigns[:terminology] || %{})["task_label_plural"] || "Jobs" %>
                     </a>
                   </li>
                    <li>
                     <a href="#" class="text-zinc-400 hover:text-white hover:bg-zinc-800 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold">
                       <.icon name="hero-user-group" class="h-6 w-6 shrink-0" />
-                      Technicians
+                      <%= (assigns[:terminology] || %{})["worker_label_plural"] || "Technicians" %>
                     </a>
                   </li>
                 </ul>
@@ -81,7 +81,7 @@
     <div class="flex grow flex-col gap-y-5 overflow-y-auto bg-zinc-900 px-6 pb-4 border-r border-white/5">
       <div class="flex h-16 shrink-0 items-center border-b border-white/5 mb-4">
         <img class="h-8 w-auto" src={~p"/images/logo.svg"} alt="FieldHub">
-        <span class="ml-3 text-xl font-bold text-white tracking-tight">FieldHub</span>
+        <span class="ml-3 text-xl font-bold text-white tracking-tight"><%= assigns[:current_organization] && assigns[:current_organization].brand_name || "FieldHub" %></span>
       </div>
       <nav class="flex flex-1 flex-col">
         <ul role="list" class="flex flex-1 flex-col gap-y-7">
@@ -108,19 +108,19 @@
               <li>
                 <a href="#" class="text-zinc-400 hover:text-white hover:bg-zinc-800 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold transition-colors duration-200">
                   <.icon name="hero-briefcase" class="h-5 w-5 shrink-0 group-hover:text-indigo-400 transition-colors" />
-                  Jobs
+                  <%= (assigns[:terminology] || %{})["task_label_plural"] || "Jobs" %>
                 </a>
               </li>
               <li>
                 <a href="#" class="text-zinc-400 hover:text-white hover:bg-zinc-800 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold transition-colors duration-200">
                   <.icon name="hero-user-group" class="h-5 w-5 shrink-0 group-hover:text-indigo-400 transition-colors" />
-                  Technicians
+                  <%= (assigns[:terminology] || %{})["worker_label_plural"] || "Technicians" %>
                 </a>
               </li>
                <li>
                 <a href="#" class="text-zinc-400 hover:text-white hover:bg-zinc-800 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold transition-colors duration-200">
                   <.icon name="hero-users" class="h-5 w-5 shrink-0 group-hover:text-indigo-400 transition-colors" />
-                  Customers
+                  <%= (assigns[:terminology] || %{})["client_label_plural"] || "Customers" %>
                 </a>
               </li>
             </ul>
@@ -128,6 +128,30 @@
           <li>
             <div class="text-xs font-semibold leading-6 text-zinc-500 uppercase tracking-wider">System</div>
             <ul role="list" class="-mx-2 mt-2 space-y-1">
+              <li>
+                <.link navigate={~p"/settings/terminology"} class="text-zinc-400 hover:text-white hover:bg-zinc-800 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold transition-colors duration-200">
+                  <.icon name="hero-language" class="h-5 w-5 shrink-0 group-hover:text-indigo-400 transition-colors" />
+                  Terminology
+                </.link>
+              </li>
+              <li>
+                <.link navigate={~p"/settings/branding"} class="text-zinc-400 hover:text-white hover:bg-zinc-800 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold transition-colors duration-200">
+                  <.icon name="hero-paint-brush" class="h-5 w-5 shrink-0 group-hover:text-indigo-400 transition-colors" />
+                  Branding
+                </.link>
+              </li>
+              <li>
+                <.link navigate={~p"/settings/workflows"} class="text-zinc-400 hover:text-white hover:bg-zinc-800 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold transition-colors duration-200">
+                  <.icon name="hero-arrow-path" class="h-5 w-5 shrink-0 group-hover:text-indigo-400 transition-colors" />
+                  Workflows
+                </.link>
+              </li>
+              <li>
+                <.link navigate={~p"/settings/custom-fields"} class="text-zinc-400 hover:text-white hover:bg-zinc-800 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold transition-colors duration-200">
+                  <.icon name="hero-list-bullet" class="h-5 w-5 shrink-0 group-hover:text-indigo-400 transition-colors" />
+                  Custom Fields
+                </.link>
+              </li>
               <li>
                 <a href="#" class="text-zinc-400 hover:text-white hover:bg-zinc-800 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold transition-colors duration-200">
                   <.icon name="hero-cog-6-tooth" class="h-5 w-5 shrink-0 group-hover:text-indigo-400 transition-colors" />

@@ -8,6 +8,14 @@
       {assigns[:page_title]}
     </.live_title>
     <link phx-track-static rel="stylesheet" href={~p"/assets/css/app.css"} />
+    <%= if org = assigns[:current_organization] do %>
+    <style>
+      :root {
+        --brand-primary: <%= org.primary_color || "#3B82F6" %>;
+        --brand-secondary: <%= org.secondary_color || "#1E40AF" %>;
+      }
+    </style>
+    <% end %>
     <script defer phx-track-static type="text/javascript" src={~p"/assets/js/app.js"}>
     </script>
     <script>

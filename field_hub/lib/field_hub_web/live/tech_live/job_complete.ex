@@ -20,6 +20,7 @@ defmodule FieldHubWeb.TechLive.JobComplete do
       {:ok,
        socket
        |> assign(:job, job)
+       |> assign(:technician, job.technician)
        |> assign(:customer, job.customer)
        |> assign_form(changeset)
        |> assign(:signature_data, nil)
@@ -188,6 +189,8 @@ defmodule FieldHubWeb.TechLive.JobComplete do
             </button>
           </div>
         </.form>
+
+        <div id="geolocation-tracking" phx-hook="Geolocation" data-auto-start="true"></div>
       </div>
     </div>
     """
@@ -233,6 +236,20 @@ defmodule FieldHubWeb.TechLive.JobComplete do
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign_form(socket, changeset)}
     end
+  end
+
+  @impl true
+  def handle_event("update_location", %{"lat" => lat, "lng" => lng}, socket) do
+    if socket.assigns.technician do
+      FieldHub.Dispatch.update_technician_location(socket.assigns.technician, lat, lng)
+    end
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_event("location_error", params, socket) do
+    IO.puts "Location error for technician #{socket.assigns.technician.id}: #{inspect(params)}"
+    {:noreply, socket}
   end
 
   defp assign_form(socket, %Ecto.Changeset{} = changeset) do

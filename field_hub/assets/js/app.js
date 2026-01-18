@@ -29,6 +29,7 @@ import {DragDropHook} from "./hooks/drag_drop"
 import {SignaturePadHook} from "./hooks/signature_pad"
 import PushNotifications from "./hooks/push_notifications"
 import {MapHook} from "./hooks/map"
+import {GeolocationHook} from "./hooks/geolocation"
 import "leaflet/dist/leaflet.css"
 
 // Custom hooks
@@ -37,7 +38,8 @@ const Hooks = {
   DragDrop: DragDropHook,
   SignaturePad: SignaturePadHook,
   PushNotifications: PushNotifications,
-  Map: MapHook
+  Map: MapHook,
+  Geolocation: GeolocationHook
 }
 
 const csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
