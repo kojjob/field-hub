@@ -62,6 +62,13 @@ defmodule FieldHub.Dispatch do
   end
 
   @doc """
+  Gets a technician by user ID.
+  """
+  def get_technician_by_user_id(user_id) do
+    Repo.get_by(Technician, user_id: user_id)
+  end
+
+  @doc """
   Creates a technician for an organization.
 
   ## Examples
