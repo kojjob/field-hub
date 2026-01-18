@@ -264,7 +264,6 @@ defmodule FieldHubWeb.JobLive.Index do
                 </td>
               </tr>
             </tbody>
-            </tbody>
           </table>
           <%= if not @has_jobs do %>
             <div class="flex flex-col items-center justify-center py-20 bg-white dark:bg-zinc-900">

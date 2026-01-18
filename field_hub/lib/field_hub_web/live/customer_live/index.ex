@@ -82,7 +82,7 @@ defmodule FieldHubWeb.CustomerLive.Index do
     |> assign(:customer, nil)
     |> assign(:selected_customer, nil)
     |> assign(:show_form_panel, false)
-    |> load_customers(socket.assigns.search)
+    |> load_customers()
   end
 
   defp load_customers(socket) do
