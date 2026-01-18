@@ -63,6 +63,25 @@ liveSocket.connect()
 // >> liveSocket.disableLatencySim()
 window.liveSocket = liveSocket
 
+// Theme Toggle Logic
+window.addEventListener("DOMContentLoaded", () => {
+  const btn = document.getElementById("themeToggle");
+  if (!btn) return;
+
+  const setTheme = (theme) => {
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem("phx:theme", theme);
+    // Dispatch event for LiveView if needed
+    window.dispatchEvent(new CustomEvent("phx:set-theme", { detail: { theme } }));
+  };
+
+  btn.addEventListener("click", () => {
+    const currentTheme = document.documentElement.getAttribute("data-theme") || 
+                         (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    setTheme(currentTheme === "dark" ? "light" : "dark");
+  });
+});
+
 // The lines below enable quality of life phoenix_live_reload
 // development features:
 //
