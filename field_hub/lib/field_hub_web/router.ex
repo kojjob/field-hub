@@ -34,7 +34,8 @@ defmodule FieldHubWeb.Router do
     pipe_through [:browser, :require_authenticated_user]
 
     live_session :require_authenticated_user,
-      on_mount: [{FieldHubWeb.UserAuth, :require_authenticated}] do
+      on_mount: [{FieldHubWeb.UserAuth, :require_authenticated}],
+      layout: {FieldHubWeb.Layouts, :app} do
       live "/users/settings", UserLive.Settings, :edit
       live "/users/settings/confirm-email/:token", UserLive.Settings, :confirm_email
 
@@ -43,14 +44,14 @@ defmodule FieldHubWeb.Router do
 
       # Main application routes (require organization)
       live "/dashboard", DashboardLive, :index
-    live "/technicians", TechnicianLive.Index, :index
-    live "/technicians/new", TechnicianLive.Index, :new
-    live "/technicians/:id/edit", TechnicianLive.Index, :edit
+      live "/technicians", TechnicianLive.Index, :index
+      live "/technicians/new", TechnicianLive.Index, :new
+      live "/technicians/:id/edit", TechnicianLive.Index, :edit
 
       live "/customers", CustomerLive.Index, :index
       live "/customers/new", CustomerLive.Index, :new
       live "/customers/:id/edit", CustomerLive.Index, :edit
-      live "/customers/:id", CustomerLive.Show, :show
+      live "/customers/:id", CustomerLive.Index, :show
 
       live "/jobs", JobLive.Index, :index
       live "/jobs/new", JobLive.Index, :new
@@ -58,6 +59,9 @@ defmodule FieldHubWeb.Router do
       live "/jobs/:id", JobLive.Show, :show
 
       live "/dispatch", DispatchLive.Index, :index
+
+      # Reports
+      live "/reports", ReportLive.Index, :index
 
       # Technician Mobile Views
       live "/tech/dashboard", TechLive.Dashboard, :index

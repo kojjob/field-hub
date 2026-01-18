@@ -7,7 +7,13 @@ defmodule FieldHubWeb.DispatchLiveTest do
 
   setup %{conn: conn} do
     unique_id = System.unique_integer([:positive])
-    {:ok, org} = FieldHub.Accounts.create_organization(%{name: "Test Org #{unique_id}", slug: "test-org-#{unique_id}"})
+
+    {:ok, org} =
+      FieldHub.Accounts.create_organization(%{
+        name: "Test Org #{unique_id}",
+        slug: "test-org-#{unique_id}"
+      })
+
     user = FieldHub.AccountsFixtures.user_fixture(%{organization_id: org.id})
 
     conn =
@@ -33,18 +39,20 @@ defmodule FieldHubWeb.DispatchLiveTest do
 
       # Create a job scheduled for 9am today
       today = Date.utc_today()
-      {:ok, _job} = FieldHub.Jobs.create_job(org.id, %{
-        title: "Morning Service Call",
-        description: "Test job",
-        job_type: "service_call",
-        priority: "normal",
-        customer_id: customer.id,
-        technician_id: technician.id,
-        created_by_id: user.id,
-        scheduled_date: today,
-        scheduled_start: ~T[09:00:00],
-        scheduled_end: ~T[10:00:00]
-      })
+
+      {:ok, _job} =
+        FieldHub.Jobs.create_job(org.id, %{
+          title: "Morning Service Call",
+          description: "Test job",
+          job_type: "service_call",
+          priority: "normal",
+          customer_id: customer.id,
+          technician_id: technician.id,
+          created_by_id: user.id,
+          scheduled_date: today,
+          scheduled_start: ~T[09:00:00],
+          scheduled_end: ~T[10:00:00]
+        })
 
       {:ok, _live, html} = live(conn, ~p"/dispatch")
 
@@ -59,29 +67,31 @@ defmodule FieldHubWeb.DispatchLiveTest do
 
       today = Date.utc_today()
 
-      {:ok, _job1} = FieldHub.Jobs.create_job(org.id, %{
-        title: "Alice's Job",
-        description: "Test",
-        job_type: "service_call",
-        priority: "normal",
-        customer_id: customer.id,
-        technician_id: tech1.id,
-        created_by_id: user.id,
-        scheduled_date: today,
-        scheduled_start: ~T[09:00:00]
-      })
+      {:ok, _job1} =
+        FieldHub.Jobs.create_job(org.id, %{
+          title: "Alice's Job",
+          description: "Test",
+          job_type: "service_call",
+          priority: "normal",
+          customer_id: customer.id,
+          technician_id: tech1.id,
+          created_by_id: user.id,
+          scheduled_date: today,
+          scheduled_start: ~T[09:00:00]
+        })
 
-      {:ok, _job2} = FieldHub.Jobs.create_job(org.id, %{
-        title: "Bob's Job",
-        description: "Test",
-        job_type: "service_call",
-        priority: "normal",
-        customer_id: customer.id,
-        technician_id: tech2.id,
-        created_by_id: user.id,
-        scheduled_date: today,
-        scheduled_start: ~T[10:00:00]
-      })
+      {:ok, _job2} =
+        FieldHub.Jobs.create_job(org.id, %{
+          title: "Bob's Job",
+          description: "Test",
+          job_type: "service_call",
+          priority: "normal",
+          customer_id: customer.id,
+          technician_id: tech2.id,
+          created_by_id: user.id,
+          scheduled_date: today,
+          scheduled_start: ~T[10:00:00]
+        })
 
       {:ok, _live, html} = live(conn, ~p"/dispatch")
 
@@ -103,14 +113,15 @@ defmodule FieldHubWeb.DispatchLiveTest do
     test "shows unassigned jobs sidebar", %{conn: conn, user: user, org: org} do
       customer = customer_fixture(org.id)
 
-      {:ok, _unassigned_job} = FieldHub.Jobs.create_job(org.id, %{
-        title: "Unassigned Service",
-        description: "Needs assignment",
-        job_type: "service_call",
-        priority: "urgent",
-        customer_id: customer.id,
-        created_by_id: user.id
-      })
+      {:ok, _unassigned_job} =
+        FieldHub.Jobs.create_job(org.id, %{
+          title: "Unassigned Service",
+          description: "Needs assignment",
+          job_type: "service_call",
+          priority: "urgent",
+          customer_id: customer.id,
+          created_by_id: user.id
+        })
 
       {:ok, _live, html} = live(conn, ~p"/dispatch")
 
@@ -123,14 +134,15 @@ defmodule FieldHubWeb.DispatchLiveTest do
       customer = customer_fixture(org.id)
       technician = technician_fixture(org.id)
 
-      {:ok, job} = FieldHub.Jobs.create_job(org.id, %{
-        title: "Test Assignment",
-        description: "Test",
-        job_type: "service_call",
-        priority: "normal",
-        customer_id: customer.id,
-        created_by_id: user.id
-      })
+      {:ok, job} =
+        FieldHub.Jobs.create_job(org.id, %{
+          title: "Test Assignment",
+          description: "Test",
+          job_type: "service_call",
+          priority: "normal",
+          customer_id: customer.id,
+          created_by_id: user.id
+        })
 
       {:ok, live, _html} = live(conn, ~p"/dispatch")
 
@@ -151,17 +163,18 @@ defmodule FieldHubWeb.DispatchLiveTest do
       customer = customer_fixture(org.id)
       technician = technician_fixture(org.id)
 
-      {:ok, job} = FieldHub.Jobs.create_job(org.id, %{
-        title: "Assigned Job",
-        description: "Test",
-        job_type: "service_call",
-        priority: "normal",
-        customer_id: customer.id,
-        technician_id: technician.id,
-        scheduled_date: Date.utc_today(),
-        scheduled_start: ~T[10:00:00],
-        created_by_id: user.id
-      })
+      {:ok, job} =
+        FieldHub.Jobs.create_job(org.id, %{
+          title: "Assigned Job",
+          description: "Test",
+          job_type: "service_call",
+          priority: "normal",
+          customer_id: customer.id,
+          technician_id: technician.id,
+          scheduled_date: Date.utc_today(),
+          scheduled_start: ~T[10:00:00],
+          created_by_id: user.id
+        })
 
       {:ok, live, _html} = live(conn, ~p"/dispatch")
 
@@ -180,17 +193,18 @@ defmodule FieldHubWeb.DispatchLiveTest do
       customer = customer_fixture(org.id)
       technician = technician_fixture(org.id)
 
-      {:ok, job} = FieldHub.Jobs.create_job(org.id, %{
-        title: "Status Test",
-        description: "Test",
-        job_type: "service_call",
-        priority: "normal",
-        status: "scheduled",
-        customer_id: customer.id,
-        technician_id: technician.id,
-        scheduled_date: Date.utc_today(),
-        created_by_id: user.id
-      })
+      {:ok, job} =
+        FieldHub.Jobs.create_job(org.id, %{
+          title: "Status Test",
+          description: "Test",
+          job_type: "service_call",
+          priority: "normal",
+          status: "scheduled",
+          customer_id: customer.id,
+          technician_id: technician.id,
+          scheduled_date: Date.utc_today(),
+          created_by_id: user.id
+        })
 
       {:ok, live, _html} = live(conn, ~p"/dispatch")
 
@@ -209,14 +223,15 @@ defmodule FieldHubWeb.DispatchLiveTest do
       customer = customer_fixture(org.id)
       technician = technician_fixture(org.id, %{status: "available"})
 
-      {:ok, job} = FieldHub.Jobs.create_job(org.id, %{
-        title: "Quick Dispatch Test",
-        description: "Test",
-        job_type: "service_call",
-        priority: "normal",
-        customer_id: customer.id,
-        created_by_id: user.id
-      })
+      {:ok, job} =
+        FieldHub.Jobs.create_job(org.id, %{
+          title: "Quick Dispatch Test",
+          description: "Test",
+          job_type: "service_call",
+          priority: "normal",
+          customer_id: customer.id,
+          created_by_id: user.id
+        })
 
       {:ok, live, _html} = live(conn, ~p"/dispatch")
 
@@ -233,17 +248,18 @@ defmodule FieldHubWeb.DispatchLiveTest do
       customer = customer_fixture(org.id)
       technician = technician_fixture(org.id)
 
-      {:ok, job} = FieldHub.Jobs.create_job(org.id, %{
-        title: "Details Test Job",
-        description: "View this job for more details",
-        job_type: "service_call",
-        priority: "normal",
-        customer_id: customer.id,
-        technician_id: technician.id,
-        scheduled_date: Date.utc_today(),
-        scheduled_start: ~T[10:00:00],
-        created_by_id: user.id
-      })
+      {:ok, job} =
+        FieldHub.Jobs.create_job(org.id, %{
+          title: "Details Test Job",
+          description: "View this job for more details",
+          job_type: "service_call",
+          priority: "normal",
+          customer_id: customer.id,
+          technician_id: technician.id,
+          scheduled_date: Date.utc_today(),
+          scheduled_start: ~T[10:00:00],
+          created_by_id: user.id
+        })
 
       {:ok, live, _html} = live(conn, ~p"/dispatch")
 
@@ -274,17 +290,18 @@ defmodule FieldHubWeb.DispatchLiveTest do
       customer = customer_fixture(org.id)
       technician = technician_fixture(org.id, %{name: "Active Tech", status: "on_job"})
 
-      {:ok, _job} = FieldHub.Jobs.create_job(org.id, %{
-        title: "Current Active Job",
-        description: "This job is in progress",
-        job_type: "service_call",
-        priority: "normal",
-        status: "in_progress",
-        customer_id: customer.id,
-        technician_id: technician.id,
-        scheduled_date: Date.utc_today(),
-        created_by_id: user.id
-      })
+      {:ok, _job} =
+        FieldHub.Jobs.create_job(org.id, %{
+          title: "Current Active Job",
+          description: "This job is in progress",
+          job_type: "service_call",
+          priority: "normal",
+          status: "in_progress",
+          customer_id: customer.id,
+          technician_id: technician.id,
+          scheduled_date: Date.utc_today(),
+          created_by_id: user.id
+        })
 
       {:ok, _live, html} = live(conn, ~p"/dispatch")
 
@@ -309,6 +326,7 @@ defmodule FieldHubWeb.DispatchLiveTest do
       assert updated_tech.status == "on_job"
     end
   end
+
   describe "Map View" do
     test "toggles to map view and displays map container", %{conn: conn} do
       {:ok, live, _html} = live(conn, ~p"/dispatch")
@@ -326,18 +344,21 @@ defmodule FieldHubWeb.DispatchLiveTest do
 
     test "includes technician and job data in map container", %{conn: conn, user: user, org: org} do
       customer = customer_fixture(org.id)
-      technician = technician_fixture(org.id, %{name: "Map Tech", current_lat: 37.77, current_lng: -122.42})
 
-      {:ok, job} = FieldHub.Jobs.create_job(org.id, %{
-        title: "Map Job",
-        job_type: "service_call",
-        customer_id: customer.id,
-        technician_id: technician.id,
-        scheduled_date: Date.utc_today(),
-        service_lat: 37.78,
-        service_lng: -122.43,
-        created_by_id: user.id
-      })
+      technician =
+        technician_fixture(org.id, %{name: "Map Tech", current_lat: 37.77, current_lng: -122.42})
+
+      {:ok, job} =
+        FieldHub.Jobs.create_job(org.id, %{
+          title: "Map Job",
+          job_type: "service_call",
+          customer_id: customer.id,
+          technician_id: technician.id,
+          scheduled_date: Date.utc_today(),
+          service_lat: 37.78,
+          service_lng: -122.43,
+          created_by_id: user.id
+        })
 
       {:ok, live, _html} = live(conn, ~p"/dispatch")
 

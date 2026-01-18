@@ -38,9 +38,11 @@ defmodule FieldHub.Config.Workflows do
   Gets the status configuration for an organization.
   Returns custom config if set, otherwise returns defaults.
   """
-  def get_statuses(%Organization{job_status_config: config}) when is_list(config) and config != [] do
+  def get_statuses(%Organization{job_status_config: config})
+      when is_list(config) and config != [] do
     config
   end
+
   def get_statuses(_), do: @default_statuses
 
   @doc """
@@ -89,6 +91,7 @@ defmodule FieldHub.Config.Workflows do
     # For now, use default transitions. Could be customized per org later.
     @default_transitions
   end
+
   def get_transitions(_), do: @default_transitions
 
   @doc """

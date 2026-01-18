@@ -8,57 +8,58 @@ defmodule FieldHubWeb.JobLive.FormComponent do
   def render(assigns) do
     ~H"""
     <div>
-      <.header>
-        <%= @title %>
-        <:subtitle>Use this form to manage job records.</:subtitle>
-      </.header>
-
       <.simple_form
         for={@form}
         id="job-form"
         phx-target={@myself}
         phx-change="validate"
         phx-submit="save"
+        class="space-y-6"
       >
-        <.input field={@form[:title]} type="text" label="Title" />
-        <.input field={@form[:description]} type="textarea" label="Description" />
+        <div class="space-y-4">
+          <.input field={@form[:title]} type="text" label="Job Title" placeholder="e.g. AC Repair for Smith Residence" />
 
-        <.input
-          field={@form[:customer_id]}
-          type="select"
-          label="Customer"
-          prompt="Select a customer"
-          options={@customers}
-        />
+          <div class="grid grid-cols-2 gap-4">
+             <.input
+              field={@form[:job_type]}
+              type="select"
+              label="Type"
+              options={[
+                {"Service Call", "service_call"},
+                {"Installation", "installation"},
+                {"Maintenance", "maintenance"},
+                {"Emergency", "emergency"},
+                {"Estimate", "estimate"}
+              ]}
+            />
+            <.input
+              field={@form[:priority]}
+              type="select"
+              label="Priority"
+              options={[
+                {"Normal", "normal"},
+                {"Low", "low"},
+                {"High", "high"},
+                {"Urgent", "urgent"}
+              ]}
+            />
+          </div>
 
-        <div class="grid grid-cols-2 gap-4">
+          <.input field={@form[:description]} type="textarea" label="Description" class="min-h-[120px]" placeholder="Detailed description of the work required..." />
+
           <.input
-            field={@form[:job_type]}
+            field={@form[:customer_id]}
             type="select"
-            label="Type"
-            options={[
-              {"Service Call", "service_call"},
-              {"Installation", "installation"},
-              {"Maintenance", "maintenance"},
-              {"Emergency", "emergency"},
-              {"Estimate", "estimate"}
-            ]}
-          />
-          <.input
-            field={@form[:priority]}
-            type="select"
-            label="Priority"
-            options={[
-              {"Normal", "normal"},
-              {"Low", "low"},
-              {"High", "high"},
-              {"Urgent", "urgent"}
-            ]}
+            label="Customer"
+            prompt="Select a customer"
+            options={@customers}
           />
         </div>
 
         <:actions>
-          <.button phx-disable-with="Saving...">Save Job</.button>
+          <.button phx-disable-with="Saving..." class="w-full bg-primary hover:bg-primary/90 text-white font-bold py-3 rounded-xl shadow-lg shadow-primary/20 transition-all">
+            Save Job Record
+          </.button>
         </:actions>
       </.simple_form>
     </div>

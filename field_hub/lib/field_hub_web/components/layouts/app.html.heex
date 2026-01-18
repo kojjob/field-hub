@@ -1,71 +1,104 @@
-<div class="h-screen w-full bg-zinc-50 dark:bg-zinc-900 flex overflow-hidden selection:bg-indigo-500 selection:text-white">
+<div class="h-screen w-full bg-zinc-50 dark:bg-zinc-950 flex overflow-hidden selection:bg-primary selection:text-white">
   
-  <!-- Off-canvas menu for mobile -->
+<!-- Off-canvas menu for mobile -->
   <div id="mobile-sidebar" class="relative z-50 lg:hidden hidden" role="dialog" aria-modal="true">
     
-    <!-- Backdrop -->
-    <div id="mobile-sidebar-backdrop" 
-         class="fixed inset-0 bg-gray-900/80 transition-opacity ease-linear duration-300 opacity-0" 
-         aria-hidden="true"
-         phx-click={JS.hide(to: "#mobile-sidebar-backdrop", transition: {"opacity-100", "opacity-100", "opacity-0"}) 
-                    |> JS.hide(to: "#mobile-sidebar-panel", transition: {"translate-x-0", "translate-x-0", "-translate-x-full"}, time: 300) 
-                    |> JS.hide(to: "#mobile-sidebar", time: 300)}>
+<!-- Backdrop -->
+    <div
+      id="mobile-sidebar-backdrop"
+      class="fixed inset-0 bg-gray-900/80 transition-opacity ease-linear duration-300 opacity-0"
+      aria-hidden="true"
+      phx-click={
+        JS.hide(
+          to: "#mobile-sidebar-backdrop",
+          transition: {"opacity-100", "opacity-100", "opacity-0"}
+        )
+        |> JS.hide(
+          to: "#mobile-sidebar-panel",
+          transition: {"translate-x-0", "translate-x-0", "-translate-x-full"},
+          time: 300
+        )
+        |> JS.hide(to: "#mobile-sidebar", time: 300)
+      }
+    >
     </div>
 
     <div class="fixed inset-0 flex">
       <!-- Sidebar panel -->
-      <div id="mobile-sidebar-panel" class="relative mr-16 flex w-full max-w-xs flex-1 transform transition ease-in-out duration-300 -translate-x-full bg-zinc-900 shadow-2xl ring-1 ring-white/10">
-        
+      <div
+        id="mobile-sidebar-panel"
+        class="relative mr-16 flex w-full max-w-xs flex-1 transform transition ease-in-out duration-300 -translate-x-full bg-zinc-900 shadow-2xl ring-1 ring-white/10"
+      >
         <div class="absolute left-full top-0 flex w-16 justify-center pt-5">
-          <button type="button" class="-m-2.5 p-2.5" 
-                  phx-click={JS.hide(to: "#mobile-sidebar-backdrop", transition: {"opacity-100", "opacity-100", "opacity-0"}) 
-                             |> JS.hide(to: "#mobile-sidebar-panel", transition: {"translate-x-0", "translate-x-0", "-translate-x-full"}, time: 300) 
-                             |> JS.hide(to: "#mobile-sidebar", time: 300)}>
+          <button
+            type="button"
+            class="-m-2.5 p-2.5"
+            phx-click={
+              JS.hide(
+                to: "#mobile-sidebar-backdrop",
+                transition: {"opacity-100", "opacity-100", "opacity-0"}
+              )
+              |> JS.hide(
+                to: "#mobile-sidebar-panel",
+                transition: {"translate-x-0", "translate-x-0", "-translate-x-full"},
+                time: 300
+              )
+              |> JS.hide(to: "#mobile-sidebar", time: 300)
+            }
+          >
             <span class="sr-only">Close sidebar</span>
             <.icon name="hero-x-mark" class="h-6 w-6 text-white" />
           </button>
         </div>
-
-        <!-- Mobile Sidebar Content -->
-        <div class="flex grow flex-col gap-y-5 overflow-y-auto px-6 pb-4 bg-zinc-900">
-          <div class="flex h-16 shrink-0 items-center">
-             <img class="h-8 w-auto" src={~p"/images/logo.svg"} alt="FieldHub">
-             <span class="ml-2 text-xl font-bold text-white tracking-tight"><%= assigns[:current_organization] && assigns[:current_organization].brand_name || "FieldHub" %></span>
+        
+<!-- Mobile Sidebar Content -->
+        <div class="flex grow flex-col gap-y-5 overflow-y-auto px-6 pb-4 bg-white dark:bg-zinc-900">
+          <div class="flex h-16 shrink-0 items-center mb-4">
+            <img class="h-8 w-auto" src={~p"/images/logo.svg"} alt="FieldHub">
+            <div class="ml-3 flex flex-col">
+              <span class="text-lg font-bold text-zinc-900 dark:text-white tracking-tight leading-none"><%= assigns[:current_organization] && assigns[:current_organization].brand_name || "FieldHub" %></span>
+              <span class="text-[10px] font-bold text-primary uppercase tracking-widest mt-0.5">Enterprise</span>
+            </div>
           </div>
           <nav class="flex flex-1 flex-col">
             <ul role="list" class="flex flex-1 flex-col gap-y-7">
               <li>
                 <ul role="list" class="-mx-2 space-y-1">
                   <li>
-                    <.link navigate={~p"/dashboard"} class="bg-zinc-800 text-white group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold">
-                      <.icon name="hero-home" class="h-6 w-6 shrink-0" />
+                    <.link navigate={~p"/dashboard"} class={if assigns[:current_nav] == :dashboard, do: "bg-primary text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-bold shadow-md shadow-primary/20", else: "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-semibold transition-all duration-200"}>
+                      <.icon name="hero-home" class={if assigns[:current_nav] == :dashboard, do: "h-5 w-5 shrink-0 text-white", else: "h-5 w-5 shrink-0 text-zinc-400 dark:text-zinc-500 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors"} />
                       Dashboard
                     </.link>
                   </li>
-                  <!-- Placeholder links -->
-                   <li>
-                    <a href="#" class="text-zinc-400 hover:text-white hover:bg-zinc-800 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold">
-                      <.icon name="hero-calendar" class="h-6 w-6 shrink-0" />
+                  <li>
+                    <.link navigate={~p"/dispatch"} class={if assigns[:current_nav] == :dispatch, do: "bg-primary text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-bold shadow-md shadow-primary/20", else: "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-semibold transition-all duration-200"}>
+                      <.icon name="hero-calendar" class={if assigns[:current_nav] == :dispatch, do: "h-5 w-5 shrink-0 text-white", else: "h-5 w-5 shrink-0 text-zinc-400 dark:text-zinc-500 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors"} />
                       Schedule
-                    </a>
+                    </.link>
                   </li>
                   <li>
-                    <a href="#" class="text-zinc-400 hover:text-white hover:bg-zinc-800 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold">
-                      <.icon name="hero-map" class="h-6 w-6 shrink-0" />
-                      Dispatch Map
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" class="text-zinc-400 hover:text-white hover:bg-zinc-800 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold">
-                      <.icon name="hero-briefcase" class="h-6 w-6 shrink-0" />
+                    <.link navigate={~p"/jobs"} class={if assigns[:current_nav] == :jobs, do: "bg-primary text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-bold shadow-md shadow-primary/20", else: "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-semibold transition-all duration-200"}>
+                      <.icon name="hero-briefcase" class={if assigns[:current_nav] == :jobs, do: "h-5 w-5 shrink-0 text-white", else: "h-5 w-5 shrink-0 text-zinc-400 dark:text-zinc-500 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors"} />
                       <%= (assigns[:terminology] || %{})["task_label_plural"] || "Jobs" %>
-                    </a>
+                    </.link>
                   </li>
-                   <li>
-                    <a href="#" class="text-zinc-400 hover:text-white hover:bg-zinc-800 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold">
-                      <.icon name="hero-user-group" class="h-6 w-6 shrink-0" />
+                  <li>
+                    <.link navigate={~p"/technicians"} class={if assigns[:current_nav] == :technicians, do: "bg-primary text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-bold shadow-md shadow-primary/20", else: "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-semibold transition-all duration-200"}>
+                      <.icon name="hero-user-group" class={if assigns[:current_nav] == :technicians, do: "h-5 w-5 shrink-0 text-white", else: "h-5 w-5 shrink-0 text-zinc-400 dark:text-zinc-500 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors"} />
                       <%= (assigns[:terminology] || %{})["worker_label_plural"] || "Technicians" %>
-                    </a>
+                    </.link>
+                  </li>
+                  <li>
+                    <.link navigate={~p"/customers"} class={if assigns[:current_nav] == :customers, do: "bg-primary text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-bold shadow-md shadow-primary/20", else: "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-semibold transition-all duration-200"}>
+                      <.icon name="hero-users" class={if assigns[:current_nav] == :customers, do: "h-5 w-5 shrink-0 text-white", else: "h-5 w-5 shrink-0 text-zinc-400 dark:text-zinc-500 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors"} />
+                      <%= (assigns[:terminology] || %{})["client_label_plural"] || "Customers" %>
+                    </.link>
+                  </li>
+                  <li>
+                    <.link navigate={~p"/reports"} class={if assigns[:current_nav] == :reports, do: "bg-primary text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-bold shadow-md shadow-primary/20", else: "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-semibold transition-all duration-200"}>
+                      <.icon name="hero-chart-bar" class={if assigns[:current_nav] == :reports, do: "h-5 w-5 shrink-0 text-white", else: "h-5 w-5 shrink-0 text-zinc-400 dark:text-zinc-500 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors"} />
+                       Reports
+                    </.link>
                   </li>
                 </ul>
               </li>
@@ -75,102 +108,138 @@
       </div>
     </div>
   </div>
-
   <!-- Static sidebar for desktop -->
   <div class="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
-    <div class="flex grow flex-col gap-y-5 overflow-y-auto bg-zinc-900 px-6 pb-4 border-r border-white/5">
-      <div class="flex h-16 shrink-0 items-center border-b border-white/5 mb-4">
+    <div class="flex grow flex-col gap-y-5 overflow-y-auto bg-white dark:bg-zinc-900 px-6 pb-4 border-r border-zinc-200 dark:border-zinc-800">
+      <div class="flex h-16 shrink-0 items-center mb-4">
         <img class="h-8 w-auto" src={~p"/images/logo.svg"} alt="FieldHub">
-        <span class="ml-3 text-xl font-bold text-white tracking-tight"><%= assigns[:current_organization] && assigns[:current_organization].brand_name || "FieldHub" %></span>
+        <div class="ml-3 flex flex-col">
+          <span class="text-lg font-bold text-zinc-900 dark:text-white tracking-tight leading-none"><%= assigns[:current_organization] && assigns[:current_organization].brand_name || "FieldHub" %></span>
+          <span class="text-[10px] font-bold text-primary uppercase tracking-widest mt-0.5">Enterprise</span>
+        </div>
       </div>
       <nav class="flex flex-1 flex-col">
         <ul role="list" class="flex flex-1 flex-col gap-y-7">
           <li>
             <ul role="list" class="-mx-2 space-y-1">
               <li>
-                <.link navigate={~p"/dashboard"} class="bg-indigo-600/10 text-indigo-400 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold border-l-2 border-indigo-500">
-                  <.icon name="hero-home" class="h-5 w-5 shrink-0 text-indigo-400" />
+                <.link navigate={~p"/dashboard"} class={if assigns[:current_nav] == :dashboard, do: "bg-primary text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-bold shadow-md shadow-primary/20", else: "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-semibold transition-all duration-200"}>
+                  <.icon name="hero-home" class={if assigns[:current_nav] == :dashboard, do: "h-5 w-5 shrink-0 text-white", else: "h-5 w-5 shrink-0 text-zinc-400 dark:text-zinc-500 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors"} />
                   Dashboard
                 </.link>
               </li>
               <li>
-                <a href="#" class="text-zinc-400 hover:text-white hover:bg-zinc-800 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold transition-colors duration-200">
-                  <.icon name="hero-calendar" class="h-5 w-5 shrink-0 group-hover:text-indigo-400 transition-colors" />
+                <.link navigate={~p"/dispatch"} class={if assigns[:current_nav] == :dispatch, do: "bg-primary text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-bold shadow-md shadow-primary/20", else: "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-semibold transition-all duration-200"}>
+                  <.icon name="hero-calendar" class={if assigns[:current_nav] == :dispatch, do: "h-5 w-5 shrink-0 text-white", else: "h-5 w-5 shrink-0 text-zinc-400 dark:text-zinc-500 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors"} />
                   Schedule
-                </a>
+                </.link>
               </li>
               <li>
-                <a href="#" class="text-zinc-400 hover:text-white hover:bg-zinc-800 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold transition-colors duration-200">
-                  <.icon name="hero-map" class="h-5 w-5 shrink-0 group-hover:text-indigo-400 transition-colors" />
-                  Dispatch Map
-                </a>
-              </li>
-              <li>
-                <a href="#" class="text-zinc-400 hover:text-white hover:bg-zinc-800 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold transition-colors duration-200">
-                  <.icon name="hero-briefcase" class="h-5 w-5 shrink-0 group-hover:text-indigo-400 transition-colors" />
+                <.link navigate={~p"/jobs"} class={if assigns[:current_nav] == :jobs, do: "bg-primary text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-bold shadow-md shadow-primary/20", else: "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-semibold transition-all duration-200"}>
+                  <.icon name="hero-briefcase" class={if assigns[:current_nav] == :jobs, do: "h-5 w-5 shrink-0 text-white", else: "h-5 w-5 shrink-0 text-zinc-400 dark:text-zinc-500 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors"} />
                   <%= (assigns[:terminology] || %{})["task_label_plural"] || "Jobs" %>
-                </a>
+                </.link>
               </li>
               <li>
-                <a href="#" class="text-zinc-400 hover:text-white hover:bg-zinc-800 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold transition-colors duration-200">
-                  <.icon name="hero-user-group" class="h-5 w-5 shrink-0 group-hover:text-indigo-400 transition-colors" />
+                <.link navigate={~p"/technicians"} class={if assigns[:current_nav] == :technicians, do: "bg-primary text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-bold shadow-md shadow-primary/20", else: "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-semibold transition-all duration-200"}>
+                  <.icon name="hero-user-group" class={if assigns[:current_nav] == :technicians, do: "h-5 w-5 shrink-0 text-white", else: "h-5 w-5 shrink-0 text-zinc-400 dark:text-zinc-500 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors"} />
                   <%= (assigns[:terminology] || %{})["worker_label_plural"] || "Technicians" %>
-                </a>
+                </.link>
               </li>
-               <li>
-                <a href="#" class="text-zinc-400 hover:text-white hover:bg-zinc-800 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold transition-colors duration-200">
-                  <.icon name="hero-users" class="h-5 w-5 shrink-0 group-hover:text-indigo-400 transition-colors" />
+              <li>
+                <.link navigate={~p"/customers"} class={if assigns[:current_nav] == :customers, do: "bg-primary text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-bold shadow-md shadow-primary/20", else: "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-semibold transition-all duration-200"}>
+                  <.icon name="hero-users" class={if assigns[:current_nav] == :customers, do: "h-5 w-5 shrink-0 text-white", else: "h-5 w-5 shrink-0 text-zinc-400 dark:text-zinc-500 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors"} />
                   <%= (assigns[:terminology] || %{})["client_label_plural"] || "Customers" %>
-                </a>
+                </.link>
+              </li>
+              <li>
+                <.link navigate={~p"/reports"} class={if assigns[:current_nav] == :reports, do: "bg-primary text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-bold shadow-md shadow-primary/20", else: "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-semibold transition-all duration-200"}>
+                  <.icon name="hero-chart-bar" class={if assigns[:current_nav] == :reports, do: "h-5 w-5 shrink-0 text-white", else: "h-5 w-5 shrink-0 text-zinc-400 dark:text-zinc-500 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors"} />
+                  Reports
+                </.link>
               </li>
             </ul>
           </li>
           <li>
-            <div class="text-xs font-semibold leading-6 text-zinc-500 uppercase tracking-wider">System</div>
+            <div class="text-xs font-semibold leading-6 text-zinc-500 uppercase tracking-wider">
+              System
+            </div>
             <ul role="list" class="-mx-2 mt-2 space-y-1">
               <li>
-                <.link navigate={~p"/settings/terminology"} class="text-zinc-400 hover:text-white hover:bg-zinc-800 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold transition-colors duration-200">
-                  <.icon name="hero-language" class="h-5 w-5 shrink-0 group-hover:text-indigo-400 transition-colors" />
-                  Terminology
+                <.link
+                  navigate={~p"/settings/terminology"}
+                  class="text-zinc-400 hover:text-white hover:bg-zinc-800 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold transition-colors duration-200"
+                >
+                  <.icon
+                    name="hero-language"
+                    class="h-5 w-5 shrink-0 group-hover:text-primary transition-colors"
+                  /> Terminology
                 </.link>
               </li>
               <li>
-                <.link navigate={~p"/settings/branding"} class="text-zinc-400 hover:text-white hover:bg-zinc-800 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold transition-colors duration-200">
-                  <.icon name="hero-paint-brush" class="h-5 w-5 shrink-0 group-hover:text-indigo-400 transition-colors" />
-                  Branding
+                <.link
+                  navigate={~p"/settings/branding"}
+                  class="text-zinc-400 hover:text-white hover:bg-zinc-800 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold transition-colors duration-200"
+                >
+                  <.icon
+                    name="hero-paint-brush"
+                    class="h-5 w-5 shrink-0 group-hover:text-primary transition-colors"
+                  /> Branding
                 </.link>
               </li>
               <li>
-                <.link navigate={~p"/settings/workflows"} class="text-zinc-400 hover:text-white hover:bg-zinc-800 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold transition-colors duration-200">
-                  <.icon name="hero-arrow-path" class="h-5 w-5 shrink-0 group-hover:text-indigo-400 transition-colors" />
-                  Workflows
+                <.link
+                  navigate={~p"/settings/workflows"}
+                  class="text-zinc-400 hover:text-white hover:bg-zinc-800 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold transition-colors duration-200"
+                >
+                  <.icon
+                    name="hero-arrow-path"
+                    class="h-5 w-5 shrink-0 group-hover:text-primary transition-colors"
+                  /> Workflows
                 </.link>
               </li>
               <li>
-                <.link navigate={~p"/settings/custom-fields"} class="text-zinc-400 hover:text-white hover:bg-zinc-800 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold transition-colors duration-200">
-                  <.icon name="hero-list-bullet" class="h-5 w-5 shrink-0 group-hover:text-indigo-400 transition-colors" />
-                  Custom Fields
+                <.link
+                  navigate={~p"/settings/custom-fields"}
+                  class="text-zinc-400 hover:text-white hover:bg-zinc-800 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold transition-colors duration-200"
+                >
+                  <.icon
+                    name="hero-list-bullet"
+                    class="h-5 w-5 shrink-0 group-hover:text-primary transition-colors"
+                  /> Custom Fields
                 </.link>
               </li>
               <li>
-                <a href="#" class="text-zinc-400 hover:text-white hover:bg-zinc-800 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold transition-colors duration-200">
-                  <.icon name="hero-cog-6-tooth" class="h-5 w-5 shrink-0 group-hover:text-indigo-400 transition-colors" />
-                  Settings
+                <a
+                  href="#"
+                  class="text-zinc-400 hover:text-white hover:bg-zinc-800 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold transition-colors duration-200"
+                >
+                  <.icon
+                    name="hero-cog-6-tooth"
+                    class="h-5 w-5 shrink-0 group-hover:text-primary transition-colors"
+                  /> Settings
                 </a>
               </li>
             </ul>
           </li>
           
           <li class="mt-auto">
-             <div class="border-t border-white/5 pt-4 mb-2">
-                 <div class="flex items-center gap-x-3 px-2 py-3 text-sm font-semibold leading-6 text-white hover:bg-zinc-800 rounded-md cursor-pointer">
-                    <div class="h-8 w-8 rounded-full bg-zinc-800 flex items-center justify-center border border-zinc-700">
-                        <span class="text-xs font-bold text-indigo-400">KO</span>
+              <div class="border-t border-zinc-100 dark:border-zinc-800 pt-4 mb-2">
+                 <div class="flex items-center gap-x-3 px-3 py-3 text-sm font-semibold leading-6 text-zinc-900 dark:text-white hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl cursor-pointer transition-colors group">
+                    <div class="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20 overflow-hidden text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+                        <%= if @current_user.avatar_url do %>
+                          <img src={@current_user.avatar_url} alt="" class="h-full w-full object-cover"/>
+                        <% else %>
+                          <span class="text-xs font-bold"><%= String.slice(@current_user.name || @current_user.email, 0, 2) |> String.upcase() %></span>
+                        <% end %>
                     </div>
-                    <span class="sr-only">Your profile</span>
-                    <span aria-hidden="true">Kojo (Admin)</span>
+                    <div class="flex flex-col">
+                      <span class="truncate max-w-[120px] font-bold"><%= @current_user.name || @current_user.email %></span>
+                      <span class="text-[10px] text-zinc-500 uppercase font-bold tracking-wider">Admin Mode</span>
+                    </div>
+                    <.icon name="hero-cog-6-tooth" class="ml-auto size-4 text-zinc-400 group-hover:text-primary transition-colors" />
                  </div>
-             </div>
+              </div>
           </li>
         </ul>
       </nav>
@@ -180,61 +249,78 @@
   <div class="lg:pl-72 w-full flex flex-col h-full overflow-hidden">
     <!-- Top Bar -->
     <div class="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
-      <button type="button" class="-m-2.5 p-2.5 text-zinc-700 dark:text-zinc-200 lg:hidden" 
-              phx-click={JS.show(to: "#mobile-sidebar") |> JS.show(to: "#mobile-sidebar-backdrop", transition: {"ease-linear duration-300", "opacity-0", "opacity-100"}) |> JS.show(to: "#mobile-sidebar-panel", transition: {"ease-in-out duration-300", "-translate-x-full", "translate-x-0"})}>
+      <button
+        type="button"
+        class="-m-2.5 p-2.5 text-zinc-700 dark:text-zinc-200 lg:hidden"
+        phx-click={
+          JS.show(to: "#mobile-sidebar")
+          |> JS.show(
+            to: "#mobile-sidebar-backdrop",
+            transition: {"ease-linear duration-300", "opacity-0", "opacity-100"}
+          )
+          |> JS.show(
+            to: "#mobile-sidebar-panel",
+            transition: {"ease-in-out duration-300", "-translate-x-full", "translate-x-0"}
+          )
+        }
+      >
         <span class="sr-only">Open sidebar</span>
         <.icon name="hero-bars-3" class="h-6 w-6" />
       </button>
-
-      <!-- Separator -->
+      
+<!-- Separator -->
       <div class="h-6 w-px bg-zinc-200 dark:bg-zinc-700 lg:hidden" aria-hidden="true"></div>
 
-      <div class="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
-        <form class="relative flex flex-1" action="#" method="GET">
-          <label for="search-field" class="sr-only">Search</label>
-          <div class="relative w-full text-zinc-400 focus-within:text-zinc-600 dark:focus-within:text-zinc-200">
-             <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-0">
-               <.icon name="hero-magnifying-glass" class="h-5 w-5" />
-             </div>
-             <input id="search-field" class="block h-full w-full border-0 py-0 pl-8 pr-0 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:ring-0 sm:text-sm bg-transparent" placeholder="Search jobs, customers, technicians..." type="search" name="search">
-           </div>
-        </form>
-        <div class="flex items-center gap-x-4 lg:gap-x-6">
-          <button type="button" class="-m-2.5 p-2.5 text-zinc-400 hover:text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full transition-colors">
-            <span class="sr-only">View notifications</span>
-            <.icon name="hero-bell" class="h-6 w-6" />
-          </button>
-          
-          <!-- Theme Toggle -->
-          <div class="flex items-center border-l border-zinc-200 dark:border-zinc-700 pl-4 lg:pl-6">
-             <.theme_toggle />
-          </div>
+      <div class="flex flex-1 gap-x-4 self-stretch lg:gap-x-6 items-center">
+        <!-- Dashboard Title -->
+        <div class="flex items-center">
+          <h1 class="text-xl font-extrabold text-zinc-900 dark:text-zinc-100 tracking-tight flex items-center gap-2">
+            <span class="size-2 rounded-full bg-primary animate-pulse"></span>
+            {(assigns[:page_title] || "FieldHub") |> String.upcase()}
+          </h1>
+        </div>
 
-          <!-- Profile dropdown (Simplified for now) -->
-          <div class="relative">
-            <button type="button" class="-m-1.5 flex items-center p-1.5" id="user-menu-button" aria-expanded="false" aria-haspopup="true">
-              <span class="sr-only">Open user menu</span>
-              <img class="h-8 w-8 rounded-full bg-zinc-50" src="https://ui-avatars.com/api/?name=Kojo&background=6366f1&color=fff" alt="">
-              <span class="hidden lg:flex lg:items-center">
-                <span class="ml-4 text-sm font-semibold leading-6 text-zinc-900 dark:text-zinc-100" aria-hidden="true">Kojo</span>
-                <.icon name="hero-chevron-down" class="ml-2 h-5 w-5 text-zinc-400" />
-              </span>
-            </button>
+        <div class="flex flex-1"></div>
+        
+<!-- Global Search (Desktop only) -->
+        <form class="hidden md:flex relative w-full max-w-sm" action="#" method="GET">
+          <label for="search-field" class="sr-only">Search</label>
+          <div class="relative w-full group">
+            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-zinc-400 group-focus-within:text-primary transition-colors">
+              <.icon name="hero-magnifying-glass" class="h-4 w-4" />
+            </div>
+            <input 
+              id="search-field" 
+              class="block w-full rounded-2xl border-0 py-2.5 pl-11 pr-4 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:ring-2 focus:ring-primary/20 bg-zinc-100 dark:bg-zinc-800/50 transition-all border-transparent focus:border-primary sm:text-sm" 
+              placeholder="Search records..."
+              type="search"
+              name="search"
+            />
           </div>
-           <div class="pl-2">
-             <.link href={~p"/users/log-out"} method="delete" class="text-sm font-semibold leading-6 text-zinc-900 dark:text-zinc-100 hover:text-red-500 transition-colors">
-                Log out
-             </.link>
-           </div>
+        </form>
+
+        <div class="flex items-center gap-x-2 sm:gap-x-4 lg:gap-x-6">
+          <!-- Notification Dropdown -->
+          <.notification_dropdown />
+
+          <div class="h-6 w-px bg-zinc-200 dark:bg-zinc-800" aria-hidden="true"></div>
+          
+<!-- Theme Toggle -->
+          <.theme_toggle />
+
+          <div class="h-6 w-px bg-zinc-200 dark:bg-zinc-800" aria-hidden="true"></div>
+          
+<!-- Profile dropdown -->
+          <.user_dropdown current_user={@current_user} current_organization={assigns[:current_organization]} />
         </div>
       </div>
     </div>
-
-    <!-- Main Content -->
+    
+<!-- Main Content -->
     <main class="flex-1 overflow-y-auto bg-zinc-50 dark:bg-black/20">
-      <div class="px-4 py-8 sm:px-6 lg:px-8">
+      <div class="max-w-[1600px] mx-auto p-4 sm:p-6 lg:p-8">
         <.flash_group flash={@flash} />
-        {render_slot(@inner_block)}
+        {@inner_content}
       </div>
     </main>
   </div>

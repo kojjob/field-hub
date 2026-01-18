@@ -41,15 +41,16 @@ defmodule FieldHub.Accounts.Organization do
     field :onboarding_completed_at, :utc_datetime
 
     # Industry-Agnostic Terminology
-    field :terminology, :map, default: %{
-      "worker_label" => "Technician",
-      "worker_label_plural" => "Technicians",
-      "client_label" => "Customer",
-      "client_label_plural" => "Customers",
-      "task_label" => "Job",
-      "task_label_plural" => "Jobs",
-      "dispatch_label" => "Dispatch"
-    }
+    field :terminology, :map,
+      default: %{
+        "worker_label" => "Technician",
+        "worker_label_plural" => "Technicians",
+        "client_label" => "Customer",
+        "client_label_plural" => "Customers",
+        "task_label" => "Job",
+        "task_label_plural" => "Jobs",
+        "dispatch_label" => "Dispatch"
+      }
 
     # White-Label Branding
     field :brand_name, :string

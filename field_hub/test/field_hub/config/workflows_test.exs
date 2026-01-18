@@ -32,14 +32,15 @@ defmodule FieldHub.Config.WorkflowsTest do
 
   describe "get_statuses/1" do
     test "returns custom statuses for organization with config" do
-      {:ok, org} = Accounts.create_organization(%{
-        name: "Test Org",
-        slug: "test-org",
-        job_status_config: [
-          %{"key" => "new", "label" => "New Request", "color" => "#3B82F6", "order" => 1},
-          %{"key" => "approved", "label" => "Approved", "color" => "#10B981", "order" => 2}
-        ]
-      })
+      {:ok, org} =
+        Accounts.create_organization(%{
+          name: "Test Org",
+          slug: "test-org",
+          job_status_config: [
+            %{"key" => "new", "label" => "New Request", "color" => "#3B82F6", "order" => 1},
+            %{"key" => "approved", "label" => "Approved", "color" => "#10B981", "order" => 2}
+          ]
+        })
 
       statuses = Workflows.get_statuses(org)
 

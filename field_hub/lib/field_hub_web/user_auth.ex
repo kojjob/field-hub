@@ -246,21 +246,29 @@ defmodule FieldHubWeb.UserAuth do
   end
 
   defp mount_current_scope(socket, session) do
-    socket = Phoenix.Component.assign_new(socket, :current_scope, fn ->
-      {user, _} =
-        if user_token = session["user_token"] do
-          Accounts.get_user_by_session_token(user_token)
-        end || {nil, nil}
+    socket =
+      Phoenix.Component.assign_new(socket, :current_scope, fn ->
+        {user, _} =
+          if user_token = session["user_token"] do
+            Accounts.get_user_by_session_token(user_token)
+          end || {nil, nil}
 
-      Scope.for_user(user)
-    end)
+        Scope.for_user(user)
+      end)
 
     # Also load organization and terminology for authenticated users
     socket
+    |> Phoenix.Component.assign_new(:current_user, fn ->
+      case socket.assigns.current_scope do
+        %Scope{user: user} -> user
+        _ -> nil
+      end
+    end)
     |> Phoenix.Component.assign_new(:current_organization, fn ->
       case socket.assigns.current_scope do
         %Scope{user: %Accounts.User{organization_id: org_id}} when not is_nil(org_id) ->
           Accounts.get_organization!(org_id)
+
         _ ->
           nil
       end
@@ -269,6 +277,7 @@ defmodule FieldHubWeb.UserAuth do
       case socket.assigns[:current_organization] do
         %Accounts.Organization{} = org ->
           FieldHub.Config.Terminology.get_terminology(org)
+
         _ ->
           FieldHub.Config.Terminology.defaults()
       end
@@ -288,6 +297,7 @@ defmodule FieldHubWeb.UserAuth do
     # or just fetch what we need. Since we need to know if we should redirect.
     # For now, let's just fetch the organization.
     org = Accounts.get_organization!(org_id)
+
     if org.onboarding_completed_at do
       ~p"/dashboard"
     else

@@ -28,9 +28,10 @@ defmodule FieldHubWeb.UserLive.SettingsTest do
       user = user_fixture()
 
       # Login with expired token timestamp
-      conn = log_in_user(conn, user,
-        token_authenticated_at: DateTime.add(DateTime.utc_now(:second), -11, :minute)
-      )
+      conn =
+        log_in_user(conn, user,
+          token_authenticated_at: DateTime.add(DateTime.utc_now(:second), -11, :minute)
+        )
 
       # Try to access settings - should redirect
       assert {:error, {:redirect, %{to: path, flash: flash}}} = live(conn, ~p"/users/settings")

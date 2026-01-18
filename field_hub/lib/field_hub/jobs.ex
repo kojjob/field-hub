@@ -29,6 +29,20 @@ defmodule FieldHub.Jobs do
   end
 
   @doc """
+  Searches jobs by number, title, or status.
+  """
+  def search_jobs(org_id, search_term) do
+    search = "%#{search_term}%"
+
+    Job
+    |> where([j], j.organization_id == ^org_id)
+    |> where([j], ilike(j.number, ^search) or ilike(j.title, ^search) or ilike(j.status, ^search))
+    |> order_by([j], desc: j.inserted_at)
+    |> Repo.all()
+    |> Repo.preload([:customer, :technician])
+  end
+
+  @doc """
   Returns the list of jobs scheduled for a specific date.
 
   ## Examples
@@ -62,8 +76,9 @@ defmodule FieldHub.Jobs do
   @doc """
   Returns the list of jobs for a customer, ordered by newest first.
   """
-  def list_jobs_for_customer(customer_id) do
+  def list_jobs_for_customer(org_id, customer_id) do
     Job
+    |> where([j], j.organization_id == ^org_id)
     |> where([j], j.customer_id == ^customer_id)
     |> order_by([j], desc: j.inserted_at)
     |> Repo.all()
@@ -84,7 +99,15 @@ defmodule FieldHub.Jobs do
     |> where([j], j.organization_id == ^org_id)
     |> where([j], is_nil(j.technician_id) or is_nil(j.scheduled_date))
     |> where([j], j.status not in ["completed", "cancelled"])
-    |> order_by([j], [desc: fragment("CASE WHEN ? = 'urgent' THEN 0 WHEN ? = 'high' THEN 1 ELSE 2 END", j.priority, j.priority), asc: j.inserted_at])
+    |> order_by([j],
+      desc:
+        fragment(
+          "CASE WHEN ? = 'urgent' THEN 0 WHEN ? = 'high' THEN 1 ELSE 2 END",
+          j.priority,
+          j.priority
+        ),
+      asc: j.inserted_at
+    )
     |> Repo.all()
     |> Repo.preload([:customer, :technician])
   end
@@ -165,8 +188,6 @@ defmodule FieldHub.Jobs do
     |> broadcast_job_updated()
   end
 
-
-
   @doc """
   Assigns a technician to a job.
 
@@ -203,7 +224,10 @@ defmodule FieldHub.Jobs do
     |> Multi.insert(:event, fn %{job: updated_job} ->
       JobEvent.build_event_changeset(updated_job, "scheduled", %{
         old_value: %{scheduled_date: job.scheduled_date, scheduled_start: job.scheduled_start},
-        new_value: %{scheduled_date: updated_job.scheduled_date, scheduled_start: updated_job.scheduled_start}
+        new_value: %{
+          scheduled_date: updated_job.scheduled_date,
+          scheduled_start: updated_job.scheduled_start
+        }
       })
     end)
     |> run_transaction()
@@ -270,7 +294,9 @@ defmodule FieldHub.Jobs do
   defp update_tech_status(repo, job, status) do
     if job.technician_id do
       case repo.get(FieldHub.Dispatch.Technician, job.technician_id) do
-        nil -> {:ok, nil}
+        nil ->
+          {:ok, nil}
+
         tech ->
           tech
           |> FieldHub.Dispatch.Technician.status_changeset(status)
@@ -369,19 +395,30 @@ defmodule FieldHub.Jobs do
   end
 
   def sanitize_job(job) do
-     # Extract relevant audit fields
-     Map.take(job, [:title, :description, :status, :technician_id, :scheduled_date, :scheduled_start, :scheduled_end, :internal_notes])
+    # Extract relevant audit fields
+    Map.take(job, [
+      :title,
+      :description,
+      :status,
+      :technician_id,
+      :scheduled_date,
+      :scheduled_start,
+      :scheduled_end,
+      :internal_notes
+    ])
   end
 
   defp broadcast_job_created({:ok, job}) do
     Broadcaster.broadcast_job_created(job)
     {:ok, job}
   end
+
   defp broadcast_job_created(error), do: error
 
   defp broadcast_job_updated({:ok, job}) do
     Broadcaster.broadcast_job_updated(job)
     {:ok, job}
   end
+
   defp broadcast_job_updated(error), do: error
 end

@@ -12,13 +12,14 @@ defmodule FieldHub.Config.CustomFieldsTest do
     end
 
     test "list_definitions/1 returns all definitions for org", %{org: org} do
-      {:ok, field1} = CustomFields.create_definition(%{
-        name: "Field 1",
-        key: "field_1",
-        type: "text",
-        target: "job",
-        organization_id: org.id
-      })
+      {:ok, field1} =
+        CustomFields.create_definition(%{
+          name: "Field 1",
+          key: "field_1",
+          type: "text",
+          target: "job",
+          organization_id: org.id
+        })
 
       assert CustomFields.list_definitions(org) == [field1]
     end

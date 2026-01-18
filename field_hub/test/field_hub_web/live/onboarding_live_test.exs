@@ -49,7 +49,7 @@ defmodule FieldHubWeb.OnboardingLiveTest do
 
       assert html =~ "Business Address"
       assert html =~ "City / Town"
-      assert html =~ "State / Province / Region"
+      assert html =~ "State / Province"
       assert html =~ "Postal / ZIP Code"
       assert html =~ "Country"
       assert has_element?(view, "input[name='organization[country]']")
