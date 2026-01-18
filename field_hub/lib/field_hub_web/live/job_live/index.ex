@@ -106,63 +106,116 @@ defmodule FieldHubWeb.JobLive.Index do
   @impl true
   def render(assigns) do
     ~H"""
-
       <div class="flex h-[calc(100vh-4rem)] overflow-hidden relative">
       <!-- Main Content Area -->
       <div class={[
-        "flex-1 flex flex-col min-w-0 transition-all duration-300",
+        "flex-1 flex flex-col min-w-0 transition-all duration-300 overflow-y-auto",
         @live_action in [:new, :edit] && "lg:mr-[480px]"
       ]}>
-        <div class="px-6 py-4 bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800">
-          <div class="flex items-center justify-between gap-4">
-            <form phx-change="search" id="search-form" class="flex-1 max-w-lg">
-              <div class="relative">
-                <.icon
-                  name="hero-magnifying-glass"
-                  class="absolute left-4 top-1/2 -tranzinc-y-1/2 text-zinc-400 size-5"
-                />
-                <input
-                  type="text"
-                  name="search"
-                  value={@search}
-                  placeholder="Search by title, location, or customer..."
-                  phx-debounce="300"
-                  class="w-full pl-12 pr-4 py-2 bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-xl text-sm font-medium text-zinc-700 dark:text-zinc-200 placeholder:text-zinc-400 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-dashboard"
-                />
-              </div>
-            </form>
-
-            <div class="flex items-center gap-3">
-              <button class="flex items-center gap-2 px-3 py-2 text-xs font-bold text-zinc-600 dark:text-zinc-300 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-all">
-                <.icon name="hero-arrow-down-tray" class="size-4" /> Export
+        <div class="space-y-10 p-6 pb-20">
+          <!-- Page Heading -->
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <p class="text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-1">
+                Operations
+              </p>
+              <h2 class="text-3xl font-black tracking-tighter text-zinc-900 dark:text-white">
+                Job Directory
+              </h2>
+            </div>
+            <div class="flex flex-wrap items-center gap-3">
+              <button class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-300 px-4 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-all border-b-2">
+                <.icon name="hero-funnel" class="size-5" /> Filters
+              </button>
+              <button class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-300 px-4 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-all border-b-2">
+                <.icon name="hero-arrow-down-tray" class="size-5" /> Export
               </button>
               <.link patch={~p"/jobs/new"}>
-                <button class="flex items-center gap-2 px-4 py-2 text-sm font-bold text-white bg-primary rounded-xl shadow-lg shadow-primary/20 hover:brightness-110 transition-all">
-                  <.icon name="hero-plus" class="size-4" /> Add Job
+                <button class="flex items-center gap-2 px-5 py-2.5 bg-primary hover:brightness-110 text-white rounded-xl font-bold text-sm shadow-xl shadow-primary/20 transition-all border-b-4 border-emerald-800 active:border-b-0 active:translate-y-1">
+                  <.icon name="hero-plus" class="size-5" /> Create New Job
                 </button>
               </.link>
             </div>
           </div>
-        </div>
 
-    <!-- Content Area -->
-      <div class="flex-1 overflow-auto bg-zinc-50/50 dark:bg-zinc-900/50 p-6">
-        <div class="bg-white dark:bg-zinc-900 rounded-[24px] border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
+          <!-- KPI Cards Grid -->
+          <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+            <FieldHubWeb.DashboardComponents.kpi_card
+              label="Open Jobs"
+              value="18"
+              progress={72}
+              variant={:progress}
+              icon="confirmation_number"
+              subtext="72% toward daily goal"
+            />
+            <FieldHubWeb.DashboardComponents.kpi_card
+              label="In Progress"
+              value="8"
+              icon="trending_up"
+              variant={:avatars}
+            />
+            <FieldHubWeb.DashboardComponents.kpi_card
+              label="Completed This Month"
+              value="156"
+              change="+24%"
+              icon="star"
+              variant={:simple}
+            />
+            <FieldHubWeb.DashboardComponents.kpi_card
+              label="Revenue Generated"
+              value="$48,520"
+              change="+18.5%"
+              icon="payments"
+              variant={:simple}
+            />
+          </div>
+
+          <!-- Search & Filters Bar -->
+          <div class="bg-white dark:bg-zinc-900 p-6 rounded-[24px] border border-zinc-200 dark:border-zinc-800 shadow-sm">
+            <div class="flex items-center justify-between gap-4">
+              <form phx-change="search" id="search-form" class="flex-1 max-w-xl">
+                <div class="relative">
+                  <.icon
+                    name="hero-magnifying-glass"
+                    class="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 size-5"
+                  />
+                  <input
+                    type="text"
+                    name="search"
+                    value={@search}
+                    placeholder="Search by title, location, or customer..."
+                    phx-debounce="300"
+                    class="w-full pl-12 pr-4 py-3 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl text-sm font-medium text-zinc-700 dark:text-zinc-200 placeholder:text-zinc-400 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                  />
+                </div>
+              </form>
+              <div class="flex items-center gap-2">
+                <button class="px-4 py-2.5 text-xs font-bold rounded-xl bg-primary/10 text-primary border border-primary/20">All</button>
+                <button class="px-4 py-2.5 text-xs font-bold rounded-xl text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 border border-transparent">Open</button>
+                <button class="px-4 py-2.5 text-xs font-bold rounded-xl text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 border border-transparent">In Progress</button>
+                <button class="px-4 py-2.5 text-xs font-bold rounded-xl text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 border border-transparent">Completed</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Jobs Table Card -->
+          <div class="bg-white dark:bg-zinc-900 rounded-[32px] border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
           <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-800">
             <thead class="bg-zinc-50 dark:bg-zinc-800/50">
               <tr>
                 <th
                   scope="col"
-                  class="py-4 pl-6 pr-3 text-left text-[11px] font-black uppercase tracking-widest text-zinc-400"
+                  class="py-4 pl-8 pr-3 text-left text-[10px] font-black uppercase tracking-widest text-zinc-500"
                 >
                   Job Details
                 </th>
                 <th
                   scope="col"
-                  class="px-3 py-4 text-left text-[11px] font-black uppercase tracking-widest text-zinc-400"
+                  class="px-3 py-4 text-left text-[10px] font-black uppercase tracking-widest text-zinc-500"
                 >
                   Customer
                 </th>
+
                 <th
                   scope="col"
                   class="px-3 py-4 text-left text-[11px] font-black uppercase tracking-widest text-zinc-400"

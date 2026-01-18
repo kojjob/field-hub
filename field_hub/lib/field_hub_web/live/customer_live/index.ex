@@ -226,172 +226,228 @@ defmodule FieldHubWeb.CustomerLive.Index do
     <div class="flex h-[calc(100vh-4rem)] overflow-hidden">
       <!-- Main Content Area -->
       <div class={[
-        "flex-1 flex flex-col min-w-0 transition-all duration-300",
+        "flex-1 flex flex-col min-w-0 transition-all duration-300 overflow-y-auto",
         @show_form_panel && "lg:mr-[480px]",
         !@show_form_panel && @selected_customer && "lg:mr-[420px]"
       ]}>
-        <div class="px-6 py-4 bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800">
-          <div class="flex items-center justify-between gap-4">
-            <form phx-change="search" id="search-form" class="flex-1 max-w-lg">
-              <div class="relative">
-                <.icon
-                  name="hero-magnifying-glass"
-                  class="absolute left-4 top-1/2 -tranzinc-y-1/2 text-zinc-400 size-5"
-                />
-                <input
-                  type="text"
-                  name="search"
-                  value={@search}
-                  placeholder="Search by name, email, or company..."
-                  phx-debounce="300"
-                  class="w-full pl-12 pr-4 py-2 bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-xl text-sm font-medium text-zinc-700 dark:text-zinc-200 placeholder:text-zinc-400 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-dashboard"
-                />
-              </div>
-            </form>
-
-            <div class="flex items-center gap-3">
-              <button class="flex items-center gap-2 px-3 py-2 text-xs font-bold text-zinc-600 dark:text-zinc-300 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-all">
-                <.icon name="hero-arrow-down-tray" class="size-4" /> Export
+        <div class="space-y-10 p-6 pb-20">
+          <!-- Page Heading -->
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <p class="text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-1">
+                CRM
+              </p>
+              <h2 class="text-3xl font-black tracking-tighter text-zinc-900 dark:text-white">
+                Customer Directory
+              </h2>
+            </div>
+            <div class="flex flex-wrap items-center gap-3">
+              <button class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-300 px-4 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-all border-b-2">
+                <.icon name="hero-funnel" class="size-5" /> Filters
+              </button>
+              <button class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-300 px-4 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-all border-b-2">
+                <.icon name="hero-arrow-down-tray" class="size-5" /> Export
               </button>
               <.link patch={~p"/customers/new"}>
-                <button class="flex items-center gap-2 px-4 py-2 text-sm font-bold text-white bg-primary rounded-xl shadow-lg shadow-primary/20 hover:brightness-110 transition-all">
-                  <.icon name="hero-plus" class="size-4" /> Add Customer
+                <button class="flex items-center gap-2 px-5 py-2.5 bg-primary hover:brightness-110 text-white rounded-xl font-bold text-sm shadow-xl shadow-primary/20 transition-all border-b-4 border-emerald-800 active:border-b-0 active:translate-y-1">
+                  <.icon name="hero-plus" class="size-5" /> Add Customer
                 </button>
               </.link>
             </div>
           </div>
-        </div>
 
-    <!-- Customer Table -->
-        <div class="flex-1 overflow-auto bg-zinc-50/50 dark:bg-zinc-900/50">
-          <table class="min-w-full">
-            <thead class="sticky top-0 bg-zinc-50 dark:bg-zinc-900 z-10">
-              <tr class="border-b border-zinc-200 dark:border-zinc-700">
-                <th class="py-3 px-6 text-left text-[11px] font-black uppercase tracking-widest text-zinc-400">
-                  Customer Name
-                </th>
-                <th class="py-3 px-6 text-left text-[11px] font-black uppercase tracking-widest text-zinc-400">
-                  Contact Info
-                </th>
-                <th class="py-3 px-6 text-left text-[11px] font-black uppercase tracking-widest text-zinc-400">
-                  Service History
-                </th>
-                <th class="py-3 px-6 text-left text-[11px] font-black uppercase tracking-widest text-zinc-400">
-                  Balance
-                </th>
-                <th class="py-3 px-6 text-left text-[11px] font-black uppercase tracking-widest text-zinc-400">
-                  Status
-                </th>
-                <th class="relative py-3 pl-3 pr-6 text-right">
-                  <span class="sr-only">Actions</span>
-                </th>
-              </tr>
-            </thead>
-            <tbody phx-update="stream" id="customers" class="bg-white dark:bg-zinc-900">
-              <tr
-                :for={{id, customer} <- @streams.customers}
-                id={id}
-                phx-click="select_customer"
-                phx-value-id={customer.id}
-                class={[
-                  "border-b border-zinc-100 dark:border-zinc-800 hover:bg-primary/5 dark:hover:bg-primary/10 cursor-pointer transition-all group",
-                  @selected_customer && @selected_customer.id == customer.id &&
-                    "bg-primary/10 dark:bg-primary/20"
-                ]}
-              >
-                <td class="py-4 px-6">
-                  <div class="flex items-center gap-4">
-                    <div class="size-10 rounded-full bg-primary flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-primary/20">
-                      {customer_initials(customer.name)}
-                    </div>
-                    <div>
-                      <p class="font-bold text-zinc-900 dark:text-white group-hover:text-primary dark:group-hover:text-primary transition-colors">
-                        {customer.name}
-                      </p>
-                      <p class="text-xs text-zinc-500">{customer.city}, {customer.state}</p>
-                    </div>
-                  </div>
-                </td>
-                <td class="py-4 px-6">
-                  <p class="text-sm text-zinc-700 dark:text-zinc-300">{customer.email}</p>
-                  <p class="text-xs text-zinc-500">{customer.phone}</p>
-                </td>
-                <td class="py-4 px-6">
-                  <p class="text-sm text-zinc-700 dark:text-zinc-300">
-                    {format_last_service(customer.updated_at)}
-                  </p>
-                  <p class="text-xs text-zinc-500">0 Jobs Completed</p>
-                </td>
-                <td class="py-4 px-6">
-                  <p class="text-sm font-semibold text-zinc-900 dark:text-white">$0.00</p>
-                </td>
-                <td class="py-4 px-6">
-                  <span class={[
-                    "px-3 py-1 rounded-full text-xs font-bold",
-                    status_badge_class("active")
-                  ]}>
-                    Active
-                  </span>
-                </td>
-                <td class="py-4 pl-3 pr-6 text-right">
-                  <div class="flex items-center justify-end gap-2 text-zinc-400">
-                    <.link
-                      patch={~p"/customers/#{customer}/edit"}
-                      phx-hook="StopPropagation"
-                      class="p-2 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-primary transition-all"
-                    >
-                      <.icon name="hero-pencil-square" class="size-5" />
-                    </.link>
-                    <.link
-                      phx-click={JS.push("delete", value: %{id: customer.id})}
-                      phx-hook="StopPropagation"
-                      data-confirm="Are you sure you want to archive this customer?"
-                      class="p-2 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-red-600 transition-all"
-                    >
-                      <.icon name="hero-archive-box" class="size-5" />
-                    </.link>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          <%= if not @has_customers do %>
-            <div class="flex flex-col items-center justify-center py-20 bg-white dark:bg-zinc-900 border-t border-zinc-200 dark:border-zinc-700">
-              <div class="size-16 rounded-2xl bg-zinc-50 dark:bg-zinc-800 flex items-center justify-center mb-4">
-                <.icon name="hero-magnifying-glass" class="size-8 text-zinc-300 dark:text-zinc-600" />
+          <!-- KPI Cards Grid -->
+          <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+            <FieldHubWeb.DashboardComponents.kpi_card
+              label="Total Customers"
+              value="247"
+              change="+12"
+              icon="confirmation_number"
+              variant={:simple}
+            />
+            <FieldHubWeb.DashboardComponents.kpi_card
+              label="Active Accounts"
+              value="218"
+              progress={88}
+              variant={:progress}
+              icon="star"
+              subtext="88% of customers active"
+            />
+            <FieldHubWeb.DashboardComponents.kpi_card
+              label="New This Month"
+              value="24"
+              icon="trending_up"
+              variant={:avatars}
+            />
+            <FieldHubWeb.DashboardComponents.kpi_card
+              label="Avg Lifetime Value"
+              value="$1,840"
+              change="+8.2%"
+              icon="payments"
+              variant={:simple}
+            />
+          </div>
+
+          <!-- Search & Filters Bar -->
+          <div class="bg-white dark:bg-zinc-900 p-6 rounded-[24px] border border-zinc-200 dark:border-zinc-800 shadow-sm">
+            <div class="flex items-center justify-between gap-4">
+              <form phx-change="search" id="search-form" class="flex-1 max-w-xl">
+                <div class="relative">
+                  <.icon
+                    name="hero-magnifying-glass"
+                    class="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 size-5"
+                  />
+                  <input
+                    type="text"
+                    name="search"
+                    value={@search}
+                    placeholder="Search by name, email, or company..."
+                    phx-debounce="300"
+                    class="w-full pl-12 pr-4 py-3 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl text-sm font-medium text-zinc-700 dark:text-zinc-200 placeholder:text-zinc-400 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                  />
+                </div>
+              </form>
+              <div class="flex items-center gap-2">
+                <button class="px-4 py-2.5 text-xs font-bold rounded-xl bg-primary/10 text-primary border border-primary/20">All</button>
+                <button class="px-4 py-2.5 text-xs font-bold rounded-xl text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 border border-transparent">Active</button>
+                <button class="px-4 py-2.5 text-xs font-bold rounded-xl text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 border border-transparent">Contract</button>
               </div>
-              <h3 class="text-sm font-bold text-zinc-900 dark:text-white mb-1">No customers found</h3>
-              <p class="text-xs text-zinc-500 dark:text-zinc-400">Try adjusting your search terms</p>
             </div>
-          <% end %>
-        </div>
+          </div>
 
-    <!-- Pagination -->
-        <div class="px-6 py-4 border-t border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 flex items-center justify-between">
-          <p class="text-sm text-zinc-500">
-            Page <span class="font-semibold">{@page}</span> of <span class="font-semibold">{@total_pages}</span>
-          </p>
-          <div class="flex items-center gap-2">
-            <.link
-              patch={~p"/customers?page=#{@page - 1}&search=#{@search}"}
-              class={"size-9 rounded-lg border border-zinc-200 dark:border-zinc-700 flex items-center justify-center text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all #{if @page <= 1, do: "pointer-events-none opacity-50"}"}
-            >
-              <.icon name="hero-chevron-left" class="size-4" />
-            </.link>
+          <!-- Customer Table Card -->
+          <div class="bg-white dark:bg-zinc-900 rounded-[32px] border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
+            <table class="min-w-full">
+              <thead class="bg-zinc-50 dark:bg-zinc-800/50">
+                <tr>
+                  <th class="py-4 px-8 text-left text-[10px] font-black uppercase tracking-widest text-zinc-500">
+                    Customer Name
+                  </th>
+                  <th class="py-4 px-6 text-left text-[10px] font-black uppercase tracking-widest text-zinc-500">
+                    Contact Info
+                  </th>
+                  <th class="py-4 px-6 text-left text-[10px] font-black uppercase tracking-widest text-zinc-500">
+                    Service History
+                  </th>
+                  <th class="py-4 px-6 text-left text-[10px] font-black uppercase tracking-widest text-zinc-500">
+                    Balance
+                  </th>
+                  <th class="py-4 px-6 text-left text-[10px] font-black uppercase tracking-widest text-zinc-500">
+                    Status
+                  </th>
+                  <th class="relative py-4 pl-3 pr-8 text-right">
+                    <span class="sr-only">Actions</span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody phx-update="stream" id="customers" class="divide-y divide-zinc-100 dark:divide-zinc-800">
+                <tr
+                  :for={{id, customer} <- @streams.customers}
+                  id={id}
+                  phx-click="select_customer"
+                  phx-value-id={customer.id}
+                  class={[
+                    "hover:bg-primary/5 dark:hover:bg-primary/10 cursor-pointer transition-all group",
+                    @selected_customer && @selected_customer.id == customer.id &&
+                      "bg-primary/10 dark:bg-primary/20"
+                  ]}
+                >
+                  <td class="py-5 px-8">
+                    <div class="flex items-center gap-4">
+                      <div class="size-10 rounded-full bg-primary flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-primary/20">
+                        {customer_initials(customer.name)}
+                      </div>
+                      <div>
+                        <p class="font-bold text-zinc-900 dark:text-white group-hover:text-primary dark:group-hover:text-primary transition-colors">
+                          {customer.name}
+                        </p>
+                        <p class="text-xs text-zinc-500">{customer.city}, {customer.state}</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="py-5 px-6">
+                    <p class="text-sm text-zinc-700 dark:text-zinc-300">{customer.email}</p>
+                    <p class="text-xs text-zinc-500">{customer.phone}</p>
+                  </td>
+                  <td class="py-5 px-6">
+                    <p class="text-sm text-zinc-700 dark:text-zinc-300">
+                      {format_last_service(customer.updated_at)}
+                    </p>
+                    <p class="text-xs text-zinc-500">0 Jobs Completed</p>
+                  </td>
+                  <td class="py-5 px-6">
+                    <p class="text-sm font-semibold text-zinc-900 dark:text-white">$0.00</p>
+                  </td>
+                  <td class="py-5 px-6">
+                    <span class={[
+                      "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold",
+                      status_badge_class("active")
+                    ]}>
+                      <div class="size-1.5 rounded-full bg-emerald-500"></div>
+                      Active
+                    </span>
+                  </td>
+                  <td class="py-5 pl-3 pr-8 text-right">
+                    <div class="flex items-center justify-end gap-2 text-zinc-400">
+                      <.link
+                        patch={~p"/customers/#{customer}/edit"}
+                        phx-hook="StopPropagation"
+                        class="p-2 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-primary transition-all"
+                      >
+                        <.icon name="hero-pencil-square" class="size-5" />
+                      </.link>
+                      <.link
+                        phx-click={JS.push("delete", value: %{id: customer.id})}
+                        phx-hook="StopPropagation"
+                        data-confirm="Are you sure you want to archive this customer?"
+                        class="p-2 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-red-600 transition-all"
+                      >
+                        <.icon name="hero-archive-box" class="size-5" />
+                      </.link>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <%= if not @has_customers do %>
+              <div class="flex flex-col items-center justify-center py-20">
+                <div class="size-16 rounded-2xl bg-zinc-50 dark:bg-zinc-800 flex items-center justify-center mb-4">
+                  <.icon name="hero-magnifying-glass" class="size-8 text-zinc-300 dark:text-zinc-600" />
+                </div>
+                <h3 class="text-sm font-bold text-zinc-900 dark:text-white mb-1">No customers found</h3>
+                <p class="text-xs text-zinc-500 dark:text-zinc-400">Try adjusting your search terms</p>
+              </div>
+            <% end %>
+          </div>
 
-            <button class="size-9 rounded-lg bg-primary text-white font-bold text-sm flex items-center justify-center">
-              {@page}
-            </button>
+          <!-- Pagination -->
+          <div class="flex items-center justify-between">
+            <p class="text-sm text-zinc-500">
+              Page <span class="font-semibold">{@page}</span> of <span class="font-semibold">{@total_pages}</span>
+            </p>
+            <div class="flex items-center gap-2">
+              <.link
+                patch={~p"/customers?page=#{@page - 1}&search=#{@search}"}
+                class={"size-10 rounded-xl border border-zinc-200 dark:border-zinc-700 flex items-center justify-center text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all #{if @page <= 1, do: "pointer-events-none opacity-50"}"}
+              >
+                <.icon name="hero-chevron-left" class="size-5" />
+              </.link>
 
-            <.link
-              patch={~p"/customers?page=#{@page + 1}&search=#{@search}"}
-              class={"size-9 rounded-lg border border-zinc-200 dark:border-zinc-700 flex items-center justify-center text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all #{if @page >= @total_pages, do: "pointer-events-none opacity-50"}"}
-            >
-              <.icon name="hero-chevron-right" class="size-4" />
-            </.link>
+              <button class="size-10 rounded-xl bg-primary text-white font-bold text-sm flex items-center justify-center shadow-lg shadow-primary/20">
+                {@page}
+              </button>
+
+              <.link
+                patch={~p"/customers?page=#{@page + 1}&search=#{@search}"}
+                class={"size-10 rounded-xl border border-zinc-200 dark:border-zinc-700 flex items-center justify-center text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all #{if @page >= @total_pages, do: "pointer-events-none opacity-50"}"}
+              >
+                <.icon name="hero-chevron-right" class="size-5" />
+              </.link>
+            </div>
           </div>
         </div>
       </div>
+
 
     <!-- Slide-in Customer Detail Panel -->
       <div

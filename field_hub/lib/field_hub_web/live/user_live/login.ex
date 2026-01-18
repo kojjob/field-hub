@@ -6,141 +6,199 @@ defmodule FieldHubWeb.UserLive.Login do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="min-h-screen bg-zinc-50 dark:bg-zinc-950 flex font-dashboard">
-      <!-- Left Sidebar: Brand & Value -->
-      <div class="hidden lg:flex lg:w-[40%] bg-zinc-900 relative overflow-hidden flex-col justify-between p-12">
-        <div class="absolute inset-0 opacity-20">
-          <div class="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-primary/30 rounded-full blur-[120px]">
-          </div>
-          <div class="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-primary/20 rounded-full blur-[120px]">
-          </div>
-        </div>
-
-        <div class="relative z-10">
-          <div class="flex items-center gap-3">
-            <div class="size-11 bg-primary rounded-2xl flex items-center justify-center text-white shadow-xl shadow-primary/20">
-              <.icon name="hero-command-line" class="size-6" />
+    <div class="min-h-screen bg-slate-100 font-dashboard">
+      <!-- Header -->
+      <header class="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-sm border-b border-slate-200 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+          <.link navigate={~p"/"} class="flex items-center gap-2.5">
+            <div class="size-9 bg-primary rounded-xl flex items-center justify-center text-white shadow-lg shadow-primary/20">
+              <.icon name="hero-command-line" class="size-5" />
             </div>
-            <span class="text-2xl font-black tracking-tight text-white">FieldHub</span>
-          </div>
+            <span class="text-xl font-black tracking-tight text-slate-900">FieldHub</span>
+          </.link>
+          <a href="mailto:admin@fieldhub.app" class="px-4 py-2 text-sm font-bold text-primary border border-primary/30 rounded-lg hover:bg-primary/5 transition-all">
+            Contact Admin
+          </a>
         </div>
+      </header>
 
-        <div class="relative z-10 space-y-8">
-          <div class="space-y-4">
-            <h2 class="text-5xl font-black text-white leading-[1.1] tracking-tight">
-              Welcome back to <span class="text-primary">FieldHub.</span>
-            </h2>
-            <p class="text-lg text-zinc-400 font-medium leading-relaxed max-w-md">
-              Sign in to manage your team, track jobs in real-time, and scale your operations.
-            </p>
-          </div>
-        </div>
-
-        <div class="relative z-10 text-zinc-500 text-sm font-bold">
-          &copy; {DateTime.utc_now().year} FieldHub Inc. All rights reserved.
-        </div>
-      </div>
-
-    <!-- Right Side: Form -->
-      <div class="flex-1 flex flex-col items-center justify-center p-6 lg:p-24 bg-white dark:bg-zinc-950">
-        <div class="w-full max-w-md space-y-10">
-          <div class="lg:hidden flex justify-center mb-8">
-            <div class="flex items-center gap-2">
-              <div class="size-10 bg-primary rounded-xl flex items-center justify-center text-white">
-                <.icon name="hero-command-line" class="size-5" />
-              </div>
-              <span class="text-xl font-black tracking-tight dark:text-white">FieldHub</span>
-            </div>
-          </div>
-
-          <div class="space-y-2 text-center lg:text-left">
-            <h1 class="text-4xl font-black text-zinc-900 dark:text-white tracking-tight">
-              Login to account
-            </h1>
-            <p class="text-zinc-500 dark:text-zinc-400 font-medium text-lg">
-              Enter your work email and password.
-            </p>
-          </div>
-
-          <.form
-            :let={f}
-            for={@form}
-            id="login_form_password"
-            action={~p"/users/log-in"}
-            phx-submit="submit_password"
-            phx-trigger-action={@trigger_submit}
-            class="space-y-6"
-          >
+      <!-- Main Content -->
+      <div class="pt-20 min-h-screen flex">
+        <!-- Left Side: Form -->
+        <div class="w-full lg:w-[45%] flex items-center justify-center p-8 lg:p-16 bg-white">
+          <div class="w-full max-w-md space-y-8">
             <div class="space-y-2">
-              <label class="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider ml-1">
-                Email Address
-              </label>
-              <.input
-                readonly={!!@current_scope}
-                field={f[:email]}
-                type="email"
-                placeholder="alex@company.com"
-                required
-                class="w-full !bg-zinc-50 dark:!bg-zinc-900 !border-zinc-200 dark:!border-zinc-800 !rounded-2xl !h-12 !px-4 focus:!ring-2 focus:!ring-primary/20 focus:!border-primary transition-all font-semibold"
-              />
+              <h1 class="text-3xl font-black text-slate-900 tracking-tight">
+                Welcome back
+              </h1>
+              <p class="text-slate-500 font-medium">
+                Please enter your details to sign in.
+              </p>
             </div>
 
-            <div class="space-y-2">
-              <div class="flex items-center justify-between px-1">
-                <label class="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
-                  Password
+            <.form
+              :let={f}
+              for={@form}
+              id="login_form_password"
+              action={~p"/users/log-in"}
+              phx-submit="submit_password"
+              phx-trigger-action={@trigger_submit}
+              class="space-y-5"
+            >
+              <div class="space-y-1.5">
+                <label class="text-sm font-semibold text-slate-700">
+                  Email Address
                 </label>
-                <.link
-                  navigate={~p"/users/settings"}
-                  class="text-xs font-bold text-primary hover:underline"
-                >
-                  Forgot?
-                </.link>
+                <.input
+                  readonly={!!@current_scope}
+                  field={f[:email]}
+                  type="email"
+                  placeholder="e.g. john@servicepro.com"
+                  required
+                  class="w-full !bg-white border border-slate-200 !rounded-lg !h-12 !px-4 focus:!ring-2 focus:!ring-primary/20 focus:!border-primary transition-all"
+                />
               </div>
-              <.input
-                field={f[:password]}
-                type="password"
-                placeholder="••••••••"
-                required
-                class="w-full !bg-zinc-50 dark:!bg-zinc-900 !border-zinc-200 dark:!border-zinc-800 !rounded-2xl !h-12 !px-4 focus:!ring-2 focus:!ring-primary/20 focus:!border-primary transition-all font-semibold"
-              />
-            </div>
 
-            <div class="flex items-center justify-between px-1">
+              <div class="space-y-1.5">
+                <div class="flex items-center justify-between">
+                  <label class="text-sm font-semibold text-slate-700">
+                    Password
+                  </label>
+                  <.link
+                    navigate={~p"/users/settings"}
+                    class="text-sm font-semibold text-primary hover:underline"
+                  >
+                    Forgot password?
+                  </.link>
+                </div>
+                <div class="relative" id="password-field-wrapper" phx-hook="PasswordToggle">
+                  <input
+                    type="password"
+                    name={f[:password].name}
+                    id="password-input"
+                    placeholder="Enter your password"
+                    required
+                    class="w-full bg-white border border-slate-300 rounded-lg h-12 px-4 pr-12 focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none transition-all"
+                  />
+                  <button
+                    type="button"
+                    id="password-toggle-btn"
+                    class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                  >
+                    <span id="eye-open"><.icon name="hero-eye" class="size-5" /></span>
+                    <span id="eye-closed" class="hidden"><.icon name="hero-eye-slash" class="size-5" /></span>
+                  </button>
+                </div>
+              </div>
+
               <div class="flex items-center gap-3">
                 <input
                   type="checkbox"
                   id="remember_me"
                   name={f[:remember_me].name}
-                  class="size-5 rounded-lg border-zinc-300 dark:border-zinc-800 text-primary focus:ring-primary/20 dark:bg-zinc-900"
+                  class="size-4 rounded border-slate-300 text-primary focus:ring-primary/20"
                 />
-                <label for="remember_me" class="text-sm font-medium text-zinc-500 dark:text-zinc-400">
+                <label for="remember_me" class="text-sm text-slate-600">
                   Remember me
                 </label>
               </div>
+
+              <button
+                type="submit"
+                class="w-full bg-primary text-white py-3.5 rounded-lg text-sm font-bold shadow-lg shadow-primary/20 hover:brightness-110 transition-all active:scale-[0.99]"
+              >
+                Sign In
+              </button>
+            </.form>
+
+            <div class="text-center">
+              <p class="text-slate-500 text-sm">
+                Don't have an account?
+                <.link
+                  navigate={~p"/users/register"}
+                  class="text-primary font-semibold hover:underline"
+                >
+                  Create account
+                </.link>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Side: Product Preview -->
+        <div class="hidden lg:flex lg:w-[55%] bg-slate-100 items-center justify-center p-16">
+          <div class="relative max-w-lg">
+            <!-- App Preview Card -->
+            <div class="bg-white rounded-3xl shadow-2xl shadow-slate-200/50 p-6 space-y-4">
+              <!-- Status Badge -->
+              <div class="flex justify-end">
+                <div class="inline-flex items-center gap-2 bg-primary/10 text-primary px-3 py-1.5 rounded-full text-xs font-bold">
+                  <div class="size-2 bg-primary rounded-full"></div>
+                  Job Completed
+                </div>
+              </div>
+
+              <!-- Mock App Interface -->
+              <div class="bg-slate-50 rounded-2xl p-5 border border-slate-100">
+                <div class="flex items-center justify-between mb-4">
+                  <h3 class="text-lg font-bold text-slate-900">Field Service eFleets</h3>
+                  <div class="flex gap-1">
+                    <div class="size-2 rounded-full bg-slate-300"></div>
+                    <div class="size-2 rounded-full bg-slate-300"></div>
+                    <div class="size-2 rounded-full bg-slate-300"></div>
+                  </div>
+                </div>
+                <div class="space-y-3">
+                  <div class="flex gap-3">
+                    <div class="h-10 w-1/3 bg-slate-200 rounded-lg"></div>
+                    <div class="h-10 flex-1 bg-primary/20 rounded-lg"></div>
+                  </div>
+                  <div class="grid grid-cols-3 gap-2">
+                    <div class="h-16 bg-slate-100 rounded-lg border border-slate-200"></div>
+                    <div class="h-16 bg-slate-100 rounded-lg border border-slate-200"></div>
+                    <div class="h-16 bg-primary/10 rounded-lg border border-primary/20"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Technician Info -->
+              <div class="flex items-center gap-3 pt-2">
+                <img
+                  src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face"
+                  class="size-10 rounded-full object-cover"
+                  alt="Technician"
+                />
+                <div>
+                  <p class="text-xs text-slate-500">Technician</p>
+                  <p class="font-bold text-slate-900 text-sm">Alex Johnson</p>
+                </div>
+              </div>
             </div>
 
-            <button
-              type="submit"
-              class="w-full bg-primary text-white py-4 rounded-2xl text-base font-bold shadow-xl shadow-primary/20 hover:bg-primary/90 transition-all active:scale-[0.98]"
-            >
-              Sign in
-            </button>
-          </.form>
-
-          <div class="text-center">
-            <p class="text-zinc-500 dark:text-zinc-400 font-medium">
-              Don't have an account?
-              <.link
-                navigate={~p"/users/register"}
-                class="text-primary font-bold hover:underline"
-              >
-                Create account
-              </.link>
-            </p>
+            <!-- Tagline -->
+            <div class="text-center mt-8 space-y-2">
+              <h2 class="text-2xl font-black text-slate-900 tracking-tight">
+                Service Management Simplified
+              </h2>
+              <p class="text-slate-500 text-sm max-w-sm mx-auto">
+                Real-time scheduling, dispatching, and invoicing for your entire fleet in one powerful hub.
+              </p>
+            </div>
           </div>
         </div>
       </div>
+
+      <!-- Footer -->
+      <footer class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 py-3 px-6">
+        <div class="max-w-7xl mx-auto flex items-center justify-between text-xs text-slate-400">
+          <span>© {DateTime.utc_now().year} FieldHub Inc. All rights reserved.</span>
+          <div class="flex gap-6">
+            <a href="#" class="hover:text-slate-600">Privacy Policy</a>
+            <a href="#" class="hover:text-slate-600">Terms of Service</a>
+            <a href="#" class="hover:text-slate-600">Security</a>
+          </div>
+        </div>
+      </footer>
     </div>
     """
   end
@@ -153,7 +211,12 @@ defmodule FieldHubWeb.UserLive.Login do
 
     form = to_form(%{"email" => email}, as: "user")
 
-    {:ok, assign(socket, form: form, trigger_submit: false)}
+    {:ok, assign(socket, form: form, trigger_submit: false, show_password: false)}
+  end
+
+  @impl true
+  def handle_event("toggle_password", _params, socket) do
+    {:noreply, assign(socket, :show_password, !socket.assigns.show_password)}
   end
 
   @impl true

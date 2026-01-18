@@ -29,182 +29,255 @@ defmodule FieldHubWeb.SettingsLive.Branding do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="max-w-4xl mx-auto">
-      <div class="mb-8">
-        <h1 class="text-3xl font-bold text-zinc-900 dark:text-white tracking-tight">
-          Branding Settings
-        </h1>
-        <p class="mt-2 text-zinc-600 dark:text-zinc-400">
-          Customize how your organization appears in the application. These settings will be applied across your workspace.
-        </p>
+    <div class="space-y-10 pb-20">
+      <!-- Page Heading (matches dashboard) -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <p class="text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-1">
+            Settings
+          </p>
+          <h2 class="text-3xl font-black tracking-tighter text-zinc-900 dark:text-white">
+            Branding & Identity
+          </h2>
+          <p class="mt-2 text-sm text-zinc-500 dark:text-zinc-400 max-w-lg">
+            Customize how your organization appears across the platform. These settings will be applied to your workspace.
+          </p>
+        </div>
+        <div class="flex flex-wrap items-center gap-3">
+          <.link navigate={~p"/dashboard"}>
+            <button class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-300 px-4 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-all border-b-2">
+              <.icon name="hero-arrow-left" class="size-4" /> Back
+            </button>
+          </.link>
+        </div>
       </div>
 
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        <div class="lg:col-span-7">
+      <div class="grid grid-cols-1 xl:grid-cols-12 gap-8">
+        <!-- Form Column -->
+        <div class="xl:col-span-7 space-y-6">
           <.form for={@form} phx-submit="save" phx-change="validate" class="space-y-6">
-            <!-- Brand Name & Logo -->
-            <div class="bg-white dark:bg-zinc-800/50 rounded-2xl shadow-sm border border-zinc-200 dark:border-zinc-700/50 p-6 overflow-hidden relative">
-              <div class="absolute top-0 left-0 w-1 h-full bg-primary"></div>
-              <h2 class="text-lg font-semibold text-zinc-900 dark:text-white mb-6 flex items-center gap-2">
-                <.icon name="hero-identification" class="size-5 text-primary" /> Identity
-              </h2>
+            <!-- Identity Card -->
+            <div class="bg-white dark:bg-zinc-900 p-6 rounded-[24px] border border-zinc-200 dark:border-zinc-800 shadow-sm">
+              <div class="flex items-center gap-3 mb-6">
+                <div class="size-11 rounded-xl bg-primary/10 flex items-center justify-center">
+                  <.icon name="hero-identification" class="text-primary size-6" />
+                </div>
+                <div>
+                  <h3 class="text-lg font-black text-zinc-900 dark:text-white tracking-tight">
+                    Brand Identity
+                  </h3>
+                  <p class="text-xs font-bold text-zinc-400 dark:text-zinc-500">
+                    Your organization's name and logo
+                  </p>
+                </div>
+              </div>
 
-              <div class="space-y-4">
-                <.input
-                  field={@form[:brand_name]}
-                  label="Brand Name"
-                  placeholder="Your Company Name"
-                  class="input-bordered"
-                />
+              <div class="space-y-5">
+                <div>
+                  <label class="block text-sm font-bold text-zinc-700 dark:text-zinc-300 mb-2">
+                    Brand Name
+                  </label>
+                  <input
+                    type="text"
+                    name="branding[brand_name]"
+                    value={@form[:brand_name].value}
+                    placeholder="Your Company Name"
+                    class="w-full px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-white placeholder-zinc-400 focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all font-medium"
+                  />
+                </div>
 
-                <.input
-                  field={@form[:logo_url]}
-                  label="Logo URL"
-                  placeholder="https://example.com/logo.png"
-                  class="input-bordered"
-                />
-                <p class="text-xs text-zinc-500 mt-1 italic">
-                  Tip: Use a PNG with transparency. Recommended height: 40px.
-                </p>
+                <div>
+                  <label class="block text-sm font-bold text-zinc-700 dark:text-zinc-300 mb-2">
+                    Logo URL
+                  </label>
+                  <div class="flex gap-3">
+                    <div class="size-12 rounded-xl bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 flex items-center justify-center overflow-hidden flex-shrink-0">
+                      <%= if @form[:logo_url].value && @form[:logo_url].value != "" do %>
+                        <img src={@form[:logo_url].value} class="size-10 object-contain" alt="Logo" />
+                      <% else %>
+                        <.icon name="hero-photo" class="size-6 text-zinc-400" />
+                      <% end %>
+                    </div>
+                    <input
+                      type="text"
+                      name="branding[logo_url]"
+                      value={@form[:logo_url].value}
+                      placeholder="https://example.com/logo.png"
+                      class="flex-1 px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-white placeholder-zinc-400 focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all font-mono text-sm"
+                    />
+                  </div>
+                  <p class="text-[10px] text-zinc-400 mt-2 uppercase tracking-wide font-bold">
+                    Use a PNG with transparency • Recommended height: 40px
+                  </p>
+                </div>
               </div>
             </div>
 
-    <!-- Colors -->
-            <div class="bg-white dark:bg-zinc-800/50 rounded-2xl shadow-sm border border-zinc-200 dark:border-zinc-700/50 p-6 overflow-hidden relative">
-              <div class="absolute top-0 left-0 w-1 h-full bg-primary"></div>
-              <h2 class="text-lg font-semibold text-zinc-900 dark:text-white mb-6 flex items-center gap-2">
-                <.icon name="hero-swatch" class="size-5 text-primary" /> Visual Theme
-              </h2>
+            <!-- Colors Card -->
+            <div class="bg-white dark:bg-zinc-900 p-6 rounded-[24px] border border-zinc-200 dark:border-zinc-800 shadow-sm">
+              <div class="flex items-center gap-3 mb-6">
+                <div class="size-11 rounded-xl bg-primary/10 flex items-center justify-center">
+                  <.icon name="hero-swatch" class="text-primary size-6" />
+                </div>
+                <div>
+                  <h3 class="text-lg font-black text-zinc-900 dark:text-white tracking-tight">
+                    Color Palette
+                  </h3>
+                  <p class="text-xs font-bold text-zinc-400 dark:text-zinc-500">
+                    Define your brand colors
+                  </p>
+                </div>
+              </div>
 
               <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
+                <!-- Primary Color -->
+                <div class="bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl p-5 border border-zinc-100 dark:border-zinc-800">
+                  <label class="block text-sm font-bold text-zinc-700 dark:text-zinc-300 mb-3">
                     Primary Color
                   </label>
-                  <div class="flex gap-2">
-                    <input
-                      type="color"
-                      name="branding[primary_color]"
-                      value={@form[:primary_color].value}
-                      class="h-11 w-14 rounded-lg border border-zinc-300 dark:border-zinc-600 cursor-pointer overflow-hidden p-0"
-                    />
-                    <div class="relative flex-1">
+                  <div class="flex gap-3 items-center">
+                    <div class="relative">
+                      <input
+                        type="color"
+                        name="branding[primary_color]"
+                        value={@form[:primary_color].value}
+                        class="size-14 rounded-xl border-2 border-zinc-200 dark:border-zinc-700 cursor-pointer overflow-hidden p-0 shadow-lg"
+                      />
+                    </div>
+                    <div class="flex-1">
                       <input
                         type="text"
                         value={@form[:primary_color].value}
-                        class="w-full px-3 py-2.5 border border-zinc-300 dark:border-zinc-600 rounded-lg bg-zinc-50 dark:bg-zinc-900 font-mono text-sm"
+                        class="w-full px-3 py-2.5 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 font-mono text-sm text-center font-bold uppercase"
                         readonly
                       />
+                      <p class="mt-1.5 text-[10px] text-zinc-400 font-bold uppercase tracking-wide">
+                        Buttons & Accents
+                      </p>
                     </div>
                   </div>
-                  <p class="mt-2 text-xs text-zinc-500">
-                    Buttons, active states, and primary accents.
-                  </p>
                 </div>
 
-                <div>
-                  <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
+                <!-- Secondary Color -->
+                <div class="bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl p-5 border border-zinc-100 dark:border-zinc-800">
+                  <label class="block text-sm font-bold text-zinc-700 dark:text-zinc-300 mb-3">
                     Secondary Color
                   </label>
-                  <div class="flex gap-2">
-                    <input
-                      type="color"
-                      name="branding[secondary_color]"
-                      value={@form[:secondary_color].value}
-                      class="h-11 w-14 rounded-lg border border-zinc-300 dark:border-zinc-600 cursor-pointer overflow-hidden p-0"
-                    />
-                    <div class="relative flex-1">
+                  <div class="flex gap-3 items-center">
+                    <div class="relative">
+                      <input
+                        type="color"
+                        name="branding[secondary_color]"
+                        value={@form[:secondary_color].value}
+                        class="size-14 rounded-xl border-2 border-zinc-200 dark:border-zinc-700 cursor-pointer overflow-hidden p-0 shadow-lg"
+                      />
+                    </div>
+                    <div class="flex-1">
                       <input
                         type="text"
                         value={@form[:secondary_color].value}
-                        class="w-full px-3 py-2.5 border border-zinc-300 dark:border-zinc-600 rounded-lg bg-zinc-50 dark:bg-zinc-900 font-mono text-sm"
+                        class="w-full px-3 py-2.5 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 font-mono text-sm text-center font-bold uppercase"
                         readonly
                       />
+                      <p class="mt-1.5 text-[10px] text-zinc-400 font-bold uppercase tracking-wide">
+                        Secondary UI
+                      </p>
                     </div>
                   </div>
-                  <p class="mt-2 text-xs text-zinc-500">Secondary actions and subtle UI elements.</p>
                 </div>
               </div>
             </div>
 
-            <div class="flex justify-end gap-3 pt-4">
-              <.button navigate={~p"/dashboard"} class="btn-ghost">
-                Cancel
-              </.button>
-              <.button type="submit" variant="primary" class="px-8" phx-disable-with="Saving...">
-                Save Changes
-              </.button>
+            <!-- Actions -->
+            <div class="flex justify-end gap-3 pt-2">
+              <.link navigate={~p"/dashboard"}>
+                <button type="button" class="px-6 py-3 rounded-xl text-sm font-bold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all">
+                  Cancel
+                </button>
+              </.link>
+              <button type="submit" class="flex items-center gap-2 px-8 py-3 bg-primary hover:brightness-110 text-white rounded-xl font-bold text-sm shadow-xl shadow-primary/20 transition-all border-b-4 border-emerald-800 active:border-b-0 active:translate-y-1" phx-disable-with="Saving...">
+                <.icon name="hero-check" class="size-5" /> Save Changes
+              </button>
             </div>
           </.form>
         </div>
 
-    <!-- Preview Column -->
-        <div class="lg:col-span-5">
-          <div class="sticky top-8 space-y-6">
-            <div class="bg-zinc-100 dark:bg-zinc-900 rounded-3xl p-1 border border-zinc-200 dark:border-zinc-800 shadow-xl overflow-hidden">
-              <div class="bg-zinc-200 dark:bg-zinc-800 px-4 py-2 flex items-center gap-1.5">
-                <div class="size-2.5 rounded-full bg-zinc-400"></div>
-                <div class="size-2.5 rounded-full bg-zinc-400"></div>
-                <div class="size-2.5 rounded-full bg-zinc-400"></div>
-                <div class="ml-2 bg-white dark:bg-zinc-700 rounded-md px-3 py-0.5 text-[10px] text-zinc-400 flex-1 truncate">
-                  https://fieldhub.app/{@current_organization.slug}
+        <!-- Preview Column -->
+        <div class="xl:col-span-5">
+          <div class="sticky top-8 space-y-4">
+            <!-- Preview Card -->
+            <div class="bg-white dark:bg-zinc-900 p-6 rounded-[24px] border border-zinc-200 dark:border-zinc-800 shadow-sm">
+              <div class="flex items-center gap-3 mb-6">
+                <div class="size-11 rounded-xl bg-primary/10 flex items-center justify-center">
+                  <.icon name="hero-eye" class="text-primary size-6" />
+                </div>
+                <div>
+                  <h3 class="text-lg font-black text-zinc-900 dark:text-white tracking-tight">
+                    Live Preview
+                  </h3>
+                  <p class="text-xs font-bold text-zinc-400 dark:text-zinc-500">
+                    See how your brand appears
+                  </p>
                 </div>
               </div>
 
-              <div class="bg-white dark:bg-zinc-950 min-h-[400px] flex flex-col">
-                <!-- Mock Sidebar -->
-                <div class="flex flex-1">
-                  <div class="w-16 border-r border-zinc-100 dark:border-zinc-900 bg-zinc-50 dark:bg-zinc-900/50 flex flex-col items-center py-4 gap-4">
+              <!-- Browser Mock -->
+              <div class="bg-zinc-100 dark:bg-zinc-800 rounded-2xl overflow-hidden border border-zinc-200 dark:border-zinc-700">
+                <div class="bg-zinc-200 dark:bg-zinc-700 px-3 py-2 flex items-center gap-1.5">
+                  <div class="size-2 rounded-full bg-zinc-400"></div>
+                  <div class="size-2 rounded-full bg-zinc-400"></div>
+                  <div class="size-2 rounded-full bg-zinc-400"></div>
+                  <div class="ml-2 bg-white dark:bg-zinc-600 rounded-md px-3 py-0.5 text-[9px] text-zinc-400 flex-1 truncate font-mono">
+                    fieldhub.app/{@current_organization.slug}
+                  </div>
+                </div>
+
+                <div class="bg-white dark:bg-zinc-900 min-h-[320px] flex">
+                  <!-- Mock Sidebar -->
+                  <div class="w-14 border-r border-zinc-100 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/50 flex flex-col items-center py-4 gap-3">
                     <div
-                      class="size-8 rounded-lg flex items-center justify-center text-white shadow-lg"
+                      class="size-8 rounded-lg flex items-center justify-center text-white shadow-lg font-black text-[9px]"
                       style={"background-color: #{@form[:primary_color].value}"}
                     >
-                      <span class="text-[10px] font-bold">FH</span>
+                      FH
                     </div>
-                    <div class="size-8 rounded-lg bg-zinc-200 dark:bg-zinc-800"></div>
-                    <div class="size-8 rounded-lg bg-zinc-200 dark:bg-zinc-800"></div>
-                    <div class="mt-auto size-8 rounded-full bg-primary/20 border border-primary/30">
-                    </div>
+                    <div class="size-8 rounded-lg bg-zinc-200 dark:bg-zinc-700"></div>
+                    <div class="size-8 rounded-lg bg-zinc-200 dark:bg-zinc-700"></div>
                   </div>
 
-                  <div class="flex-1 p-6">
-                    <div class="flex items-center gap-3 mb-8">
+                  <!-- Mock Content -->
+                  <div class="flex-1 p-4">
+                    <div class="flex items-center gap-2 mb-4">
                       <%= if @form[:logo_url].value && @form[:logo_url].value != "" do %>
-                        <img src={@form[:logo_url].value} class="h-6 w-auto" alt="Logo preview" />
-                      <% else %>
-                        <div class="h-6 w-24 bg-zinc-100 dark:bg-zinc-800 rounded animate-pulse">
-                        </div>
+                        <img src={@form[:logo_url].value} class="h-5 w-auto" alt="Logo" />
                       <% end %>
-                      <h3 class="text-sm font-bold text-zinc-900 dark:text-white">
+                      <span class="text-[10px] font-black text-zinc-900 dark:text-white">
                         {@form[:brand_name].value || "Your Brand"}
-                      </h3>
+                      </span>
                     </div>
 
-                    <div class="space-y-4">
-                      <div class="h-8 w-1/2 bg-zinc-100 dark:bg-zinc-800 rounded-lg"></div>
-                      <div class="grid grid-cols-2 gap-4">
-                        <div class="h-24 bg-zinc-50 dark:bg-zinc-900 rounded-xl border border-zinc-100 dark:border-zinc-800 flex flex-col p-3 gap-2">
-                          <div class="size-6 rounded bg-zinc-200 dark:bg-zinc-800"></div>
-                          <div class="h-3 w-1/2 bg-zinc-200 dark:bg-zinc-800 rounded"></div>
-                          <div
-                            class="h-5 w-3/4 bg-zinc-200 dark:bg-zinc-800 rounded mt-auto"
-                            style={"background-color: #{@form[:primary_color].value}20"}
-                          >
-                          </div>
+                    <div class="space-y-3">
+                      <div class="h-4 w-1/3 bg-zinc-100 dark:bg-zinc-800 rounded"></div>
+                      <div class="grid grid-cols-2 gap-2">
+                        <div class="h-16 bg-zinc-50 dark:bg-zinc-800/50 rounded-lg border border-zinc-100 dark:border-zinc-800 p-2">
+                          <div class="size-4 rounded bg-zinc-200 dark:bg-zinc-700 mb-1"></div>
+                          <div class="h-2 w-1/2 bg-zinc-200 dark:bg-zinc-700 rounded"></div>
                         </div>
-                        <div class="h-24 bg-zinc-50 dark:bg-zinc-900 rounded-xl border border-zinc-100 dark:border-zinc-800">
+                        <div class="h-16 bg-zinc-50 dark:bg-zinc-800/50 rounded-lg border border-zinc-100 dark:border-zinc-800 p-2">
+                          <div class="size-4 rounded bg-zinc-200 dark:bg-zinc-700 mb-1"></div>
+                          <div class="h-2 w-1/2 bg-zinc-200 dark:bg-zinc-700 rounded"></div>
                         </div>
                       </div>
 
-                      <div class="flex gap-2 mt-4">
+                      <div class="flex gap-2 mt-3">
                         <div
-                          class="px-4 py-2 rounded-lg text-[10px] font-bold text-white shadow-sm"
+                          class="px-3 py-1.5 rounded-lg text-[8px] font-black text-white shadow-sm"
                           style={"background-color: #{@form[:primary_color].value}"}
                         >
-                          PRIMARY ACTION
+                          PRIMARY
                         </div>
                         <div
-                          class="px-4 py-2 rounded-lg text-[10px] font-bold border"
+                          class="px-3 py-1.5 rounded-lg text-[8px] font-black border"
                           style={"color: #{@form[:secondary_color].value}; border-color: #{@form[:secondary_color].value}"}
                         >
                           SECONDARY
@@ -215,9 +288,24 @@ defmodule FieldHubWeb.SettingsLive.Branding do
                 </div>
               </div>
             </div>
-            <p class="text-center text-xs text-zinc-500">
-              Live preview of your organization dashboard
-            </p>
+
+            <!-- Quick Stats -->
+            <div class="grid grid-cols-2 gap-3">
+              <div class="bg-white dark:bg-zinc-900 p-4 rounded-xl border border-zinc-200 dark:border-zinc-800">
+                <p class="text-[10px] font-black text-zinc-400 uppercase tracking-wide mb-1">Primary</p>
+                <div class="flex items-center gap-2">
+                  <div class="size-6 rounded-lg shadow-inner" style={"background-color: #{@form[:primary_color].value}"}></div>
+                  <span class="text-sm font-mono font-bold text-zinc-900 dark:text-white">{@form[:primary_color].value}</span>
+                </div>
+              </div>
+              <div class="bg-white dark:bg-zinc-900 p-4 rounded-xl border border-zinc-200 dark:border-zinc-800">
+                <p class="text-[10px] font-black text-zinc-400 uppercase tracking-wide mb-1">Secondary</p>
+                <div class="flex items-center gap-2">
+                  <div class="size-6 rounded-lg shadow-inner" style={"background-color: #{@form[:secondary_color].value}"}></div>
+                  <span class="text-sm font-mono font-bold text-zinc-900 dark:text-white">{@form[:secondary_color].value}</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
