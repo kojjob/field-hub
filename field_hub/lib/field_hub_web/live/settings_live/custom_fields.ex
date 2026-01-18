@@ -144,7 +144,7 @@ defmodule FieldHubWeb.SettingsLive.CustomFields do
              <p class="text-sm text-zinc-500 mt-1">Add a new attribute to your <%= @active_tab %> model.</p>
           </div>
 
-          <.form for={@form} phx-change="validate" phx-submit="save" class="p-8 space-y-6">
+          <.form for={@form} id="custom-field-form" phx-change="validate" phx-submit="save" class="p-8 space-y-6">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <.input field={@form[:name]} label="Field Label" placeholder="e.g. Serial Number" class="input-bordered" />
               <.input field={@form[:key]} label="System Key" placeholder="e.g. serial_number" class="input-bordered" />

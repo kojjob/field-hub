@@ -39,7 +39,27 @@ const Hooks = {
   SignaturePad: SignaturePadHook,
   PushNotifications: PushNotifications,
   Map: MapHook,
-  Geolocation: GeolocationHook
+  Geolocation: GeolocationHook,
+  PasswordToggle: {
+    mounted() {
+      this.el.addEventListener("click", () => {
+        const inputId = this.el.dataset.inputId;
+        const input = document.getElementById(inputId);
+        const iconVis = this.el.querySelector(".icon-vis");
+        const iconHid = this.el.querySelector(".icon-hid");
+        
+        if (input.type === "password") {
+          input.type = "text";
+          iconVis.style.display = "none";
+          iconHid.style.display = "block";
+        } else {
+          input.type = "password";
+          iconVis.style.display = "block";
+          iconHid.style.display = "none";
+        }
+      });
+    }
+  }
 }
 
 const csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")

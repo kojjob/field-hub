@@ -25,15 +25,17 @@ defmodule FieldHubWeb.UserLive.SettingsTest do
     end
 
     test "redirects if user is not in sudo mode", %{conn: conn} do
-      {:ok, conn} =
-        conn
-        |> log_in_user(user_fixture(),
-          token_authenticated_at: DateTime.add(DateTime.utc_now(:second), -11, :minute)
-        )
-        |> live(~p"/users/settings")
-        |> follow_redirect(conn, ~p"/users/log-in")
+      user = user_fixture()
 
-      assert conn.resp_body =~ "You must re-authenticate to access this page."
+      # Login with expired token timestamp
+      conn = log_in_user(conn, user,
+        token_authenticated_at: DateTime.add(DateTime.utc_now(:second), -11, :minute)
+      )
+
+      # Try to access settings - should redirect
+      assert {:error, {:redirect, %{to: path, flash: flash}}} = live(conn, ~p"/users/settings")
+      assert path == ~p"/users/log-in"
+      assert flash["error"] == "You must re-authenticate to access this page."
     end
   end
 

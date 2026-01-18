@@ -77,13 +77,27 @@ defmodule FieldHub.AccountsTest do
       assert "has already been taken" in errors_on(changeset).email
     end
 
-    test "registers users without password" do
+    test "registers users with password and company" do
       email = unique_user_email()
-      {:ok, user} = Accounts.register_user(valid_user_attributes(email: email))
+      password = valid_user_password()
+      company_name = "Acme Inc"
+
+      {:ok, user} = Accounts.register_user(%{
+        email: email,
+        password: password,
+        terms_accepted: true,
+        company_name: company_name,
+        name: "Test User"
+      })
+
       assert user.email == email
-      assert is_nil(user.hashed_password)
+      assert user.hashed_password
       assert is_nil(user.confirmed_at)
-      assert is_nil(user.password)
+
+      # Also check organization creation
+      user = Repo.preload(user, :organization)
+      assert user.organization
+      assert user.organization.name == company_name
     end
   end
 
@@ -350,14 +364,17 @@ defmodule FieldHub.AccountsTest do
       assert {:error, :not_found} = Accounts.login_user_by_magic_link(encoded_token)
     end
 
-    test "raises when unconfirmed user has password set" do
+    test "confirms user and expires tokens even with password" do
       user = unconfirmed_user_fixture()
-      {1, nil} = Repo.update_all(User, set: [hashed_password: "hashed"])
-      {encoded_token, _hashed_token} = generate_user_magic_link_token(user)
+      # verify user has password (unconfirmed_user_fixture now sets it)
+      assert user.hashed_password
 
-      assert_raise RuntimeError, ~r/magic link log in is not allowed/, fn ->
-        Accounts.login_user_by_magic_link(encoded_token)
-      end
+      {encoded_token, hashed_token} = generate_user_magic_link_token(user)
+
+      assert {:ok, {user, [%{token: ^hashed_token}]}} =
+               Accounts.login_user_by_magic_link(encoded_token)
+
+      assert user.confirmed_at
     end
   end
 

@@ -13,236 +13,186 @@ defmodule FieldHubWeb.OnboardingLiveTest do
     end
   end
 
-  describe "Onboarding - Step 1: Template Selection" do
+  describe "Onboarding - user with organization" do
     setup %{conn: conn} do
+      # user_fixture creates user with organization
       user = user_fixture()
       %{conn: log_in_user(conn, user), user: user}
     end
 
-    test "mounts on step 1 with template selection", %{conn: conn} do
+    test "redirects users with completed onboarding to dashboard", %{conn: conn, user: user} do
+      # Mark onboarding as complete
+      org = Accounts.get_organization!(user.organization_id)
+      {:ok, _} = Accounts.update_organization(org, %{onboarding_completed_at: DateTime.utc_now()})
+
+      assert {:error, {:live_redirect, %{to: "/dashboard"}}} = live(conn, ~p"/onboarding")
+    end
+
+    test "shows step 2 (company details) for users with pending onboarding", %{conn: conn} do
+      {:ok, _view, html} = live(conn, ~p"/onboarding")
+
+      # Should start at step 2 since user has organization
+      assert html =~ "Tell us about your company"
+      assert html =~ "Company Profile"
+    end
+
+    test "displays organization form fields", %{conn: conn} do
+      {:ok, view, _html} = live(conn, ~p"/onboarding")
+
+      assert has_element?(view, "input[name='organization[name]']")
+      assert has_element?(view, "input[name='organization[email]']")
+      assert has_element?(view, "input[name='organization[phone]']")
+    end
+
+    test "shows international address fields", %{conn: conn} do
       {:ok, view, html} = live(conn, ~p"/onboarding")
 
-      assert html =~ "Select Your Industry"
-      assert has_element?(view, "button[phx-value-template=field_service]")
-      assert has_element?(view, "button[phx-value-template=healthcare]")
-    end
-
-    test "can select a template", %{conn: conn} do
-      {:ok, view, _html} = live(conn, ~p"/onboarding")
-
-      html =
-        view
-        |> element("button[phx-value-template=healthcare]")
-        |> render_click()
-
-      assert html =~ "border-blue-600"
-    end
-
-    test "can skip template selection", %{conn: conn} do
-      {:ok, view, _html} = live(conn, ~p"/onboarding")
-
-      html =
-        view
-        |> element("button", "Skip for now")
-        |> render_click()
-
-      assert html =~ "Create Your Organization"
-      assert has_element?(view, "input#organization_name")
-    end
-
-    test "can continue with selected template", %{conn: conn} do
-      {:ok, view, _html} = live(conn, ~p"/onboarding")
-
-      view
-      |> element("button[phx-value-template=healthcare]")
-      |> render_click()
-
-      html =
-        view
-        |> element("button", "Continue")
-        |> render_click()
-
-      assert html =~ "Create Your Organization"
-      assert html =~ "Home Healthcare"
+      assert html =~ "Business Address"
+      assert html =~ "City / Town"
+      assert html =~ "State / Province / Region"
+      assert html =~ "Postal / ZIP Code"
+      assert html =~ "Country"
+      assert has_element?(view, "input[name='organization[country]']")
     end
   end
 
-  describe "Onboarding - Step 2: Organization Details" do
+  describe "Onboarding - Step 2 to Step 3 flow" do
     setup %{conn: conn} do
       user = user_fixture()
       %{conn: log_in_user(conn, user), user: user}
     end
 
-    defp go_to_step_2(view) do
-      view
-      |> element("button", "Skip for now")
-      |> render_click()
-    end
-
-    test "validates organization name is required", %{conn: conn} do
+    test "can navigate from step 2 to step 3 (branding)", %{conn: conn} do
       {:ok, view, _html} = live(conn, ~p"/onboarding")
-      go_to_step_2(view)
 
-      result =
-        view
-        |> form("#onboarding-form", %{organization: %{name: "", email: "test@example.com"}})
-        |> render_change()
-
-      assert result =~ "can&#39;t be blank"
-    end
-
-    test "validates email format", %{conn: conn} do
-      {:ok, view, _html} = live(conn, ~p"/onboarding")
-      go_to_step_2(view)
-
-      result =
-        view
-        |> form("#onboarding-form", %{organization: %{name: "Test Org", email: "invalid-email"}})
-        |> render_change()
-
-      assert result =~ "has invalid format"
-    end
-
-    test "creates organization and redirects to dashboard", %{conn: conn, user: user} do
-      {:ok, view, _html} = live(conn, ~p"/onboarding")
-      go_to_step_2(view)
-
-      {:ok, _view, html} =
-        view
-        |> form("#onboarding-form", %{
-          organization: %{
-            name: "Ace HVAC Services",
-            email: "info@acehvac.com",
-            phone: "555-123-4567"
-          }
-        })
-        |> render_submit()
-        |> follow_redirect(conn)
-
-      # Should redirect to dashboard with success message
-      assert html =~ "Operations Dashboard"
-
-      # Verify user is now owner of the organization
-      updated_user = Accounts.get_user!(user.id)
-      assert updated_user.role == "owner"
-      assert updated_user.organization_id
-
-      # Verify organization was created correctly
-      {:ok, org} = Accounts.get_organization(updated_user.organization_id)
-      assert org.name == "Ace HVAC Services"
-      assert org.email == "info@acehvac.com"
-      assert org.subscription_status == "trial"
-    end
-
-    test "auto-generates slug from name", %{conn: conn, user: user} do
-      {:ok, view, _html} = live(conn, ~p"/onboarding")
-      go_to_step_2(view)
-
-      {:ok, _view, _html} =
-        view
-        |> form("#onboarding-form", %{
-          organization: %{name: "Bob's Plumbing & Heating"}
-        })
-        |> render_submit()
-        |> follow_redirect(conn)
-
-      updated_user = Accounts.get_user!(user.id)
-      {:ok, org} = Accounts.get_organization(updated_user.organization_id)
-      assert org.slug =~ "bobs-plumbing-heating"
-    end
-
-    test "shows organization preview as user types", %{conn: conn} do
-      {:ok, view, _html} = live(conn, ~p"/onboarding")
-      go_to_step_2(view)
-
+      # Submit step 2 form
       html =
         view
-        |> form("#onboarding-form", %{organization: %{name: "Ace HVAC"}})
-        |> render_change()
+        |> form("#onboarding-form", organization: %{name: "Test Org"})
+        |> render_submit()
 
-      assert html =~ "ace-hvac"
-    end
-
-    test "can go back to step 1", %{conn: conn} do
-      {:ok, view, _html} = live(conn, ~p"/onboarding")
-      go_to_step_2(view)
-
-      html =
-        view
-        |> element("button", "Back")
-        |> render_click()
-
-      assert html =~ "Select Your Industry"
+      # Should now be on step 3 (branding)
+      assert html =~ "Make it yours"
+      assert html =~ "Brand Colors"
     end
   end
 
-  describe "Onboarding - With Template Applied" do
+  describe "Onboarding - Step 3 (Branding)" do
     setup %{conn: conn} do
       user = user_fixture()
       %{conn: log_in_user(conn, user), user: user}
     end
 
-    test "applies healthcare template terminology", %{conn: conn, user: user} do
+    test "can navigate to branding step", %{conn: conn} do
       {:ok, view, _html} = live(conn, ~p"/onboarding")
 
-      # Select healthcare template
+      # Submit step 2 to get to step 3
       view
-      |> element("button[phx-value-template=healthcare]")
-      |> render_click()
+      |> form("#onboarding-form", organization: %{name: "Test Org"})
+      |> render_submit()
 
+      html = render(view)
+      assert html =~ "Make it yours"
+      assert html =~ "Primary Color"
+      assert html =~ "Secondary Color"
+      assert html =~ "Brand Name"
+    end
+
+    test "shows branding preview", %{conn: conn} do
+      {:ok, view, _html} = live(conn, ~p"/onboarding")
+
+      # Submit step 2 to get to step 3
       view
-      |> element("button", "Continue")
-      |> render_click()
+      |> form("#onboarding-form", organization: %{name: "Test Org"})
+      |> render_submit()
 
-      # Create organization
-      {:ok, _view, _html} =
-        view
-        |> form("#onboarding-form", %{
-          organization: %{name: "Care Plus Home Health"}
-        })
-        |> render_submit()
-        |> follow_redirect(conn)
-
-      # Verify template was applied
-      updated_user = Accounts.get_user!(user.id)
-      {:ok, org} = Accounts.get_organization(updated_user.organization_id)
-
-      assert org.terminology["worker_label"] == "Caregiver"
-      assert org.terminology["client_label"] == "Patient"
-      assert org.primary_color == "#10B981"
+      html = render(view)
+      assert html =~ "Live Preview"
     end
   end
 
-  describe "Onboarding - user already has organization" do
+  describe "Onboarding - Step 4 (Launch)" do
     setup %{conn: conn} do
-      {:ok, org} = Accounts.create_organization(%{name: "Existing Org", slug: "existing-org"})
       user = user_fixture()
-
-      # Update user to associate with org (register_user doesn't accept organization_id)
-      {:ok, user} =
-        user
-        |> Ecto.Changeset.change(%{organization_id: org.id})
-        |> FieldHub.Repo.update()
-
-      %{conn: log_in_user(conn, user), user: user, org: org}
+      %{conn: log_in_user(conn, user), user: user}
     end
 
-    test "redirects to dashboard if user already has organization", %{conn: conn} do
-      result = live(conn, ~p"/onboarding")
+    test "shows launch step after branding", %{conn: conn} do
+      {:ok, view, _html} = live(conn, ~p"/onboarding")
 
-      assert {:error, {:live_redirect, %{to: path}}} = result
-      assert path == "/dashboard"
+      # Go through step 2
+      view
+      |> form("#onboarding-form", organization: %{name: "Test Org"})
+      |> render_submit()
+
+      # Go through step 3
+      html =
+        view
+        |> form("#branding-form", organization: %{brand_name: "My Brand"})
+        |> render_submit()
+
+      # Should be on step 4
+      assert html =~ "all set"
+      assert html =~ "Launch Dashboard"
+    end
+
+    test "shows quick action cards on launch step", %{conn: conn} do
+      {:ok, view, _html} = live(conn, ~p"/onboarding")
+
+      # Navigate to step 4
+      view
+      |> form("#onboarding-form", organization: %{name: "Test Org"})
+      |> render_submit()
+
+      view
+      |> form("#branding-form", organization: %{})
+      |> render_submit()
+
+      html = render(view)
+      assert html =~ "Invite Team"
+      assert html =~ "Add Customers"
+      assert html =~ "Create Job"
     end
   end
 
-  # Fixtures
+  describe "Onboarding - completion" do
+    setup %{conn: conn} do
+      user = user_fixture()
+      %{conn: log_in_user(conn, user), user: user}
+    end
 
+    test "completing onboarding redirects to dashboard", %{conn: conn} do
+      {:ok, view, _html} = live(conn, ~p"/onboarding")
+
+      # Navigate through all steps
+      view
+      |> form("#onboarding-form", organization: %{name: "Test Org"})
+      |> render_submit()
+
+      view
+      |> form("#branding-form", organization: %{})
+      |> render_submit()
+
+      # Click finish
+      view
+      |> element("button", "Launch Dashboard")
+      |> render_click()
+
+      # Should redirect to dashboard
+      assert_redirect(view, "/dashboard")
+    end
+  end
+
+  # Helper fixtures
   defp user_fixture(attrs \\ %{}) do
     {:ok, user} =
       attrs
       |> Enum.into(%{
         email: "test#{System.unique_integer([:positive])}@example.com",
-        password: "validpassword123"
+        password: "validpassword123",
+        terms_accepted: true,
+        name: "Test User",
+        company_name: "Test Company #{System.unique_integer([:positive])}"
       })
       |> Accounts.register_user()
 
