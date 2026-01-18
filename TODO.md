@@ -485,24 +485,24 @@ git push -u origin develop
 
 **Branch:** `feature/FH-032-tech-dashboard`
 
-### FH-033: Job Detail View (Mobile)
+### FH-033: Job Detail View (Mobile) ✅
 
-- [ ] **Implement:** Full job details screen
-- [ ] **Implement:** Customer info with tap-to-call
-- [ ] **Implement:** Address with tap-to-navigate (Google Maps)
-- [ ] **Implement:** Job notes and instructions
-- [ ] **Implement:** Previous service history at address
+- [x] **Implement:** Full job details screen
+- [x] **Implement:** Customer info with tap-to-call
+- [x] **Implement:** Address with tap-to-navigate (Google Maps)
+- [x] **Implement:** Job notes and instructions
+- [x] **Implement:** Previous service history at address
 
 **Branch:** `feature/FH-033-tech-job-detail`
 
-### FH-034: Job Status Actions
+### FH-034: Job Status Actions ✅
 
-- [ ] **Test First:** Status transitions work from mobile
-- [ ] **Implement:** "Start Travel" button
-- [ ] **Implement:** "Arrived" button
-- [ ] **Implement:** "Start Work" button
+- [x] **Test First:** Status transitions work from mobile
+- [x] **Implement:** "Start Travel" button
+- [x] **Implement:** "Arrived" button
+- [x] **Implement:** "Start Work" button
 - [ ] **Implement:** Status confirmation modals
-- [ ] **Integrate:** Broadcast status changes
+- [x] **Integrate:** Broadcast status changes
 
 **Branch:** `feature/FH-034-tech-status-actions`
 
@@ -516,14 +516,14 @@ git push -u origin develop
 
 **Branch:** `feature/FH-035-gps-tracking`
 
-### FH-036: Job Completion Flow
+### FH-036: Job Completion Flow ✅
 
-- [ ] **Test First:** Job completes with required fields
-- [ ] **Implement:** Work performed text entry
-- [ ] **Implement:** Amount charged input
-- [ ] **Implement:** Signature capture (canvas component)
-- [ ] **Implement:** Photo upload (before/after)
-- [ ] **Implement:** Complete job submission
+- [x] **Test First:** Job completes with required fields
+- [x] **Implement:** Work performed text entry
+- [x] **Implement:** Amount charged input
+- [x] **Implement:** Signature capture (canvas component)
+- [x] **Implement:** Photo upload (before/after)
+- [x] **Implement:** Complete job submission
 
 **Branch:** `feature/FH-036-job-completion`
 
@@ -799,12 +799,12 @@ git push -u origin develop
 | 0 - Foundation | 17 | 17 | 100% |
 | 1 - Core Domain | 32 | 32 | 100% |
 | 2 - Dispatcher Dashboard | 36 | 15 | 42% |
-| 3 - Technician Mobile | 28 | 15 | 54% |
+| 3 - Technician Mobile | 28 | 16 | 57% |
 | 4 - Customer Portal | 12 | 0 | 0% |
 | 5 - Notifications | 20 | 0 | 0% |
 | 6 - Billing & Polish | 16 | 0 | 0% |
 | 7 - Launch Prep | 24 | 0 | 0% |
-| **TOTAL** | **185** | **78** | **42%** |
+| **TOTAL** | **185** | **79** | **43%** |
 
 ---
 

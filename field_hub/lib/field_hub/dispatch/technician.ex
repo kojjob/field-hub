@@ -8,7 +8,7 @@ defmodule FieldHub.Dispatch.Technician do
   use Ecto.Schema
   import Ecto.Changeset
 
-  @statuses ~w(available on_job traveling break off_duty)
+  @statuses ~w(available on_job traveling en_route on_site busy break off_duty)
   @hex_color_regex ~r/^#[0-9A-Fa-f]{6}$/
 
   schema "technicians" do

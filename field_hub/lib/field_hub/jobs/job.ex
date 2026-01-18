@@ -206,6 +206,7 @@ defmodule FieldHub.Jobs.Job do
       :customer_signature,
       :photos
     ])
+    |> validate_required([:work_performed])
     |> change(
       status: "completed",
       completed_at: DateTime.utc_now() |> DateTime.truncate(:second)

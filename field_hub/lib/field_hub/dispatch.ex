@@ -138,6 +138,19 @@ defmodule FieldHub.Dispatch do
   end
 
   @doc """
+  Updates a technician's device token for push notifications.
+  """
+  def update_technician_device_token(%Technician{} = technician, type, token) do
+    attrs = case type do
+      "fcm" -> %{fcm_token: token}
+      "apns" -> %{apns_token: token}
+      _ -> %{}
+    end
+
+    update_technician(technician, attrs)
+  end
+
+  @doc """
   Updates a technician's current location.
 
   ## Examples
@@ -279,31 +292,7 @@ defmodule FieldHub.Dispatch do
     |> Repo.all()
   end
 
-  @doc """
-  Updates a technician's device token (FCM or APNS).
 
-  ## Examples
-
-      iex> update_technician_device_token(tech, "fcm", "token123")
-      {:ok, %Technician{fcm_token: "token123"}}
-
-  """
-  def update_technician_device_token(%Technician{} = technician, token_type, token) do
-    attrs =
-      case token_type do
-        "fcm" -> %{fcm_token: token}
-        "apns" -> %{apns_token: token}
-        _ -> %{}
-      end
-
-    technician
-    |> Technician.changeset(attrs)
-    |> Repo.update()
-    # We generally don't need to broadcast device token updates to everyone,
-    # but we might want to for admin dashboards if they show "Push Enabled".
-    # For now, let's skip global broadcast or use the generic updated one.
-    |> broadcast_technician_updated()
-  end
 
   defp broadcast_technician_status({:ok, tech}) do
     Broadcaster.broadcast_technician_status(tech)
