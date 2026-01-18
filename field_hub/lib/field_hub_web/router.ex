@@ -63,6 +63,10 @@ defmodule FieldHubWeb.Router do
       live "/tech/dashboard", TechLive.Dashboard, :index
       live "/tech/jobs/:id", TechLive.JobShow, :show
       live "/tech/jobs/:id/complete", TechLive.JobComplete, :complete
+
+      # Settings
+      live "/settings/terminology", SettingsLive.Terminology, :index
+      live "/settings/branding", SettingsLive.Branding, :index
     end
 
     post "/users/update-password", UserSessionController, :update_password

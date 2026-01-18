@@ -36,6 +36,23 @@ defmodule FieldHub.Accounts.Organization do
     # Settings
     field :settings, :map, default: %{}
 
+    # Industry-Agnostic Terminology
+    field :terminology, :map, default: %{
+      "worker_label" => "Technician",
+      "worker_label_plural" => "Technicians",
+      "client_label" => "Customer",
+      "client_label_plural" => "Customers",
+      "task_label" => "Job",
+      "task_label_plural" => "Jobs",
+      "dispatch_label" => "Dispatch"
+    }
+
+    # White-Label Branding
+    field :brand_name, :string
+    field :logo_url, :string
+    field :primary_color, :string, default: "#3B82F6"
+    field :secondary_color, :string, default: "#1E40AF"
+
     # Associations
     has_many :users, FieldHub.Accounts.User
     has_many :technicians, FieldHub.Dispatch.Technician
@@ -66,7 +83,12 @@ defmodule FieldHub.Accounts.Organization do
       :subscription_status,
       :trial_ends_at,
       :stripe_customer_id,
-      :settings
+      :settings,
+      :terminology,
+      :brand_name,
+      :logo_url,
+      :primary_color,
+      :secondary_color
     ])
     |> validate_required([:name, :slug])
     |> validate_format(:slug, ~r/^[a-z0-9]+(?:-[a-z0-9]+)*$/,

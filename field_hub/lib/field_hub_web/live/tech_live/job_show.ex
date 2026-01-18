@@ -10,7 +10,9 @@ defmodule FieldHubWeb.TechLive.JobShow do
     job = Jobs.get_job!(org_id, id) |> FieldHub.Repo.preload([:customer])
     history = Jobs.list_jobs_for_customer(job.customer_id) |> Enum.reject(&(&1.id == job.id))
 
-    {:ok, assign(socket, job: job, history: history, page_title: job.title)}
+    technician = FieldHub.Dispatch.get_technician_by_user_id(user.id)
+
+    {:ok, assign(socket, job: job, history: history, page_title: job.title, technician: technician)}
   end
 
   @impl true
@@ -143,6 +145,8 @@ defmodule FieldHubWeb.TechLive.JobShow do
             <% end %>
           </div>
         </div>
+
+        <div id="geolocation-tracking" phx-hook="Geolocation" data-auto-start="true"></div>
       </div>
     </div>
     """
@@ -180,6 +184,20 @@ defmodule FieldHubWeb.TechLive.JobShow do
         <div class="flex-1 text-center py-3 text-gray-400 font-medium">Job Status: <%= String.capitalize(@job.status) %></div>
     <% end %>
     """
+  end
+
+  @impl true
+  def handle_event("update_location", %{"lat" => lat, "lng" => lng}, socket) do
+    if socket.assigns.technician do
+      FieldHub.Dispatch.update_technician_location(socket.assigns.technician, lat, lng)
+    end
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_event("location_error", params, socket) do
+    IO.puts "Location error for technician #{socket.assigns.technician.id}: #{inspect(params)}"
+    {:noreply, socket}
   end
 
   @impl true

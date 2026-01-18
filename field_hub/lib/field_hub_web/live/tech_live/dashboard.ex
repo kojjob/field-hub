@@ -62,6 +62,7 @@ defmodule FieldHubWeb.TechLive.Dashboard do
       <% end %>
 
       <div id="push-notifications" phx-hook="PushNotifications"></div>
+      <div id="geolocation-tracking" phx-hook="Geolocation" data-auto-start="true"></div>
     </div>
     """
   end
@@ -112,6 +113,18 @@ defmodule FieldHubWeb.TechLive.Dashboard do
   @impl true
   def handle_event("save_device_token", %{"token" => token, "type" => type}, socket) do
     Dispatch.update_technician_device_token(socket.assigns.technician, type, token)
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_event("update_location", %{"lat" => lat, "lng" => lng}, socket) do
+    Dispatch.update_technician_location(socket.assigns.technician, lat, lng)
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_event("location_error", params, socket) do
+    IO.puts "Location error for technician #{socket.assigns.technician.id}: #{inspect(params)}"
     {:noreply, socket}
   end
 

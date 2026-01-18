@@ -506,13 +506,13 @@ git push -u origin develop
 
 **Branch:** `feature/FH-034-tech-status-actions`
 
-### FH-035: GPS Location Tracking
+### FH-035: GPS Location Tracking ✅
 
-- [ ] **Implement:** Geolocation hook for continuous tracking
-- [ ] **Implement:** Battery-efficient tracking (when traveling)
-- [ ] **Implement:** Location permission handling
-- [ ] **Implement:** Send location updates to server
-- [ ] **Test:** Works in background on mobile
+- [x] **Implement:** Geolocation hook for continuous tracking
+- [x] **Implement:** Battery-efficient tracking (when traveling)
+- [x] **Implement:** Location permission handling
+- [x] **Implement:** Send location updates to server
+- [x] **Test:** Works in background on mobile (Simulated)
 
 **Branch:** `feature/FH-035-gps-tracking`
 
@@ -790,6 +790,35 @@ git push -u origin develop
 - [ ] White-label offering
 - [ ] Enterprise features (SSO, audit logs)
 
+### v2.1 - Industry-Agnostic Architecture 🚧
+
+**Phase A: Terminology Abstraction**
+- [x] Add terminology JSONB column to organizations
+- [x] Create `FieldHub.Config.Terminology` module
+- [x] Add industry presets (healthcare, delivery, inspection, cleaning)
+- [x] Update templates to use dynamic terminology
+- [x] Add terminology settings UI
+
+**Phase B: Custom Status Workflows**
+- [ ] Create `job_status_configs` schema
+- [ ] Build workflow builder UI
+- [ ] Replace fixed status enum with dynamic transitions
+
+**Phase C: Dynamic Custom Fields**
+- [ ] Create `custom_field_definitions` schema
+- [ ] Build dynamic form renderer component
+- [ ] Add field builder UI in settings
+
+**Phase D: White-Label Branding**
+- [x] Add branding columns to organizations (logo, colors)
+- [x] Implement CSS variable theming
+- [x] Add branding settings UI
+- [x] Update layouts to use org branding
+
+**Phase E: Industry Templates**
+- [ ] Create template seed data
+- [ ] Add template selection to onboarding flow
+
 ---
 
 ## 📊 Progress Tracking
@@ -799,12 +828,12 @@ git push -u origin develop
 | 0 - Foundation | 17 | 17 | 100% |
 | 1 - Core Domain | 32 | 32 | 100% |
 | 2 - Dispatcher Dashboard | 36 | 15 | 42% |
-| 3 - Technician Mobile | 28 | 16 | 57% |
+| 3 - Technician Mobile | 28 | 17 | 61% |
 | 4 - Customer Portal | 12 | 0 | 0% |
 | 5 - Notifications | 20 | 0 | 0% |
 | 6 - Billing & Polish | 16 | 0 | 0% |
 | 7 - Launch Prep | 24 | 0 | 0% |
-| **TOTAL** | **185** | **79** | **43%** |
+| **TOTAL** | **185** | **80** | **43%** |
 
 ---
 
