@@ -21,6 +21,7 @@ defmodule FieldHubWeb.SettingsLive.Branding do
     socket =
       socket
       |> assign(:page_title, "Branding Settings")
+      |> assign(:current_nav, :branding)
       |> assign(:form, to_form(form_data, as: "branding"))
 
     {:ok, socket}

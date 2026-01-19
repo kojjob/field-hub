@@ -51,7 +51,7 @@ defmodule FieldHubWeb.UserLive.LoginTest do
       {:ok, _lv, html} = live(conn, ~p"/users/log-in")
 
       # Verify registration link is present
-      assert html =~ "Create an account"
+      assert html =~ "Create account"
       assert html =~ ~s(href="/users/register")
     end
   end

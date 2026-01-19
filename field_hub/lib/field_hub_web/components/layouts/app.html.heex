@@ -65,41 +65,42 @@
               <li>
                 <ul role="list" class="-mx-2 space-y-1">
                   <li>
-                    <.link navigate={~p"/dashboard"} class={if assigns[:current_nav] == :dashboard, do: "bg-primary text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-bold shadow-md shadow-primary/20", else: "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-semibold transition-all duration-200"}>
+                    <.link navigate={~p"/dashboard"} class={if assigns[:current_nav] == :dashboard, do: "bg-zinc-900 dark:bg-zinc-800 text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-bold shadow-md shadow-zinc-900/10", else: "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-semibold transition-all duration-200"}>
                       <.icon name="hero-home" class={if assigns[:current_nav] == :dashboard, do: "h-5 w-5 shrink-0 text-white", else: "h-5 w-5 shrink-0 text-zinc-400 dark:text-zinc-500 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors"} />
                       Dashboard
                     </.link>
                   </li>
                   <li>
-                    <.link navigate={~p"/dispatch"} class={if assigns[:current_nav] == :dispatch, do: "bg-primary text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-bold shadow-md shadow-primary/20", else: "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-semibold transition-all duration-200"}>
+                    <.link navigate={~p"/dispatch"} class={if assigns[:current_nav] == :dispatch, do: "bg-zinc-900 dark:bg-zinc-800 text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-bold shadow-md shadow-zinc-900/10", else: "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-semibold transition-all duration-200"}>
                       <.icon name="hero-calendar" class={if assigns[:current_nav] == :dispatch, do: "h-5 w-5 shrink-0 text-white", else: "h-5 w-5 shrink-0 text-zinc-400 dark:text-zinc-500 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors"} />
                       Schedule
                     </.link>
                   </li>
                   <li>
-                    <.link navigate={~p"/jobs"} class={if assigns[:current_nav] == :jobs, do: "bg-primary text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-bold shadow-md shadow-primary/20", else: "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-semibold transition-all duration-200"}>
+                    <.link navigate={~p"/jobs"} class={if assigns[:current_nav] == :jobs, do: "bg-zinc-900 dark:bg-zinc-800 text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-bold shadow-md shadow-zinc-900/10", else: "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-semibold transition-all duration-200"}>
                       <.icon name="hero-briefcase" class={if assigns[:current_nav] == :jobs, do: "h-5 w-5 shrink-0 text-white", else: "h-5 w-5 shrink-0 text-zinc-400 dark:text-zinc-500 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors"} />
                       <%= (assigns[:terminology] || %{})["task_label_plural"] || "Jobs" %>
                     </.link>
                   </li>
                   <li>
-                    <.link navigate={~p"/technicians"} class={if assigns[:current_nav] == :technicians, do: "bg-primary text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-bold shadow-md shadow-primary/20", else: "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-semibold transition-all duration-200"}>
+                    <.link navigate={~p"/technicians"} class={if assigns[:current_nav] == :technicians, do: "bg-zinc-900 dark:bg-zinc-800 text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-bold shadow-md shadow-zinc-900/10", else: "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-semibold transition-all duration-200"}>
                       <.icon name="hero-user-group" class={if assigns[:current_nav] == :technicians, do: "h-5 w-5 shrink-0 text-white", else: "h-5 w-5 shrink-0 text-zinc-400 dark:text-zinc-500 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors"} />
                       <%= (assigns[:terminology] || %{})["worker_label_plural"] || "Technicians" %>
                     </.link>
                   </li>
                   <li>
-                    <.link navigate={~p"/customers"} class={if assigns[:current_nav] == :customers, do: "bg-primary text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-bold shadow-md shadow-primary/20", else: "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-semibold transition-all duration-200"}>
+                    <.link navigate={~p"/customers"} class={if assigns[:current_nav] == :customers, do: "bg-zinc-900 dark:bg-zinc-800 text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-bold shadow-md shadow-zinc-900/10", else: "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-semibold transition-all duration-200"}>
                       <.icon name="hero-users" class={if assigns[:current_nav] == :customers, do: "h-5 w-5 shrink-0 text-white", else: "h-5 w-5 shrink-0 text-zinc-400 dark:text-zinc-500 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors"} />
                       <%= (assigns[:terminology] || %{})["client_label_plural"] || "Customers" %>
                     </.link>
                   </li>
                   <li>
-                    <.link navigate={~p"/reports"} class={if assigns[:current_nav] == :reports, do: "bg-primary text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-bold shadow-md shadow-primary/20", else: "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-semibold transition-all duration-200"}>
+                    <.link navigate={~p"/reports"} class={if assigns[:current_nav] == :reports, do: "bg-zinc-900 dark:bg-zinc-800 text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-bold shadow-md shadow-zinc-900/10", else: "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-semibold transition-all duration-200"}>
                       <.icon name="hero-chart-bar" class={if assigns[:current_nav] == :reports, do: "h-5 w-5 shrink-0 text-white", else: "h-5 w-5 shrink-0 text-zinc-400 dark:text-zinc-500 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors"} />
                        Reports
                     </.link>
                   </li>
+
                 </ul>
               </li>
             </ul>
@@ -123,41 +124,42 @@
           <li>
             <ul role="list" class="-mx-2 space-y-1">
               <li>
-                <.link navigate={~p"/dashboard"} class={if assigns[:current_nav] == :dashboard, do: "bg-primary text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-bold shadow-md shadow-primary/20", else: "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-semibold transition-all duration-200"}>
+                <.link navigate={~p"/dashboard"} class={if assigns[:current_nav] == :dashboard, do: "bg-zinc-900 dark:bg-zinc-800 text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-bold shadow-md shadow-zinc-900/10", else: "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-semibold transition-all duration-200"}>
                   <.icon name="hero-home" class={if assigns[:current_nav] == :dashboard, do: "h-5 w-5 shrink-0 text-white", else: "h-5 w-5 shrink-0 text-zinc-400 dark:text-zinc-500 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors"} />
                   Dashboard
                 </.link>
               </li>
               <li>
-                <.link navigate={~p"/dispatch"} class={if assigns[:current_nav] == :dispatch, do: "bg-primary text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-bold shadow-md shadow-primary/20", else: "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-semibold transition-all duration-200"}>
+                <.link navigate={~p"/dispatch"} class={if assigns[:current_nav] == :dispatch, do: "bg-zinc-900 dark:bg-zinc-800 text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-bold shadow-md shadow-zinc-900/10", else: "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-semibold transition-all duration-200"}>
                   <.icon name="hero-calendar" class={if assigns[:current_nav] == :dispatch, do: "h-5 w-5 shrink-0 text-white", else: "h-5 w-5 shrink-0 text-zinc-400 dark:text-zinc-500 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors"} />
                   Schedule
                 </.link>
               </li>
               <li>
-                <.link navigate={~p"/jobs"} class={if assigns[:current_nav] == :jobs, do: "bg-primary text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-bold shadow-md shadow-primary/20", else: "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-semibold transition-all duration-200"}>
+                <.link navigate={~p"/jobs"} class={if assigns[:current_nav] == :jobs, do: "bg-zinc-900 dark:bg-zinc-800 text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-bold shadow-md shadow-zinc-900/10", else: "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-semibold transition-all duration-200"}>
                   <.icon name="hero-briefcase" class={if assigns[:current_nav] == :jobs, do: "h-5 w-5 shrink-0 text-white", else: "h-5 w-5 shrink-0 text-zinc-400 dark:text-zinc-500 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors"} />
                   <%= (assigns[:terminology] || %{})["task_label_plural"] || "Jobs" %>
                 </.link>
               </li>
               <li>
-                <.link navigate={~p"/technicians"} class={if assigns[:current_nav] == :technicians, do: "bg-primary text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-bold shadow-md shadow-primary/20", else: "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-semibold transition-all duration-200"}>
+                <.link navigate={~p"/technicians"} class={if assigns[:current_nav] == :technicians, do: "bg-zinc-900 dark:bg-zinc-800 text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-bold shadow-md shadow-zinc-900/10", else: "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-semibold transition-all duration-200"}>
                   <.icon name="hero-user-group" class={if assigns[:current_nav] == :technicians, do: "h-5 w-5 shrink-0 text-white", else: "h-5 w-5 shrink-0 text-zinc-400 dark:text-zinc-500 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors"} />
                   <%= (assigns[:terminology] || %{})["worker_label_plural"] || "Technicians" %>
                 </.link>
               </li>
               <li>
-                <.link navigate={~p"/customers"} class={if assigns[:current_nav] == :customers, do: "bg-primary text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-bold shadow-md shadow-primary/20", else: "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-semibold transition-all duration-200"}>
+                <.link navigate={~p"/customers"} class={if assigns[:current_nav] == :customers, do: "bg-zinc-900 dark:bg-zinc-800 text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-bold shadow-md shadow-zinc-900/10", else: "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-semibold transition-all duration-200"}>
                   <.icon name="hero-users" class={if assigns[:current_nav] == :customers, do: "h-5 w-5 shrink-0 text-white", else: "h-5 w-5 shrink-0 text-zinc-400 dark:text-zinc-500 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors"} />
                   <%= (assigns[:terminology] || %{})["client_label_plural"] || "Customers" %>
                 </.link>
               </li>
               <li>
-                <.link navigate={~p"/reports"} class={if assigns[:current_nav] == :reports, do: "bg-primary text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-bold shadow-md shadow-primary/20", else: "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-semibold transition-all duration-200"}>
+                <.link navigate={~p"/reports"} class={if assigns[:current_nav] == :reports, do: "bg-zinc-900 dark:bg-zinc-800 text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-bold shadow-md shadow-zinc-900/10", else: "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-semibold transition-all duration-200"}>
                   <.icon name="hero-chart-bar" class={if assigns[:current_nav] == :reports, do: "h-5 w-5 shrink-0 text-white", else: "h-5 w-5 shrink-0 text-zinc-400 dark:text-zinc-500 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors"} />
                   Reports
                 </.link>
               </li>
+
             </ul>
           </li>
           <li>
@@ -168,58 +170,59 @@
               <li>
                 <.link
                   navigate={~p"/settings/terminology"}
-                  class="text-zinc-400 hover:text-white hover:bg-zinc-800 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold transition-colors duration-200"
+                  class={if assigns[:current_nav] == :terminology, do: "bg-zinc-900 dark:bg-zinc-800 text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-bold shadow-md shadow-zinc-900/10", else: "text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-semibold transition-all duration-200"}
                 >
                   <.icon
                     name="hero-language"
-                    class="h-5 w-5 shrink-0 group-hover:text-primary transition-colors"
+                    class={if assigns[:current_nav] == :terminology, do: "h-5 w-5 shrink-0 text-white", else: "h-5 w-5 shrink-0 text-zinc-400 dark:text-zinc-500 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors"}
                   /> Terminology
                 </.link>
               </li>
               <li>
                 <.link
                   navigate={~p"/settings/branding"}
-                  class="text-zinc-400 hover:text-white hover:bg-zinc-800 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold transition-colors duration-200"
+                  class={if assigns[:current_nav] == :branding, do: "bg-zinc-900 dark:bg-zinc-800 text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-bold shadow-md shadow-zinc-900/10", else: "text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-semibold transition-all duration-200"}
                 >
                   <.icon
                     name="hero-paint-brush"
-                    class="h-5 w-5 shrink-0 group-hover:text-primary transition-colors"
+                    class={if assigns[:current_nav] == :branding, do: "h-5 w-5 shrink-0 text-white", else: "h-5 w-5 shrink-0 text-zinc-400 dark:text-zinc-500 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors"}
                   /> Branding
                 </.link>
               </li>
               <li>
                 <.link
                   navigate={~p"/settings/workflows"}
-                  class="text-zinc-400 hover:text-white hover:bg-zinc-800 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold transition-colors duration-200"
+                  class={if assigns[:current_nav] == :workflows, do: "bg-zinc-900 dark:bg-zinc-800 text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-bold shadow-md shadow-zinc-900/10", else: "text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-semibold transition-all duration-200"}
                 >
                   <.icon
                     name="hero-arrow-path"
-                    class="h-5 w-5 shrink-0 group-hover:text-primary transition-colors"
+                    class={if assigns[:current_nav] == :workflows, do: "h-5 w-5 shrink-0 text-white", else: "h-5 w-5 shrink-0 text-zinc-400 dark:text-zinc-500 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors"}
                   /> Workflows
                 </.link>
               </li>
               <li>
                 <.link
                   navigate={~p"/settings/custom-fields"}
-                  class="text-zinc-400 hover:text-white hover:bg-zinc-800 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold transition-colors duration-200"
+                  class={if assigns[:current_nav] == :custom_fields, do: "bg-zinc-900 dark:bg-zinc-800 text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-bold shadow-md shadow-zinc-900/10", else: "text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-semibold transition-all duration-200"}
                 >
                   <.icon
                     name="hero-list-bullet"
-                    class="h-5 w-5 shrink-0 group-hover:text-primary transition-colors"
+                    class={if assigns[:current_nav] == :custom_fields, do: "h-5 w-5 shrink-0 text-white", else: "h-5 w-5 shrink-0 text-zinc-400 dark:text-zinc-500 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors"}
                   /> Custom Fields
                 </.link>
               </li>
               <li>
-                <a
-                  href="#"
-                  class="text-zinc-400 hover:text-white hover:bg-zinc-800 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold transition-colors duration-200"
+                <.link
+                  navigate={~p"/users/settings"}
+                  class={if assigns[:current_nav] == :user_settings, do: "bg-zinc-900 dark:bg-zinc-800 text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-bold shadow-md shadow-zinc-900/10", else: "text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-semibold transition-all duration-200"}
                 >
                   <.icon
                     name="hero-cog-6-tooth"
-                    class="h-5 w-5 shrink-0 group-hover:text-primary transition-colors"
+                    class={if assigns[:current_nav] == :user_settings, do: "h-5 w-5 shrink-0 text-white", else: "h-5 w-5 shrink-0 text-zinc-400 dark:text-zinc-500 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors"}
                   /> Settings
-                </a>
+                </.link>
               </li>
+
             </ul>
           </li>
           

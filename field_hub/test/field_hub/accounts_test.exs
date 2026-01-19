@@ -107,8 +107,8 @@ defmodule FieldHub.AccountsTest do
       now = DateTime.utc_now()
 
       assert Accounts.sudo_mode?(%User{authenticated_at: DateTime.utc_now()})
-      assert Accounts.sudo_mode?(%User{authenticated_at: DateTime.add(now, -19, :minute)})
-      refute Accounts.sudo_mode?(%User{authenticated_at: DateTime.add(now, -21, :minute)})
+      assert Accounts.sudo_mode?(%User{authenticated_at: DateTime.add(now, -29, :minute)})
+      refute Accounts.sudo_mode?(%User{authenticated_at: DateTime.add(now, -31, :minute)})
 
       # minute override
       refute Accounts.sudo_mode?(

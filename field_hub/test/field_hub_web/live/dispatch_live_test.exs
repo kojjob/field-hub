@@ -104,7 +104,7 @@ defmodule FieldHubWeb.DispatchLiveTest do
       {:ok, live, _html} = live(conn, ~p"/dispatch")
 
       # Navigate to next day
-      html = live |> element("button", "Next") |> render_click()
+      html = live |> element("button[phx-click='next_day']") |> render_click()
 
       tomorrow = Date.add(Date.utc_today(), 1)
       assert html =~ Calendar.strftime(tomorrow, "%B %d, %Y")
@@ -283,7 +283,7 @@ defmodule FieldHubWeb.DispatchLiveTest do
       assert html =~ "John Smith"
       assert html =~ "Jane Doe"
       assert html =~ "available"
-      assert html =~ "on_job"
+      assert html =~ "on job"
     end
 
     test "shows current job for technicians on a job", %{conn: conn, user: user, org: org} do
