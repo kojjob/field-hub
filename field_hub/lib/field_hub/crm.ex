@@ -104,6 +104,7 @@ defmodule FieldHub.CRM do
     |> where([c], c.portal_enabled == true)
     |> where([c], is_nil(c.archived_at))
     |> Repo.one()
+    |> Repo.preload(:organization)
   end
 
   @doc """

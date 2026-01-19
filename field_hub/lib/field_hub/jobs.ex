@@ -86,6 +86,35 @@ defmodule FieldHub.Jobs do
   end
 
   @doc """
+  Returns active (non-completed, non-cancelled) jobs for a customer.
+  Used by the customer portal.
+  """
+  def list_active_jobs_for_customer(customer_id) do
+    Job
+    |> where([j], j.customer_id == ^customer_id)
+    |> where([j], j.status not in ["completed", "cancelled"])
+    |> order_by([j], asc: j.scheduled_date, asc: j.scheduled_start)
+    |> Repo.all()
+    |> Repo.preload([:technician, :customer])
+  end
+
+  @doc """
+  Returns completed jobs for a customer, with optional limit.
+  Used by the customer portal.
+  """
+  def list_completed_jobs_for_customer(customer_id, opts \\ []) do
+    limit = Keyword.get(opts, :limit, 10)
+
+    Job
+    |> where([j], j.customer_id == ^customer_id)
+    |> where([j], j.status == "completed")
+    |> order_by([j], desc: j.completed_at)
+    |> limit(^limit)
+    |> Repo.all()
+    |> Repo.preload([:technician])
+  end
+
+  @doc """
   Returns the list of unassigned jobs (no technician or no scheduled date).
 
   ## Examples
