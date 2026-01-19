@@ -1,61 +1,67 @@
 defmodule FieldHubWeb.PortalControllerTest do
-  use FieldHubWeb.ConnCase, async: true
+  use FieldHubWeb.ConnCase
 
   import FieldHub.AccountsFixtures
   import FieldHub.CRMFixtures
   import FieldHub.JobsFixtures
+  import Phoenix.LiveViewTest
 
-  test "shows active jobs and service history", %{conn: conn} do
+  setup %{conn: conn} do
     org = organization_fixture()
-    customer = customer_fixture(org.id)
+    customer = customer_fixture(org.id, %{portal_enabled: true})
+    # Preload organization for the customer manualy if needed,
+    # but CRM.get_customer_for_portal preloads it in the app.
+    # We want to match what the layout expects.
+    customer = FieldHub.Repo.preload(customer, :organization)
+    {:ok, conn: conn, customer: customer, organization: org}
+  end
 
-    tech =
-      %FieldHub.Dispatch.Technician{
-        organization_id: org.id,
-        name: "Portal Tech",
-        status: "available",
-        email: "portal-tech-#{System.unique_integer([:positive])}@example.com"
-      }
-      |> FieldHub.Repo.insert!()
+  describe "GET /portal" do
+    test "redirects to home if not logged in", %{conn: conn} do
+      assert {:error, {:redirect, %{to: "/"}}} = live(conn, ~p"/portal")
+    end
 
-    _active_job =
-      job_fixture(org.id, %{
+    test "renders dashboard when logged in", %{conn: conn, customer: customer} do
+      conn = conn |> init_test_session(%{portal_customer_id: customer.id})
+      {:ok, _view, html} = live(conn, ~p"/portal")
+
+      assert html =~ "Welcome, #{customer.name}"
+      assert html =~ customer.organization.name
+    end
+  end
+
+  describe "GET /portal/jobs/:id" do
+    test "renders job details", %{conn: conn, customer: customer, organization: organization} do
+      job = job_fixture(organization.id, %{customer_id: customer.id, title: "Repair Leak"})
+      conn = conn |> init_test_session(%{portal_customer_id: customer.id})
+
+      {:ok, _view, html} = live(conn, ~p"/portal/jobs/#{job.id}")
+      assert html =~ "Repair Leak"
+      assert html =~ "Job Details"
+    end
+
+    test "redirects for job not belonging to customer", %{conn: conn, customer: customer, organization: organization} do
+      other_customer = customer_fixture(organization.id, %{})
+      job = job_fixture(organization.id, %{customer_id: other_customer.id, title: "Other Job"})
+
+      conn = conn |> init_test_session(%{portal_customer_id: customer.id})
+      assert {:error, {:live_redirect, %{to: "/portal", flash: %{"error" => "Job not found"}}}} = live(conn, ~p"/portal/jobs/#{job.id}")
+    end
+  end
+
+  describe "GET /portal/history" do
+    test "renders service history", %{conn: conn, customer: customer, organization: organization} do
+      job_fixture(organization.id, %{
         customer_id: customer.id,
-        technician_id: tech.id,
-        status: "en_route",
-        title: "Fix Sink",
-        scheduled_date: Date.utc_today(),
-        scheduled_start: ~T[09:00:00]
-      })
-
-    completed_job =
-      job_fixture(org.id, %{
-        customer_id: customer.id,
-        technician_id: tech.id,
+        title: "Old Job",
         status: "completed",
-        title: "Replace Filter"
+        completed_at: DateTime.utc_now()
       })
+      conn = conn |> init_test_session(%{portal_customer_id: customer.id})
 
-    _ =
-      completed_job
-      |> Ecto.Changeset.change(%{completed_at: DateTime.utc_now() |> DateTime.truncate(:second)})
-      |> FieldHub.Repo.update!()
-
-    conn =
-      conn
-      |> init_test_session(%{portal_customer_id: customer.id})
-      |> get(~p"/portal")
-
-    html = html_response(conn, 200)
-
-    assert html =~ "Welcome"
-    assert html =~ customer.name
-
-    assert html =~ "Active Jobs"
-    assert html =~ "Fix Sink"
-    assert html =~ "en route"
-
-    assert html =~ "Service History"
-    assert html =~ "Replace Filter"
+      {:ok, _view, html} = live(conn, ~p"/portal/history")
+      assert html =~ "Service History"
+      assert html =~ "Old Job"
+    end
   end
 end

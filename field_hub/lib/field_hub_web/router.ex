@@ -36,11 +36,17 @@ defmodule FieldHubWeb.Router do
 
     get "/login/:token", PortalSessionController, :create
     delete "/logout", PortalSessionController, :delete
+  end
 
-    scope "/" do
-      pipe_through [:require_portal_customer]
+  scope "/portal", FieldHubWeb do
+    pipe_through [:browser, :portal, :require_portal_customer]
 
-      get "/", PortalController, :index
+    live_session :portal_customer,
+      on_mount: [{FieldHubWeb.PortalAuth, :mount_portal_customer}],
+      layout: {FieldHubWeb.Layouts, :portal} do
+      live "/", PortalLive.Dashboard, :index
+      live "/jobs/:id", PortalLive.JobDetail, :show
+      live "/history", PortalLive.History, :index
     end
   end
 

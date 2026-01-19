@@ -76,6 +76,11 @@ defmodule FieldHubWeb.JobLive.Index do
   end
 
   @impl true
+  def handle_info(_message, socket) do
+    {:noreply, socket}
+  end
+
+  @impl true
   def handle_event("delete", %{"id" => id}, socket) do
     job = Jobs.get_job!(socket.assigns.current_organization.id, id)
     {:ok, _} = Jobs.delete_job(job)
@@ -138,7 +143,7 @@ defmodule FieldHubWeb.JobLive.Index do
               </.link>
             </div>
           </div>
-          
+
     <!-- KPI Cards Grid -->
           <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
             <FieldHubWeb.DashboardComponents.kpi_card
@@ -170,7 +175,7 @@ defmodule FieldHubWeb.JobLive.Index do
               variant={:simple}
             />
           </div>
-          
+
     <!-- Search & Filters Bar -->
           <div class="bg-white dark:bg-zinc-900 p-6 rounded-[24px] border border-zinc-200 dark:border-zinc-800 shadow-sm">
             <div class="flex items-center justify-between gap-4">
@@ -206,7 +211,7 @@ defmodule FieldHubWeb.JobLive.Index do
               </div>
             </div>
           </div>
-          
+
     <!-- Jobs Table Card -->
           <div class="bg-white dark:bg-zinc-900 rounded-[32px] border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
             <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-800">
@@ -353,7 +358,7 @@ defmodule FieldHubWeb.JobLive.Index do
           </div>
         </div>
       </div>
-      
+
     <!-- Slide-over Panel -->
       <div
         :if={@live_action in [:new, :edit]}
@@ -372,7 +377,7 @@ defmodule FieldHubWeb.JobLive.Index do
               <.icon name="hero-x-mark" class="size-5" />
             </.link>
           </div>
-          
+
     <!-- Slide-over Content -->
           <div class="flex-1 overflow-y-auto p-6">
             <.live_component

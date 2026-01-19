@@ -550,23 +550,23 @@ git push -u origin develop
 
 **Branch:** `feature/FH-040-portal-auth`
 
-### FH-041: Job Status Tracking
+### FH-041: Job Status Tracking ✅
 
 - [x] **Test First:** Customer sees their scheduled job
 - [x] **Implement:** Show active jobs + recent completed jobs on `/portal`
-- [ ] **Implement:** Show technician name and ETA
-- [ ] **Implement:** Real-time status updates
-- [ ] **Implement:** Map showing tech location (when en route)
+- [x] **Implement:** Show technician name and ETA
+- [x] **Implement:** Real-time status updates via PubSub
+- [ ] **Implement:** Map showing tech location (when en route) - (stretch)
 
-**Branch:** `feature/FH-041-portal-job-status` (PR #27)
+**Branch:** `feature/FH-040-customer-portal`
 
-### FH-042: Service History
+### FH-042: Service History ✅
 
-- [ ] **Implement:** List of past jobs
-- [ ] **Implement:** Job detail with work performed
+- [x] **Implement:** List of past jobs via `/portal/history`
+- [x] **Implement:** Job detail with work performed via `/portal/jobs/:id`
 - [ ] **Implement:** Invoice download (stretch)
 
-**Branch:** `feature/FH-042-portal-history`
+**Branch:** `feature/FH-040-customer-portal`
 
 ### FH-043: Self-Service Booking (Stretch)
 
