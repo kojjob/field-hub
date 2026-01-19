@@ -75,7 +75,7 @@ defmodule FieldHubWeb.DashboardComponents do
       <div :if={@variant == :stars} class="flex items-center gap-1 mt-auto">
         <.icon :for={_ <- 1..5} name="hero-star" class="text-amber-400 size-4 fill-current" />
       </div>
-
+      
     <!-- Mini Chart Placeholder (for Revenue) -->
       <div
         :if={@variant == :simple && @icon == "payments"}

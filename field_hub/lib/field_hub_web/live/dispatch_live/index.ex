@@ -7,6 +7,7 @@ defmodule FieldHubWeb.DispatchLive.Index do
   alias FieldHub.Jobs
   alias FieldHub.Dispatch
   alias FieldHub.Dispatch.Broadcaster
+  alias FieldHubWeb.Components.DispatchMap
   import Ecto.Query
   alias FieldHub.Repo
 
@@ -143,6 +144,7 @@ defmodule FieldHubWeb.DispatchLive.Index do
 
   @impl true
   def handle_event("set_view_mode", %{"mode" => mode}, socket) do
+    # Pure LiveView - no JavaScript hooks needed!
     {:noreply, assign(socket, :view_mode, String.to_existing_atom(mode))}
   end
 
@@ -535,17 +537,12 @@ defmodule FieldHubWeb.DispatchLive.Index do
     <!-- Calendar Grid or Map -->
         <div class="flex-1 overflow-auto relative bg-zinc-50/50 dark:bg-zinc-900/50 scrollbar-hide">
           <%= if @view_mode == :map do %>
-            <div
-              id="map-view"
-              class="absolute inset-0 z-0 bg-zinc-100 dark:bg-zinc-800"
-              phx-hook="Map"
-              phx-update="ignore"
-              data-lat="37.7749"
-              data-lng="-122.4194"
-              data-technicians={Jason.encode!(@map_technicians)}
-              data-jobs={Jason.encode!(@map_jobs)}
-            >
-            </div>
+            <!-- Pure LiveView Map Component - No JavaScript hooks needed! -->
+            <DispatchMap.render
+              technicians={@map_technicians}
+              jobs={@map_jobs}
+              class="absolute inset-0"
+            />
           <% else %>
             <div class="min-w-max">
               <!-- Technician Headers -->

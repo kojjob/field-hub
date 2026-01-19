@@ -1,0 +1,131 @@
+<div class="mx-auto max-w-2xl py-12 px-6">
+  <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl shadow-sm p-8">
+    <div class="flex items-start justify-between gap-6">
+      <div>
+        <p class="text-[10px] font-black text-primary uppercase tracking-[0.2em]">
+          Customer Portal
+        </p>
+        <h1 class="mt-2 text-3xl font-black tracking-tight text-zinc-900 dark:text-white">
+          Welcome, {@customer.name}
+        </h1>
+        <p class="mt-3 text-sm text-zinc-600 dark:text-zinc-300 leading-relaxed">
+          Your technician updates will appear here soon.
+        </p>
+      </div>
+      <.link
+        href={~p"/portal/logout"}
+        method="delete"
+        class="shrink-0 inline-flex items-center gap-2 rounded-2xl px-4 py-2.5 text-sm font-bold bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-200 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all"
+      >
+        <.icon name="hero-arrow-right-on-rectangle" class="size-5" /> Log out
+      </.link>
+    </div>
+
+    <div class="mt-8 space-y-10">
+      <section id="portal-active-jobs" class="space-y-4">
+        <div class="flex items-center justify-between">
+          <h2 class="text-sm font-black text-zinc-900 dark:text-white tracking-tight">
+            Active Jobs
+          </h2>
+          <span class="text-xs font-bold text-zinc-400">{length(@active_jobs)}</span>
+        </div>
+
+        <%= if @active_jobs == [] do %>
+          <div class="rounded-2xl border border-zinc-200 dark:border-zinc-800 p-6 bg-zinc-50/60 dark:bg-zinc-800/30">
+            <p class="text-sm font-semibold text-zinc-700 dark:text-zinc-200">No active jobs</p>
+            <p class="mt-1 text-sm text-zinc-500">
+              We’ll show updates here once a job is scheduled.
+            </p>
+          </div>
+        <% else %>
+          <div class="grid grid-cols-1 gap-4">
+            <%= for job <- @active_jobs do %>
+              <div class="rounded-2xl border border-zinc-200 dark:border-zinc-800 p-5 bg-white dark:bg-zinc-900">
+                <div class="flex items-start justify-between gap-4">
+                  <div class="min-w-0">
+                    <p class="text-[10px] font-black text-zinc-400 uppercase tracking-wider">
+                      {job.number}
+                    </p>
+                    <p class="mt-1 text-base font-black text-zinc-900 dark:text-white tracking-tight truncate">
+                      {job.title}
+                    </p>
+                    <p class="mt-2 text-sm font-semibold text-primary">
+                      {String.replace(job.status, "_", " ")}
+                    </p>
+                  </div>
+
+                  <div class="shrink-0 text-right">
+                    <p class="text-[10px] font-black text-zinc-400 uppercase tracking-wider">
+                      Scheduled
+                    </p>
+                    <p class="mt-1 text-sm font-bold text-zinc-700 dark:text-zinc-200">
+                      <%= if job.scheduled_date do %>
+                        {Calendar.strftime(job.scheduled_date, "%b %d")}
+                      <% else %>
+                        TBD
+                      <% end %>
+                      <%= if job.scheduled_start do %>
+                        <span class="text-zinc-500">·</span>
+                        {Calendar.strftime(job.scheduled_start, "%I:%M%p")}
+                      <% end %>
+                    </p>
+                    <p class="mt-1 text-xs text-zinc-500">
+                      <%= if job.technician do %>
+                        Tech: {job.technician.name}
+                      <% else %>
+                        Tech: Pending
+                      <% end %>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+      </section>
+
+      <section id="portal-service-history" class="space-y-4">
+        <div class="flex items-center justify-between">
+          <h2 class="text-sm font-black text-zinc-900 dark:text-white tracking-tight">
+            Service History
+          </h2>
+        </div>
+
+        <%= if @completed_jobs == [] do %>
+          <div class="rounded-2xl border border-zinc-200 dark:border-zinc-800 p-6 bg-zinc-50/60 dark:bg-zinc-800/30">
+            <p class="text-sm font-semibold text-zinc-700 dark:text-zinc-200">
+              No completed jobs yet
+            </p>
+            <p class="mt-1 text-sm text-zinc-500">Completed services will show up here.</p>
+          </div>
+        <% else %>
+          <div class="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 divide-y divide-zinc-100 dark:divide-zinc-800">
+            <%= for job <- @completed_jobs do %>
+              <div class="p-5 flex items-start justify-between gap-4">
+                <div class="min-w-0">
+                  <p class="text-sm font-black text-zinc-900 dark:text-white truncate">
+                    {job.title}
+                  </p>
+                  <p class="mt-1 text-xs text-zinc-500">
+                    <%= if job.completed_at do %>
+                      Completed {Calendar.strftime(job.completed_at, "%b %d, %Y")}
+                    <% else %>
+                      Completed
+                    <% end %>
+                    <%= if job.technician do %>
+                      <span class="text-zinc-400">·</span>
+                      {job.technician.name}
+                    <% end %>
+                  </p>
+                </div>
+                <div class="shrink-0 text-right">
+                  <p class="text-xs font-bold text-zinc-500">{job.number}</p>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+      </section>
+    </div>
+  </div>
+</div>

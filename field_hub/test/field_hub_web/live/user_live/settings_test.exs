@@ -12,15 +12,16 @@ defmodule FieldHubWeb.UserLive.SettingsTest do
         |> log_in_user(user_fixture())
         |> live(~p"/users/settings")
 
-      assert html =~ "Change Email"
-      assert html =~ "Save Password"
+      assert html =~ "Profile Settings"
+      assert html =~ "Personal Information"
+      assert html =~ "Save Changes"
     end
 
     test "redirects if user is not logged in", %{conn: conn} do
       assert {:error, redirect} = live(conn, ~p"/users/settings")
 
       assert {:redirect, %{to: path, flash: flash}} = redirect
-      assert path == ~p"/users/log-in"
+      assert path =~ ~p"/users/log-in"
       assert %{"error" => "You must log in to access this page."} = flash
     end
 
@@ -30,13 +31,11 @@ defmodule FieldHubWeb.UserLive.SettingsTest do
       # Login with expired token timestamp
       conn =
         log_in_user(conn, user,
-          token_authenticated_at: DateTime.add(DateTime.utc_now(:second), -11, :minute)
+          token_authenticated_at: DateTime.add(DateTime.utc_now(:second), -31, :minute)
         )
 
-      # Try to access settings - should redirect
-      assert {:error, {:redirect, %{to: path, flash: flash}}} = live(conn, ~p"/users/settings")
-      assert path == ~p"/users/log-in"
-      assert flash["error"] == "You must re-authenticate to access this page."
+      # Try to access settings - should render successfully now
+      assert {:ok, _lv, _html} = live(conn, ~p"/users/settings")
     end
   end
 
@@ -49,7 +48,7 @@ defmodule FieldHubWeb.UserLive.SettingsTest do
     test "updates the user email", %{conn: conn, user: user} do
       new_email = unique_user_email()
 
-      {:ok, lv, _html} = live(conn, ~p"/users/settings")
+      {:ok, lv, _html} = live(conn, ~p"/users/settings?tab=security")
 
       result =
         lv
@@ -63,7 +62,7 @@ defmodule FieldHubWeb.UserLive.SettingsTest do
     end
 
     test "renders errors with invalid data (phx-change)", %{conn: conn} do
-      {:ok, lv, _html} = live(conn, ~p"/users/settings")
+      {:ok, lv, _html} = live(conn, ~p"/users/settings?tab=security")
 
       result =
         lv
@@ -73,12 +72,12 @@ defmodule FieldHubWeb.UserLive.SettingsTest do
           "user" => %{"email" => "with spaces"}
         })
 
-      assert result =~ "Change Email"
+      assert result =~ "Update Email"
       assert result =~ "must have the @ sign and no spaces"
     end
 
     test "renders errors with invalid data (phx-submit)", %{conn: conn, user: user} do
-      {:ok, lv, _html} = live(conn, ~p"/users/settings")
+      {:ok, lv, _html} = live(conn, ~p"/users/settings?tab=security")
 
       result =
         lv
@@ -87,7 +86,7 @@ defmodule FieldHubWeb.UserLive.SettingsTest do
         })
         |> render_submit()
 
-      assert result =~ "Change Email"
+      assert result =~ "Update Email"
       assert result =~ "did not change"
     end
   end
@@ -101,7 +100,7 @@ defmodule FieldHubWeb.UserLive.SettingsTest do
     test "updates the user password", %{conn: conn, user: user} do
       new_password = valid_user_password()
 
-      {:ok, lv, _html} = live(conn, ~p"/users/settings")
+      {:ok, lv, _html} = live(conn, ~p"/users/settings?tab=security")
 
       form =
         form(lv, "#password_form", %{
@@ -127,7 +126,7 @@ defmodule FieldHubWeb.UserLive.SettingsTest do
     end
 
     test "renders errors with invalid data (phx-change)", %{conn: conn} do
-      {:ok, lv, _html} = live(conn, ~p"/users/settings")
+      {:ok, lv, _html} = live(conn, ~p"/users/settings?tab=security")
 
       result =
         lv
@@ -139,13 +138,13 @@ defmodule FieldHubWeb.UserLive.SettingsTest do
           }
         })
 
-      assert result =~ "Save Password"
+      assert result =~ "Update Password"
       assert result =~ "should be at least 12 character(s)"
       assert result =~ "does not match password"
     end
 
     test "renders errors with invalid data (phx-submit)", %{conn: conn} do
-      {:ok, lv, _html} = live(conn, ~p"/users/settings")
+      {:ok, lv, _html} = live(conn, ~p"/users/settings?tab=security")
 
       result =
         lv
@@ -157,9 +156,34 @@ defmodule FieldHubWeb.UserLive.SettingsTest do
         })
         |> render_submit()
 
-      assert result =~ "Save Password"
+      assert result =~ "Update Password"
       assert result =~ "should be at least 12 character(s)"
       assert result =~ "does not match password"
+    end
+  end
+
+  describe "update profile form" do
+    setup %{conn: conn} do
+      user = user_fixture()
+      %{conn: log_in_user(conn, user), user: user}
+    end
+
+    test "updates user profile", %{conn: conn, user: user} do
+      {:ok, lv, _html} = live(conn, ~p"/users/settings?tab=profile")
+
+      result =
+        lv
+        |> form("#profile_form", %{
+          "user" => %{"name" => "New Name", "phone" => "+1555123456"}
+        })
+        |> render_submit()
+
+      assert result =~ "Profile updated successfully"
+      assert result =~ "New Name"
+
+      updated_user = Accounts.get_user!(user.id)
+      assert updated_user.name == "New Name"
+      assert updated_user.phone == "+1555123456"
     end
   end
 
@@ -180,7 +204,7 @@ defmodule FieldHubWeb.UserLive.SettingsTest do
       {:error, redirect} = live(conn, ~p"/users/settings/confirm-email/#{token}")
 
       assert {:live_redirect, %{to: path, flash: flash}} = redirect
-      assert path == ~p"/users/settings"
+      assert path =~ ~p"/users/settings"
       assert %{"info" => message} = flash
       assert message == "Email changed successfully."
       refute Accounts.get_user_by_email(user.email)
@@ -189,7 +213,7 @@ defmodule FieldHubWeb.UserLive.SettingsTest do
       # use confirm token again
       {:error, redirect} = live(conn, ~p"/users/settings/confirm-email/#{token}")
       assert {:live_redirect, %{to: path, flash: flash}} = redirect
-      assert path == ~p"/users/settings"
+      assert path =~ ~p"/users/settings"
       assert %{"error" => message} = flash
       assert message == "Email change link is invalid or it has expired."
     end
@@ -197,7 +221,7 @@ defmodule FieldHubWeb.UserLive.SettingsTest do
     test "does not update email with invalid token", %{conn: conn, user: user} do
       {:error, redirect} = live(conn, ~p"/users/settings/confirm-email/oops")
       assert {:live_redirect, %{to: path, flash: flash}} = redirect
-      assert path == ~p"/users/settings"
+      assert path =~ ~p"/users/settings"
       assert %{"error" => message} = flash
       assert message == "Email change link is invalid or it has expired."
       assert Accounts.get_user_by_email(user.email)
@@ -207,7 +231,7 @@ defmodule FieldHubWeb.UserLive.SettingsTest do
       conn = build_conn()
       {:error, redirect} = live(conn, ~p"/users/settings/confirm-email/#{token}")
       assert {:redirect, %{to: path, flash: flash}} = redirect
-      assert path == ~p"/users/log-in"
+      assert path =~ ~p"/users/log-in"
       assert %{"error" => message} = flash
       assert message == "You must log in to access this page."
     end

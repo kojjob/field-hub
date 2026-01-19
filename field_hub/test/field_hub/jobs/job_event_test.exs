@@ -171,8 +171,8 @@ defmodule FieldHub.Jobs.JobEventTest do
     test "schedule_job/2 creates 'scheduled' event", %{job: job} do
       attrs = %{
         scheduled_date: Date.utc_today(),
-        scheduled_start: Time.utc_now(),
-        scheduled_end: Time.add(Time.utc_now(), 3600)
+        scheduled_start: ~T[10:00:00],
+        scheduled_end: ~T[11:00:00]
       }
 
       {:ok, updated_job} = Jobs.schedule_job(job, attrs)

@@ -373,7 +373,7 @@ defmodule FieldHubWeb.OnboardingLive do
             </div>
           </div>
         </div>
-
+        
     <!-- Address Section -->
         <div class="bg-zinc-50/50 dark:bg-zinc-800/30 rounded-3xl border border-zinc-100 dark:border-zinc-800 p-8 space-y-8">
           <div class="flex items-center gap-4">
@@ -454,7 +454,7 @@ defmodule FieldHubWeb.OnboardingLive do
             </div>
           </div>
         </div>
-
+        
     <!-- Navigation Buttons -->
         <div class="pt-6 flex justify-between items-center">
           <button
@@ -574,7 +574,7 @@ defmodule FieldHubWeb.OnboardingLive do
                 </p>
               </div>
             </div>
-
+            
     <!-- Live Preview -->
             <div class="space-y-6">
               <div class="flex items-center gap-4 mb-4">
@@ -596,8 +596,7 @@ defmodule FieldHubWeb.OnboardingLive do
                   <div class="h-4 bg-primary"></div>
                   <div class="p-6">
                     <div class="flex items-center gap-3 mb-6">
-                      <div class="size-10 bg-primary rounded-xl shadow-lg shadow-primary/20">
-                      </div>
+                      <div class="size-10 bg-primary rounded-xl shadow-lg shadow-primary/20"></div>
                       <div class="h-4 w-32 bg-zinc-200 dark:bg-zinc-700 rounded-full"></div>
                     </div>
                     <div class="space-y-3">
@@ -616,7 +615,7 @@ defmodule FieldHubWeb.OnboardingLive do
             </div>
           </div>
         </div>
-
+        
     <!-- Navigation -->
         <div class="pt-6 flex justify-between items-center">
           <button
@@ -668,7 +667,7 @@ defmodule FieldHubWeb.OnboardingLive do
           Your workspace is configured and ready. Start managing your field operations like a pro.
         </p>
       </div>
-
+      
     <!-- Quick Start Cards -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div class="bg-white dark:bg-zinc-800/30 rounded-[2rem] border border-zinc-100 dark:border-zinc-800 p-8 text-center group hover:border-primary/50 hover:bg-primary/10 transition-all shadow-sm">

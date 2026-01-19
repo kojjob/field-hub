@@ -107,23 +107,35 @@ defmodule FieldHubWeb.Layouts do
           phx-click-away={JS.hide(to: "#user-menu")}
         >
           <div class="relative h-9 w-9">
-             <img
+            <img
               class="h-9 w-9 rounded-full bg-zinc-50 border border-zinc-200 dark:border-zinc-700 object-cover"
-              src={@current_user.avatar_url || "https://ui-avatars.com/api/?name=#{@current_user.name || @current_user.email}&background=10b981&color=fff"}
+              src={
+                @current_user.avatar_url ||
+                  "https://ui-avatars.com/api/?name=#{@current_user.name || @current_user.email}&background=10b981&color=fff"
+              }
               alt=""
             />
-            <span class="absolute bottom-0 right-0 block h-2.5 w-2.5 rounded-full bg-primary ring-2 ring-white dark:ring-zinc-900"></span>
+            <span class="absolute bottom-0 right-0 block h-2.5 w-2.5 rounded-full bg-primary ring-2 ring-white dark:ring-zinc-900">
+            </span>
           </div>
 
           <span class="hidden lg:flex lg:flex-col lg:items-start text-left">
-            <span class="text-sm font-bold text-zinc-700 dark:text-zinc-200 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors" aria-hidden="true">
+            <span
+              class="text-sm font-bold text-zinc-700 dark:text-zinc-200 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors"
+              aria-hidden="true"
+            >
               {@current_user.name || @current_user.email}
             </span>
             <span class="text-[10px] font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wide leading-none">
-              <%= if @current_organization, do: @current_organization.brand_name || "Enterprise", else: "Admin" %>
+              {if @current_organization,
+                do: @current_organization.brand_name || "Enterprise",
+                else: "Admin"}
             </span>
           </span>
-          <.icon name="hero-chevron-down" class="hidden lg:block h-4 w-4 text-zinc-400 group-hover:text-zinc-600 dark:text-zinc-500 dark:group-hover:text-zinc-300 transition-colors ml-1" />
+          <.icon
+            name="hero-chevron-down"
+            class="hidden lg:block h-4 w-4 text-zinc-400 group-hover:text-zinc-600 dark:text-zinc-500 dark:group-hover:text-zinc-300 transition-colors ml-1"
+          />
         </button>
       </div>
 
@@ -144,20 +156,22 @@ defmodule FieldHubWeb.Layouts do
             {@current_user.email}
           </p>
         </div>
-
-        <!-- Account Section -->
+        
+    <!-- Account Section -->
         <div class="py-1">
           <div class="px-3 py-1.5 text-xs font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">
             Account
           </div>
-           <.link
+          <.link
             navigate={~p"/users/settings"}
             class="group flex items-center px-4 py-2 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
             role="menuitem"
             tabindex="-1"
           >
-            <.icon name="hero-user-circle" class="mr-3 h-5 w-5 text-zinc-400 group-hover:text-primary transition-colors" />
-            Your Profile
+            <.icon
+              name="hero-user-circle"
+              class="mr-3 h-5 w-5 text-zinc-400 group-hover:text-primary transition-colors"
+            /> Your Profile
           </.link>
           <.link
             navigate={~p"/users/settings"}
@@ -165,48 +179,56 @@ defmodule FieldHubWeb.Layouts do
             role="menuitem"
             tabindex="-1"
           >
-             <.icon name="hero-cog" class="mr-3 h-5 w-5 text-zinc-400 group-hover:text-primary transition-colors" />
-            Settings
+            <.icon
+              name="hero-cog"
+              class="mr-3 h-5 w-5 text-zinc-400 group-hover:text-primary transition-colors"
+            /> Settings
           </.link>
         </div>
-
-        <!-- Organization Section -->
+        
+    <!-- Organization Section -->
         <%= if @current_organization do %>
-        <div class="py-1">
-          <div class="px-3 py-1.5 text-xs font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">
-            {@current_organization.brand_name || "Organization"}
+          <div class="py-1">
+            <div class="px-3 py-1.5 text-xs font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">
+              {@current_organization.brand_name || "Organization"}
+            </div>
+            <.link
+              navigate={~p"/settings/branding"}
+              class="group flex items-center px-4 py-2 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
+              role="menuitem"
+              tabindex="-1"
+            >
+              <.icon
+                name="hero-building-office"
+                class="mr-3 h-5 w-5 text-zinc-400 group-hover:text-primary transition-colors"
+              /> Company Profile
+            </.link>
+            <.link
+              navigate={~p"/technicians"}
+              class="group flex items-center px-4 py-2 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
+              role="menuitem"
+              tabindex="-1"
+            >
+              <.icon
+                name="hero-users"
+                class="mr-3 h-5 w-5 text-zinc-400 group-hover:text-primary transition-colors"
+              /> Team Members
+            </.link>
           </div>
-          <.link
-            navigate={~p"/settings/branding"}
-            class="group flex items-center px-4 py-2 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
-            role="menuitem"
-            tabindex="-1"
-          >
-            <.icon name="hero-building-office" class="mr-3 h-5 w-5 text-zinc-400 group-hover:text-primary transition-colors" />
-            Company Profile
-          </.link>
-           <.link
-            navigate={~p"/technicians"}
-            class="group flex items-center px-4 py-2 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
-            role="menuitem"
-            tabindex="-1"
-          >
-            <.icon name="hero-users" class="mr-3 h-5 w-5 text-zinc-400 group-hover:text-primary transition-colors" />
-            Team Members
-          </.link>
-        </div>
         <% end %>
-
-        <!-- Help Section -->
+        
+    <!-- Help Section -->
         <div class="py-1">
-           <.link
+          <.link
             href="#"
             class="group flex items-center px-4 py-2 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
             role="menuitem"
             tabindex="-1"
           >
-             <.icon name="hero-lifebuoy" class="mr-3 h-5 w-5 text-zinc-400 group-hover:text-primary transition-colors" />
-            Help Center
+            <.icon
+              name="hero-lifebuoy"
+              class="mr-3 h-5 w-5 text-zinc-400 group-hover:text-primary transition-colors"
+            /> Help Center
           </.link>
           <.link
             href="#"
@@ -214,12 +236,14 @@ defmodule FieldHubWeb.Layouts do
             role="menuitem"
             tabindex="-1"
           >
-             <.icon name="hero-book-open" class="mr-3 h-5 w-5 text-zinc-400 group-hover:text-primary transition-colors" />
-            API Documentation
+            <.icon
+              name="hero-book-open"
+              class="mr-3 h-5 w-5 text-zinc-400 group-hover:text-primary transition-colors"
+            /> API Documentation
           </.link>
         </div>
-
-        <!-- Logout -->
+        
+    <!-- Logout -->
         <div class="py-1">
           <.link
             href={~p"/users/log-out"}
@@ -228,8 +252,10 @@ defmodule FieldHubWeb.Layouts do
             role="menuitem"
             tabindex="-1"
           >
-            <.icon name="hero-arrow-right-on-rectangle" class="mr-3 h-5 w-5 text-red-500 group-hover:text-red-600 transition-colors" />
-            Sign out
+            <.icon
+              name="hero-arrow-right-on-rectangle"
+              class="mr-3 h-5 w-5 text-red-500 group-hover:text-red-600 transition-colors"
+            /> Sign out
           </.link>
         </div>
       </div>
@@ -317,5 +343,21 @@ defmodule FieldHubWeb.Layouts do
       </div>
     </div>
     """
+  end
+
+  def nav_link_class(active) do
+    if active do
+      "bg-primary/10 text-primary group flex items-center gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-bold transition-all duration-200 border-l-2 border-primary"
+    else
+      "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white group flex items-center gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-semibold transition-all duration-200 border-l-2 border-transparent"
+    end
+  end
+
+  def nav_icon_class(active) do
+    if active do
+      "h-5 w-5 shrink-0 text-primary"
+    else
+      "h-5 w-5 shrink-0 text-zinc-400 dark:text-zinc-500 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors"
+    end
   end
 end

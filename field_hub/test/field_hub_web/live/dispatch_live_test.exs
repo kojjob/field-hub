@@ -104,7 +104,7 @@ defmodule FieldHubWeb.DispatchLiveTest do
       {:ok, live, _html} = live(conn, ~p"/dispatch")
 
       # Navigate to next day
-      html = live |> element("button", "Next") |> render_click()
+      html = live |> element("button[phx-click='next_day']") |> render_click()
 
       tomorrow = Date.add(Date.utc_today(), 1)
       assert html =~ Calendar.strftime(tomorrow, "%B %d, %Y")
@@ -283,7 +283,7 @@ defmodule FieldHubWeb.DispatchLiveTest do
       assert html =~ "John Smith"
       assert html =~ "Jane Doe"
       assert html =~ "available"
-      assert html =~ "on_job"
+      assert html =~ "on job"
     end
 
     test "shows current job for technicians on a job", %{conn: conn, user: user, org: org} do
@@ -328,18 +328,15 @@ defmodule FieldHubWeb.DispatchLiveTest do
   end
 
   describe "Map View" do
-    test "toggles to map view and displays map container", %{conn: conn} do
+    test "toggles to map view and displays map", %{conn: conn} do
       {:ok, live, _html} = live(conn, ~p"/dispatch")
-
-      # Initial view should not have map
-      refute has_element?(live, "#map-view")
 
       # Switch to map view
       html = live |> element("button", "Map") |> render_click()
 
-      # Map container should be present
-      assert html =~ "id=\"map-view\""
-      assert html =~ "phx-hook=\"Map\""
+      # Should show the map component (either the OSM embed or empty state)
+      # The new component uses OpenStreetMap iframe or shows "No Locations Available"
+      assert html =~ "Map Legend" or html =~ "No Locations Available"
     end
 
     test "includes technician and job data in map container", %{conn: conn, user: user, org: org} do
@@ -348,7 +345,7 @@ defmodule FieldHubWeb.DispatchLiveTest do
       technician =
         technician_fixture(org.id, %{name: "Map Tech", current_lat: 37.77, current_lng: -122.42})
 
-      {:ok, job} =
+      {:ok, _job} =
         FieldHub.Jobs.create_job(org.id, %{
           title: "Map Job",
           job_type: "service_call",
@@ -365,11 +362,12 @@ defmodule FieldHubWeb.DispatchLiveTest do
       # Switch to map view
       html = live |> element("button", "Map") |> render_click()
 
-      # Check for data attributes (checking for JSON strings might be brittle due to encoding, but checking unique values works)
+      # New component shows technicians and jobs in sidebar panel
       assert html =~ "Map Tech"
       assert html =~ "Map Job"
-      assert html =~ "37.77"
-      assert html =~ "37.78"
+      # Should have the map legend since we have markers
+      assert html =~ "Map Legend"
+      assert html =~ "Active on Map"
     end
   end
 end

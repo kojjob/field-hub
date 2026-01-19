@@ -53,6 +53,16 @@ defmodule FieldHub.Dispatch do
   end
 
   @doc """
+  Gets a single technician by their slug scoped to an organization.
+  """
+  def get_technician_by_slug!(org_id, slug) do
+    Technician
+    |> where([t], t.organization_id == ^org_id)
+    |> where([t], t.slug == ^slug)
+    |> Repo.one!()
+  end
+
+  @doc """
   Gets a technician by ID without organization scoping.
 
   Returns nil if not found.

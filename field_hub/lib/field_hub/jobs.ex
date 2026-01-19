@@ -86,6 +86,45 @@ defmodule FieldHub.Jobs do
   end
 
   @doc """
+  Returns active (non-completed, non-cancelled) jobs for a customer.
+  Used by the customer portal.
+  """
+  def list_active_jobs_for_customer(customer_id) do
+    Job
+    |> where([j], j.customer_id == ^customer_id)
+    |> where([j], j.status not in ["completed", "cancelled"])
+    |> order_by([j], asc: j.scheduled_date)
+    |> Repo.all()
+    |> Repo.preload([:technician, :customer])
+  end
+
+  @doc """
+  Counts active jobs for an organization.
+  """
+  def count_active_jobs(org_id) do
+    Job
+    |> where([j], j.organization_id == ^org_id)
+    |> where([j], j.status not in ["completed", "cancelled"])
+    |> Repo.aggregate(:count, :id)
+  end
+
+  @doc """
+  Returns completed jobs for a customer with an optional limit.
+  Used by the customer portal.
+  """
+  def list_completed_jobs_for_customer(customer_id, opts \\ []) do
+    limit = Keyword.get(opts, :limit, 10)
+
+    Job
+    |> where([j], j.customer_id == ^customer_id)
+    |> where([j], j.status == "completed")
+    |> order_by([j], desc: j.completed_at)
+    |> limit(^limit)
+    |> Repo.all()
+    |> Repo.preload([:technician, :customer])
+  end
+
+  @doc """
   Returns the list of unassigned jobs (no technician or no scheduled date).
 
   ## Examples
@@ -135,6 +174,16 @@ defmodule FieldHub.Jobs do
   end
 
   @doc """
+  Gets a single job by its number scoped to an organization.
+  """
+  def get_job_by_number!(org_id, number) do
+    Job
+    |> where([j], j.organization_id == ^org_id)
+    |> where([j], j.number == ^number)
+    |> Repo.one!()
+  end
+
+  @doc """
   Creates a job.
 
   Automatically generates a job number if not provided.
@@ -152,6 +201,10 @@ defmodule FieldHub.Jobs do
     # Normalize to string keys to avoid mixed keys error
     attrs = for {key, val} <- attrs, into: %{}, do: {to_string(key), val}
     attrs = Map.put_new(attrs, "number", Job.generate_job_number(org_id))
+
+    # Geocode address if lat/lng not provided
+    attrs = FieldHub.Geo.maybe_geocode_job_attrs(attrs)
+
     job_changeset = %Job{organization_id: org_id} |> Job.changeset(attrs)
 
     Multi.new()
@@ -176,6 +229,12 @@ defmodule FieldHub.Jobs do
 
   """
   def update_job(%Job{} = job, attrs) do
+    # Normalize to string keys
+    attrs = for {key, val} <- attrs, into: %{}, do: {to_string(key), val}
+
+    # Re-geocode if address changed
+    attrs = maybe_regeocode_on_update(job, attrs)
+
     Multi.new()
     |> Multi.update(:job, Job.changeset(job, attrs))
     |> Multi.insert(:event, fn %{job: updated_job} ->
@@ -186,6 +245,22 @@ defmodule FieldHub.Jobs do
     end)
     |> run_transaction()
     |> broadcast_job_updated()
+  end
+
+  # Only geocode if address fields changed
+  defp maybe_regeocode_on_update(job, attrs) do
+    address_changed? =
+      Enum.any?(~w(service_address service_city service_state service_zip), fn key ->
+        new_val = Map.get(attrs, key)
+        old_val = Map.get(job, String.to_existing_atom(key))
+        new_val != nil and new_val != old_val
+      end)
+
+    if address_changed? do
+      FieldHub.Geo.maybe_geocode_job_attrs(attrs)
+    else
+      attrs
+    end
   end
 
   @doc """
@@ -211,6 +286,7 @@ defmodule FieldHub.Jobs do
     end)
     |> run_transaction()
     |> broadcast_job_updated()
+    |> notify_job_dispatched()
   end
 
   @doc """
@@ -232,6 +308,7 @@ defmodule FieldHub.Jobs do
     end)
     |> run_transaction()
     |> broadcast_job_updated()
+    |> notify_job_scheduled()
   end
 
   @doc """
@@ -251,6 +328,7 @@ defmodule FieldHub.Jobs do
     end)
     |> run_transaction()
     |> broadcast_job_updated()
+    |> notify_job_dispatched()
   end
 
   @doc """
@@ -324,6 +402,7 @@ defmodule FieldHub.Jobs do
     end)
     |> run_transaction()
     |> broadcast_job_updated()
+    |> notify_job_completed()
   end
 
   @doc """
@@ -410,6 +489,12 @@ defmodule FieldHub.Jobs do
 
   defp broadcast_job_created({:ok, job}) do
     Broadcaster.broadcast_job_created(job)
+
+    # Send confirmation if it's already scheduled or has a customer
+    if job.customer_id do
+      FieldHub.Jobs.JobNotifier.deliver_job_confirmation(job)
+    end
+
     {:ok, job}
   end
 
@@ -421,4 +506,42 @@ defmodule FieldHub.Jobs do
   end
 
   defp broadcast_job_updated(error), do: error
+
+  @doc """
+  Broadcasts a job location update (technician location).
+  """
+  def broadcast_job_location_update(job_id, lat, lng) do
+    Broadcaster.broadcast_job_location_update(job_id, lat, lng)
+  end
+
+  # Add specific helpers for different update types to trigger notifications
+  defp notify_job_scheduled({:ok, job}) do
+    if job.customer_id do
+      FieldHub.Jobs.JobNotifier.deliver_job_confirmation(job)
+    end
+
+    {:ok, job}
+  end
+
+  defp notify_job_scheduled(error), do: error
+
+  defp notify_job_dispatched({:ok, job}) do
+    if job.customer_id do
+      FieldHub.Jobs.JobNotifier.deliver_technician_dispatch(job)
+    end
+
+    {:ok, job}
+  end
+
+  defp notify_job_dispatched(error), do: error
+
+  defp notify_job_completed({:ok, job}) do
+    if job.customer_id do
+      FieldHub.Jobs.JobNotifier.deliver_job_completion(job)
+    end
+
+    {:ok, job}
+  end
+
+  defp notify_job_completed(error), do: error
 end

@@ -185,6 +185,13 @@ defmodule FieldHub.Accounts do
   end
 
   @doc """
+  Returns an `%Ecto.Changeset{}` for changing the organization.
+  """
+  def change_organization(%Organization{} = org, attrs \\ %{}) do
+    Organization.changeset(org, attrs)
+  end
+
+  @doc """
   Generates a unique slug from an organization name.
 
   If the slug already exists, appends a unique suffix.
@@ -374,7 +381,7 @@ defmodule FieldHub.Accounts do
   The user is in sudo mode when the last authentication was done no further
   than 20 minutes ago. The limit can be given as second argument in minutes.
   """
-  def sudo_mode?(user, minutes \\ -20)
+  def sudo_mode?(user, minutes \\ -30)
 
   def sudo_mode?(%User{authenticated_at: ts}, minutes) when is_struct(ts, DateTime) do
     DateTime.after?(ts, DateTime.utc_now() |> DateTime.add(minutes, :minute))
@@ -441,6 +448,22 @@ defmodule FieldHub.Accounts do
   end
 
   @doc """
+  Updates the user profile (name, phone, avatar).
+  """
+  def update_user_profile(user, attrs) do
+    user
+    |> User.profile_changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for changing the user profile.
+  """
+  def change_user_profile(user, attrs \\ %{}) do
+    User.profile_changeset(user, attrs)
+  end
+
+  @doc """
   Updates the user password.
 
   Returns a tuple with the updated user, as well as a list of expired tokens.
@@ -458,6 +481,41 @@ defmodule FieldHub.Accounts do
     user
     |> User.password_changeset(attrs)
     |> update_user_and_delete_all_tokens()
+  end
+
+  @doc """
+  Returns the list of users in an organization.
+  """
+  def list_org_users(%Organization{} = org) do
+    User
+    |> where(organization_id: ^org.id)
+    |> order_by(:name)
+    |> Repo.all()
+  end
+
+  @doc """
+  Invites a new user to the organization.
+  """
+  def invite_user(%Organization{} = org, attrs) do
+    # Generate a strong random password since the user will set their own later
+    password = Base.encode64(:crypto.strong_rand_bytes(32))
+
+    %User{}
+    |> User.registration_changeset(
+      Map.merge(attrs, %{"password" => password, "terms_accepted" => true})
+    )
+    |> Ecto.Changeset.put_change(:organization_id, org.id)
+    |> Ecto.Changeset.put_change(:role, attrs["role"] || "viewer")
+    |> Ecto.Changeset.put_change(:phone, attrs["phone"])
+    |> Ecto.Changeset.put_change(:avatar_url, attrs["avatar_url"])
+    |> Repo.insert()
+  end
+
+  @doc """
+  Deletes a user.
+  """
+  def delete_user(%User{} = user) do
+    Repo.delete(user)
   end
 
   ## Session
@@ -585,5 +643,15 @@ defmodule FieldHub.Accounts do
         {:ok, {user, tokens_to_expire}}
       end
     end)
+  end
+
+  def update_user_notifications(%User{} = user, attrs) do
+    user
+    |> User.notification_changeset(attrs)
+    |> Repo.update()
+  end
+
+  def change_user_notifications(%User{} = user, attrs \\ %{}) do
+    User.notification_changeset(user, attrs)
   end
 end

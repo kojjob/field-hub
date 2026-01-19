@@ -20,7 +20,7 @@ defmodule FieldHubWeb.SettingsLive.CustomFieldsTest do
       {:ok, view, _html} = live(conn, ~p"/settings/custom-fields")
 
       view
-      |> element("a", "Add Field")
+      |> element("button", "Add Field")
       |> render_click()
 
       assert_patch(view, ~p"/settings/custom-fields/new?target=job")
@@ -42,7 +42,7 @@ defmodule FieldHubWeb.SettingsLive.CustomFieldsTest do
     end
 
     test "can delete a custom field", %{conn: conn, org: org} do
-      {:ok, field} =
+      {:ok, _field} =
         FieldHub.Config.CustomFields.create_definition(%{
           name: "Gate Code",
           key: "gate_code",

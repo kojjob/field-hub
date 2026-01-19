@@ -54,7 +54,7 @@ defmodule FieldHubWeb.JobLiveTest do
       %{job: job} = create_job(user)
       {:ok, _index_live, html} = live(conn, ~p"/jobs")
 
-      assert html =~ "Listing Jobs"
+      assert html =~ "Job Directory"
       assert html =~ job.title
     end
 
@@ -62,7 +62,7 @@ defmodule FieldHubWeb.JobLiveTest do
       customer = create_customer(user)
       {:ok, index_live, _html} = live(conn, ~p"/jobs")
 
-      assert index_live |> element("a", "New Job") |> render_click() =~
+      assert index_live |> element("a", "Create New Job") |> render_click() =~
                "New Job"
 
       assert_patch(index_live, ~p"/jobs/new")
@@ -86,10 +86,10 @@ defmodule FieldHubWeb.JobLiveTest do
       %{job: job} = create_job(user)
       {:ok, index_live, _html} = live(conn, ~p"/jobs")
 
-      assert index_live |> element("#jobs-#{job.id} a", "Edit") |> render_click() =~
+      assert index_live |> element("a[href*='/edit']") |> render_click() =~
                "Edit Job"
 
-      assert_patch(index_live, ~p"/jobs/#{job.id}/edit")
+      assert_patch(index_live, ~p"/jobs/#{job.number}/edit")
 
       assert index_live
              |> form("#job-form", job: @invalid_attrs)
@@ -110,7 +110,7 @@ defmodule FieldHubWeb.JobLiveTest do
       %{job: job} = create_job(user)
       {:ok, index_live, _html} = live(conn, ~p"/jobs")
 
-      assert index_live |> element("#jobs-#{job.id} a", "Delete") |> render_click()
+      assert index_live |> element("a[phx-click*='delete']") |> render_click()
       refute has_element?(index_live, "#jobs-#{job.id}")
     end
   end

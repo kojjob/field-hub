@@ -4,10 +4,10 @@ defmodule FieldHubWeb.TechLive.JobShow do
   alias FieldHub.Jobs
 
   @impl true
-  def mount(%{"id" => id}, _session, socket) do
+  def mount(%{"number" => number}, _session, socket) do
     user = socket.assigns.current_scope.user
     org_id = user.organization_id
-    job = Jobs.get_job!(org_id, id) |> FieldHub.Repo.preload([:customer])
+    job = Jobs.get_job_by_number!(org_id, number) |> FieldHub.Repo.preload([:customer])
 
     history =
       Jobs.list_jobs_for_customer(org_id, job.customer_id) |> Enum.reject(&(&1.id == job.id))
@@ -15,7 +15,14 @@ defmodule FieldHubWeb.TechLive.JobShow do
     technician = FieldHub.Dispatch.get_technician_by_user_id(user.id)
 
     {:ok,
-     assign(socket, job: job, history: history, page_title: job.title, technician: technician)}
+     assign(socket,
+       job: job,
+       history: history,
+       page_title: job.title,
+       technician: technician,
+       pending_status_action: nil,
+       pending_status_meta: nil
+     )}
   end
 
   @impl true
@@ -59,7 +66,7 @@ defmodule FieldHubWeb.TechLive.JobShow do
             </div>
           </div>
         </div>
-
+        
     <!-- Action Bar (Sticky Bottom in Mobile) -->
         <div class="fixed bottom-0 left-0 right-0 p-4 bg-white/80 backdrop-blur-md border-t border-gray-200 z-20">
           <div class="max-w-2xl mx-auto flex space-x-3">
@@ -67,6 +74,32 @@ defmodule FieldHubWeb.TechLive.JobShow do
           </div>
         </div>
 
+        <.modal
+          :if={@pending_status_action}
+          id="status-confirm-modal"
+          on_cancel={JS.push("cancel_status_confirm")}
+        >
+          <div class="space-y-2">
+            <h3 class="text-lg font-black tracking-tight text-zinc-900 dark:text-white">
+              {@pending_status_meta.title}
+            </h3>
+            <p class="text-sm text-zinc-600 dark:text-zinc-300 leading-relaxed">
+              {@pending_status_meta.body}
+            </p>
+          </div>
+          <:confirm>
+            <button
+              id="status-confirm-modal-confirm"
+              phx-click="confirm_status_action"
+              phx-value-action={@pending_status_action}
+              class={@pending_status_meta.confirm_class}
+            >
+              {@pending_status_meta.confirm_label}
+            </button>
+          </:confirm>
+          <:cancel>Cancel</:cancel>
+        </.modal>
+        
     <!-- Description -->
         <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
           <h3 class="text-sm font-bold text-gray-900 mb-2 flex items-center">
@@ -76,7 +109,7 @@ defmodule FieldHubWeb.TechLive.JobShow do
             {@job.description || "No description provided."}
           </p>
         </div>
-
+        
     <!-- Customer Card -->
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
           <div class="px-4 py-3 bg-gray-50 border-b border-gray-200 flex justify-between items-center">
@@ -116,7 +149,7 @@ defmodule FieldHubWeb.TechLive.JobShow do
             </div>
           </div>
         </div>
-
+        
     <!-- Notes Section -->
         <%= if @job.technician_notes || @job.internal_notes do %>
           <div class="bg-yellow-50 p-4 rounded-xl shadow-sm border border-yellow-100 space-y-3">
@@ -137,7 +170,7 @@ defmodule FieldHubWeb.TechLive.JobShow do
             <% end %>
           </div>
         <% end %>
-
+        
     <!-- History Section -->
         <div class="bg-white rounded-xl shadow-sm border border-gray-200">
           <div class="px-4 py-3 border-b border-gray-100">
@@ -179,21 +212,27 @@ defmodule FieldHubWeb.TechLive.JobShow do
     <%= case @job.status do %>
       <% "scheduled" -> %>
         <button
-          phx-click="start_travel"
+          id="tech-start-travel-btn"
+          phx-click="open_status_confirm"
+          phx-value-action="start_travel"
           class="flex-1 bg-primary text-white font-bold py-3.5 rounded-2xl shadow-lg shadow-primary/30 active:scale-[0.98] transition-all"
         >
           Start Travel
         </button>
       <% "dispatched" -> %>
         <button
-          phx-click="start_travel"
+          id="tech-start-travel-btn"
+          phx-click="open_status_confirm"
+          phx-value-action="start_travel"
           class="flex-1 bg-primary text-white font-bold py-3.5 rounded-2xl shadow-lg shadow-primary/30 active:scale-[0.98] transition-all"
         >
           Start Travel
         </button>
       <% "en_route" -> %>
         <button
-          phx-click="arrive"
+          id="tech-arrive-btn"
+          phx-click="open_status_confirm"
+          phx-value-action="arrive"
           class="flex-1 bg-purple-600 text-white font-bold py-3.5 rounded-2xl shadow-lg shadow-purple-200 active:scale-[0.98] transition-all"
         >
           Arrived On Site
@@ -201,12 +240,15 @@ defmodule FieldHubWeb.TechLive.JobShow do
       <% "on_site" -> %>
         <div class="flex gap-3 w-full">
           <button
-            phx-click="start_work"
+            id="tech-start-work-btn"
+            phx-click="open_status_confirm"
+            phx-value-action="start_work"
             class="flex-1 bg-yellow-500 text-white font-bold py-3.5 rounded-2xl shadow-lg shadow-yellow-200 active:scale-[0.98] transition-all text-sm"
           >
             Start Work
           </button>
           <button
+            id="tech-complete-job-btn"
             phx-click="complete_job"
             class="flex-1 bg-green-600 text-white font-bold py-3.5 rounded-2xl shadow-lg shadow-green-200 active:scale-[0.98] transition-all text-sm"
           >
@@ -215,6 +257,7 @@ defmodule FieldHubWeb.TechLive.JobShow do
         </div>
       <% "in_progress" -> %>
         <button
+          id="tech-complete-job-btn"
           phx-click="complete_job"
           class="flex-1 bg-green-600 text-white font-bold py-3.5 rounded-2xl shadow-lg shadow-green-200 active:scale-[0.98] transition-all"
         >
@@ -232,6 +275,10 @@ defmodule FieldHubWeb.TechLive.JobShow do
   def handle_event("update_location", %{"lat" => lat, "lng" => lng}, socket) do
     if socket.assigns.technician do
       FieldHub.Dispatch.update_technician_location(socket.assigns.technician, lat, lng)
+
+      if socket.assigns.job.status == "en_route" do
+        FieldHub.Jobs.broadcast_job_location_update(socket.assigns.job.id, lat, lng)
+      end
     end
 
     {:noreply, socket}
@@ -244,44 +291,118 @@ defmodule FieldHubWeb.TechLive.JobShow do
   end
 
   @impl true
-  def handle_event("start_travel", _, socket) do
-    case Jobs.start_travel(socket.assigns.job) do
-      {:ok, job} ->
-        job = FieldHub.Repo.preload(job, [:customer])
-        {:noreply, assign(socket, job: job)}
+  def handle_event("open_status_confirm", %{"action" => action}, socket) do
+    {:noreply,
+     socket
+     |> assign(:pending_status_action, action)
+     |> assign(:pending_status_meta, status_confirm_meta(action))}
+  end
 
-      {:error, _} ->
-        {:noreply, put_flash(socket, :error, "Could not update status")}
-    end
+  @impl true
+  def handle_event("confirm_status_action", %{"action" => action}, socket) do
+    socket = assign(socket, pending_status_action: nil, pending_status_meta: nil)
+
+    {:noreply, apply_status_action(socket, action)}
+  end
+
+  @impl true
+  def handle_event("cancel_status_confirm", _params, socket) do
+    {:noreply, assign(socket, pending_status_action: nil, pending_status_meta: nil)}
+  end
+
+  @impl true
+  def handle_event("start_travel", _, socket) do
+    {:noreply, apply_status_action(socket, "start_travel")}
   end
 
   @impl true
   def handle_event("arrive", _, socket) do
-    case Jobs.arrive_on_site(socket.assigns.job) do
-      {:ok, job} ->
-        job = FieldHub.Repo.preload(job, [:customer])
-        {:noreply, assign(socket, job: job)}
-
-      {:error, _} ->
-        {:noreply, put_flash(socket, :error, "Could not update status")}
-    end
+    {:noreply, apply_status_action(socket, "arrive")}
   end
 
   @impl true
   def handle_event("start_work", _, socket) do
-    case Jobs.start_work(socket.assigns.job) do
-      {:ok, job} ->
-        job = FieldHub.Repo.preload(job, [:customer])
-        {:noreply, assign(socket, job: job)}
-
-      {:error, _} ->
-        {:noreply, put_flash(socket, :error, "Could not update status")}
-    end
+    {:noreply, apply_status_action(socket, "start_work")}
   end
 
   @impl true
   def handle_event("complete_job", _, socket) do
-    {:noreply, push_navigate(socket, to: ~p"/tech/jobs/#{socket.assigns.job.id}/complete")}
+    {:noreply, push_navigate(socket, to: ~p"/tech/jobs/#{socket.assigns.job}/complete")}
+  end
+
+  defp apply_status_action(socket, "start_travel") do
+    case Jobs.start_travel(socket.assigns.job) do
+      {:ok, job} ->
+        job = FieldHub.Repo.preload(job, [:customer])
+        assign(socket, job: job)
+
+      {:error, _} ->
+        put_flash(socket, :error, "Could not update status")
+    end
+  end
+
+  defp apply_status_action(socket, "arrive") do
+    case Jobs.arrive_on_site(socket.assigns.job) do
+      {:ok, job} ->
+        job = FieldHub.Repo.preload(job, [:customer])
+        assign(socket, job: job)
+
+      {:error, _} ->
+        put_flash(socket, :error, "Could not update status")
+    end
+  end
+
+  defp apply_status_action(socket, "start_work") do
+    case Jobs.start_work(socket.assigns.job) do
+      {:ok, job} ->
+        job = FieldHub.Repo.preload(job, [:customer])
+        assign(socket, job: job)
+
+      {:error, _} ->
+        put_flash(socket, :error, "Could not update status")
+    end
+  end
+
+  defp apply_status_action(socket, _), do: socket
+
+  defp status_confirm_meta("start_travel") do
+    %{
+      title: "Start travel?",
+      body: "This marks the job as en route and starts travel tracking.",
+      confirm_label: "Start Travel",
+      confirm_class:
+        "px-5 py-2.5 rounded-xl text-sm font-bold text-white bg-primary hover:bg-primary/90 transition-all"
+    }
+  end
+
+  defp status_confirm_meta("arrive") do
+    %{
+      title: "Confirm arrival?",
+      body: "This marks the job as on site. Only confirm when you have arrived.",
+      confirm_label: "Mark Arrived",
+      confirm_class:
+        "px-5 py-2.5 rounded-xl text-sm font-bold text-white bg-purple-600 hover:bg-purple-700 transition-all"
+    }
+  end
+
+  defp status_confirm_meta("start_work") do
+    %{
+      title: "Start work now?",
+      body: "This marks the job as in progress and begins time tracking.",
+      confirm_label: "Start Work",
+      confirm_class:
+        "px-5 py-2.5 rounded-xl text-sm font-bold text-white bg-yellow-500 hover:bg-yellow-600 transition-all"
+    }
+  end
+
+  defp status_confirm_meta(_action) do
+    %{
+      title: "Confirm status change",
+      body: "Please confirm you want to update this job.",
+      confirm_label: "Confirm",
+      confirm_class:
+        "px-5 py-2.5 rounded-xl text-sm font-bold text-white bg-primary hover:bg-primary/90 transition-all"
+    }
   end
 
   defp status_color("scheduled"), do: "bg-primary/10 text-primary border border-primary/20"

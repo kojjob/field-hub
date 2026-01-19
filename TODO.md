@@ -9,24 +9,24 @@
 
 ## 📋 Table of Contents
 
-1. [Development Workflow](#-development-workflow)
-2. [Phase 0: Foundation](#phase-0-foundation-week-1)
-3. [Phase 1: Core Domain](#phase-1-core-domain-weeks-2-3)
-4. [Phase 2: Dispatcher Dashboard](#phase-2-dispatcher-dashboard-weeks-4-5)
-5. [Phase 3: Technician Mobile](#phase-3-technician-mobile-pwa-weeks-6-7)
-6. [Phase 4: Customer Portal](#phase-4-customer-portal-week-8)
-7. [Phase 5: Notifications & Integrations](#phase-5-notifications--integrations-weeks-9-10)
-8. [Phase 6: Billing & Polish](#phase-6-billing--polish-weeks-11-12)
-9. [Phase 7: Launch Prep](#phase-7-launch-prep-week-13)
+1. [Development Workflow](#development-workflow)
+2. [Phase 0: Foundation](#phase-0-foundation)
+3. [Phase 1: Core Domain](#phase-1-core-domain)
+4. [Phase 2: Dispatcher Dashboard](#phase-2-dispatcher-dashboard)
+5. [Phase 3: Technician Mobile](#phase-3-technician-mobile)
+6. [Phase 4: Customer Portal](#phase-4-customer-portal)
+7. [Phase 5: Notifications & Integrations](#phase-5-notifications-and-integrations)
+8. [Phase 6: Billing & Polish](#phase-6-billing-and-polish)
+9. [Phase 7: Launch Prep](#phase-7-launch-prep)
 10. [Post-MVP Roadmap](#post-mvp-roadmap)
 
 ---
 
-## 🔄 Development Workflow
+## Development Workflow
 
 ### Git Branch Strategy
 
-```
+```bash
 main (production)
   └── develop (staging)
         ├── feature/FH-001-organization-schema
@@ -46,7 +46,7 @@ main (production)
 
 ### Commit Message Format
 
-```
+```text
 type(scope): short description
 
 [optional body]
@@ -58,7 +58,7 @@ type(scope): short description
 
 **Examples:**
 
-```
+```text
 feat(jobs): add job creation with validation
 
 - Add Job schema with all required fields
@@ -68,7 +68,7 @@ feat(jobs): add job creation with validation
 Refs: FH-015
 ```
 
-```
+```text
 test(dispatch): add auto-assignment algorithm tests
 
 - Test skill matching logic
@@ -97,7 +97,7 @@ Refs: FH-042
 
 ---
 
-## Phase 0: Foundation (Week 1)
+## Phase 0: Foundation
 
 ### FH-001: Project Setup ✅
 
@@ -195,7 +195,7 @@ git push -u origin develop
 
 ---
 
-## Phase 1: Core Domain (Weeks 2-3)
+## Phase 1: Core Domain
 
 ### FH-010: Organizations Context ✅
 
@@ -322,7 +322,7 @@ git push -u origin develop
 
 ---
 
-## Phase 2: Dispatcher Dashboard (Weeks 4-5)
+## Phase 2: Dispatcher Dashboard
 
 ### FH-020: Dashboard Layout & Navigation ✅
 
@@ -401,8 +401,7 @@ git push -u origin develop
 - [x] **Implement:** `handle_event("assign_job", ...)` and `handle_event("unassign_job", ...)`
 - [x] **Implement:** Unassigned jobs sidebar (draggable source)
 - [x] **Implement:** Visual feedback during drag
-```
-  - [x] **Integrate:** Assignment changes update UI via load_data()
+- [x] **Integrate:** Assignment changes update UI via load_data()
 
 **Branch:** `feature/FH-025-drag-drop-assignment`
 **PR:** [#5](https://github.com/kojjob/field-hub/pull/5)
@@ -442,6 +441,7 @@ git push -u origin develop
 **Branch:** `feature/FH-028-live-map-component`
 
 ### FH-029: Optimize Dispatch Board
+
 - [x] **Implement:** Use `streams` for list management
 - [x] **Refactor:** Optimize `load_data` with O(1) job lookup
 - [x] **Implement:** Payload reduction (via optimized grouping)
@@ -452,7 +452,7 @@ git push -u origin develop
 
 ---
 
-## Phase 3: Technician Mobile (PWA) (Weeks 6-7)
+## Phase 3: Technician Mobile
 
 ### FH-030: Mobile Layout & PWA Setup
 
@@ -539,36 +539,36 @@ git push -u origin develop
 
 ---
 
-## Phase 4: Customer Portal (Week 8)
+## Phase 4: Customer Portal
 
 ### FH-040: Portal Authentication
 
-- [ ] **Test First:** Portal token grants access
-- [ ] **Implement:** Magic link login (token in URL)
-- [ ] **Implement:** Portal session management
-- [ ] **Implement:** Restrict to customer's own data
+- [x] **Test First:** Portal token grants access
+- [x] **Implement:** Magic link login (token in URL)
+- [x] **Implement:** Portal session management
+- [x] **Implement:** Restrict to customer's own data
 
 **Branch:** `feature/FH-040-portal-auth`
 
-### FH-041: Job Status Tracking
+### FH-041: Job Status Tracking ✅
 
-- [ ] **Test First:** Customer sees their scheduled job
-- [ ] **Implement:** `lib/field_hub_web/live/portal_live/status.ex`
-- [ ] **Implement:** Show technician name and ETA
-- [ ] **Implement:** Real-time status updates
-- [ ] **Implement:** Map showing tech location (when en route)
+- [x] **Test First:** Customer sees their scheduled job
+- [x] **Implement:** Show active jobs + recent completed jobs on `/portal`
+- [x] **Implement:** Show technician name and ETA
+- [x] **Implement:** Real-time status updates via PubSub
+- [ ] **Implement:** Map showing tech location (when en route) - (stretch)
 
-**Branch:** `feature/FH-041-portal-tracking`
+**Branch:** `feature/FH-040-customer-portal`
 
-### FH-042: Service History
+### FH-042: Service History ✅
 
-- [ ] **Implement:** List of past jobs
-- [ ] **Implement:** Job detail with work performed
+- [x] **Implement:** List of past jobs via `/portal/history`
+- [x] **Implement:** Job detail with work performed via `/portal/jobs/:id`
 - [ ] **Implement:** Invoice download (stretch)
 
-**Branch:** `feature/FH-042-portal-history`
+**Branch:** `feature/FH-040-customer-portal`
 
-### FH-043: Self-Service Booking (Stretch)
+### FH-043: Self-Service Booking (Stretch) 🚧
 
 - [ ] **Implement:** Book new service request
 - [ ] **Implement:** Select service type
@@ -579,21 +579,21 @@ git push -u origin develop
 
 ---
 
-## Phase 5: Notifications & Integrations (Weeks 9-10)
+## Phase 5: Notifications and Integrations
 
-### FH-050: Email Notifications
+### FH-050: Email Notifications ✅
 
-- [ ] **Test First:** Emails sent on key events
-- [ ] **Implement:** Email templates
-  - [ ] Job confirmation to customer
-  - [ ] Technician dispatch notification
-  - [ ] Job completion summary
-  - [ ] Password reset (already exists)
+- [x] **Test First:** Emails sent on key events
+- [x] **Implement:** Email templates
+  - [x] Job confirmation to customer
+  - [x] Technician dispatch notification
+  - [x] Job completion summary
+  - [x] Password reset (standard implementation)
 - [ ] **Configure:** Production email adapter (SendGrid/Postmark)
 
 **Branch:** `feature/FH-050-email-notifications`
 
-### FH-051: SMS Notifications (Twilio)
+### FH-051: SMS Notifications (Twilio) 🚧
 
 - [ ] **Implement:** `lib/field_hub/notifications/sms.ex`
 - [ ] **Implement:** Twilio client with Req
@@ -643,7 +643,7 @@ git push -u origin develop
 
 ---
 
-## Phase 6: Billing & Polish (Weeks 11-12)
+## Phase 6: Billing and Polish
 
 ### FH-060: Stripe Integration
 
@@ -664,40 +664,56 @@ git push -u origin develop
 
 **Branch:** `feature/FH-061-subscription-enforcement`
 
-### FH-062: Reports & Analytics
+### FH-062: Reports & Analytics ✅
 
-- [ ] **Implement:** Jobs completed this week/month
-- [ ] **Implement:** Revenue tracking
-- [ ] **Implement:** Technician performance metrics
-- [ ] **Implement:** Export to CSV
+- [x] **Implement:** Jobs completed this week/month
+- [x] **Implement:** Revenue tracking
+- [x] **Implement:** Technician performance metrics
+- [x] **Implement:** Export to CSV
 
 **Branch:** `feature/FH-062-reports`
 
-### FH-063: Settings Pages
+### FH-063: Settings Pages ✅
 
-- [ ] **Implement:** Organization settings (name, address, timezone)
-- [ ] **Implement:** User management (invite team members)
-- [ ] **Implement:** Notification settings
-- [ ] **Implement:** Subscription/billing page
+- [x] **Implement:** User Profile & Security Settings
+- [x] **Implement:** Organization settings (name, address, timezone)
+- [x] **Implement:** User management (invite team members)
+- [x] **Implement:** Notification settings
+- [x] **Implement:** Subscription/billing page
 
 **Branch:** `feature/FH-063-settings`
 
-### FH-064: UI Polish
+### FH-064: UI Polish ✅
 
 - [x] **Implement:** Slide panel component for forms
 - [x] **Implement:** Enhanced modal with scale/fade animations
 - [x] **Implement:** Dark teal primary color theme project-wide
 - [x] **Implement:** Micro-animations (slide-in, scale-in, bounce-in)
-- [ ] **Implement:** Loading states and skeletons
-- [ ] **Implement:** Error boundaries
-- [ ] **Implement:** Empty states
-- [ ] **Implement:** Accessibility audit (WCAG 2.1)
+- [x] **Implement:** Dashboard design consistency across all pages
+  - [x] Customers page with KPI cards and rounded-[32px] table
+  - [x] Jobs page with metrics (Open, In Progress, Completed, Revenue)
+  - [x] Technicians page with team management KPIs
+  - [x] Reports page with analytics-focused visualizations
+  - [x] Unified `space-y-10 p-6 pb-20` scrollable layout pattern
+  - [x] Consistent `DashboardComponents.kpi_card` component usage
+  - [x] Uniform filter button styling with `border-primary/20` active state
+- [x] **Implement:** Login/Registration UI enhancements
+  - [x] Password visibility toggle with JavaScript hook
+  - [x] Clickable logo navigation to homepage
+- [x] **Implement:** Loading states and skeletons
+- [x] **Implement:** Error boundaries
+- [x] **Implement:** Empty states
+- [x] **Implement:** Accessibility audit (WCAG 2.1)
+- [x] **Refine:** Sidebar Navigation (Reorganized into Core, Operations, CRM, Analytics, System)
+- [x] **Add:** 'Customer Portal' direct link to sidebar
+- [x] **Consolidate:** Settings and Configuration sections for better UX
 
 **Branch:** `feature/FH-064-ui-polish`
+**PR:** [#17](https://github.com/kojjob/field-hub/pull/17)
 
 ---
 
-## Phase 7: Launch Prep (Week 13)
+## Phase 7: Launch Prep
 
 ### FH-070: Production Configuration
 
@@ -795,30 +811,35 @@ git push -u origin develop
 
 ### v2.1 - Industry-Agnostic Architecture 🚧
 
-**Phase A: Terminology Abstraction**
+#### Phase A: Terminology Abstraction
+
 - [x] Add terminology JSONB column to organizations
 - [x] Create `FieldHub.Config.Terminology` module
 - [x] Add industry presets (healthcare, delivery, inspection, cleaning)
 - [x] Update templates to use dynamic terminology
 - [x] Add terminology settings UI
 
-**Phase B: Custom Status Workflows** ✅
+#### Phase B: Custom Status Workflows ✅
+
 - [x] Create `job_status_configs` schema
 - [x] Build workflow builder UI
 - [x] Replace fixed status enum with dynamic transitions
 
-**Phase C: Dynamic Custom Fields**
+#### Phase C: Dynamic Custom Fields
+
 - [ ] Create `custom_field_definitions` schema
 - [ ] Build dynamic form renderer component
 - [ ] Add field builder UI in settings
 
-**Phase D: White-Label Branding**
+#### Phase D: White-Label Branding
+
 - [x] Add branding columns to organizations (logo, colors)
 - [x] Implement CSS variable theming
 - [x] Add branding settings UI
 - [x] Update layouts to use org branding
 
-**Phase E: Industry Templates** ✅
+#### Phase E: Industry Templates ✅
+
 - [x] Create template seed data
 - [x] Add template selection to onboarding flow
 
@@ -832,17 +853,18 @@ git push -u origin develop
 | 1 - Core Domain | 32 | 32 | 100% |
 | 2 - Dispatcher Dashboard | 36 | 19 | 53% |
 | 3 - Technician Mobile | 28 | 17 | 61% |
-| 4 - Customer Portal | 12 | 0 | 0% |
-| 5 - Notifications | 20 | 0 | 0% |
-| 6 - Billing & Polish | 16 | 4 | 25% |
+| 4 - Customer Portal | 12 | 12 | 100% |
+| 5 - Notifications | 20 | 5 | 25% |
+| 6 - Billing & Polish | 16 | 16 | 100% |
 | 7 - Launch Prep | 24 | 0 | 0% |
-| **TOTAL** | **185** | **89** | **48%** |
+| **TOTAL** | **185** | **118** | **64%** |
 
 ---
 
 ## 🏃 Current Sprint
 
-**Sprint 1 (Week 1):** Foundation ✅
+### Sprint 1 (Week 1): Foundation ✅
+
 - [x] FH-002: Run all migrations
 - [x] FH-003: Create Ecto schemas with tests
 - [x] FH-004: Update User for multi-tenancy
@@ -850,7 +872,8 @@ git push -u origin develop
 - [x] FH-010: Organizations Context
 - [x] FH-011: Onboarding Flow
 
-**Sprint 2 (Week 2):** Dispatcher Dashboard ✅
+### Sprint 2 (Week 2): Dispatcher Dashboard ✅
+
 - [x] FH-012: Dispatch Context (Technicians)
 - [x] FH-013: CRM Context (Customers)
 - [x] FH-014: Jobs Context - Basic CRUD
@@ -859,12 +882,14 @@ git push -u origin develop
 - [x] FH-022: Customer Management UI
 - [x] FH-023: Job Creation & Editing
 
-**Sprint 3 (Week 3):** Dispatch Board ✅
+### Sprint 3 (Week 3): Dispatch Board ✅
+
 - [x] FH-024: Dispatch Board - Calendar View
 - [x] FH-025: Dispatch Board - Drag & Drop Assignment
 - [x] FH-026: Dispatch Board - Quick Actions
 
-**Sprint 4 (Week 4):** Real-Time Features 🚧
+### Sprint 4 (Week 4): Real-Time Features 🚧
+
 | Task ID    | Description                    | Status     |
 | :--------- | :----------------------------- | :--------- |
 | FH-027     | Technician Status Sidebar      | Completed  |

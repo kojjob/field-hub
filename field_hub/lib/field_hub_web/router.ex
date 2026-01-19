@@ -17,10 +17,37 @@ defmodule FieldHubWeb.Router do
     plug :accepts, ["json"]
   end
 
+  pipeline :portal do
+    plug FieldHubWeb.PortalAuth, :fetch_current_portal_customer
+  end
+
+  pipeline :require_portal_customer do
+    plug FieldHubWeb.PortalAuth, :require_portal_customer
+  end
+
   scope "/", FieldHubWeb do
     pipe_through :browser
 
     get "/", PageController, :home
+  end
+
+  scope "/portal", FieldHubWeb do
+    pipe_through [:browser, :portal]
+
+    get "/login/:token", PortalSessionController, :create
+    delete "/logout", PortalSessionController, :delete
+  end
+
+  scope "/portal", FieldHubWeb do
+    pipe_through [:browser, :portal, :require_portal_customer]
+
+    live_session :portal_customer,
+      on_mount: [{FieldHubWeb.PortalAuth, :mount_portal_customer}],
+      layout: {FieldHubWeb.Layouts, :portal} do
+      live "/", PortalLive.Dashboard, :index
+      live "/jobs/:number", PortalLive.JobDetail, :show
+      live "/history", PortalLive.History, :index
+    end
   end
 
   # Other scopes may use custom stacks.
@@ -46,17 +73,17 @@ defmodule FieldHubWeb.Router do
       live "/dashboard", DashboardLive, :index
       live "/technicians", TechnicianLive.Index, :index
       live "/technicians/new", TechnicianLive.Index, :new
-      live "/technicians/:id/edit", TechnicianLive.Index, :edit
+      live "/technicians/:slug/edit", TechnicianLive.Index, :edit
 
       live "/customers", CustomerLive.Index, :index
       live "/customers/new", CustomerLive.Index, :new
-      live "/customers/:id/edit", CustomerLive.Index, :edit
-      live "/customers/:id", CustomerLive.Index, :show
+      live "/customers/:slug/edit", CustomerLive.Index, :edit
+      live "/customers/:slug", CustomerLive.Index, :show
 
       live "/jobs", JobLive.Index, :index
       live "/jobs/new", JobLive.Index, :new
-      live "/jobs/:id/edit", JobLive.Index, :edit
-      live "/jobs/:id", JobLive.Show, :show
+      live "/jobs/:number/edit", JobLive.Index, :edit
+      live "/jobs/:number", JobLive.Show, :show
 
       live "/dispatch", DispatchLive.Index, :index
 
@@ -65,16 +92,22 @@ defmodule FieldHubWeb.Router do
 
       # Technician Mobile Views
       live "/tech/dashboard", TechLive.Dashboard, :index
-      live "/tech/jobs/:id", TechLive.JobShow, :show
-      live "/tech/jobs/:id/complete", TechLive.JobComplete, :complete
+      live "/tech/jobs/:number", TechLive.JobShow, :show
+      live "/tech/jobs/:number/complete", TechLive.JobComplete, :complete
 
       # Settings
+      live "/settings/organization", SettingsLive.Organization, :index
+      live "/settings/users", SettingsLive.Users, :index
+      live "/settings/notifications", SettingsLive.Notifications, :index
+      live "/settings/billing", SettingsLive.Billing, :index
       live "/settings/terminology", SettingsLive.Terminology, :index
       live "/settings/branding", SettingsLive.Branding, :index
       live "/settings/workflows", SettingsLive.Workflows, :index
       live "/settings/custom-fields", SettingsLive.CustomFields, :index
       live "/settings/custom-fields/new", SettingsLive.CustomFields, :new
     end
+
+    get "/reports/export", ReportController, :export
 
     post "/users/update-password", UserSessionController, :update_password
   end

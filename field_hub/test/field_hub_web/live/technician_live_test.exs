@@ -40,7 +40,7 @@ defmodule FieldHubWeb.TechnicianLiveTest do
     test "saves new technician", %{conn: conn} do
       {:ok, index_live, _html} = live(conn, ~p"/technicians")
 
-      assert index_live |> element("a", "New Technician") |> render_click() =~
+      assert index_live |> element("a", "Add Technician") |> render_click() =~
                "New Technician"
 
       assert_patch(index_live, ~p"/technicians/new")
@@ -68,10 +68,10 @@ defmodule FieldHubWeb.TechnicianLiveTest do
       tech = technician_fixture(org.id)
       {:ok, index_live, _html} = live(conn, ~p"/technicians")
 
-      assert index_live |> element("#technicians-#{tech.id} a", "Edit") |> render_click() =~
+      assert index_live |> element("a[href*='/edit']") |> render_click() =~
                "Edit Technician"
 
-      assert has_element?(index_live, "#technician-modal", "Edit Technician")
+      assert has_element?(index_live, "h2", "Edit Technician")
 
       assert index_live
              |> form("#technician-form", technician: %{name: "Updated Name"})
@@ -87,7 +87,7 @@ defmodule FieldHubWeb.TechnicianLiveTest do
       tech = technician_fixture(org.id)
       {:ok, index_live, _html} = live(conn, ~p"/technicians")
 
-      assert index_live |> element("#technicians-#{tech.id} a", "Delete") |> render_click()
+      assert index_live |> element("a[phx-click*='delete']") |> render_click()
       refute has_element?(index_live, "#technicians-#{tech.id}")
     end
 
