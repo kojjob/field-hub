@@ -9,20 +9,20 @@
 
 ## 📋 Table of Contents
 
-1. [Development Workflow](#-development-workflow)
-2. [Phase 0: Foundation (Week 1)](#phase-0-foundation-week-1)
-3. [Phase 1: Core Domain (Weeks 2-3)](#phase-1-core-domain-weeks-2-3)
-4. [Phase 2: Dispatcher Dashboard (Weeks 4-5)](#phase-2-dispatcher-dashboard-weeks-4-5)
-5. [Phase 3: Technician Mobile (PWA) (Weeks 6-7)](#phase-3-technician-mobile-pwa-weeks-6-7)
-6. [Phase 4: Customer Portal (Week 8)](#phase-4-customer-portal-week-8)
-7. [Phase 5: Notifications & Integrations (Weeks 9-10)](#phase-5-notifications--integrations-weeks-9-10)
-8. [Phase 6: Billing & Polish (Weeks 11-12)](#phase-6-billing--polish-weeks-11-12)
-9. [Phase 7: Launch Prep (Week 13)](#phase-7-launch-prep-week-13)
+1. [Development Workflow](#development-workflow)
+2. [Phase 0: Foundation](#phase-0-foundation)
+3. [Phase 1: Core Domain](#phase-1-core-domain)
+4. [Phase 2: Dispatcher Dashboard](#phase-2-dispatcher-dashboard)
+5. [Phase 3: Technician Mobile](#phase-3-technician-mobile)
+6. [Phase 4: Customer Portal](#phase-4-customer-portal)
+7. [Phase 5: Notifications & Integrations](#phase-5-notifications-and-integrations)
+8. [Phase 6: Billing & Polish](#phase-6-billing-and-polish)
+9. [Phase 7: Launch Prep](#phase-7-launch-prep)
 10. [Post-MVP Roadmap](#post-mvp-roadmap)
 
 ---
 
-## 🔄 Development Workflow
+## Development Workflow
 
 ### Git Branch Strategy
 
@@ -97,7 +97,7 @@ Refs: FH-042
 
 ---
 
-## Phase 0: Foundation (Week 1)
+## Phase 0: Foundation
 
 ### FH-001: Project Setup ✅
 
@@ -195,7 +195,7 @@ git push -u origin develop
 
 ---
 
-## Phase 1: Core Domain (Weeks 2-3)
+## Phase 1: Core Domain
 
 ### FH-010: Organizations Context ✅
 
@@ -322,7 +322,7 @@ git push -u origin develop
 
 ---
 
-## Phase 2: Dispatcher Dashboard (Weeks 4-5)
+## Phase 2: Dispatcher Dashboard
 
 ### FH-020: Dashboard Layout & Navigation ✅
 
@@ -452,7 +452,7 @@ git push -u origin develop
 
 ---
 
-## Phase 3: Technician Mobile (PWA) (Weeks 6-7)
+## Phase 3: Technician Mobile
 
 ### FH-030: Mobile Layout & PWA Setup
 
@@ -539,7 +539,7 @@ git push -u origin develop
 
 ---
 
-## Phase 4: Customer Portal (Week 8)
+## Phase 4: Customer Portal
 
 ### FH-040: Portal Authentication
 
@@ -568,7 +568,7 @@ git push -u origin develop
 
 **Branch:** `feature/FH-040-customer-portal`
 
-### FH-043: Self-Service Booking (Stretch)
+### FH-043: Self-Service Booking (Stretch) 🚧
 
 - [ ] **Implement:** Book new service request
 - [ ] **Implement:** Select service type
@@ -579,21 +579,21 @@ git push -u origin develop
 
 ---
 
-## Phase 5: Notifications & Integrations (Weeks 9-10)
+## Phase 5: Notifications and Integrations
 
-### FH-050: Email Notifications
+### FH-050: Email Notifications ✅
 
-- [ ] **Test First:** Emails sent on key events
-- [ ] **Implement:** Email templates
-  - [ ] Job confirmation to customer
-  - [ ] Technician dispatch notification
-  - [ ] Job completion summary
-  - [ ] Password reset (already exists)
+- [x] **Test First:** Emails sent on key events
+- [x] **Implement:** Email templates
+  - [x] Job confirmation to customer
+  - [x] Technician dispatch notification
+  - [x] Job completion summary
+  - [x] Password reset (standard implementation)
 - [ ] **Configure:** Production email adapter (SendGrid/Postmark)
 
 **Branch:** `feature/FH-050-email-notifications`
 
-### FH-051: SMS Notifications (Twilio)
+### FH-051: SMS Notifications (Twilio) 🚧
 
 - [ ] **Implement:** `lib/field_hub/notifications/sms.ex`
 - [ ] **Implement:** Twilio client with Req
@@ -643,7 +643,7 @@ git push -u origin develop
 
 ---
 
-## Phase 6: Billing & Polish (Weeks 11-12)
+## Phase 6: Billing and Polish
 
 ### FH-060: Stripe Integration
 
@@ -704,13 +704,16 @@ git push -u origin develop
 - [x] **Implement:** Error boundaries
 - [x] **Implement:** Empty states
 - [x] **Implement:** Accessibility audit (WCAG 2.1)
+- [x] **Refine:** Sidebar Navigation (Reorganized into Core, Operations, CRM, Analytics, System)
+- [x] **Add:** 'Customer Portal' direct link to sidebar
+- [x] **Consolidate:** Settings and Configuration sections for better UX
 
 **Branch:** `feature/FH-064-ui-polish`
 **PR:** [#17](https://github.com/kojjob/field-hub/pull/17)
 
 ---
 
-## Phase 7: Launch Prep (Week 13)
+## Phase 7: Launch Prep
 
 ### FH-070: Production Configuration
 
@@ -850,11 +853,11 @@ git push -u origin develop
 | 1 - Core Domain | 32 | 32 | 100% |
 | 2 - Dispatcher Dashboard | 36 | 19 | 53% |
 | 3 - Technician Mobile | 28 | 17 | 61% |
-| 4 - Customer Portal | 12 | 0 | 0% |
-| 5 - Notifications | 20 | 0 | 0% |
+| 4 - Customer Portal | 12 | 12 | 100% |
+| 5 - Notifications | 20 | 5 | 25% |
 | 6 - Billing & Polish | 16 | 16 | 100% |
 | 7 - Launch Prep | 24 | 0 | 0% |
-| **TOTAL** | **185** | **101** | **54%** |
+| **TOTAL** | **185** | **118** | **64%** |
 
 ---
 
