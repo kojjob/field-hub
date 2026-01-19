@@ -17,6 +17,11 @@ defmodule FieldHub.Accounts.User do
     field :company_name, :string, virtual: true
     field :terms_accepted, :boolean, virtual: true
 
+    # Notification preferences
+    field :notify_on_new_jobs, :boolean, default: true
+    field :notify_on_job_updates, :boolean, default: true
+    field :notify_marketing, :boolean, default: false
+
     belongs_to :organization, FieldHub.Accounts.Organization
 
     timestamps(type: :utc_datetime)
@@ -53,6 +58,11 @@ defmodule FieldHub.Accounts.User do
     |> validate_required([:name])
     |> validate_length(:name, max: 255)
     |> validate_length(:phone, max: 50)
+  end
+
+  def notification_changeset(user, attrs) do
+    user
+    |> cast(attrs, [:notify_on_new_jobs, :notify_on_job_updates, :notify_marketing])
   end
 
   defp validate_email(changeset, opts) do

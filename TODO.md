@@ -10,14 +10,14 @@
 ## 📋 Table of Contents
 
 1. [Development Workflow](#-development-workflow)
-2. [Phase 0: Foundation](#phase-0-foundation-week-1)
-3. [Phase 1: Core Domain](#phase-1-core-domain-weeks-2-3)
-4. [Phase 2: Dispatcher Dashboard](#phase-2-dispatcher-dashboard-weeks-4-5)
-5. [Phase 3: Technician Mobile](#phase-3-technician-mobile-pwa-weeks-6-7)
-6. [Phase 4: Customer Portal](#phase-4-customer-portal-week-8)
-7. [Phase 5: Notifications & Integrations](#phase-5-notifications--integrations-weeks-9-10)
-8. [Phase 6: Billing & Polish](#phase-6-billing--polish-weeks-11-12)
-9. [Phase 7: Launch Prep](#phase-7-launch-prep-week-13)
+2. [Phase 0: Foundation (Week 1)](#phase-0-foundation-week-1)
+3. [Phase 1: Core Domain (Weeks 2-3)](#phase-1-core-domain-weeks-2-3)
+4. [Phase 2: Dispatcher Dashboard (Weeks 4-5)](#phase-2-dispatcher-dashboard-weeks-4-5)
+5. [Phase 3: Technician Mobile (PWA) (Weeks 6-7)](#phase-3-technician-mobile-pwa-weeks-6-7)
+6. [Phase 4: Customer Portal (Week 8)](#phase-4-customer-portal-week-8)
+7. [Phase 5: Notifications & Integrations (Weeks 9-10)](#phase-5-notifications--integrations-weeks-9-10)
+8. [Phase 6: Billing & Polish (Weeks 11-12)](#phase-6-billing--polish-weeks-11-12)
+9. [Phase 7: Launch Prep (Week 13)](#phase-7-launch-prep-week-13)
 10. [Post-MVP Roadmap](#post-mvp-roadmap)
 
 ---
@@ -26,7 +26,7 @@
 
 ### Git Branch Strategy
 
-```
+```bash
 main (production)
   └── develop (staging)
         ├── feature/FH-001-organization-schema
@@ -46,7 +46,7 @@ main (production)
 
 ### Commit Message Format
 
-```
+```text
 type(scope): short description
 
 [optional body]
@@ -58,7 +58,7 @@ type(scope): short description
 
 **Examples:**
 
-```
+```text
 feat(jobs): add job creation with validation
 
 - Add Job schema with all required fields
@@ -68,7 +68,7 @@ feat(jobs): add job creation with validation
 Refs: FH-015
 ```
 
-```
+```text
 test(dispatch): add auto-assignment algorithm tests
 
 - Test skill matching logic
@@ -401,8 +401,7 @@ git push -u origin develop
 - [x] **Implement:** `handle_event("assign_job", ...)` and `handle_event("unassign_job", ...)`
 - [x] **Implement:** Unassigned jobs sidebar (draggable source)
 - [x] **Implement:** Visual feedback during drag
-```
-  - [x] **Integrate:** Assignment changes update UI via load_data()
+- [x] **Integrate:** Assignment changes update UI via load_data()
 
 **Branch:** `feature/FH-025-drag-drop-assignment`
 **PR:** [#5](https://github.com/kojjob/field-hub/pull/5)
@@ -442,6 +441,7 @@ git push -u origin develop
 **Branch:** `feature/FH-028-live-map-component`
 
 ### FH-029: Optimize Dispatch Board
+
 - [x] **Implement:** Use `streams` for list management
 - [x] **Refactor:** Optimize `load_data` with O(1) job lookup
 - [x] **Implement:** Payload reduction (via optimized grouping)
@@ -673,12 +673,13 @@ git push -u origin develop
 
 **Branch:** `feature/FH-062-reports`
 
-### FH-063: Settings Pages
+### FH-063: Settings Pages ✅
 
-- [ ] **Implement:** Organization settings (name, address, timezone)
-- [ ] **Implement:** User management (invite team members)
-- [ ] **Implement:** Notification settings
-- [ ] **Implement:** Subscription/billing page
+- [x] **Implement:** User Profile & Security Settings
+- [x] **Implement:** Organization settings (name, address, timezone)
+- [x] **Implement:** User management (invite team members)
+- [x] **Implement:** Notification settings
+- [x] **Implement:** Subscription/billing page
 
 **Branch:** `feature/FH-063-settings`
 
@@ -706,7 +707,6 @@ git push -u origin develop
 
 **Branch:** `feature/FH-064-ui-polish`
 **PR:** [#17](https://github.com/kojjob/field-hub/pull/17)
-
 
 ---
 
@@ -808,30 +808,35 @@ git push -u origin develop
 
 ### v2.1 - Industry-Agnostic Architecture 🚧
 
-**Phase A: Terminology Abstraction**
+#### Phase A: Terminology Abstraction
+
 - [x] Add terminology JSONB column to organizations
 - [x] Create `FieldHub.Config.Terminology` module
 - [x] Add industry presets (healthcare, delivery, inspection, cleaning)
 - [x] Update templates to use dynamic terminology
 - [x] Add terminology settings UI
 
-**Phase B: Custom Status Workflows** ✅
+#### Phase B: Custom Status Workflows ✅
+
 - [x] Create `job_status_configs` schema
 - [x] Build workflow builder UI
 - [x] Replace fixed status enum with dynamic transitions
 
-**Phase C: Dynamic Custom Fields**
+#### Phase C: Dynamic Custom Fields
+
 - [ ] Create `custom_field_definitions` schema
 - [ ] Build dynamic form renderer component
 - [ ] Add field builder UI in settings
 
-**Phase D: White-Label Branding**
+#### Phase D: White-Label Branding
+
 - [x] Add branding columns to organizations (logo, colors)
 - [x] Implement CSS variable theming
 - [x] Add branding settings UI
 - [x] Update layouts to use org branding
 
-**Phase E: Industry Templates** ✅
+#### Phase E: Industry Templates ✅
+
 - [x] Create template seed data
 - [x] Add template selection to onboarding flow
 
@@ -855,7 +860,8 @@ git push -u origin develop
 
 ## 🏃 Current Sprint
 
-**Sprint 1 (Week 1):** Foundation ✅
+### Sprint 1 (Week 1): Foundation ✅
+
 - [x] FH-002: Run all migrations
 - [x] FH-003: Create Ecto schemas with tests
 - [x] FH-004: Update User for multi-tenancy
@@ -863,7 +869,8 @@ git push -u origin develop
 - [x] FH-010: Organizations Context
 - [x] FH-011: Onboarding Flow
 
-**Sprint 2 (Week 2):** Dispatcher Dashboard ✅
+### Sprint 2 (Week 2): Dispatcher Dashboard ✅
+
 - [x] FH-012: Dispatch Context (Technicians)
 - [x] FH-013: CRM Context (Customers)
 - [x] FH-014: Jobs Context - Basic CRUD
@@ -872,12 +879,14 @@ git push -u origin develop
 - [x] FH-022: Customer Management UI
 - [x] FH-023: Job Creation & Editing
 
-**Sprint 3 (Week 3):** Dispatch Board ✅
+### Sprint 3 (Week 3): Dispatch Board ✅
+
 - [x] FH-024: Dispatch Board - Calendar View
 - [x] FH-025: Dispatch Board - Drag & Drop Assignment
 - [x] FH-026: Dispatch Board - Quick Actions
 
-**Sprint 4 (Week 4):** Real-Time Features 🚧
+### Sprint 4 (Week 4): Real-Time Features 🚧
+
 | Task ID    | Description                    | Status     |
 | :--------- | :----------------------------- | :--------- |
 | FH-027     | Technician Status Sidebar      | Completed  |
