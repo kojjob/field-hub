@@ -388,11 +388,11 @@ defmodule FieldHubWeb.CoreComponents do
         phx-click={@on_close}
         aria-hidden="true"
       />
-
-      <!-- Panel -->
+      
+    <!-- Panel -->
       <div
         id={"#{@id}-panel"}
-        class={"fixed top-0 right-0 bottom-0 bg-white dark:bg-zinc-900 border-l border-zinc-200 dark:border-zinc-800 shadow-2xl flex flex-col transform translate-x-full transition-transform duration-300 ease-out"}
+        class="fixed top-0 right-0 bottom-0 bg-white dark:bg-zinc-900 border-l border-zinc-200 dark:border-zinc-800 shadow-2xl flex flex-col transform translate-x-full transition-transform duration-300 ease-out"
         style={"width: #{@width}; max-width: 90vw;"}
       >
         <!-- Header -->
@@ -413,14 +413,17 @@ defmodule FieldHubWeb.CoreComponents do
             <.icon name="hero-x-mark" class="size-5" />
           </button>
         </div>
-
-        <!-- Content -->
+        
+    <!-- Content -->
         <div class="flex-1 overflow-y-auto p-6">
           {render_slot(@inner_block)}
         </div>
-
-        <!-- Footer -->
-        <div :if={@footer != []} class="p-6 border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-800/30">
+        
+    <!-- Footer -->
+        <div
+          :if={@footer != []}
+          class="p-6 border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-800/30"
+        >
           {render_slot(@footer)}
         </div>
       </div>
@@ -436,7 +439,8 @@ defmodule FieldHubWeb.CoreComponents do
     )
     |> JS.remove_class("translate-x-full",
       to: "##{id}-panel",
-      transition: {"transition-transform duration-300 ease-out", "translate-x-full", "translate-x-0"}
+      transition:
+        {"transition-transform duration-300 ease-out", "translate-x-full", "translate-x-0"}
     )
     |> JS.add_class("overflow-hidden", to: "body")
     |> JS.focus_first(to: "##{id}-panel")
@@ -450,7 +454,8 @@ defmodule FieldHubWeb.CoreComponents do
     )
     |> JS.add_class("translate-x-full",
       to: "##{id}-panel",
-      transition: {"transition-transform duration-200 ease-in", "translate-x-0", "translate-x-full"}
+      transition:
+        {"transition-transform duration-200 ease-in", "translate-x-0", "translate-x-full"}
     )
     |> JS.remove_class("overflow-hidden", to: "body")
     |> JS.hide(to: "##{id}", transition: {"block", "block", "hidden"})
@@ -516,14 +521,17 @@ defmodule FieldHubWeb.CoreComponents do
                 <.icon name="hero-x-mark" class="size-5" />
               </button>
             </div>
-
-            <!-- Modal Body (for forms without confirm/cancel) -->
+            
+    <!-- Modal Body (for forms without confirm/cancel) -->
             <div :if={@confirm == [] and @cancel == []} class="p-6">
               {render_slot(@inner_block)}
             </div>
-
-            <!-- Modal Footer (for confirm dialogs) -->
-            <div :if={@confirm != [] or @cancel != []} class="flex justify-end gap-3 px-6 py-4 bg-zinc-50/50 dark:bg-zinc-800/30 border-t border-zinc-200 dark:border-zinc-800">
+            
+    <!-- Modal Footer (for confirm dialogs) -->
+            <div
+              :if={@confirm != [] or @cancel != []}
+              class="flex justify-end gap-3 px-6 py-4 bg-zinc-50/50 dark:bg-zinc-800/30 border-t border-zinc-200 dark:border-zinc-800"
+            >
               <button
                 :for={cancel <- @cancel}
                 phx-click={JS.exec("data-cancel", to: "##{@id}")}
@@ -551,7 +559,9 @@ defmodule FieldHubWeb.CoreComponents do
     )
     |> JS.show(
       to: "##{id}-container",
-      transition: {"transition-all duration-300 ease-out", "opacity-0 scale-95 translate-y-4", "opacity-100 scale-100 translate-y-0"}
+      transition:
+        {"transition-all duration-300 ease-out", "opacity-0 scale-95 translate-y-4",
+         "opacity-100 scale-100 translate-y-0"}
     )
     |> JS.add_class("overflow-hidden", to: "body")
     |> JS.focus_first(to: "##{id}-content")
@@ -565,7 +575,9 @@ defmodule FieldHubWeb.CoreComponents do
     )
     |> JS.hide(
       to: "##{id}-container",
-      transition: {"transition-all duration-200 ease-in", "opacity-100 scale-100 translate-y-0", "opacity-0 scale-95 translate-y-4"}
+      transition:
+        {"transition-all duration-200 ease-in", "opacity-100 scale-100 translate-y-0",
+         "opacity-0 scale-95 translate-y-4"}
     )
     |> JS.hide(to: "##{id}", transition: {"block", "block", "hidden"})
     |> JS.remove_class("overflow-hidden", to: "body")

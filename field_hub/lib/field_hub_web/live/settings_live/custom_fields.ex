@@ -90,8 +90,10 @@ defmodule FieldHubWeb.SettingsLive.CustomFields do
                     phx-value-tab={tab}
                     class={[
                       "flex-1 flex items-center justify-center gap-2 py-3 text-xs font-black uppercase tracking-widest transition-all rounded-xl",
-                      @active_tab == tab && "bg-white dark:bg-zinc-800 text-primary shadow-sm ring-1 ring-zinc-200 dark:ring-zinc-700",
-                      @active_tab != tab && "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300"
+                      @active_tab == tab &&
+                        "bg-white dark:bg-zinc-800 text-primary shadow-sm ring-1 ring-zinc-200 dark:ring-zinc-700",
+                      @active_tab != tab &&
+                        "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300"
                     ]}
                   >
                     <.icon name={icon} class="size-4" />
@@ -99,8 +101,8 @@ defmodule FieldHubWeb.SettingsLive.CustomFields do
                   </button>
                 <% end %>
               </div>
-
-              <!-- Field List -->
+              
+    <!-- Field List -->
               <div class="bg-white dark:bg-zinc-900 rounded-[24px] border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
                 <div class="px-6 py-4 border-b border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-800/50 flex items-center justify-between">
                   <div class="flex items-center gap-2">
@@ -121,7 +123,9 @@ defmodule FieldHubWeb.SettingsLive.CustomFields do
                     <div class="size-20 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center mx-auto mb-6">
                       <.icon name="hero-document-plus" class="size-10 text-zinc-400" />
                     </div>
-                    <h3 class="text-xl font-black text-zinc-900 dark:text-white tracking-tight">No custom fields defined</h3>
+                    <h3 class="text-xl font-black text-zinc-900 dark:text-white tracking-tight">
+                      No custom fields defined
+                    </h3>
                     <p class="text-sm font-bold text-zinc-500 mt-2 uppercase tracking-wide max-w-xs mx-auto">
                       Add fields to capture specific details for your {@active_tab}s.
                     </p>
@@ -138,12 +142,15 @@ defmodule FieldHubWeb.SettingsLive.CustomFields do
                       <div class="group flex items-center justify-between p-6 hover:bg-zinc-50 dark:hover:bg-zinc-800/30 transition-all">
                         <div class="flex items-center gap-6">
                           <div class="size-14 rounded-2xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-400 group-hover:text-primary transition-all border border-transparent group-hover:border-primary/20 shadow-sm relative overflow-hidden">
-                            <div class="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                            <div class="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity">
+                            </div>
                             <.icon name={get_field_icon(field.type)} class="size-7 relative z-10" />
                           </div>
                           <div>
                             <div class="flex items-center gap-3 mb-1.5">
-                              <h4 class="font-black text-zinc-900 dark:text-white text-lg tracking-tight">{field.name}</h4>
+                              <h4 class="font-black text-zinc-900 dark:text-white text-lg tracking-tight">
+                                {field.name}
+                              </h4>
                               <%= if field.required do %>
                                 <span class="text-[9px] font-black bg-red-50 dark:bg-red-500/10 text-red-500 px-2 py-0.5 rounded-full uppercase tracking-tighter border border-red-100 dark:border-red-500/20">
                                   Required
@@ -213,8 +220,12 @@ defmodule FieldHubWeb.SettingsLive.CustomFields do
                         <.icon name="hero-key" class="size-4 text-zinc-500" />
                       </div>
                       <div>
-                        <h5 class="text-xs font-black text-zinc-700 dark:text-zinc-300 uppercase tracking-widest">Unique Keys</h5>
-                        <p class="text-[11px] font-bold text-zinc-500 dark:text-zinc-500 mt-1 uppercase tracking-wider">Use snake_case for system identifiers (e.g., serial_number).</p>
+                        <h5 class="text-xs font-black text-zinc-700 dark:text-zinc-300 uppercase tracking-widest">
+                          Unique Keys
+                        </h5>
+                        <p class="text-[11px] font-bold text-zinc-500 dark:text-zinc-500 mt-1 uppercase tracking-wider">
+                          Use snake_case for system identifiers (e.g., serial_number).
+                        </p>
                       </div>
                     </div>
 
@@ -223,8 +234,12 @@ defmodule FieldHubWeb.SettingsLive.CustomFields do
                         <.icon name="hero-swatch" class="size-4 text-zinc-500" />
                       </div>
                       <div>
-                        <h5 class="text-xs font-black text-zinc-700 dark:text-zinc-300 uppercase tracking-widest">Field Types</h5>
-                        <p class="text-[11px] font-bold text-zinc-500 dark:text-zinc-500 mt-1 uppercase tracking-wider">Choose the type that best matches your data format.</p>
+                        <h5 class="text-xs font-black text-zinc-700 dark:text-zinc-300 uppercase tracking-widest">
+                          Field Types
+                        </h5>
+                        <p class="text-[11px] font-bold text-zinc-500 dark:text-zinc-500 mt-1 uppercase tracking-wider">
+                          Choose the type that best matches your data format.
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -234,8 +249,8 @@ defmodule FieldHubWeb.SettingsLive.CustomFields do
           </div>
         </div>
       </div>
-
-      <!-- Slide-in Form Panel -->
+      
+    <!-- Slide-in Form Panel -->
       <div
         :if={@live_action in [:new, :edit]}
         class="fixed right-0 top-0 bottom-0 w-[480px] bg-white dark:bg-zinc-900 border-l border-zinc-200 dark:border-zinc-700 shadow-2xl z-50 flex flex-col animate-in slide-in-from-right duration-300"
@@ -243,8 +258,12 @@ defmodule FieldHubWeb.SettingsLive.CustomFields do
         <!-- Form Panel Header -->
         <div class="p-6 border-b border-zinc-200 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-800/20 flex items-center justify-between">
           <div>
-            <h2 class="text-xl font-black text-zinc-900 dark:text-white tracking-tighter">Define Custom Field</h2>
-            <p class="text-sm font-bold text-zinc-500 mt-1 uppercase tracking-wide">Adding attribute to {@active_tab} model</p>
+            <h2 class="text-xl font-black text-zinc-900 dark:text-white tracking-tighter">
+              Define Custom Field
+            </h2>
+            <p class="text-sm font-bold text-zinc-500 mt-1 uppercase tracking-wide">
+              Adding attribute to {@active_tab} model
+            </p>
           </div>
           <button
             phx-click={JS.patch(~p"/settings/custom-fields?tab=#{@active_tab}")}
@@ -253,8 +272,8 @@ defmodule FieldHubWeb.SettingsLive.CustomFields do
             <.icon name="hero-x-mark" class="size-5" />
           </button>
         </div>
-
-        <!-- Form Content -->
+        
+    <!-- Form Content -->
         <div class="flex-1 overflow-y-auto p-8">
           <.form
             for={@form}
@@ -304,13 +323,16 @@ defmodule FieldHubWeb.SettingsLive.CustomFields do
                   name="custom_field_definition[type]"
                   class="w-full px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-white focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all font-medium"
                 >
-                  <%= Phoenix.HTML.Form.options_for_select([
-                    {"Text Input", "text"},
-                    {"Number", "number"},
-                    {"Date Picker", "date"},
-                    {"Checkbox (Yes/No)", "boolean"},
-                    {"Dropdown Menu", "select"}
-                  ], @form[:type].value) %>
+                  {Phoenix.HTML.Form.options_for_select(
+                    [
+                      {"Text Input", "text"},
+                      {"Number", "number"},
+                      {"Date Picker", "date"},
+                      {"Checkbox (Yes/No)", "boolean"},
+                      {"Dropdown Menu", "select"}
+                    ],
+                    @form[:type].value
+                  )}
                 </select>
               </div>
 
@@ -324,8 +346,14 @@ defmodule FieldHubWeb.SettingsLive.CustomFields do
                     class="sr-only peer"
                     id="field-required-toggle"
                   />
-                  <div class="w-11 h-6 bg-zinc-200 peer-focus:outline-none rounded-full peer dark:bg-zinc-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-zinc-600 peer-checked:bg-primary"></div>
-                  <label for="field-required-toggle" class="ml-3 text-sm font-black text-zinc-700 dark:text-zinc-300 uppercase tracking-widest">Mandatory</label>
+                  <div class="w-11 h-6 bg-zinc-200 peer-focus:outline-none rounded-full peer dark:bg-zinc-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-zinc-600 peer-checked:bg-primary">
+                  </div>
+                  <label
+                    for="field-required-toggle"
+                    class="ml-3 text-sm font-black text-zinc-700 dark:text-zinc-300 uppercase tracking-widest"
+                  >
+                    Mandatory
+                  </label>
                 </div>
               </div>
             </div>
@@ -346,10 +374,14 @@ defmodule FieldHubWeb.SettingsLive.CustomFields do
                 </p>
               </div>
             <% end %>
-
-            <!-- Hidden fields -->
+            
+    <!-- Hidden fields -->
             <input type="hidden" name="custom_field_definition[target]" value={@form[:target].value} />
-            <input type="hidden" name="custom_field_definition[organization_id]" value={@form[:organization_id].value} />
+            <input
+              type="hidden"
+              name="custom_field_definition[organization_id]"
+              value={@form[:organization_id].value}
+            />
 
             <div class="flex justify-end gap-3 pt-4">
               <button

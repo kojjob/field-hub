@@ -80,6 +80,8 @@ defmodule FieldHubWeb.Router do
       live "/settings/custom-fields/new", SettingsLive.CustomFields, :new
     end
 
+    get "/reports/export", ReportController, :export
+
     post "/users/update-password", UserSessionController, :update_password
   end
 

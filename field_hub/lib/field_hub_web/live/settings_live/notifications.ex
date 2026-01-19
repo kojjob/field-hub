@@ -36,9 +36,16 @@ defmodule FieldHubWeb.SettingsLive.Notifications do
       <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
         <div class="xl:col-span-2">
           <div class="bg-white dark:bg-zinc-900 p-8 rounded-[24px] border border-zinc-200 dark:border-zinc-800 shadow-sm relative overflow-hidden group">
-            <div class="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 transition-all group-hover:bg-primary/10"></div>
+            <div class="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 transition-all group-hover:bg-primary/10">
+            </div>
 
-            <.form for={@form} id="notifications-form" phx-submit="save" phx-change="validate" class="space-y-8 relative">
+            <.form
+              for={@form}
+              id="notifications-form"
+              phx-submit="save"
+              phx-change="validate"
+              class="space-y-8 relative"
+            >
               <div class="space-y-6">
                 <h3 class="text-lg font-black text-zinc-900 dark:text-white flex items-center gap-2">
                   <div class="size-8 rounded-lg bg-primary/10 flex items-center justify-center">
@@ -60,9 +67,16 @@ defmodule FieldHubWeb.SettingsLive.Notifications do
                       />
                       <input name="user[notify_on_new_jobs]" type="hidden" value="false" />
                     </div>
-                    <div class="flex-1 text-sm cursor-pointer" onclick="document.getElementById('notify_on_new_jobs').click()">
-                      <label class="font-bold text-zinc-900 dark:text-white cursor-pointer select-none">New Job Assignments</label>
-                      <p class="text-zinc-500 dark:text-zinc-400 mt-0.5">Get notified immediately when you are assigned to a new job.</p>
+                    <div
+                      class="flex-1 text-sm cursor-pointer"
+                      onclick="document.getElementById('notify_on_new_jobs').click()"
+                    >
+                      <label class="font-bold text-zinc-900 dark:text-white cursor-pointer select-none">
+                        New Job Assignments
+                      </label>
+                      <p class="text-zinc-500 dark:text-zinc-400 mt-0.5">
+                        Get notified immediately when you are assigned to a new job.
+                      </p>
                     </div>
                   </div>
 
@@ -76,11 +90,18 @@ defmodule FieldHubWeb.SettingsLive.Notifications do
                         checked={@form[:notify_on_job_updates].value}
                         class="size-5 rounded-md border-zinc-300 text-primary focus:ring-primary cursor-pointer"
                       />
-                       <input name="user[notify_on_job_updates]" type="hidden" value="false" />
+                      <input name="user[notify_on_job_updates]" type="hidden" value="false" />
                     </div>
-                    <div class="flex-1 text-sm cursor-pointer" onclick="document.getElementById('notify_on_job_updates').click()">
-                      <label class="font-bold text-zinc-900 dark:text-white cursor-pointer select-none">Job Updates</label>
-                      <p class="text-zinc-500 dark:text-zinc-400 mt-0.5">Receive updates when job status changes or comments are added.</p>
+                    <div
+                      class="flex-1 text-sm cursor-pointer"
+                      onclick="document.getElementById('notify_on_job_updates').click()"
+                    >
+                      <label class="font-bold text-zinc-900 dark:text-white cursor-pointer select-none">
+                        Job Updates
+                      </label>
+                      <p class="text-zinc-500 dark:text-zinc-400 mt-0.5">
+                        Receive updates when job status changes or comments are added.
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -109,16 +130,26 @@ defmodule FieldHubWeb.SettingsLive.Notifications do
                       />
                       <input name="user[notify_marketing]" type="hidden" value="false" />
                     </div>
-                    <div class="flex-1 text-sm cursor-pointer" onclick="document.getElementById('notify_marketing').click()">
-                      <label class="font-bold text-zinc-900 dark:text-white cursor-pointer select-none">Product Announcements</label>
-                      <p class="text-zinc-500 dark:text-zinc-400 mt-0.5">Be the first to know about new features, improvements, and news.</p>
+                    <div
+                      class="flex-1 text-sm cursor-pointer"
+                      onclick="document.getElementById('notify_marketing').click()"
+                    >
+                      <label class="font-bold text-zinc-900 dark:text-white cursor-pointer select-none">
+                        Product Announcements
+                      </label>
+                      <p class="text-zinc-500 dark:text-zinc-400 mt-0.5">
+                        Be the first to know about new features, improvements, and news.
+                      </p>
                     </div>
                   </div>
                 </div>
               </div>
 
               <div class="pt-6 flex justify-end">
-                 <button type="submit" class="flex items-center gap-2 px-8 py-3 bg-primary hover:brightness-110 text-white rounded-xl font-bold text-sm shadow-xl shadow-primary/20 transition-all border-b-4 border-emerald-800 active:border-b-0 active:translate-y-1">
+                <button
+                  type="submit"
+                  class="flex items-center gap-2 px-8 py-3 bg-primary hover:brightness-110 text-white rounded-xl font-bold text-sm shadow-xl shadow-primary/20 transition-all border-b-4 border-emerald-800 active:border-b-0 active:translate-y-1"
+                >
                   <.icon name="hero-check" class="size-5" /> Save Preferences
                 </button>
               </div>
@@ -127,25 +158,25 @@ defmodule FieldHubWeb.SettingsLive.Notifications do
         </div>
 
         <div class="xl:col-span-1 space-y-6">
-             <div class="bg-white dark:bg-zinc-900 p-6 rounded-[24px] border border-zinc-200 dark:border-zinc-800 shadow-sm">
-             <h3 class="font-bold text-zinc-900 dark:text-white mb-4">Notification Channels</h3>
-             <div class="space-y-3">
-               <div class="flex items-center gap-3 p-3 rounded-xl bg-zinc-50 dark:bg-zinc-800/50">
-                 <.icon name="hero-device-phone-mobile" class="size-5 text-zinc-400" />
-                 <div>
-                    <p class="text-xs font-bold text-zinc-900 dark:text-white">Push Notifications</p>
-                    <p class="text-[10px] text-zinc-500">Coming to mobile app soon</p>
-                 </div>
-               </div>
-               <div class="flex items-center gap-3 p-3 rounded-xl bg-zinc-50 dark:bg-zinc-800/50">
-                 <.icon name="hero-chat-bubble-left-ellipsis" class="size-5 text-zinc-400" />
-                 <div>
-                    <p class="text-xs font-bold text-zinc-900 dark:text-white">SMS Alerts</p>
-                    <p class="text-[10px] text-zinc-500">Enable in Organization Settings</p>
-                 </div>
-               </div>
-             </div>
-           </div>
+          <div class="bg-white dark:bg-zinc-900 p-6 rounded-[24px] border border-zinc-200 dark:border-zinc-800 shadow-sm">
+            <h3 class="font-bold text-zinc-900 dark:text-white mb-4">Notification Channels</h3>
+            <div class="space-y-3">
+              <div class="flex items-center gap-3 p-3 rounded-xl bg-zinc-50 dark:bg-zinc-800/50">
+                <.icon name="hero-device-phone-mobile" class="size-5 text-zinc-400" />
+                <div>
+                  <p class="text-xs font-bold text-zinc-900 dark:text-white">Push Notifications</p>
+                  <p class="text-[10px] text-zinc-500">Coming to mobile app soon</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-3 p-3 rounded-xl bg-zinc-50 dark:bg-zinc-800/50">
+                <.icon name="hero-chat-bubble-left-ellipsis" class="size-5 text-zinc-400" />
+                <div>
+                  <p class="text-xs font-bold text-zinc-900 dark:text-white">SMS Alerts</p>
+                  <p class="text-[10px] text-zinc-500">Enable in Organization Settings</p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -168,7 +199,8 @@ defmodule FieldHubWeb.SettingsLive.Notifications do
       {:ok, user} ->
         {:noreply,
          socket
-         |> assign(:current_user, user) # Update current_user in socket
+         # Update current_user in socket
+         |> assign(:current_user, user)
          |> put_flash(:info, "Notifications preferences updated successfully")
          |> assign(:form, to_form(Accounts.User.notification_changeset(user, %{}), as: "user"))}
 

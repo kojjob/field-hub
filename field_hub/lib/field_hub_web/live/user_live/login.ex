@@ -16,13 +16,16 @@ defmodule FieldHubWeb.UserLive.Login do
             </div>
             <span class="text-xl font-black tracking-tight text-slate-900">FieldHub</span>
           </.link>
-          <a href="mailto:admin@fieldhub.app" class="px-4 py-2 text-sm font-bold text-primary border border-primary/30 rounded-lg hover:bg-primary/5 transition-all">
+          <a
+            href="mailto:admin@fieldhub.app"
+            class="px-4 py-2 text-sm font-bold text-primary border border-primary/30 rounded-lg hover:bg-primary/5 transition-all"
+          >
             Contact Admin
           </a>
         </div>
       </header>
-
-      <!-- Main Content -->
+      
+    <!-- Main Content -->
       <div class="pt-20 min-h-screen flex">
         <!-- Left Side: Form -->
         <div class="w-full lg:w-[45%] flex items-center justify-center p-8 lg:p-16 bg-white">
@@ -86,7 +89,9 @@ defmodule FieldHubWeb.UserLive.Login do
                     class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
                   >
                     <span id="eye-open"><.icon name="hero-eye" class="size-5" /></span>
-                    <span id="eye-closed" class="hidden"><.icon name="hero-eye-slash" class="size-5" /></span>
+                    <span id="eye-closed" class="hidden">
+                      <.icon name="hero-eye-slash" class="size-5" />
+                    </span>
                   </button>
                 </div>
               </div>
@@ -124,8 +129,8 @@ defmodule FieldHubWeb.UserLive.Login do
             </div>
           </div>
         </div>
-
-        <!-- Right Side: Product Preview -->
+        
+    <!-- Right Side: Product Preview -->
         <div class="hidden lg:flex lg:w-[55%] bg-slate-100 items-center justify-center p-16">
           <div class="relative max-w-lg">
             <!-- App Preview Card -->
@@ -137,8 +142,8 @@ defmodule FieldHubWeb.UserLive.Login do
                   Job Completed
                 </div>
               </div>
-
-              <!-- Mock App Interface -->
+              
+    <!-- Mock App Interface -->
               <div class="bg-slate-50 rounded-2xl p-5 border border-slate-100">
                 <div class="flex items-center justify-between mb-4">
                   <h3 class="text-lg font-bold text-slate-900">Field Service eFleets</h3>
@@ -160,8 +165,8 @@ defmodule FieldHubWeb.UserLive.Login do
                   </div>
                 </div>
               </div>
-
-              <!-- Technician Info -->
+              
+    <!-- Technician Info -->
               <div class="flex items-center gap-3 pt-2">
                 <img
                   src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face"
@@ -174,8 +179,8 @@ defmodule FieldHubWeb.UserLive.Login do
                 </div>
               </div>
             </div>
-
-            <!-- Tagline -->
+            
+    <!-- Tagline -->
             <div class="text-center mt-8 space-y-2">
               <h2 class="text-2xl font-black text-slate-900 tracking-tight">
                 Service Management Simplified
@@ -187,8 +192,8 @@ defmodule FieldHubWeb.UserLive.Login do
           </div>
         </div>
       </div>
-
-      <!-- Footer -->
+      
+    <!-- Footer -->
       <footer class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 py-3 px-6">
         <div class="max-w-7xl mx-auto flex items-center justify-between text-xs text-slate-400">
           <span>© {DateTime.utc_now().year} FieldHub Inc. All rights reserved.</span>

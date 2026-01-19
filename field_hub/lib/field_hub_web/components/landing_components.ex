@@ -31,7 +31,7 @@ defmodule FieldHubWeb.LandingComponents do
               <div class="text-xs text-[rgb(var(--muted2))] -mt-0.5">Dispatch • Mobile • Billing</div>
             </div>
           </div>
-
+          
     <!-- Desktop Menu -->
           <div class="hidden md:flex items-center gap-8">
             <a
@@ -59,7 +59,7 @@ defmodule FieldHubWeb.LandingComponents do
               FAQ
             </a>
           </div>
-
+          
     <!-- Right actions -->
           <div class="flex items-center gap-3">
             <!-- Theme toggle -->

@@ -59,7 +59,10 @@ defmodule FieldHubWeb.UserLive.Confirmation do
         >
           <input type="hidden" name={@form[:token].name} value={@form[:token].value} />
           <%= if @current_scope && @current_scope.user do %>
-            <.button phx-disable-with="Logging in..." class="w-full bg-primary text-white py-4 rounded-xl text-sm font-bold shadow-lg shadow-primary/20 hover:brightness-110 transition-all active:scale-[0.99]">
+            <.button
+              phx-disable-with="Logging in..."
+              class="w-full bg-primary text-white py-4 rounded-xl text-sm font-bold shadow-lg shadow-primary/20 hover:brightness-110 transition-all active:scale-[0.99]"
+            >
               Log in to FieldHub
             </.button>
           <% else %>
@@ -81,16 +84,15 @@ defmodule FieldHubWeb.UserLive.Confirmation do
         </.form>
 
         <div :if={!@user.confirmed_at} class="bg-amber-50 rounded-xl p-4 border border-amber-100">
-           <div class="flex gap-3">
-              <.icon name="hero-light-bulb" class="size-5 text-amber-600 shrink-0" />
-              <p class="text-[13px] text-amber-900 font-medium leading-tight">
-                Tip: You can enable password sign-in later in your account settings if you prefer.
-              </p>
-           </div>
+          <div class="flex gap-3">
+            <.icon name="hero-light-bulb" class="size-5 text-amber-600 shrink-0" />
+            <p class="text-[13px] text-amber-900 font-medium leading-tight">
+              Tip: You can enable password sign-in later in your account settings if you prefer.
+            </p>
+          </div>
         </div>
       </div>
     </div>
-
     """
   end
 

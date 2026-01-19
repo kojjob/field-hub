@@ -45,7 +45,7 @@ defmodule FieldHubWeb.DashboardLive do
           </.link>
         </div>
       </div>
-
+      
     <!-- KPI Cards Grid -->
       <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
         <FieldHubWeb.DashboardComponents.kpi_card
@@ -76,7 +76,7 @@ defmodule FieldHubWeb.DashboardLive do
           variant={:avatars}
         />
       </div>
-
+      
     <!-- Middle Section: Utilization & Activity -->
       <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
         <div class="xl:col-span-2">
@@ -86,7 +86,7 @@ defmodule FieldHubWeb.DashboardLive do
           <FieldHubWeb.DashboardComponents.live_activity_feed />
         </div>
       </div>
-
+      
     <!-- Bottom Section: Priority Jobs -->
       <FieldHubWeb.DashboardComponents.priority_jobs_table />
     </div>

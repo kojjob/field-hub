@@ -47,7 +47,7 @@ defmodule FieldHubWeb.CustomerLive.FormComponent do
               </div>
             </div>
           </div>
-
+          
     <!-- Address Section -->
           <div>
             <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4 border-b border-slate-200 dark:border-slate-700 pb-2">
@@ -97,17 +97,20 @@ defmodule FieldHubWeb.CustomerLive.FormComponent do
               </div>
             </div>
           </div>
-
+          
     <!-- Access Info Section -->
           <div class="bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 relative overflow-hidden group">
             <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity pointer-events-none">
-              <.icon name="hero-lock-closed" class="w-24 h-24 text-slate-400 dark:text-slate-500 -rotate-12" />
+              <.icon
+                name="hero-lock-closed"
+                class="w-24 h-24 text-slate-400 dark:text-slate-500 -rotate-12"
+              />
             </div>
 
             <div class="relative z-10">
               <div class="flex items-center gap-2 mb-4">
                 <div class="p-2 bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-100 dark:border-slate-700 text-primary">
-                   <.icon name="hero-key" class="w-4 h-4" />
+                  <.icon name="hero-key" class="w-4 h-4" />
                 </div>
                 <h3 class="text-sm font-bold text-slate-900 dark:text-white">
                   Access & Security

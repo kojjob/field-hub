@@ -22,8 +22,10 @@ defmodule FieldHubWeb.SettingsLive.BillingTest do
 
       assert html =~ "Subscription"
       assert html =~ "Current Plan"
-      assert html =~ org.subscription_tier # trial
-      assert html =~ org.subscription_status # trial
+      # trial
+      assert html =~ org.subscription_tier
+      # trial
+      assert html =~ org.subscription_status
       assert html =~ "Upgrade Plan"
     end
 
@@ -36,7 +38,12 @@ defmodule FieldHubWeb.SettingsLive.BillingTest do
 
       conn = log_in_user(build_conn(), user)
 
-      assert {:error, {:live_redirect, %{to: "/dashboard", flash: %{"error" => "You do not have permission to view billing settings."}}}} =
+      assert {:error,
+              {:live_redirect,
+               %{
+                 to: "/dashboard",
+                 flash: %{"error" => "You do not have permission to view billing settings."}
+               }}} =
                live(conn, ~p"/settings/billing")
     end
   end

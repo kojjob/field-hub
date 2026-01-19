@@ -163,7 +163,7 @@ defmodule FieldHubWeb.UserLive.SettingsTest do
   end
 
   describe "update profile form" do
-     setup %{conn: conn} do
+    setup %{conn: conn} do
       user = user_fixture()
       %{conn: log_in_user(conn, user), user: user}
     end

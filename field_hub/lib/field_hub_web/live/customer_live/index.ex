@@ -255,8 +255,8 @@ defmodule FieldHubWeb.CustomerLive.Index do
               </.link>
             </div>
           </div>
-
-          <!-- KPI Cards Grid -->
+          
+    <!-- KPI Cards Grid -->
           <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
             <FieldHubWeb.DashboardComponents.kpi_card
               label="Total Customers"
@@ -287,8 +287,8 @@ defmodule FieldHubWeb.CustomerLive.Index do
               variant={:simple}
             />
           </div>
-
-          <!-- Search & Filters Bar -->
+          
+    <!-- Search & Filters Bar -->
           <div class="bg-white dark:bg-zinc-900 p-6 rounded-[24px] border border-zinc-200 dark:border-zinc-800 shadow-sm">
             <div class="flex items-center justify-between gap-4">
               <form phx-change="search" id="search-form" class="flex-1 max-w-xl">
@@ -308,14 +308,20 @@ defmodule FieldHubWeb.CustomerLive.Index do
                 </div>
               </form>
               <div class="flex items-center gap-2">
-                <button class="px-4 py-2.5 text-xs font-bold rounded-xl bg-primary/10 text-primary border border-primary/20">All</button>
-                <button class="px-4 py-2.5 text-xs font-bold rounded-xl text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 border border-transparent">Active</button>
-                <button class="px-4 py-2.5 text-xs font-bold rounded-xl text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 border border-transparent">Contract</button>
+                <button class="px-4 py-2.5 text-xs font-bold rounded-xl bg-primary/10 text-primary border border-primary/20">
+                  All
+                </button>
+                <button class="px-4 py-2.5 text-xs font-bold rounded-xl text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 border border-transparent">
+                  Active
+                </button>
+                <button class="px-4 py-2.5 text-xs font-bold rounded-xl text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 border border-transparent">
+                  Contract
+                </button>
               </div>
             </div>
           </div>
-
-          <!-- Customer Table Card -->
+          
+    <!-- Customer Table Card -->
           <div class="bg-white dark:bg-zinc-900 rounded-[32px] border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
             <table class="min-w-full">
               <thead class="bg-zinc-50 dark:bg-zinc-800/50">
@@ -340,7 +346,11 @@ defmodule FieldHubWeb.CustomerLive.Index do
                   </th>
                 </tr>
               </thead>
-              <tbody phx-update="stream" id="customers" class="divide-y divide-zinc-100 dark:divide-zinc-800">
+              <tbody
+                phx-update="stream"
+                id="customers"
+                class="divide-y divide-zinc-100 dark:divide-zinc-800"
+              >
                 <tr
                   :for={{id, customer} <- @streams.customers}
                   id={id}
@@ -414,16 +424,21 @@ defmodule FieldHubWeb.CustomerLive.Index do
                 <div class="size-16 rounded-2xl bg-zinc-50 dark:bg-zinc-800 flex items-center justify-center mb-4">
                   <.icon name="hero-magnifying-glass" class="size-8 text-zinc-300 dark:text-zinc-600" />
                 </div>
-                <h3 class="text-sm font-bold text-zinc-900 dark:text-white mb-1">No customers found</h3>
-                <p class="text-xs text-zinc-500 dark:text-zinc-400">Try adjusting your search terms</p>
+                <h3 class="text-sm font-bold text-zinc-900 dark:text-white mb-1">
+                  No customers found
+                </h3>
+                <p class="text-xs text-zinc-500 dark:text-zinc-400">
+                  Try adjusting your search terms
+                </p>
               </div>
             <% end %>
           </div>
-
-          <!-- Pagination -->
+          
+    <!-- Pagination -->
           <div class="flex items-center justify-between">
             <p class="text-sm text-zinc-500">
-              Page <span class="font-semibold">{@page}</span> of <span class="font-semibold">{@total_pages}</span>
+              Page <span class="font-semibold">{@page}</span>
+              of <span class="font-semibold">{@total_pages}</span>
             </p>
             <div class="flex items-center gap-2">
               <.link
@@ -447,8 +462,7 @@ defmodule FieldHubWeb.CustomerLive.Index do
           </div>
         </div>
       </div>
-
-
+      
     <!-- Slide-in Customer Detail Panel -->
       <div
         :if={@selected_customer}
@@ -489,7 +503,7 @@ defmodule FieldHubWeb.CustomerLive.Index do
             </.link>
           </div>
         </div>
-
+        
     <!-- Panel Tabs -->
         <div class="flex border-b border-zinc-200 dark:border-zinc-700 px-6">
           <button
@@ -526,7 +540,7 @@ defmodule FieldHubWeb.CustomerLive.Index do
             Billing
           </button>
         </div>
-
+        
     <!-- Panel Content -->
         <div class="flex-1 overflow-y-auto p-6 space-y-6">
           <%= if @panel_tab == "overview" do %>
@@ -545,7 +559,7 @@ defmodule FieldHubWeb.CustomerLive.Index do
                 <p class="text-2xl font-black text-primary">$0.00</p>
               </div>
             </div>
-
+            
     <!-- Contact Information -->
             <div>
               <h3 class="text-[11px] font-black uppercase tracking-widest text-zinc-400 mb-4">
@@ -591,7 +605,7 @@ defmodule FieldHubWeb.CustomerLive.Index do
                 </div>
               </div>
             </div>
-
+            
     <!-- Recent Jobs -->
             <div>
               <div class="flex items-center justify-between mb-4">
@@ -611,7 +625,7 @@ defmodule FieldHubWeb.CustomerLive.Index do
                 </p>
               </div>
             </div>
-
+            
     <!-- Notes -->
             <%= if @selected_customer.notes do %>
               <div>
@@ -621,7 +635,7 @@ defmodule FieldHubWeb.CustomerLive.Index do
                 <p class="text-sm text-zinc-700 dark:text-zinc-300">{@selected_customer.notes}</p>
               </div>
             <% end %>
-
+            
     <!-- Special Instructions -->
             <%= if @selected_customer.gate_code || @selected_customer.special_instructions do %>
               <div>
@@ -715,7 +729,7 @@ defmodule FieldHubWeb.CustomerLive.Index do
             </div>
           <% end %>
         </div>
-
+        
     <!-- Panel Footer -->
         <div class="p-4 border-t border-zinc-200 dark:border-zinc-700">
           <button
@@ -728,7 +742,7 @@ defmodule FieldHubWeb.CustomerLive.Index do
           </button>
         </div>
       </div>
-
+      
     <!-- Slide-in Form Panel (for New/Edit) -->
       <div
         :if={@show_form_panel}
@@ -747,7 +761,7 @@ defmodule FieldHubWeb.CustomerLive.Index do
             <.icon name="hero-x-mark" class="size-5" />
           </button>
         </div>
-
+        
     <!-- Form Content -->
         <div class="flex-1 overflow-y-auto p-6">
           <.live_component
