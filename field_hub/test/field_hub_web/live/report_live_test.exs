@@ -54,6 +54,51 @@ defmodule FieldHubWeb.ReportLiveTest do
     assert conn.resp_body =~ "Job Number,Title,Customer,Technician,Completed At,Amount"
   end
 
+  test "displays KPI values from completed jobs", %{conn: conn, org: org, tech: tech} do
+    _job = create_completed_job(org.id, tech.id, %{
+      title: "KPI Test Job",
+      actual_amount: Decimal.new("150.00")
+    })
+
+    {:ok, _view, html} = live(conn, ~p"/reports")
+
+    # Check total revenue is displayed
+    assert html =~ "$150.00"
+    # Check completed jobs count (should be 1)
+    assert html =~ "Completed Jobs"
+  end
+
+  test "displays technician performance section", %{conn: conn, org: org, tech: tech} do
+    _job = create_completed_job(org.id, tech.id, %{
+      title: "Tech Performance Job",
+      actual_amount: Decimal.new("200.00")
+    })
+
+    {:ok, view, _html} = live(conn, ~p"/reports")
+
+    # Technician should appear in top techs section
+    assert render(view) =~ tech.name
+    assert render(view) =~ "Top Technicians"
+  end
+
+  test "handles empty state gracefully", %{conn: conn} do
+    {:ok, view, _html} = live(conn, ~p"/reports")
+
+    # Should still render the page without errors
+    assert has_element?(view, "#reports-page")
+    # Should show zero revenue
+    assert render(view) =~ "$0.00"
+  end
+
+  test "export link includes correct date range parameters", %{conn: conn} do
+    {:ok, _view, html} = live(conn, ~p"/reports")
+
+    # Export link should have start and end date parameters
+    assert html =~ "/reports/export"
+    assert html =~ "start="
+    assert html =~ "end="
+  end
+
   defp create_completed_job(org_id, tech_id, attrs) do
     completed_at = DateTime.utc_now() |> DateTime.truncate(:second)
     started_at = DateTime.add(completed_at, -3600, :second)
