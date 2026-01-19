@@ -17,22 +17,43 @@ defmodule FieldHubWeb.TechnicianLive.FormComponent do
       >
         <div class="space-y-4">
           <!-- Avatar Color Selection with Label -->
-           <div class="flex items-center gap-4">
+          <div class="flex items-center gap-4">
             <div class="relative">
-               <.input field={@form[:color]} type="color" label="Avatar" class="h-12 w-12 p-1 rounded-full overflow-hidden cursor-pointer" />
+              <.input
+                field={@form[:color]}
+                type="color"
+                label="Avatar"
+                class="h-12 w-12 p-1 rounded-full overflow-hidden cursor-pointer"
+              />
             </div>
-             <div class="flex-1">
+            <div class="flex-1">
               <.input field={@form[:name]} type="text" label="Full Name" placeholder="e.g. Jane Doe" />
             </div>
-           </div>
-
-          <div class="grid grid-cols-2 gap-4">
-            <.input field={@form[:email]} type="email" label="Email Address" placeholder="jane@example.com" />
-            <.input field={@form[:phone]} type="tel" label="Phone Number" placeholder="+1 (555) 000-0000" />
           </div>
 
           <div class="grid grid-cols-2 gap-4">
-            <.input field={@form[:hourly_rate]} type="number" step="0.01" label="Hourly Rate ($)" placeholder="0.00" />
+            <.input
+              field={@form[:email]}
+              type="email"
+              label="Email Address"
+              placeholder="jane@example.com"
+            />
+            <.input
+              field={@form[:phone]}
+              type="tel"
+              label="Phone Number"
+              placeholder="+1 (555) 000-0000"
+            />
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <.input
+              field={@form[:hourly_rate]}
+              type="number"
+              step="0.01"
+              label="Hourly Rate ($)"
+              placeholder="0.00"
+            />
           </div>
 
           <.input
@@ -47,7 +68,10 @@ defmodule FieldHubWeb.TechnicianLive.FormComponent do
         </div>
 
         <:actions>
-          <.button phx-disable-with="Saving..." class="w-full bg-primary hover:bg-primary/90 text-white font-bold py-3 rounded-xl shadow-lg shadow-primary/20 transition-all">
+          <.button
+            phx-disable-with="Saving..."
+            class="w-full bg-primary hover:bg-primary/90 text-white font-bold py-3 rounded-xl shadow-lg shadow-primary/20 transition-all"
+          >
             Save Technician Record
           </.button>
         </:actions>

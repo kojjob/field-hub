@@ -53,7 +53,8 @@ defmodule FieldHubWeb.SettingsLive.Terminology do
           <.form for={@form} phx-submit="save" phx-change="validate" class="space-y-8">
             <!-- Workers Section -->
             <div class="bg-white dark:bg-zinc-900 p-6 rounded-[24px] border border-zinc-200 dark:border-zinc-800 shadow-sm relative overflow-hidden group">
-              <div class="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full -mr-12 -mt-12 transition-all group-hover:bg-primary/10"></div>
+              <div class="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full -mr-12 -mt-12 transition-all group-hover:bg-primary/10">
+              </div>
 
               <div class="flex items-center gap-3 mb-8">
                 <div class="size-11 rounded-xl bg-primary/10 flex items-center justify-center">
@@ -71,7 +72,9 @@ defmodule FieldHubWeb.SettingsLive.Terminology do
 
               <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div class="space-y-2">
-                  <label class="block text-sm font-bold text-zinc-700 dark:text-zinc-300">Singular Name</label>
+                  <label class="block text-sm font-bold text-zinc-700 dark:text-zinc-300">
+                    Singular Name
+                  </label>
                   <input
                     type="text"
                     name="terminology[worker_label]"
@@ -81,7 +84,9 @@ defmodule FieldHubWeb.SettingsLive.Terminology do
                   />
                 </div>
                 <div class="space-y-2">
-                  <label class="block text-sm font-bold text-zinc-700 dark:text-zinc-300">Plural Name</label>
+                  <label class="block text-sm font-bold text-zinc-700 dark:text-zinc-300">
+                    Plural Name
+                  </label>
                   <input
                     type="text"
                     name="terminology[worker_label_plural]"
@@ -98,10 +103,11 @@ defmodule FieldHubWeb.SettingsLive.Terminology do
                 </p>
               </div>
             </div>
-
-            <!-- Clients Section -->
+            
+    <!-- Clients Section -->
             <div class="bg-white dark:bg-zinc-900 p-6 rounded-[24px] border border-zinc-200 dark:border-zinc-800 shadow-sm relative overflow-hidden group">
-              <div class="absolute top-0 right-0 w-24 h-24 bg-emerald-500/5 rounded-full -mr-12 -mt-12 transition-all group-hover:bg-emerald-500/10"></div>
+              <div class="absolute top-0 right-0 w-24 h-24 bg-emerald-500/5 rounded-full -mr-12 -mt-12 transition-all group-hover:bg-emerald-500/10">
+              </div>
 
               <div class="flex items-center gap-3 mb-8">
                 <div class="size-11 rounded-xl bg-emerald-500/10 flex items-center justify-center">
@@ -119,7 +125,9 @@ defmodule FieldHubWeb.SettingsLive.Terminology do
 
               <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div class="space-y-2">
-                  <label class="block text-sm font-bold text-zinc-700 dark:text-zinc-300">Singular Name</label>
+                  <label class="block text-sm font-bold text-zinc-700 dark:text-zinc-300">
+                    Singular Name
+                  </label>
                   <input
                     type="text"
                     name="terminology[client_label]"
@@ -129,7 +137,9 @@ defmodule FieldHubWeb.SettingsLive.Terminology do
                   />
                 </div>
                 <div class="space-y-2">
-                  <label class="block text-sm font-bold text-zinc-700 dark:text-zinc-300">Plural Name</label>
+                  <label class="block text-sm font-bold text-zinc-700 dark:text-zinc-300">
+                    Plural Name
+                  </label>
                   <input
                     type="text"
                     name="terminology[client_label_plural]"
@@ -146,10 +156,11 @@ defmodule FieldHubWeb.SettingsLive.Terminology do
                 </p>
               </div>
             </div>
-
-            <!-- Tasks Section -->
+            
+    <!-- Tasks Section -->
             <div class="bg-white dark:bg-zinc-900 p-6 rounded-[24px] border border-zinc-200 dark:border-zinc-800 shadow-sm relative overflow-hidden group">
-              <div class="absolute top-0 right-0 w-24 h-24 bg-amber-500/5 rounded-full -mr-12 -mt-12 transition-all group-hover:bg-amber-500/10"></div>
+              <div class="absolute top-0 right-0 w-24 h-24 bg-amber-500/5 rounded-full -mr-12 -mt-12 transition-all group-hover:bg-amber-500/10">
+              </div>
 
               <div class="flex items-center gap-3 mb-8">
                 <div class="size-11 rounded-xl bg-amber-500/10 flex items-center justify-center">
@@ -167,7 +178,9 @@ defmodule FieldHubWeb.SettingsLive.Terminology do
 
               <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div class="space-y-2">
-                  <label class="block text-sm font-bold text-zinc-700 dark:text-zinc-300">Singular Name</label>
+                  <label class="block text-sm font-bold text-zinc-700 dark:text-zinc-300">
+                    Singular Name
+                  </label>
                   <input
                     type="text"
                     name="terminology[task_label]"
@@ -177,7 +190,9 @@ defmodule FieldHubWeb.SettingsLive.Terminology do
                   />
                 </div>
                 <div class="space-y-2">
-                  <label class="block text-sm font-bold text-zinc-700 dark:text-zinc-300">Plural Name</label>
+                  <label class="block text-sm font-bold text-zinc-700 dark:text-zinc-300">
+                    Plural Name
+                  </label>
                   <input
                     type="text"
                     name="terminology[task_label_plural]"
@@ -187,7 +202,9 @@ defmodule FieldHubWeb.SettingsLive.Terminology do
                   />
                 </div>
                 <div class="md:col-span-2 space-y-2">
-                  <label class="block text-sm font-bold text-zinc-700 dark:text-zinc-300">Dispatch Board Label</label>
+                  <label class="block text-sm font-bold text-zinc-700 dark:text-zinc-300">
+                    Dispatch Board Label
+                  </label>
                   <input
                     type="text"
                     name="terminology[dispatch_label]"
@@ -207,11 +224,18 @@ defmodule FieldHubWeb.SettingsLive.Terminology do
 
             <div class="flex justify-end gap-3 pt-2">
               <.link navigate={~p"/dashboard"}>
-                <button type="button" class="px-6 py-3 rounded-xl text-sm font-bold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all">
+                <button
+                  type="button"
+                  class="px-6 py-3 rounded-xl text-sm font-bold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all"
+                >
                   Cancel
                 </button>
               </.link>
-              <button type="submit" class="flex items-center gap-2 px-8 py-3 bg-primary hover:brightness-110 text-white rounded-xl font-bold text-sm shadow-xl shadow-primary/20 transition-all border-b-4 border-emerald-800 active:border-b-0 active:translate-y-1" phx-disable-with="Saving...">
+              <button
+                type="submit"
+                class="flex items-center gap-2 px-8 py-3 bg-primary hover:brightness-110 text-white rounded-xl font-bold text-sm shadow-xl shadow-primary/20 transition-all border-b-4 border-emerald-800 active:border-b-0 active:translate-y-1"
+                phx-disable-with="Saving..."
+              >
                 <.icon name="hero-check" class="size-5" /> Save Terminology
               </button>
             </div>

@@ -160,15 +160,17 @@ defmodule FieldHubWeb.SettingsLive.Workflows do
                     <div class="size-20 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center mx-auto mb-6">
                       <.icon name="hero-square-3-stack-3d" class="size-10 text-zinc-400" />
                     </div>
-                    <h3 class="text-xl font-black text-zinc-900 dark:text-white tracking-tight">No statuses defined</h3>
+                    <h3 class="text-xl font-black text-zinc-900 dark:text-white tracking-tight">
+                      No statuses defined
+                    </h3>
                     <p class="text-sm font-bold text-zinc-500 mt-2 uppercase tracking-wide">
                       Add your first status or apply a template to get started.
                     </p>
                   </div>
                 <% end %>
               </div>
-
-              <!-- Visual Workflow Preview -->
+              
+    <!-- Visual Workflow Preview -->
               <div class="bg-white dark:bg-zinc-900 rounded-[24px] border border-zinc-200 dark:border-zinc-800 p-8 shadow-sm">
                 <div class="flex items-center gap-3 mb-8">
                   <div class="size-10 rounded-xl bg-primary/10 flex items-center justify-center">
@@ -204,7 +206,10 @@ defmodule FieldHubWeb.SettingsLive.Workflows do
                       </div>
                       <%= if index < length(@statuses) - 1 do %>
                         <div class="flex items-center justify-center px-1">
-                          <.icon name="hero-chevron-right" class="size-5 text-zinc-300 dark:text-zinc-700 animate-pulse" />
+                          <.icon
+                            name="hero-chevron-right"
+                            class="size-5 text-zinc-300 dark:text-zinc-700 animate-pulse"
+                          />
                         </div>
                       <% end %>
                     </div>
@@ -212,8 +217,8 @@ defmodule FieldHubWeb.SettingsLive.Workflows do
                 </div>
               </div>
             </div>
-
-            <!-- Sidebar / Presets -->
+            
+    <!-- Sidebar / Presets -->
             <div class="xl:col-span-4 space-y-6">
               <div class="bg-white dark:bg-zinc-900 p-6 rounded-[24px] border border-zinc-200 dark:border-zinc-800 shadow-sm sticky top-8">
                 <div class="flex items-center gap-3 mb-6">
@@ -247,31 +252,35 @@ defmodule FieldHubWeb.SettingsLive.Workflows do
                           class="size-4 text-zinc-400 group-hover:text-primary transition-colors group-hover:rotate-180 duration-500"
                         />
                       </div>
-                      <p class="text-[11px] font-bold text-zinc-500 uppercase tracking-wide leading-tight line-clamp-2">{preset.description}</p>
+                      <p class="text-[11px] font-bold text-zinc-500 uppercase tracking-wide leading-tight line-clamp-2">
+                        {preset.description}
+                      </p>
                     </button>
                   <% end %>
                 </div>
 
                 <div class="mt-8 p-6 bg-primary/5 rounded-[24px] border border-primary/10 relative overflow-hidden">
-                   <div class="relative z-10 flex gap-4">
-                      <div class="size-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                        <.icon name="hero-light-bulb" class="size-6 text-primary" />
-                      </div>
-                      <div>
-                        <h3 class="text-sm font-black text-zinc-900 dark:text-white tracking-tight">Pro Tip</h3>
-                        <p class="text-[11px] font-bold text-zinc-500 dark:text-zinc-400 mt-1 leading-relaxed uppercase tracking-wider">
-                          The order of statuses defines the default progression.
-                        </p>
-                      </div>
-                   </div>
+                  <div class="relative z-10 flex gap-4">
+                    <div class="size-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                      <.icon name="hero-light-bulb" class="size-6 text-primary" />
+                    </div>
+                    <div>
+                      <h3 class="text-sm font-black text-zinc-900 dark:text-white tracking-tight">
+                        Pro Tip
+                      </h3>
+                      <p class="text-[11px] font-bold text-zinc-500 dark:text-zinc-400 mt-1 leading-relaxed uppercase tracking-wider">
+                        The order of statuses defines the default progression.
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-
-      <!-- Slide-in Status Editor Panel -->
+      
+    <!-- Slide-in Status Editor Panel -->
       <div
         :if={@editing_status}
         class="fixed right-0 top-0 bottom-0 w-[480px] bg-white dark:bg-zinc-900 border-l border-zinc-200 dark:border-zinc-700 shadow-2xl z-50 flex flex-col animate-in slide-in-from-right duration-300"
@@ -282,7 +291,9 @@ defmodule FieldHubWeb.SettingsLive.Workflows do
             <h2 class="text-xl font-black text-zinc-900 dark:text-white tracking-tighter">
               {if @editing_status.is_new, do: "Add New Phase", else: "Modify Phase"}
             </h2>
-            <p class="text-sm font-bold text-zinc-500 mt-1 uppercase tracking-wide">Configure progression details</p>
+            <p class="text-sm font-bold text-zinc-500 mt-1 uppercase tracking-wide">
+              Configure progression details
+            </p>
           </div>
           <button
             phx-click="close_editor"
@@ -291,8 +302,8 @@ defmodule FieldHubWeb.SettingsLive.Workflows do
             <.icon name="hero-x-mark" class="size-5" />
           </button>
         </div>
-
-        <!-- Form Content -->
+        
+    <!-- Form Content -->
         <div class="flex-1 overflow-y-auto p-8">
           <form phx-submit="save_status" class="space-y-8">
             <input type="hidden" name="index" value={@editing_status.index} />
@@ -334,7 +345,7 @@ defmodule FieldHubWeb.SettingsLive.Workflows do
               </label>
               <div class="flex flex-col items-center gap-8">
                 <div class="flex flex-col items-center gap-6">
-                   <input
+                  <input
                     type="color"
                     name="color"
                     value={@editing_status.color}

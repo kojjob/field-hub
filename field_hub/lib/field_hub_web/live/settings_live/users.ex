@@ -104,8 +104,8 @@ defmodule FieldHubWeb.SettingsLive.Users do
           </button>
         </div>
       </div>
-
-      <!-- Users List -->
+      
+    <!-- Users List -->
       <div class="bg-white dark:bg-zinc-900 rounded-[24px] border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
         <div class="overflow-x-auto">
           <table class="w-full text-left">
@@ -137,36 +137,41 @@ defmodule FieldHubWeb.SettingsLive.Users do
                         <%= if user.avatar_url do %>
                           <img src={user.avatar_url} class="size-10 rounded-full object-cover" />
                         <% else %>
-                          <%= String.at(user.name || "U", 0) %>
+                          {String.at(user.name || "U", 0)}
                         <% end %>
                       </div>
                       <div>
                         <div class="font-bold text-zinc-900 dark:text-white">
-                          <%= user.name || "Unknown" %>
+                          {user.name || "Unknown"}
                         </div>
                         <div class="text-xs text-zinc-500 dark:text-zinc-400">
-                          <%= user.phone %>
+                          {user.phone}
                         </div>
                       </div>
                     </div>
                   </td>
                   <td class="px-6 py-4 text-sm text-zinc-600 dark:text-zinc-400">
-                    <%= user.email %>
+                    {user.email}
                   </td>
                   <td class="px-6 py-4">
                     <span class={[
                       "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wide",
-                      user.role == "owner" && "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300",
-                      user.role == "admin" && "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300",
-                      user.role == "technician" && "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300",
-                      user.role == "dispatcher" && "bg-cyan-100 text-cyan-800 dark:bg-cyan-900/30 dark:text-cyan-300",
-                      user.role == "viewer" && "bg-zinc-100 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-300"
+                      user.role == "owner" &&
+                        "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300",
+                      user.role == "admin" &&
+                        "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300",
+                      user.role == "technician" &&
+                        "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300",
+                      user.role == "dispatcher" &&
+                        "bg-cyan-100 text-cyan-800 dark:bg-cyan-900/30 dark:text-cyan-300",
+                      user.role == "viewer" &&
+                        "bg-zinc-100 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-300"
                     ]}>
-                      <%= user.role %>
+                      {user.role}
                     </span>
                   </td>
                   <td class="px-6 py-4 text-sm text-zinc-500 dark:text-zinc-500">
-                    <%= Calendar.strftime(user.inserted_at, "%b %d, %Y") %>
+                    {Calendar.strftime(user.inserted_at, "%b %d, %Y")}
                   </td>
                   <td class="px-6 py-4 text-right">
                     <%= if user.id != @current_user.id do %>
@@ -188,12 +193,18 @@ defmodule FieldHubWeb.SettingsLive.Users do
           </table>
         </div>
       </div>
-
-      <!-- Invite Modal -->
+      
+    <!-- Invite Modal -->
       <%= if @show_invite_modal do %>
-        <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-900/80 backdrop-blur-sm transition-all" id="invite-modal">
+        <div
+          class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-900/80 backdrop-blur-sm transition-all"
+          id="invite-modal"
+        >
           <div class="bg-white dark:bg-zinc-900 w-full max-w-md rounded-[24px] border border-zinc-200 dark:border-zinc-800 shadow-2xl overflow-hidden relative animate-in fade-in zoom-in-95 duration-200">
-            <button phx-click="close_invite_modal" class="absolute top-4 right-4 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200">
+            <button
+              phx-click="close_invite_modal"
+              class="absolute top-4 right-4 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
+            >
               <.icon name="hero-x-mark" class="size-6" />
             </button>
 
@@ -212,9 +223,17 @@ defmodule FieldHubWeb.SettingsLive.Users do
                 </div>
               </div>
 
-              <.form for={@form} id="invite-user-form" phx-submit="save" phx-change="validate" class="space-y-6">
+              <.form
+                for={@form}
+                id="invite-user-form"
+                phx-submit="save"
+                phx-change="validate"
+                class="space-y-6"
+              >
                 <div class="space-y-2">
-                  <label class="block text-sm font-bold text-zinc-700 dark:text-zinc-300">Full Name</label>
+                  <label class="block text-sm font-bold text-zinc-700 dark:text-zinc-300">
+                    Full Name
+                  </label>
                   <input
                     type="text"
                     name="user[name]"
@@ -224,12 +243,14 @@ defmodule FieldHubWeb.SettingsLive.Users do
                     class="w-full px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-white placeholder-zinc-400 focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all font-medium"
                   />
                   <.error :for={err <- @form[:name].errors}>
-                    <%= FieldHubWeb.CoreComponents.translate_error(err) %>
+                    {FieldHubWeb.CoreComponents.translate_error(err)}
                   </.error>
                 </div>
 
                 <div class="space-y-2">
-                  <label class="block text-sm font-bold text-zinc-700 dark:text-zinc-300">Email Address</label>
+                  <label class="block text-sm font-bold text-zinc-700 dark:text-zinc-300">
+                    Email Address
+                  </label>
                   <input
                     type="email"
                     name="user[email]"
@@ -239,7 +260,7 @@ defmodule FieldHubWeb.SettingsLive.Users do
                     class="w-full px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-white placeholder-zinc-400 focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all font-medium"
                   />
                   <.error :for={err <- @form[:email].errors}>
-                    <%= FieldHubWeb.CoreComponents.translate_error(err) %>
+                    {FieldHubWeb.CoreComponents.translate_error(err)}
                   </.error>
                 </div>
 
@@ -258,10 +279,17 @@ defmodule FieldHubWeb.SettingsLive.Users do
                 </div>
 
                 <div class="flex justify-end gap-3 pt-4">
-                  <button type="button" phx-click="close_invite_modal" class="px-6 py-3 rounded-xl text-sm font-bold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all">
+                  <button
+                    type="button"
+                    phx-click="close_invite_modal"
+                    class="px-6 py-3 rounded-xl text-sm font-bold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all"
+                  >
                     Cancel
                   </button>
-                  <button type="submit" class="flex items-center gap-2 px-8 py-3 bg-primary hover:brightness-110 text-white rounded-xl font-bold text-sm shadow-xl shadow-primary/20 transition-all border-b-4 border-emerald-800 active:border-b-0 active:translate-y-1">
+                  <button
+                    type="submit"
+                    class="flex items-center gap-2 px-8 py-3 bg-primary hover:brightness-110 text-white rounded-xl font-bold text-sm shadow-xl shadow-primary/20 transition-all border-b-4 border-emerald-800 active:border-b-0 active:translate-y-1"
+                  >
                     Send Invitation
                   </button>
                 </div>

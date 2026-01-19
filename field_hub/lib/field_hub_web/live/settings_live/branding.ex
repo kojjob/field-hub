@@ -113,8 +113,8 @@ defmodule FieldHubWeb.SettingsLive.Branding do
                 </div>
               </div>
             </div>
-
-            <!-- Colors Card -->
+            
+    <!-- Colors Card -->
             <div class="bg-white dark:bg-zinc-900 p-6 rounded-[24px] border border-zinc-200 dark:border-zinc-800 shadow-sm">
               <div class="flex items-center gap-3 mb-6">
                 <div class="size-11 rounded-xl bg-primary/10 flex items-center justify-center">
@@ -158,8 +158,8 @@ defmodule FieldHubWeb.SettingsLive.Branding do
                     </div>
                   </div>
                 </div>
-
-                <!-- Secondary Color -->
+                
+    <!-- Secondary Color -->
                 <div class="bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl p-5 border border-zinc-100 dark:border-zinc-800">
                   <label class="block text-sm font-bold text-zinc-700 dark:text-zinc-300 mb-3">
                     Secondary Color
@@ -188,22 +188,29 @@ defmodule FieldHubWeb.SettingsLive.Branding do
                 </div>
               </div>
             </div>
-
-            <!-- Actions -->
+            
+    <!-- Actions -->
             <div class="flex justify-end gap-3 pt-2">
               <.link navigate={~p"/dashboard"}>
-                <button type="button" class="px-6 py-3 rounded-xl text-sm font-bold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all">
+                <button
+                  type="button"
+                  class="px-6 py-3 rounded-xl text-sm font-bold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all"
+                >
                   Cancel
                 </button>
               </.link>
-              <button type="submit" class="flex items-center gap-2 px-8 py-3 bg-primary hover:brightness-110 text-white rounded-xl font-bold text-sm shadow-xl shadow-primary/20 transition-all border-b-4 border-emerald-800 active:border-b-0 active:translate-y-1" phx-disable-with="Saving...">
+              <button
+                type="submit"
+                class="flex items-center gap-2 px-8 py-3 bg-primary hover:brightness-110 text-white rounded-xl font-bold text-sm shadow-xl shadow-primary/20 transition-all border-b-4 border-emerald-800 active:border-b-0 active:translate-y-1"
+                phx-disable-with="Saving..."
+              >
                 <.icon name="hero-check" class="size-5" /> Save Changes
               </button>
             </div>
           </.form>
         </div>
-
-        <!-- Preview Column -->
+        
+    <!-- Preview Column -->
         <div class="xl:col-span-5">
           <div class="sticky top-8 space-y-4">
             <!-- Preview Card -->
@@ -221,8 +228,8 @@ defmodule FieldHubWeb.SettingsLive.Branding do
                   </p>
                 </div>
               </div>
-
-              <!-- Browser Mock -->
+              
+    <!-- Browser Mock -->
               <div class="bg-zinc-100 dark:bg-zinc-800 rounded-2xl overflow-hidden border border-zinc-200 dark:border-zinc-700">
                 <div class="bg-zinc-200 dark:bg-zinc-700 px-3 py-2 flex items-center gap-1.5">
                   <div class="size-2 rounded-full bg-zinc-400"></div>
@@ -245,8 +252,8 @@ defmodule FieldHubWeb.SettingsLive.Branding do
                     <div class="size-8 rounded-lg bg-zinc-200 dark:bg-zinc-700"></div>
                     <div class="size-8 rounded-lg bg-zinc-200 dark:bg-zinc-700"></div>
                   </div>
-
-                  <!-- Mock Content -->
+                  
+    <!-- Mock Content -->
                   <div class="flex-1 p-4">
                     <div class="flex items-center gap-2 mb-4">
                       <%= if @form[:logo_url].value && @form[:logo_url].value != "" do %>
@@ -289,21 +296,37 @@ defmodule FieldHubWeb.SettingsLive.Branding do
                 </div>
               </div>
             </div>
-
-            <!-- Quick Stats -->
+            
+    <!-- Quick Stats -->
             <div class="grid grid-cols-2 gap-3">
               <div class="bg-white dark:bg-zinc-900 p-4 rounded-xl border border-zinc-200 dark:border-zinc-800">
-                <p class="text-[10px] font-black text-zinc-400 uppercase tracking-wide mb-1">Primary</p>
+                <p class="text-[10px] font-black text-zinc-400 uppercase tracking-wide mb-1">
+                  Primary
+                </p>
                 <div class="flex items-center gap-2">
-                  <div class="size-6 rounded-lg shadow-inner" style={"background-color: #{@form[:primary_color].value}"}></div>
-                  <span class="text-sm font-mono font-bold text-zinc-900 dark:text-white">{@form[:primary_color].value}</span>
+                  <div
+                    class="size-6 rounded-lg shadow-inner"
+                    style={"background-color: #{@form[:primary_color].value}"}
+                  >
+                  </div>
+                  <span class="text-sm font-mono font-bold text-zinc-900 dark:text-white">
+                    {@form[:primary_color].value}
+                  </span>
                 </div>
               </div>
               <div class="bg-white dark:bg-zinc-900 p-4 rounded-xl border border-zinc-200 dark:border-zinc-800">
-                <p class="text-[10px] font-black text-zinc-400 uppercase tracking-wide mb-1">Secondary</p>
+                <p class="text-[10px] font-black text-zinc-400 uppercase tracking-wide mb-1">
+                  Secondary
+                </p>
                 <div class="flex items-center gap-2">
-                  <div class="size-6 rounded-lg shadow-inner" style={"background-color: #{@form[:secondary_color].value}"}></div>
-                  <span class="text-sm font-mono font-bold text-zinc-900 dark:text-white">{@form[:secondary_color].value}</span>
+                  <div
+                    class="size-6 rounded-lg shadow-inner"
+                    style={"background-color: #{@form[:secondary_color].value}"}
+                  >
+                  </div>
+                  <span class="text-sm font-mono font-bold text-zinc-900 dark:text-white">
+                    {@form[:secondary_color].value}
+                  </span>
                 </div>
               </div>
             </div>

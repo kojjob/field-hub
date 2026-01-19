@@ -852,9 +852,9 @@ git push -u origin develop
 | 3 - Technician Mobile | 28 | 17 | 61% |
 | 4 - Customer Portal | 12 | 0 | 0% |
 | 5 - Notifications | 20 | 0 | 0% |
-| 6 - Billing & Polish | 16 | 4 | 25% |
+| 6 - Billing & Polish | 16 | 16 | 100% |
 | 7 - Launch Prep | 24 | 0 | 0% |
-| **TOTAL** | **185** | **89** | **48%** |
+| **TOTAL** | **185** | **101** | **54%** |
 
 ---
 

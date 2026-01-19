@@ -5,9 +5,33 @@ defmodule FieldHubWeb.UserLive.Settings do
 
   # Mock sessions for UI demonstration since we don't track devices yet
   @mock_sessions [
-    %{id: "s1", device: "Chrome on MacOS (14.2.1)", ip: "192.168.1.1", location: "London, UK", active: true, last_active: "Active now", icon: "hero-computer-desktop"},
-    %{id: "s2", device: "FieldHub App on iPhone 15 Pro", ip: "172.16.2.45", location: "Manchester, UK", active: false, last_active: "2 hours ago", icon: "hero-device-phone-mobile"},
-    %{id: "s3", device: "Android Tablet - Dispatch Panel", ip: "10.0.0.89", location: "Liverpool, UK", active: false, last_active: "3 days ago", icon: "hero-device-tablet"}
+    %{
+      id: "s1",
+      device: "Chrome on MacOS (14.2.1)",
+      ip: "192.168.1.1",
+      location: "London, UK",
+      active: true,
+      last_active: "Active now",
+      icon: "hero-computer-desktop"
+    },
+    %{
+      id: "s2",
+      device: "FieldHub App on iPhone 15 Pro",
+      ip: "172.16.2.45",
+      location: "Manchester, UK",
+      active: false,
+      last_active: "2 hours ago",
+      icon: "hero-device-phone-mobile"
+    },
+    %{
+      id: "s3",
+      device: "Android Tablet - Dispatch Panel",
+      ip: "10.0.0.89",
+      location: "Liverpool, UK",
+      active: false,
+      last_active: "3 days ago",
+      icon: "hero-device-tablet"
+    }
   ]
 
   @impl true
@@ -50,13 +74,14 @@ defmodule FieldHubWeb.UserLive.Settings do
 
   @impl true
   def handle_params(params, _url, socket) do
-    current_tab = case params["tab"] do
-      "security" -> :security
-      "notifications" -> :notifications
-      "billing" -> :billing
-      "team" -> :team
-      _ -> :profile
-    end
+    current_tab =
+      case params["tab"] do
+        "security" -> :security
+        "notifications" -> :notifications
+        "billing" -> :billing
+        "team" -> :team
+        _ -> :profile
+      end
 
     {:noreply, assign(socket, :current_tab, current_tab)}
   end
@@ -72,39 +97,71 @@ defmodule FieldHubWeb.UserLive.Settings do
           <.icon name="hero-chevron-right" class="w-4 h-4 mx-2" />
           <span class="text-zinc-900 dark:text-zinc-100 font-medium">User Profile</span>
         </nav>
-        <h1 class="text-3xl font-bold text-zinc-900 dark:text-white tracking-tight">Profile Settings</h1>
-        <p class="text-zinc-500 dark:text-zinc-400 mt-1">Manage your personal presence and account safety across the FieldHub platform.</p>
+        <h1 class="text-3xl font-bold text-zinc-900 dark:text-white tracking-tight">
+          Profile Settings
+        </h1>
+        <p class="text-zinc-500 dark:text-zinc-400 mt-1">
+          Manage your personal presence and account safety across the FieldHub platform.
+        </p>
       </div>
 
       <div class="flex flex-col lg:flex-row gap-8">
         <!-- Settings Sidebar -->
         <aside class="w-full lg:w-64 flex-shrink-0 space-y-1">
-          <.link patch={~p"/users/settings?tab=profile"} class={if @current_tab == :profile, do: "flex items-center gap-3 px-4 py-2.5 bg-primary text-white rounded-xl font-medium shadow-sm transition-all", else: "flex items-center gap-3 px-4 py-2.5 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-xl font-medium transition-all"}>
-            <.icon name="hero-user" class="w-5 h-5" />
-            Profile
+          <.link
+            patch={~p"/users/settings?tab=profile"}
+            class={
+              if @current_tab == :profile,
+                do:
+                  "flex items-center gap-3 px-4 py-2.5 bg-primary text-white rounded-xl font-medium shadow-sm transition-all",
+                else:
+                  "flex items-center gap-3 px-4 py-2.5 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-xl font-medium transition-all"
+            }
+          >
+            <.icon name="hero-user" class="w-5 h-5" /> Profile
           </.link>
-          <.link patch={~p"/users/settings?tab=security"} class={if @current_tab == :security, do: "flex items-center gap-3 px-4 py-2.5 bg-primary text-white rounded-xl font-medium shadow-sm transition-all", else: "flex items-center gap-3 px-4 py-2.5 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-xl font-medium transition-all"}>
-            <.icon name="hero-shield-check" class="w-5 h-5" />
-            Security
+          <.link
+            patch={~p"/users/settings?tab=security"}
+            class={
+              if @current_tab == :security,
+                do:
+                  "flex items-center gap-3 px-4 py-2.5 bg-primary text-white rounded-xl font-medium shadow-sm transition-all",
+                else:
+                  "flex items-center gap-3 px-4 py-2.5 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-xl font-medium transition-all"
+            }
+          >
+            <.icon name="hero-shield-check" class="w-5 h-5" /> Security
           </.link>
-          <a href="#" class="flex items-center gap-3 px-4 py-2.5 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-xl font-medium transition-all opacity-50 cursor-not-allowed">
-            <.icon name="hero-bell" class="w-5 h-5" />
-            Notifications
-            <span class="ml-auto text-[10px] bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded text-zinc-500">Soon</span>
+          <a
+            href="#"
+            class="flex items-center gap-3 px-4 py-2.5 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-xl font-medium transition-all opacity-50 cursor-not-allowed"
+          >
+            <.icon name="hero-bell" class="w-5 h-5" /> Notifications
+            <span class="ml-auto text-[10px] bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded text-zinc-500">
+              Soon
+            </span>
           </a>
-          <a href="#" class="flex items-center gap-3 px-4 py-2.5 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-xl font-medium transition-all opacity-50 cursor-not-allowed">
-            <.icon name="hero-credit-card" class="w-5 h-5" />
-            Billing & Plan
-             <span class="ml-auto text-[10px] bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded text-zinc-500">Soon</span>
+          <a
+            href="#"
+            class="flex items-center gap-3 px-4 py-2.5 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-xl font-medium transition-all opacity-50 cursor-not-allowed"
+          >
+            <.icon name="hero-credit-card" class="w-5 h-5" /> Billing & Plan
+            <span class="ml-auto text-[10px] bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded text-zinc-500">
+              Soon
+            </span>
           </a>
-          <a href="#" class="flex items-center gap-3 px-4 py-2.5 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-xl font-medium transition-all opacity-50 cursor-not-allowed">
-            <.icon name="hero-users" class="w-5 h-5" />
-            Team Management
-             <span class="ml-auto text-[10px] bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded text-zinc-500">Soon</span>
+          <a
+            href="#"
+            class="flex items-center gap-3 px-4 py-2.5 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-xl font-medium transition-all opacity-50 cursor-not-allowed"
+          >
+            <.icon name="hero-users" class="w-5 h-5" /> Team Management
+            <span class="ml-auto text-[10px] bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded text-zinc-500">
+              Soon
+            </span>
           </a>
         </aside>
-
-        <!-- Main Content Area -->
+        
+    <!-- Main Content Area -->
         <div class="flex-1 space-y-8">
           <%= if @current_tab == :profile do %>
             <!-- Avatar Section -->
@@ -112,7 +169,8 @@ defmodule FieldHubWeb.UserLive.Settings do
               <div class="flex items-start sm:items-center gap-6 flex-col sm:flex-row">
                 <div class="relative group">
                   <div class="size-24 rounded-full bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 flex items-center justify-center text-3xl font-bold ring-4 ring-white dark:ring-zinc-900 border border-orange-200 dark:border-orange-800/50">
-                    <%= String.first(@current_scope.user.name || @current_scope.user.email) |> String.upcase() %>
+                    {String.first(@current_scope.user.name || @current_scope.user.email)
+                    |> String.upcase()}
                   </div>
                   <div class="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
                     <.icon name="hero-camera" class="w-8 h-8 text-white" />
@@ -120,11 +178,12 @@ defmodule FieldHubWeb.UserLive.Settings do
                 </div>
                 <div class="flex-1">
                   <h3 class="text-lg font-bold text-zinc-900 dark:text-white">Your Avatar</h3>
-                  <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">Accepted formats: JPG, PNG, WEBP.<br/>Minimum dimension 400x400px. Max size 2MB.</p>
+                  <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
+                    Accepted formats: JPG, PNG, WEBP.<br />Minimum dimension 400x400px. Max size 2MB.
+                  </p>
                   <div class="mt-4 flex gap-3">
                     <button class="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors flex items-center gap-2 shadow-sm shadow-primary/20">
-                       <.icon name="hero-arrow-up-tray" class="w-4 h-4" />
-                       Upload New Photo
+                      <.icon name="hero-arrow-up-tray" class="w-4 h-4" /> Upload New Photo
                     </button>
                     <button class="bg-white dark:bg-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700 px-4 py-2 rounded-lg text-sm font-semibold transition-colors">
                       Remove
@@ -133,42 +192,71 @@ defmodule FieldHubWeb.UserLive.Settings do
                 </div>
               </div>
             </div>
-
-            <!-- ID/Personal Info Section -->
+            
+    <!-- ID/Personal Info Section -->
             <div class="bg-white dark:bg-zinc-900 rounded-2xl p-8 border border-zinc-200 dark:border-zinc-800 shadow-sm relative overflow-hidden transition-all duration-200 hover:shadow-md">
-               <div class="absolute top-8 right-8">
+              <div class="absolute top-8 right-8">
                 <span class="inline-flex items-center rounded-md bg-teal-50 dark:bg-teal-900/30 px-2.5 py-1 text-xs font-bold text-teal-700 dark:text-teal-400 ring-1 ring-inset ring-teal-600/20 uppercase tracking-widest">
                   Identity
                 </span>
               </div>
 
-              <h3 class="text-lg font-bold text-zinc-900 dark:text-white mb-6">Personal Information</h3>
+              <h3 class="text-lg font-bold text-zinc-900 dark:text-white mb-6">
+                Personal Information
+              </h3>
 
-              <.form for={@profile_form} id="profile_form" phx-change="validate_profile" phx-submit="update_profile" class="space-y-6">
+              <.form
+                for={@profile_form}
+                id="profile_form"
+                phx-change="validate_profile"
+                phx-submit="update_profile"
+                class="space-y-6"
+              >
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <.input field={@profile_form[:name]} label="Full Name" placeholder="John Doe" class="bg-zinc-50 dark:bg-zinc-800/50" />
+                    <.input
+                      field={@profile_form[:name]}
+                      label="Full Name"
+                      placeholder="John Doe"
+                      class="bg-zinc-50 dark:bg-zinc-800/50"
+                    />
                   </div>
                   <!-- Placeholder for visual balance -->
-                   <div class="hidden md:block"></div>
+                  <div class="hidden md:block"></div>
                 </div>
 
                 <div class="relative group">
-                   <.input field={@profile_form[:email_view_only]} name="email_view_only" value={@current_email} label="Email Address" disabled class="bg-zinc-50 dark:bg-zinc-800/50 text-zinc-500" />
-                   <div class="absolute right-0 top-9">
-                      <span class="inline-flex items-center rounded-md bg-green-50 dark:bg-green-900/30 px-2 py-1 text-xs font-medium text-green-700 dark:text-green-400 ring-1 ring-inset ring-green-600/20 uppercase">
-                        Verified
-                      </span>
-                   </div>
-                   <p class="mt-2 text-xs text-zinc-500">To change your email, please use the Security tab.</p>
+                  <.input
+                    field={@profile_form[:email_view_only]}
+                    name="email_view_only"
+                    value={@current_email}
+                    label="Email Address"
+                    disabled
+                    class="bg-zinc-50 dark:bg-zinc-800/50 text-zinc-500"
+                  />
+                  <div class="absolute right-0 top-9">
+                    <span class="inline-flex items-center rounded-md bg-green-50 dark:bg-green-900/30 px-2 py-1 text-xs font-medium text-green-700 dark:text-green-400 ring-1 ring-inset ring-green-600/20 uppercase">
+                      Verified
+                    </span>
+                  </div>
+                  <p class="mt-2 text-xs text-zinc-500">
+                    To change your email, please use the Security tab.
+                  </p>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <.input field={@profile_form[:phone]} label="Phone Number" placeholder="+1 (555) 000-1234" class="bg-zinc-50 dark:bg-zinc-800/50" />
+                    <.input
+                      field={@profile_form[:phone]}
+                      label="Phone Number"
+                      placeholder="+1 (555) 000-1234"
+                      class="bg-zinc-50 dark:bg-zinc-800/50"
+                    />
                   </div>
                   <div>
-                    <label class="block text-sm font-semibold leading-6 text-zinc-900 dark:text-zinc-100">Language / Locale</label>
+                    <label class="block text-sm font-semibold leading-6 text-zinc-900 dark:text-zinc-100">
+                      Language / Locale
+                    </label>
                     <select class="mt-2 block w-full rounded-2xl border-0 py-2.5 pl-3 pr-10 text-zinc-900 dark:text-zinc-100 ring-1 ring-inset ring-zinc-300 dark:ring-zinc-700 focus:ring-2 focus:ring-primary sm:text-sm sm:leading-6 bg-zinc-50 dark:bg-zinc-800/50">
                       <option>English (US)</option>
                       <option>English (UK)</option>
@@ -186,10 +274,14 @@ defmodule FieldHubWeb.UserLive.Settings do
           <% end %>
 
           <%= if @current_tab == :security do %>
-             <!-- Active Sessions -->
+            <!-- Active Sessions -->
             <div class="bg-white dark:bg-zinc-900 rounded-2xl p-8 border border-zinc-200 dark:border-zinc-800 shadow-sm">
-              <h3 class="text-lg font-bold text-zinc-900 dark:text-white">Security & Active Sessions</h3>
-              <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1 mb-6">Manage devices currently logged into your account.</p>
+              <h3 class="text-lg font-bold text-zinc-900 dark:text-white">
+                Security & Active Sessions
+              </h3>
+              <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1 mb-6">
+                Manage devices currently logged into your account.
+              </p>
 
               <div class="space-y-4">
                 <%= for session <- @sessions do %>
@@ -200,10 +292,14 @@ defmodule FieldHubWeb.UserLive.Settings do
                       </div>
                       <div>
                         <div class="flex items-center gap-2">
-                          <span class="font-semibold text-zinc-900 dark:text-zinc-100">{session.device}</span>
-                           <%= if session.active do %>
-                            <span class="px-1.5 py-0.5 rounded bg-teal-100 dark:bg-teal-900 text-[10px] font-bold text-teal-700 dark:text-teal-300 uppercase tracking-wide">Current</span>
-                           <% end %>
+                          <span class="font-semibold text-zinc-900 dark:text-zinc-100">
+                            {session.device}
+                          </span>
+                          <%= if session.active do %>
+                            <span class="px-1.5 py-0.5 rounded bg-teal-100 dark:bg-teal-900 text-[10px] font-bold text-teal-700 dark:text-teal-300 uppercase tracking-wide">
+                              Current
+                            </span>
+                          <% end %>
                         </div>
                         <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
                           {session.ip} • {session.location} • {session.last_active}
@@ -212,24 +308,28 @@ defmodule FieldHubWeb.UserLive.Settings do
                     </div>
                     <div>
                       <%= unless session.active do %>
-                        <button class="text-sm font-semibold text-red-600 hover:text-red-700 transition-colors hover:underline">Revoke Access</button>
+                        <button class="text-sm font-semibold text-red-600 hover:text-red-700 transition-colors hover:underline">
+                          Revoke Access
+                        </button>
                       <% else %>
-                         <.icon name="hero-arrow-right-on-rectangle" class="w-5 h-5 text-zinc-400" />
+                        <.icon name="hero-arrow-right-on-rectangle" class="w-5 h-5 text-zinc-400" />
                       <% end %>
                     </div>
                   </div>
                 <% end %>
               </div>
             </div>
-
-            <!-- Danger Zone -->
+            
+    <!-- Danger Zone -->
             <div class="rounded-2xl p-6 bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/20 flex items-center justify-between">
               <div>
                 <h4 class="text-red-800 dark:text-red-300 font-bold flex items-center gap-2">
-                   <.icon name="hero-exclamation-triangle" class="w-5 h-5" />
-                   Think your account is compromised?
+                  <.icon name="hero-exclamation-triangle" class="w-5 h-5" />
+                  Think your account is compromised?
                 </h4>
-                <p class="text-red-600 dark:text-red-400 text-sm mt-1">Sign out from all sessions to secure your account immediately.</p>
+                <p class="text-red-600 dark:text-red-400 text-sm mt-1">
+                  Sign out from all sessions to secure your account immediately.
+                </p>
               </div>
               <button class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-sm shadow-red-500/20 transition-colors">
                 Sign Out All Sessions
@@ -239,28 +339,59 @@ defmodule FieldHubWeb.UserLive.Settings do
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
               <!-- Change Password -->
               <div class="bg-white dark:bg-zinc-900 rounded-2xl p-8 border border-zinc-200 dark:border-zinc-800 shadow-sm">
-                  <h3 class="text-lg font-bold text-zinc-900 dark:text-white mb-6 flex items-center gap-2">
-                     <.icon name="hero-key" class="w-5 h-5 text-primary" />
-                     Change Password
-                  </h3>
-                  <.form for={@password_form} id="password_form" action={~p"/users/update-password"} method="post" phx-change="validate_password" phx-submit="update_password" phx-trigger-action={@trigger_submit} class="space-y-4">
-                      <input name={@password_form[:email].name} type="hidden" value={@current_email} />
-                      <.input field={@password_form[:password]} type="password" label="New Password" required class="bg-zinc-50 dark:bg-zinc-800/50" />
-                      <.input field={@password_form[:password_confirmation]} type="password" label="Confirm Password" required class="bg-zinc-50 dark:bg-zinc-800/50" />
-                      <.button variant="primary" class="w-full">Update Password</.button>
-                  </.form>
+                <h3 class="text-lg font-bold text-zinc-900 dark:text-white mb-6 flex items-center gap-2">
+                  <.icon name="hero-key" class="w-5 h-5 text-primary" /> Change Password
+                </h3>
+                <.form
+                  for={@password_form}
+                  id="password_form"
+                  action={~p"/users/update-password"}
+                  method="post"
+                  phx-change="validate_password"
+                  phx-submit="update_password"
+                  phx-trigger-action={@trigger_submit}
+                  class="space-y-4"
+                >
+                  <input name={@password_form[:email].name} type="hidden" value={@current_email} />
+                  <.input
+                    field={@password_form[:password]}
+                    type="password"
+                    label="New Password"
+                    required
+                    class="bg-zinc-50 dark:bg-zinc-800/50"
+                  />
+                  <.input
+                    field={@password_form[:password_confirmation]}
+                    type="password"
+                    label="Confirm Password"
+                    required
+                    class="bg-zinc-50 dark:bg-zinc-800/50"
+                  />
+                  <.button variant="primary" class="w-full">Update Password</.button>
+                </.form>
               </div>
-
-              <!-- Change Email -->
+              
+    <!-- Change Email -->
               <div class="bg-white dark:bg-zinc-900 rounded-2xl p-8 border border-zinc-200 dark:border-zinc-800 shadow-sm">
-                  <h3 class="text-lg font-bold text-zinc-900 dark:text-white mb-6 flex items-center gap-2">
-                    <.icon name="hero-envelope" class="w-5 h-5 text-primary" />
-                    Change Email
-                  </h3>
-                   <.form for={@email_form} id="email_form" phx-submit="update_email" phx-change="validate_email" class="space-y-4">
-                      <.input field={@email_form[:email]} type="email" label="New Email Address" required class="bg-zinc-50 dark:bg-zinc-800/50" />
-                      <.button variant="primary" class="w-full">Update Email</.button>
-                  </.form>
+                <h3 class="text-lg font-bold text-zinc-900 dark:text-white mb-6 flex items-center gap-2">
+                  <.icon name="hero-envelope" class="w-5 h-5 text-primary" /> Change Email
+                </h3>
+                <.form
+                  for={@email_form}
+                  id="email_form"
+                  phx-submit="update_email"
+                  phx-change="validate_email"
+                  class="space-y-4"
+                >
+                  <.input
+                    field={@email_form[:email]}
+                    type="email"
+                    label="New Email Address"
+                    required
+                    class="bg-zinc-50 dark:bg-zinc-800/50"
+                  />
+                  <.button variant="primary" class="w-full">Update Email</.button>
+                </.form>
               </div>
             </div>
           <% end %>
@@ -283,6 +414,7 @@ defmodule FieldHubWeb.UserLive.Settings do
 
   def handle_event("update_profile", %{"user" => user_params}, socket) do
     user = socket.assigns.current_scope.user
+
     case Accounts.update_user_profile(user, user_params) do
       {:ok, user} ->
         info = "Profile updated successfully."
@@ -333,7 +465,10 @@ defmodule FieldHubWeb.UserLive.Settings do
           {:noreply, assign(socket, :email_form, to_form(changeset, action: :insert))}
       end
     else
-      {:noreply, socket |> put_flash(:error, "You must log in to access this page.") |> redirect(to: ~p"/users/log-in")}
+      {:noreply,
+       socket
+       |> put_flash(:error, "You must log in to access this page.")
+       |> redirect(to: ~p"/users/log-in")}
     end
   end
 
@@ -362,7 +497,10 @@ defmodule FieldHubWeb.UserLive.Settings do
           {:noreply, assign(socket, password_form: to_form(changeset, action: :insert))}
       end
     else
-      {:noreply, socket |> put_flash(:error, "You must log in to access this page.") |> redirect(to: ~p"/users/log-in")}
+      {:noreply,
+       socket
+       |> put_flash(:error, "You must log in to access this page.")
+       |> redirect(to: ~p"/users/log-in")}
     end
   end
 end

@@ -47,7 +47,8 @@ defmodule FieldHubWeb.SettingsLive.OrganizationTest do
         view
         |> form("#organization-form", %{
           "organization" => %{
-            "name" => "", # Invalid
+            # Invalid
+            "name" => "",
             "email" => "invalid-email"
           }
         })

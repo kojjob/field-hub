@@ -644,6 +644,7 @@ defmodule FieldHub.Accounts do
       end
     end)
   end
+
   def update_user_notifications(%User{} = user, attrs) do
     user
     |> User.notification_changeset(attrs)

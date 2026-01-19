@@ -17,10 +17,15 @@ defmodule FieldHubWeb.JobLive.FormComponent do
         class="space-y-6"
       >
         <div class="space-y-4">
-          <.input field={@form[:title]} type="text" label="Job Title" placeholder="e.g. AC Repair for Smith Residence" />
+          <.input
+            field={@form[:title]}
+            type="text"
+            label="Job Title"
+            placeholder="e.g. AC Repair for Smith Residence"
+          />
 
           <div class="grid grid-cols-2 gap-4">
-             <.input
+            <.input
               field={@form[:job_type]}
               type="select"
               label="Type"
@@ -45,7 +50,13 @@ defmodule FieldHubWeb.JobLive.FormComponent do
             />
           </div>
 
-          <.input field={@form[:description]} type="textarea" label="Description" class="min-h-[120px]" placeholder="Detailed description of the work required..." />
+          <.input
+            field={@form[:description]}
+            type="textarea"
+            label="Description"
+            class="min-h-[120px]"
+            placeholder="Detailed description of the work required..."
+          />
 
           <.input
             field={@form[:customer_id]}
@@ -57,7 +68,10 @@ defmodule FieldHubWeb.JobLive.FormComponent do
         </div>
 
         <:actions>
-          <.button phx-disable-with="Saving..." class="w-full bg-primary hover:bg-primary/90 text-white font-bold py-3 rounded-xl shadow-lg shadow-primary/20 transition-all">
+          <.button
+            phx-disable-with="Saving..."
+            class="w-full bg-primary hover:bg-primary/90 text-white font-bold py-3 rounded-xl shadow-lg shadow-primary/20 transition-all"
+          >
             Save Job Record
           </.button>
         </:actions>
