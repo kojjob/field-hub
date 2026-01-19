@@ -27,7 +27,7 @@ defmodule FieldHubWeb.SettingsLive.BillingTest do
       assert html =~ "Upgrade Plan"
     end
 
-    test "redirects non-owner", %{conn: conn, user: user} do
+    test "redirects non-owner", %{user: user} do
       # Demote user
       {:ok, user} =
         user

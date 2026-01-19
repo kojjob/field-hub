@@ -18,98 +18,135 @@ defmodule FieldHubWeb.SettingsLive.Notifications do
 
   def render(assigns) do
     ~H"""
-    <div class="max-w-2xl mx-auto">
-      <div class="mb-8">
-        <h1 class="text-3xl font-black text-zinc-900 dark:text-white tracking-tight">
-          Notifications
-        </h1>
-        <p class="mt-2 text-zinc-600 dark:text-zinc-400">
-          Manage how and when you receive updates.
-        </p>
+    <div class="space-y-10 pb-20">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <p class="text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-1">
+            Account
+          </p>
+          <h2 class="text-3xl font-black tracking-tighter text-zinc-900 dark:text-white">
+            Notification Settings
+          </h2>
+          <p class="mt-2 text-sm text-zinc-500 dark:text-zinc-400 max-w-lg">
+            Manage how and when you receive updates and alerts.
+          </p>
+        </div>
       </div>
 
-      <div class="bg-white dark:bg-zinc-900 rounded-[32px] p-8 shadow-xl shadow-zinc-900/5 ring-1 ring-zinc-200 dark:ring-zinc-800">
-        <.form for={@form} id="notifications-form" phx-submit="save" phx-change="validate" class="space-y-8">
-          <div class="space-y-6">
-            <h3 class="text-lg font-bold text-zinc-900 dark:text-white flex items-center gap-2">
-              <.icon name="hero-envelope" class="size-5 text-primary" />
-              Email Notifications
-            </h3>
+      <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
+        <div class="xl:col-span-2">
+          <div class="bg-white dark:bg-zinc-900 p-8 rounded-[24px] border border-zinc-200 dark:border-zinc-800 shadow-sm relative overflow-hidden group">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 transition-all group-hover:bg-primary/10"></div>
 
-            <div class="space-y-4">
-              <div class="flex items-start gap-4">
-                <div class="flex items-center h-5">
-                  <input
-                    id="notify_on_new_jobs"
-                    name="user[notify_on_new_jobs]"
-                    type="checkbox"
-                    value="true"
-                    checked={@form[:notify_on_new_jobs].value}
-                    class="size-5 rounded-md border-zinc-300 text-primary focus:ring-primary"
-                  />
-                  <input name="user[notify_on_new_jobs]" type="hidden" value="false" />
+            <.form for={@form} id="notifications-form" phx-submit="save" phx-change="validate" class="space-y-8 relative">
+              <div class="space-y-6">
+                <h3 class="text-lg font-black text-zinc-900 dark:text-white flex items-center gap-2">
+                  <div class="size-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                    <.icon name="hero-envelope" class="size-4 text-primary" />
+                  </div>
+                  Email Notifications
+                </h3>
+
+                <div class="pl-10 space-y-4">
+                  <div class="flex items-start gap-4 p-4 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-100 dark:border-zinc-800 transition-all hover:border-primary/20">
+                    <div class="flex items-center h-5 pt-1">
+                      <input
+                        id="notify_on_new_jobs"
+                        name="user[notify_on_new_jobs]"
+                        type="checkbox"
+                        value="true"
+                        checked={@form[:notify_on_new_jobs].value}
+                        class="size-5 rounded-md border-zinc-300 text-primary focus:ring-primary cursor-pointer"
+                      />
+                      <input name="user[notify_on_new_jobs]" type="hidden" value="false" />
+                    </div>
+                    <div class="flex-1 text-sm cursor-pointer" onclick="document.getElementById('notify_on_new_jobs').click()">
+                      <label class="font-bold text-zinc-900 dark:text-white cursor-pointer select-none">New Job Assignments</label>
+                      <p class="text-zinc-500 dark:text-zinc-400 mt-0.5">Get notified immediately when you are assigned to a new job.</p>
+                    </div>
+                  </div>
+
+                  <div class="flex items-start gap-4 p-4 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-100 dark:border-zinc-800 transition-all hover:border-primary/20">
+                    <div class="flex items-center h-5 pt-1">
+                      <input
+                        id="notify_on_job_updates"
+                        name="user[notify_on_job_updates]"
+                        type="checkbox"
+                        value="true"
+                        checked={@form[:notify_on_job_updates].value}
+                        class="size-5 rounded-md border-zinc-300 text-primary focus:ring-primary cursor-pointer"
+                      />
+                       <input name="user[notify_on_job_updates]" type="hidden" value="false" />
+                    </div>
+                    <div class="flex-1 text-sm cursor-pointer" onclick="document.getElementById('notify_on_job_updates').click()">
+                      <label class="font-bold text-zinc-900 dark:text-white cursor-pointer select-none">Job Updates</label>
+                      <p class="text-zinc-500 dark:text-zinc-400 mt-0.5">Receive updates when job status changes or comments are added.</p>
+                    </div>
+                  </div>
                 </div>
-                <div class="flex-1 text-sm">
-                  <label for="notify_on_new_jobs" class="font-bold text-zinc-900 dark:text-white">New Jobs</label>
-                  <p class="text-zinc-500 dark:text-zinc-400">Get notified when a new job is assigned to you.</p>
+              </div>
+
+              <div class="w-full h-px bg-zinc-100 dark:bg-zinc-800 my-8"></div>
+
+              <div class="space-y-6">
+                <h3 class="text-lg font-black text-zinc-900 dark:text-white flex items-center gap-2">
+                  <div class="size-8 rounded-lg bg-amber-500/10 flex items-center justify-center">
+                    <.icon name="hero-megaphone" class="size-4 text-amber-500" />
+                  </div>
+                  Marketing & Updates
+                </h3>
+
+                <div class="pl-10 space-y-4">
+                  <div class="flex items-start gap-4 p-4 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-100 dark:border-zinc-800 transition-all hover:border-amber-500/20">
+                    <div class="flex items-center h-5 pt-1">
+                      <input
+                        id="notify_marketing"
+                        name="user[notify_marketing]"
+                        type="checkbox"
+                        value="true"
+                        checked={@form[:notify_marketing].value}
+                        class="size-5 rounded-md border-zinc-300 text-amber-500 focus:ring-amber-500 cursor-pointer"
+                      />
+                      <input name="user[notify_marketing]" type="hidden" value="false" />
+                    </div>
+                    <div class="flex-1 text-sm cursor-pointer" onclick="document.getElementById('notify_marketing').click()">
+                      <label class="font-bold text-zinc-900 dark:text-white cursor-pointer select-none">Product Announcements</label>
+                      <p class="text-zinc-500 dark:text-zinc-400 mt-0.5">Be the first to know about new features, improvements, and news.</p>
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              <div class="flex items-start gap-4">
-                <div class="flex items-center h-5">
-                  <input
-                    id="notify_on_job_updates"
-                    name="user[notify_on_job_updates]"
-                    type="checkbox"
-                    value="true"
-                    checked={@form[:notify_on_job_updates].value}
-                    class="size-5 rounded-md border-zinc-300 text-primary focus:ring-primary"
-                  />
-                   <input name="user[notify_on_job_updates]" type="hidden" value="false" />
-                </div>
-                <div class="flex-1 text-sm">
-                  <label for="notify_on_job_updates" class="font-bold text-zinc-900 dark:text-white">Job Updates</label>
-                  <p class="text-zinc-500 dark:text-zinc-400">Receive updates when job status changes or comments are added.</p>
-                </div>
+              <div class="pt-6 flex justify-end">
+                 <button type="submit" class="flex items-center gap-2 px-8 py-3 bg-primary hover:brightness-110 text-white rounded-xl font-bold text-sm shadow-xl shadow-primary/20 transition-all border-b-4 border-emerald-800 active:border-b-0 active:translate-y-1">
+                  <.icon name="hero-check" class="size-5" /> Save Preferences
+                </button>
               </div>
-            </div>
+            </.form>
           </div>
+        </div>
 
-          <div class="w-full h-px bg-zinc-100 dark:bg-zinc-800"></div>
-
-          <div class="space-y-6">
-            <h3 class="text-lg font-bold text-zinc-900 dark:text-white flex items-center gap-2">
-              <.icon name="hero-megaphone" class="size-5 text-zinc-400" />
-              Marketing
-            </h3>
-
-            <div class="space-y-4">
-              <div class="flex items-start gap-4">
-                <div class="flex items-center h-5">
-                  <input
-                    id="notify_marketing"
-                    name="user[notify_marketing]"
-                    type="checkbox"
-                    value="true"
-                    checked={@form[:notify_marketing].value}
-                    class="size-5 rounded-md border-zinc-300 text-primary focus:ring-primary"
-                  />
-                  <input name="user[notify_marketing]" type="hidden" value="false" />
-                </div>
-                <div class="flex-1 text-sm">
-                  <label for="notify_marketing" class="font-bold text-zinc-900 dark:text-white">Product Updates</label>
-                  <p class="text-zinc-500 dark:text-zinc-400">Receive news about new features and improvements.</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="pt-6 flex justify-end">
-             <button type="submit" class="flex items-center gap-2 px-8 py-3 bg-primary hover:brightness-110 text-white rounded-xl font-bold text-sm shadow-xl shadow-primary/20 transition-all border-b-4 border-emerald-800 active:border-b-0 active:translate-y-1">
-              Save Preferences
-            </button>
-          </div>
-        </.form>
+        <div class="xl:col-span-1 space-y-6">
+             <div class="bg-white dark:bg-zinc-900 p-6 rounded-[24px] border border-zinc-200 dark:border-zinc-800 shadow-sm">
+             <h3 class="font-bold text-zinc-900 dark:text-white mb-4">Notification Channels</h3>
+             <div class="space-y-3">
+               <div class="flex items-center gap-3 p-3 rounded-xl bg-zinc-50 dark:bg-zinc-800/50">
+                 <.icon name="hero-device-phone-mobile" class="size-5 text-zinc-400" />
+                 <div>
+                    <p class="text-xs font-bold text-zinc-900 dark:text-white">Push Notifications</p>
+                    <p class="text-[10px] text-zinc-500">Coming to mobile app soon</p>
+                 </div>
+               </div>
+               <div class="flex items-center gap-3 p-3 rounded-xl bg-zinc-50 dark:bg-zinc-800/50">
+                 <.icon name="hero-chat-bubble-left-ellipsis" class="size-5 text-zinc-400" />
+                 <div>
+                    <p class="text-xs font-bold text-zinc-900 dark:text-white">SMS Alerts</p>
+                    <p class="text-[10px] text-zinc-500">Enable in Organization Settings</p>
+                 </div>
+               </div>
+             </div>
+           </div>
+        </div>
       </div>
     </div>
     """

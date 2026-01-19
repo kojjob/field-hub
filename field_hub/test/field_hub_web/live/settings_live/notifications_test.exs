@@ -16,7 +16,7 @@ defmodule FieldHubWeb.SettingsLive.NotificationsTest do
       assert html =~ "Notifications"
       assert html =~ "Manage how and when you receive updates"
       assert html =~ "Email Notifications"
-      assert html =~ "New Jobs"
+      assert html =~ "New Job Assignments"
     end
 
     test "updates notification preferences", %{conn: conn, user: user} do

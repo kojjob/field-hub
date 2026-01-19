@@ -37,7 +37,7 @@ defmodule FieldHubWeb.SettingsLive.Users do
   end
 
   @impl true
-  def handle_event("validate", %{"user" => user_params}, socket) do
+  def handle_event("validate", %{"user" => _user_params}, socket) do
     # We could add validation logic here if we exposed a changeset
     {:noreply, socket}
   end
