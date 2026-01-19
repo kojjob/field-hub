@@ -90,13 +90,16 @@ defmodule FieldHubWeb.TechLive.JobShowTest do
     test "handles status action: start_travel", %{conn: conn, job: job} do
       {:ok, view, _html} = live(conn, ~p"/tech/jobs/#{job.id}")
 
-      # Should see "Start Travel" initially (status is scheduled)
       assert render(view) =~ "Start Travel"
 
       view |> element("button", "Start Travel") |> render_click()
+      assert has_element?(view, "#status-confirm-modal")
+
+      view |> element("#status-confirm-modal-confirm") |> render_click()
 
       assert render(view) =~ "En route"
       assert render(view) =~ "Arrived On Site"
+      refute has_element?(view, "#status-confirm-modal")
     end
 
     test "handles status action sequence: start_travel -> arrive -> start_work", %{
@@ -106,12 +109,15 @@ defmodule FieldHubWeb.TechLive.JobShowTest do
       {:ok, view, _html} = live(conn, ~p"/tech/jobs/#{job.id}")
 
       view |> element("button", "Start Travel") |> render_click()
+      view |> element("#status-confirm-modal-confirm") |> render_click()
       assert render(view) =~ "En route"
 
       view |> element("button", "Arrived On Site") |> render_click()
+      view |> element("#status-confirm-modal-confirm") |> render_click()
       assert render(view) =~ "On site"
 
       view |> element("button", "Start Work") |> render_click()
+      view |> element("#status-confirm-modal-confirm") |> render_click()
       assert render(view) =~ "In progress"
       assert render(view) =~ "Complete Job"
     end
