@@ -69,6 +69,7 @@ defmodule FieldHubWeb.Router do
       live "/tech/jobs/:id/complete", TechLive.JobComplete, :complete
 
       # Settings
+      live "/settings/organization", SettingsLive.Organization, :index
       live "/settings/terminology", SettingsLive.Terminology, :index
       live "/settings/branding", SettingsLive.Branding, :index
       live "/settings/workflows", SettingsLive.Workflows, :index

@@ -185,6 +185,13 @@ defmodule FieldHub.Accounts do
   end
 
   @doc """
+  Returns an `%Ecto.Changeset{}` for changing the organization.
+  """
+  def change_organization(%Organization{} = org, attrs \\ %{}) do
+    Organization.changeset(org, attrs)
+  end
+
+  @doc """
   Generates a unique slug from an organization name.
 
   If the slug already exists, appends a unique suffix.
