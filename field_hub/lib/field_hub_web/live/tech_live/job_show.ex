@@ -66,7 +66,7 @@ defmodule FieldHubWeb.TechLive.JobShow do
             </div>
           </div>
         </div>
-        
+
     <!-- Action Bar (Sticky Bottom in Mobile) -->
         <div class="fixed bottom-0 left-0 right-0 p-4 bg-white/80 backdrop-blur-md border-t border-gray-200 z-20">
           <div class="max-w-2xl mx-auto flex space-x-3">
@@ -99,7 +99,7 @@ defmodule FieldHubWeb.TechLive.JobShow do
           </:confirm>
           <:cancel>Cancel</:cancel>
         </.modal>
-        
+
     <!-- Description -->
         <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
           <h3 class="text-sm font-bold text-gray-900 mb-2 flex items-center">
@@ -109,7 +109,7 @@ defmodule FieldHubWeb.TechLive.JobShow do
             {@job.description || "No description provided."}
           </p>
         </div>
-        
+
     <!-- Customer Card -->
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
           <div class="px-4 py-3 bg-gray-50 border-b border-gray-200 flex justify-between items-center">
@@ -149,7 +149,7 @@ defmodule FieldHubWeb.TechLive.JobShow do
             </div>
           </div>
         </div>
-        
+
     <!-- Notes Section -->
         <%= if @job.technician_notes || @job.internal_notes do %>
           <div class="bg-yellow-50 p-4 rounded-xl shadow-sm border border-yellow-100 space-y-3">
@@ -170,7 +170,7 @@ defmodule FieldHubWeb.TechLive.JobShow do
             <% end %>
           </div>
         <% end %>
-        
+
     <!-- History Section -->
         <div class="bg-white rounded-xl shadow-sm border border-gray-200">
           <div class="px-4 py-3 border-b border-gray-100">
@@ -275,6 +275,10 @@ defmodule FieldHubWeb.TechLive.JobShow do
   def handle_event("update_location", %{"lat" => lat, "lng" => lng}, socket) do
     if socket.assigns.technician do
       FieldHub.Dispatch.update_technician_location(socket.assigns.technician, lat, lng)
+
+      if socket.assigns.job.status == "en_route" do
+        FieldHub.Jobs.broadcast_job_location_update(socket.assigns.job.id, lat, lng)
+      end
     end
 
     {:noreply, socket}

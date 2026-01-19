@@ -96,6 +96,7 @@ defmodule FieldHubWeb.JobLive.Show do
     <% total = length(checklist_items) %>
     <% percent = checklist_progress_percent(completed, total) %>
     <% activity_events = recent_events(@job_events) %>
+    <% map_query = map_query(@job) %>
 
     <div class="flex h-[calc(100vh-4rem)] overflow-hidden relative">
       <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
@@ -216,11 +217,11 @@ defmodule FieldHubWeb.JobLive.Show do
                     </p>
 
                     <div class="h-28 rounded-2xl overflow-hidden border border-zinc-200 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-900 relative">
-                      <%= if @job.service_lat && @job.service_lng do %>
+                      <%= if map_query do %>
                         <iframe
                           title="Job location map"
                           class="absolute inset-0 h-full w-full"
-                          src={google_maps_embed_url(@job.service_lat, @job.service_lng)}
+                          src={google_maps_embed_url(map_query)}
                           loading="lazy"
                           referrerpolicy="no-referrer-when-downgrade"
                           allowfullscreen
@@ -229,7 +230,7 @@ defmodule FieldHubWeb.JobLive.Show do
                         <div class="absolute inset-0 pointer-events-none bg-gradient-to-t from-zinc-950/15 via-transparent to-transparent" />
 
                         <a
-                          href={google_maps_url(@job.service_lat, @job.service_lng)}
+                          href={google_maps_url(map_query)}
                           target="_blank"
                           rel="noreferrer"
                           class="absolute top-3 right-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/90 dark:bg-zinc-950/40 backdrop-blur border border-zinc-200/60 dark:border-zinc-700 text-xs font-black text-zinc-700 dark:text-zinc-100 hover:brightness-105 transition-all"
@@ -779,12 +780,41 @@ defmodule FieldHubWeb.JobLive.Show do
     |> blank_fallback("No service address on file.")
   end
 
-  defp google_maps_url(lat, lng) when is_number(lat) and is_number(lng) do
-    "https://www.google.com/maps?q=#{lat},#{lng}"
+  defp map_query(job) do
+    cond do
+      is_number(job.service_lat) and is_number(job.service_lng) ->
+        "#{job.service_lat},#{job.service_lng}"
+
+      map_address_query = map_address_query(job) ->
+        map_address_query
+
+      true ->
+        nil
+    end
   end
 
-  defp google_maps_embed_url(lat, lng) when is_number(lat) and is_number(lng) do
-    "https://www.google.com/maps?&q=#{lat},#{lng}&z=15&output=embed"
+  defp map_address_query(job) do
+    query =
+      [
+        job.service_address,
+        job.service_city,
+        job.service_state,
+        job.service_zip
+      ]
+      |> Enum.filter(&present?/1)
+      |> Enum.join(", ")
+
+    if present?(query), do: query, else: nil
+  end
+
+  defp google_maps_url(query) when is_binary(query) do
+    encoded = URI.encode_www_form(query)
+    "https://www.google.com/maps?q=#{encoded}"
+  end
+
+  defp google_maps_embed_url(query) when is_binary(query) do
+    encoded = URI.encode_www_form(query)
+    "https://www.google.com/maps?&q=#{encoded}&z=15&output=embed"
   end
 
   defp format_money(nil), do: "—"

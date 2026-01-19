@@ -47,10 +47,63 @@ defmodule FieldHubWeb.PortalLive.JobDetail do
   @impl true
   def handle_info({:job_updated, job}, socket) do
     job = Repo.preload(job, [:technician, :customer], force: true)
-    {:noreply, assign(socket, :job, job)}
+    socket = assign(socket, :job, job)
+
+    if job.status == "en_route" do
+      {:noreply, push_map_update(socket)}
+    else
+      {:noreply, socket}
+    end
+  end
+
+  def handle_info({:job_location_updated, location}, socket) do
+    # Update tech location in assigns broadly or just push event
+    # We update the technician inside the job struct in assigns to keep state consistent
+    technician = socket.assigns.job.technician
+
+    updated_tech = %{technician | current_lat: location.lat, current_lng: location.lng}
+    updated_job = %{socket.assigns.job | technician: updated_tech}
+
+    socket = assign(socket, :job, updated_job)
+
+    {:noreply, push_map_update(socket)}
   end
 
   def handle_info(_, socket), do: {:noreply, socket}
+
+  defp push_map_update(socket) do
+    job = socket.assigns.job
+
+    if job.technician && job.service_lat && job.service_lng do
+      push_event(socket, "update_map_data", %{
+        technicians: [serialize_tech(job.technician)],
+        jobs: [serialize_job(job)]
+      })
+    else
+      socket
+    end
+  end
+
+  defp serialize_tech(tech) do
+    %{
+      id: tech.id,
+      name: tech.name,
+      status: tech.status,
+      current_lat: tech.current_lat,
+      current_lng: tech.current_lng,
+      color: tech.calendar_color || "#099268"
+    }
+  end
+
+  defp serialize_job(job) do
+    %{
+      id: job.id,
+      number: job.number,
+      title: job.title,
+      service_lat: job.service_lat,
+      service_lng: job.service_lng
+    }
+  end
 
   @impl true
   def render(assigns) do
@@ -109,6 +162,31 @@ defmodule FieldHubWeb.PortalLive.JobDetail do
             </div>
           </div>
         </div>
+
+        <%= if @job.status == "en_route" and @job.technician && @job.service_lat && @job.service_lng do %>
+           <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden shadow-sm">
+             <div class="p-4 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between bg-zinc-50/50 dark:bg-zinc-800/20">
+               <h3 class="text-sm font-bold text-zinc-900 dark:text-white flex items-center gap-2">
+                 <.icon name="hero-map" class="size-4 text-primary" />
+                 Live Technician Tracking
+               </h3>
+               <span class="relative flex h-2.5 w-2.5">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary"></span>
+                </span>
+             </div>
+             <div
+                id="live-map"
+                phx-hook="Map"
+                class="w-full h-64 z-0"
+                data-lat={@job.service_lat}
+                data-lng={@job.service_lng}
+                data-technicians={Jason.encode!([serialize_tech(@job.technician)])}
+                data-jobs={Jason.encode!([serialize_job(@job)])}
+                phx-update="ignore"
+             ></div>
+           </div>
+        <% end %>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div class="md:col-span-2 space-y-6">

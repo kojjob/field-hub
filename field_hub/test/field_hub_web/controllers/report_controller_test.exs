@@ -28,7 +28,9 @@ defmodule FieldHubWeb.ReportControllerTest do
       # Set completed_at timestamp directly since changeset doesn't allow it
       completed_job =
         job
-        |> Ecto.Changeset.change(%{completed_at: DateTime.utc_now() |> DateTime.truncate(:second)})
+        |> Ecto.Changeset.change(%{
+          completed_at: DateTime.utc_now() |> DateTime.truncate(:second)
+        })
         |> FieldHub.Repo.update!()
 
       %{org: org, tech: tech, customer: customer, completed_job: completed_job}
@@ -89,7 +91,10 @@ defmodule FieldHubWeb.ReportControllerTest do
           actual_amount: Decimal.new("100.00")
         })
 
-      old_date = DateTime.utc_now() |> DateTime.add(-60 * 24 * 60 * 60, :second) |> DateTime.truncate(:second)
+      old_date =
+        DateTime.utc_now()
+        |> DateTime.add(-60 * 24 * 60 * 60, :second)
+        |> DateTime.truncate(:second)
 
       old_job
       |> Ecto.Changeset.change(%{completed_at: old_date})

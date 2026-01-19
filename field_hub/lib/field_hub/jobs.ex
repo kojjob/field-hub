@@ -481,6 +481,13 @@ defmodule FieldHub.Jobs do
 
   defp broadcast_job_updated(error), do: error
 
+  @doc """
+  Broadcasts a job location update (technician location).
+  """
+  def broadcast_job_location_update(job_id, lat, lng) do
+    Broadcaster.broadcast_job_location_update(job_id, lat, lng)
+  end
+
   # Add specific helpers for different update types to trigger notifications
   defp notify_job_scheduled({:ok, job}) do
     if job.customer_id do
