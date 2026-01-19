@@ -201,6 +201,10 @@ defmodule FieldHub.Jobs do
     # Normalize to string keys to avoid mixed keys error
     attrs = for {key, val} <- attrs, into: %{}, do: {to_string(key), val}
     attrs = Map.put_new(attrs, "number", Job.generate_job_number(org_id))
+
+    # Geocode address if lat/lng not provided
+    attrs = FieldHub.Geo.maybe_geocode_job_attrs(attrs)
+
     job_changeset = %Job{organization_id: org_id} |> Job.changeset(attrs)
 
     Multi.new()
@@ -225,6 +229,12 @@ defmodule FieldHub.Jobs do
 
   """
   def update_job(%Job{} = job, attrs) do
+    # Normalize to string keys
+    attrs = for {key, val} <- attrs, into: %{}, do: {to_string(key), val}
+
+    # Re-geocode if address changed
+    attrs = maybe_regeocode_on_update(job, attrs)
+
     Multi.new()
     |> Multi.update(:job, Job.changeset(job, attrs))
     |> Multi.insert(:event, fn %{job: updated_job} ->
@@ -235,6 +245,22 @@ defmodule FieldHub.Jobs do
     end)
     |> run_transaction()
     |> broadcast_job_updated()
+  end
+
+  # Only geocode if address fields changed
+  defp maybe_regeocode_on_update(job, attrs) do
+    address_changed? =
+      Enum.any?(~w(service_address service_city service_state service_zip), fn key ->
+        new_val = Map.get(attrs, key)
+        old_val = Map.get(job, String.to_existing_atom(key))
+        new_val != nil and new_val != old_val
+      end)
+
+    if address_changed? do
+      FieldHub.Geo.maybe_geocode_job_attrs(attrs)
+    else
+      attrs
+    end
   end
 
   @doc """
