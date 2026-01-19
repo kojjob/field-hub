@@ -543,22 +543,22 @@ git push -u origin develop
 
 ### FH-040: Portal Authentication
 
-- [ ] **Test First:** Portal token grants access
-- [ ] **Implement:** Magic link login (token in URL)
-- [ ] **Implement:** Portal session management
-- [ ] **Implement:** Restrict to customer's own data
+- [x] **Test First:** Portal token grants access
+- [x] **Implement:** Magic link login (token in URL)
+- [x] **Implement:** Portal session management
+- [x] **Implement:** Restrict to customer's own data
 
 **Branch:** `feature/FH-040-portal-auth`
 
 ### FH-041: Job Status Tracking
 
-- [ ] **Test First:** Customer sees their scheduled job
-- [ ] **Implement:** `lib/field_hub_web/live/portal_live/status.ex`
+- [x] **Test First:** Customer sees their scheduled job
+- [x] **Implement:** Show active jobs + recent completed jobs on `/portal`
 - [ ] **Implement:** Show technician name and ETA
 - [ ] **Implement:** Real-time status updates
 - [ ] **Implement:** Map showing tech location (when en route)
 
-**Branch:** `feature/FH-041-portal-tracking`
+**Branch:** `feature/FH-041-portal-job-status` (PR #27)
 
 ### FH-042: Service History
 
