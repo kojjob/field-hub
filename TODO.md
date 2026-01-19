@@ -700,10 +700,10 @@ git push -u origin develop
 - [x] **Implement:** Login/Registration UI enhancements
   - [x] Password visibility toggle with JavaScript hook
   - [x] Clickable logo navigation to homepage
-- [ ] **Implement:** Loading states and skeletons
-- [ ] **Implement:** Error boundaries
-- [ ] **Implement:** Empty states (partial - added to Customers/Jobs/Technicians)
-- [ ] **Implement:** Accessibility audit (WCAG 2.1)
+- [x] **Implement:** Loading states and skeletons
+- [x] **Implement:** Error boundaries
+- [x] **Implement:** Empty states
+- [x] **Implement:** Accessibility audit (WCAG 2.1)
 
 **Branch:** `feature/FH-064-ui-polish`
 **PR:** [#17](https://github.com/kojjob/field-hub/pull/17)
