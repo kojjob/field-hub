@@ -78,6 +78,35 @@ defmodule FieldHub.CRM do
   end
 
   @doc """
+  Gets a portal-enabled customer by portal token.
+
+  Returns `nil` when the token is invalid, the portal is disabled,
+  or the customer is archived.
+  """
+  def get_customer_by_portal_token(token) when is_binary(token) and token != "" do
+    Customer
+    |> where([c], c.portal_token == ^token)
+    |> where([c], c.portal_enabled == true)
+    |> where([c], is_nil(c.archived_at))
+    |> Repo.one()
+  end
+
+  def get_customer_by_portal_token(_), do: nil
+
+  @doc """
+  Gets a portal-enabled customer by id for an established portal session.
+
+  Returns `nil` when the customer is not portal-enabled or archived.
+  """
+  def get_customer_for_portal(id) do
+    Customer
+    |> where([c], c.id == ^id)
+    |> where([c], c.portal_enabled == true)
+    |> where([c], is_nil(c.archived_at))
+    |> Repo.one()
+  end
+
+  @doc """
   Creates a customer.
 
   Automatically generates a portal token if not present.
