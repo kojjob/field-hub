@@ -4,10 +4,10 @@ defmodule FieldHubWeb.TechLive.JobShow do
   alias FieldHub.Jobs
 
   @impl true
-  def mount(%{"id" => id}, _session, socket) do
+  def mount(%{"number" => number}, _session, socket) do
     user = socket.assigns.current_scope.user
     org_id = user.organization_id
-    job = Jobs.get_job!(org_id, id) |> FieldHub.Repo.preload([:customer])
+    job = Jobs.get_job_by_number!(org_id, number) |> FieldHub.Repo.preload([:customer])
 
     history =
       Jobs.list_jobs_for_customer(org_id, job.customer_id) |> Enum.reject(&(&1.id == job.id))
@@ -323,7 +323,7 @@ defmodule FieldHubWeb.TechLive.JobShow do
 
   @impl true
   def handle_event("complete_job", _, socket) do
-    {:noreply, push_navigate(socket, to: ~p"/tech/jobs/#{socket.assigns.job.id}/complete")}
+    {:noreply, push_navigate(socket, to: ~p"/tech/jobs/#{socket.assigns.job}/complete")}
   end
 
   defp apply_status_action(socket, "start_travel") do

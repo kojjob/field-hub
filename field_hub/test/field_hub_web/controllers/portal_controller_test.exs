@@ -30,22 +30,28 @@ defmodule FieldHubWeb.PortalControllerTest do
     end
   end
 
-  describe "GET /portal/jobs/:id" do
+  describe "GET /portal/jobs/:number" do
     test "renders job details", %{conn: conn, customer: customer, organization: organization} do
       job = job_fixture(organization.id, %{customer_id: customer.id, title: "Repair Leak"})
       conn = conn |> init_test_session(%{portal_customer_id: customer.id})
 
-      {:ok, _view, html} = live(conn, ~p"/portal/jobs/#{job.id}")
+      {:ok, _view, html} = live(conn, ~p"/portal/jobs/#{job.number}")
       assert html =~ "Repair Leak"
       assert html =~ "Job Details"
     end
 
-    test "redirects for job not belonging to customer", %{conn: conn, customer: customer, organization: organization} do
+    test "redirects for job not belonging to customer", %{
+      conn: conn,
+      customer: customer,
+      organization: organization
+    } do
       other_customer = customer_fixture(organization.id, %{})
       job = job_fixture(organization.id, %{customer_id: other_customer.id, title: "Other Job"})
 
       conn = conn |> init_test_session(%{portal_customer_id: customer.id})
-      assert {:error, {:live_redirect, %{to: "/portal", flash: %{"error" => "Job not found"}}}} = live(conn, ~p"/portal/jobs/#{job.id}")
+
+      assert {:error, {:live_redirect, %{to: "/portal", flash: %{"error" => "Job not found"}}}} =
+               live(conn, ~p"/portal/jobs/#{job.number}")
     end
   end
 
@@ -57,6 +63,7 @@ defmodule FieldHubWeb.PortalControllerTest do
         status: "completed",
         completed_at: DateTime.utc_now()
       })
+
       conn = conn |> init_test_session(%{portal_customer_id: customer.id})
 
       {:ok, _view, html} = live(conn, ~p"/portal/history")

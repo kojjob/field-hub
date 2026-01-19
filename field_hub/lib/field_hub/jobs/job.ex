@@ -8,6 +8,7 @@ defmodule FieldHub.Jobs.Job do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @derive {Phoenix.Param, key: :number}
   @job_types ~w(service_call installation maintenance emergency estimate)
   @priorities ~w(low normal high urgent)
   @statuses ~w(unscheduled scheduled dispatched en_route on_site in_progress completed cancelled on_hold)

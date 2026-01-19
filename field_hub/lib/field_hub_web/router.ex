@@ -45,7 +45,7 @@ defmodule FieldHubWeb.Router do
       on_mount: [{FieldHubWeb.PortalAuth, :mount_portal_customer}],
       layout: {FieldHubWeb.Layouts, :portal} do
       live "/", PortalLive.Dashboard, :index
-      live "/jobs/:id", PortalLive.JobDetail, :show
+      live "/jobs/:number", PortalLive.JobDetail, :show
       live "/history", PortalLive.History, :index
     end
   end
@@ -73,17 +73,17 @@ defmodule FieldHubWeb.Router do
       live "/dashboard", DashboardLive, :index
       live "/technicians", TechnicianLive.Index, :index
       live "/technicians/new", TechnicianLive.Index, :new
-      live "/technicians/:id/edit", TechnicianLive.Index, :edit
+      live "/technicians/:slug/edit", TechnicianLive.Index, :edit
 
       live "/customers", CustomerLive.Index, :index
       live "/customers/new", CustomerLive.Index, :new
-      live "/customers/:id/edit", CustomerLive.Index, :edit
-      live "/customers/:id", CustomerLive.Index, :show
+      live "/customers/:slug/edit", CustomerLive.Index, :edit
+      live "/customers/:slug", CustomerLive.Index, :show
 
       live "/jobs", JobLive.Index, :index
       live "/jobs/new", JobLive.Index, :new
-      live "/jobs/:id/edit", JobLive.Index, :edit
-      live "/jobs/:id", JobLive.Show, :show
+      live "/jobs/:number/edit", JobLive.Index, :edit
+      live "/jobs/:number", JobLive.Show, :show
 
       live "/dispatch", DispatchLive.Index, :index
 
@@ -92,8 +92,8 @@ defmodule FieldHubWeb.Router do
 
       # Technician Mobile Views
       live "/tech/dashboard", TechLive.Dashboard, :index
-      live "/tech/jobs/:id", TechLive.JobShow, :show
-      live "/tech/jobs/:id/complete", TechLive.JobComplete, :complete
+      live "/tech/jobs/:number", TechLive.JobShow, :show
+      live "/tech/jobs/:number/complete", TechLive.JobComplete, :complete
 
       # Settings
       live "/settings/organization", SettingsLive.Organization, :index

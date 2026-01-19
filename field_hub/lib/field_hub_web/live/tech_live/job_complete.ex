@@ -4,16 +4,18 @@ defmodule FieldHubWeb.TechLive.JobComplete do
   alias FieldHub.Jobs
 
   @impl true
-  def mount(%{"id" => id}, _session, socket) do
+  def mount(%{"number" => number}, _session, socket) do
     org_id = socket.assigns.current_scope.user.organization_id
-    job = Jobs.get_job!(org_id, id) |> FieldHub.Repo.preload([:customer, :technician])
+
+    job =
+      Jobs.get_job_by_number!(org_id, number) |> FieldHub.Repo.preload([:customer, :technician])
 
     # Check if job is in a state that can be completed
     if job.status not in ["on_site", "in_progress"] do
       {:ok,
        socket
        |> put_flash(:error, "Job must be started before it can be completed.")
-       |> push_navigate(to: ~p"/tech/jobs/#{job.id}")}
+       |> push_navigate(to: ~p"/tech/jobs/#{job}")}
     else
       changeset = Jobs.change_complete_job(job)
 
@@ -38,7 +40,7 @@ defmodule FieldHubWeb.TechLive.JobComplete do
     <div class="min-h-screen bg-gray-50 pb-24">
       <!-- Header -->
       <div class="bg-white border-b px-4 py-3 sticky top-0 z-10 flex items-center justify-between">
-        <button phx-click={JS.navigate(~p"/tech/jobs/#{@job.id}")} class="p-1 -ml-1 text-gray-400">
+        <button phx-click={JS.navigate(~p"/tech/jobs/#{@job}")} class="p-1 -ml-1 text-gray-400">
           <.icon name="hero-chevron-left" class="w-6 h-6" />
         </button>
         <h1 class="text-lg font-bold">Complete Job</h1>
@@ -173,7 +175,7 @@ defmodule FieldHubWeb.TechLive.JobComplete do
           <div class="fixed bottom-0 left-0 right-0 p-4 bg-white shadow-[0_-4px_10px_rgba(0,0,0,0.05)] flex gap-3">
             <button
               type="button"
-              phx-click={JS.navigate(~p"/tech/jobs/#{@job.id}")}
+              phx-click={JS.navigate(~p"/tech/jobs/#{@job}")}
               class="flex-1 py-4 px-6 rounded-xl font-bold bg-gray-100 text-gray-700 active:bg-gray-200 transition-all"
             >
               Cancel

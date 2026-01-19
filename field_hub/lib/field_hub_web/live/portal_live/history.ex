@@ -62,7 +62,7 @@ defmodule FieldHubWeb.PortalLive.History do
             <div class="divide-y divide-zinc-100 dark:divide-zinc-800">
               <%= for job <- @completed_jobs do %>
                 <.link
-                  navigate={~p"/portal/jobs/#{job.id}"}
+                  navigate={~p"/portal/jobs/#{job}"}
                   class="block p-5 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors group"
                 >
                   <div class="flex items-start justify-between gap-4">
@@ -87,7 +87,10 @@ defmodule FieldHubWeb.PortalLive.History do
                         <% end %>
                       </div>
                     </div>
-                    <.icon name="hero-chevron-right" class="size-5 text-zinc-300 dark:text-zinc-700 group-hover:translate-x-1 transition-transform" />
+                    <.icon
+                      name="hero-chevron-right"
+                      class="size-5 text-zinc-300 dark:text-zinc-700 group-hover:translate-x-1 transition-transform"
+                    />
                   </div>
                 </.link>
               <% end %>

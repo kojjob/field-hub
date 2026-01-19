@@ -25,10 +25,10 @@ defmodule FieldHub.Jobs.JobNotifierTest do
   test "deliver_job_confirmation sends an email", %{job: job, customer: customer, org: org} do
     JobNotifier.deliver_job_confirmation(job)
 
-    assert_email_sent [
+    assert_email_sent(
       to: {customer.name, customer.email},
       subject: "Job Confirmation - #{org.name}"
-    ]
+    )
   end
 
   test "deliver_technician_dispatch sends an email", %{job: job, customer: customer, org: org} do
@@ -37,10 +37,10 @@ defmodule FieldHub.Jobs.JobNotifierTest do
 
     JobNotifier.deliver_technician_dispatch(job)
 
-    assert_email_sent [
+    assert_email_sent(
       to: {customer.name, customer.email},
       subject: "Technician Dispatched - #{org.name}"
-    ]
+    )
   end
 
   test "deliver_job_completion sends an email", %{job: job, customer: customer, org: org} do
@@ -48,9 +48,9 @@ defmodule FieldHub.Jobs.JobNotifierTest do
 
     JobNotifier.deliver_job_completion(job)
 
-    assert_email_sent [
+    assert_email_sent(
       to: {customer.name, customer.email},
       subject: "Service Completed - #{org.name}"
-    ]
+    )
   end
 end

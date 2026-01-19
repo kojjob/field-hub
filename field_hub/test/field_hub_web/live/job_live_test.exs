@@ -89,7 +89,7 @@ defmodule FieldHubWeb.JobLiveTest do
       assert index_live |> element("a[href*='/edit']") |> render_click() =~
                "Edit Job"
 
-      assert_patch(index_live, ~p"/jobs/#{job.id}/edit")
+      assert_patch(index_live, ~p"/jobs/#{job.number}/edit")
 
       assert index_live
              |> form("#job-form", job: @invalid_attrs)

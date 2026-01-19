@@ -8,12 +8,14 @@ defmodule FieldHub.CRM.Customer do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @derive {Phoenix.Param, key: :slug}
   @contact_methods ~w(phone email sms)
   @state_code_regex ~r/^[A-Z]{2}$/
   @zip_code_regex ~r/^\d{5}(-\d{4})?$/
 
   schema "customers" do
     field :name, :string
+    field :slug, :string
     field :email, :string
     field :phone, :string
     field :secondary_phone, :string
@@ -64,6 +66,7 @@ defmodule FieldHub.CRM.Customer do
     |> cast(attrs, [
       :organization_id,
       :name,
+      :slug,
       :email,
       :phone,
       :secondary_phone,
@@ -86,12 +89,40 @@ defmodule FieldHub.CRM.Customer do
       :custom_fields
     ])
     |> validate_required([:organization_id, :name])
+    |> put_slug()
     |> validate_format(:email, ~r/^[^\s]+@[^\s]+\.[^\s]+$/, message: "has invalid format")
     |> validate_inclusion(:preferred_contact, @contact_methods)
     |> validate_format(:state, @state_code_regex, message: "must be a 2-letter state code")
     |> validate_format(:zip, @zip_code_regex, message: "must be a valid ZIP code")
     |> foreign_key_constraint(:organization_id)
     |> unique_constraint([:portal_token])
+    |> unique_constraint([:organization_id, :slug])
+  end
+
+  defp put_slug(changeset) do
+    name = get_field(changeset, :name)
+    slug = get_field(changeset, :slug)
+
+    if name && (is_nil(slug) || slug == "") do
+      put_change(changeset, :slug, generate_slug(name))
+    else
+      case get_change(changeset, :name) do
+        nil ->
+          changeset
+
+        name ->
+          put_change(changeset, :slug, generate_slug(name))
+      end
+    end
+  end
+
+  defp generate_slug(name) do
+    name
+    |> String.downcase()
+    |> String.replace(~r/[^\w\s-]/, "")
+    |> String.replace(~r/\s+/, "-")
+    |> String.replace(~r/-+/, "-")
+    |> String.trim("-")
   end
 
   @doc """

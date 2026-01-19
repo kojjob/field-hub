@@ -99,6 +99,16 @@ defmodule FieldHub.Jobs do
   end
 
   @doc """
+  Counts active jobs for an organization.
+  """
+  def count_active_jobs(org_id) do
+    Job
+    |> where([j], j.organization_id == ^org_id)
+    |> where([j], j.status not in ["completed", "cancelled"])
+    |> Repo.aggregate(:count, :id)
+  end
+
+  @doc """
   Returns completed jobs for a customer with an optional limit.
   Used by the customer portal.
   """
@@ -160,6 +170,16 @@ defmodule FieldHub.Jobs do
     Job
     |> where([j], j.organization_id == ^org_id)
     |> where([j], j.id == ^id)
+    |> Repo.one!()
+  end
+
+  @doc """
+  Gets a single job by its number scoped to an organization.
+  """
+  def get_job_by_number!(org_id, number) do
+    Job
+    |> where([j], j.organization_id == ^org_id)
+    |> where([j], j.number == ^number)
     |> Repo.one!()
   end
 
@@ -466,23 +486,29 @@ defmodule FieldHub.Jobs do
     if job.customer_id do
       FieldHub.Jobs.JobNotifier.deliver_job_confirmation(job)
     end
+
     {:ok, job}
   end
+
   defp notify_job_scheduled(error), do: error
 
   defp notify_job_dispatched({:ok, job}) do
     if job.customer_id do
       FieldHub.Jobs.JobNotifier.deliver_technician_dispatch(job)
     end
+
     {:ok, job}
   end
+
   defp notify_job_dispatched(error), do: error
 
   defp notify_job_completed({:ok, job}) do
     if job.customer_id do
       FieldHub.Jobs.JobNotifier.deliver_job_completion(job)
     end
+
     {:ok, job}
   end
+
   defp notify_job_completed(error), do: error
 end

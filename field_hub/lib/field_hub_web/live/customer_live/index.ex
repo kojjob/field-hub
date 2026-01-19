@@ -44,8 +44,8 @@ defmodule FieldHubWeb.CustomerLive.Index do
     {:noreply, apply_action(socket, socket.assigns.live_action, params)}
   end
 
-  defp apply_action(socket, :edit, %{"id" => id}) do
-    customer = CRM.get_customer!(socket.assigns.current_organization.id, id)
+  defp apply_action(socket, :edit, %{"slug" => slug}) do
+    customer = CRM.get_customer_by_slug!(socket.assigns.current_organization.id, slug)
 
     socket
     |> assign(:page_title, "Edit Customer")
@@ -62,8 +62,8 @@ defmodule FieldHubWeb.CustomerLive.Index do
     |> load_customers()
   end
 
-  defp apply_action(socket, :show, %{"id" => id}) do
-    customer = CRM.get_customer!(socket.assigns.current_organization.id, id)
+  defp apply_action(socket, :show, %{"slug" => slug}) do
+    customer = CRM.get_customer_by_slug!(socket.assigns.current_organization.id, slug)
     customer_jobs = get_customer_jobs(socket.assigns.current_organization.id, customer.id)
 
     socket
@@ -125,8 +125,8 @@ defmodule FieldHubWeb.CustomerLive.Index do
     {:noreply, assign(socket, :status_filter, status)}
   end
 
-  def handle_event("select_customer", %{"id" => id}, socket) do
-    {:noreply, push_patch(socket, to: ~p"/customers/#{id}")}
+  def handle_event("select_customer", %{"slug" => slug}, socket) do
+    {:noreply, push_patch(socket, to: ~p"/customers/#{slug}")}
   end
 
   def handle_event("close_panel", _params, socket) do
@@ -137,8 +137,8 @@ defmodule FieldHubWeb.CustomerLive.Index do
     {:noreply, assign(socket, :panel_tab, tab)}
   end
 
-  def handle_event("delete", %{"id" => id}, socket) do
-    customer = CRM.get_customer!(socket.assigns.current_organization.id, id)
+  def handle_event("delete", %{"slug" => slug}, socket) do
+    customer = CRM.get_customer_by_slug!(socket.assigns.current_organization.id, slug)
     {:ok, _} = CRM.archive_customer(customer)
 
     socket =
@@ -155,7 +155,7 @@ defmodule FieldHubWeb.CustomerLive.Index do
      socket
      |> stream_insert(:customers, customer)
      |> assign(:show_form_panel, false)
-     |> push_patch(to: ~p"/customers/#{customer.id}")}
+     |> push_patch(to: ~p"/customers/#{customer}")}
   end
 
   def handle_info({:customer_created, customer}, socket) do
@@ -355,7 +355,7 @@ defmodule FieldHubWeb.CustomerLive.Index do
                   :for={{id, customer} <- @streams.customers}
                   id={id}
                   phx-click="select_customer"
-                  phx-value-id={customer.id}
+                  phx-value-slug={customer.slug}
                   class={[
                     "hover:bg-primary/5 dark:hover:bg-primary/10 cursor-pointer transition-all group",
                     @selected_customer && @selected_customer.id == customer.id &&
@@ -407,7 +407,7 @@ defmodule FieldHubWeb.CustomerLive.Index do
                         <.icon name="hero-pencil-square" class="size-5" />
                       </.link>
                       <.link
-                        phx-click={JS.push("delete", value: %{id: customer.id})}
+                        phx-click={JS.push("delete", value: %{slug: customer.slug})}
                         phx-hook="StopPropagation"
                         data-confirm="Are you sure you want to archive this customer?"
                         class="p-2 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-red-600 transition-all"
@@ -496,7 +496,7 @@ defmodule FieldHubWeb.CustomerLive.Index do
                 <.icon name="hero-pencil" class="size-4" /> Edit Profile
               </button>
             </.link>
-            <.link navigate={~p"/jobs/new?customer_id=#{@selected_customer.id}"} class="flex-1">
+            <.link navigate={~p"/jobs/new?customer_slug=#{@selected_customer.slug}"} class="flex-1">
               <button class="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-bold text-white bg-primary rounded-xl shadow-lg shadow-primary/20 hover:brightness-110 transition-all">
                 <.icon name="hero-plus" class="size-4" /> New Job
               </button>
@@ -670,7 +670,7 @@ defmodule FieldHubWeb.CustomerLive.Index do
                 <%= for job <- @customer_jobs do %>
                   <div
                     class="p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-xl border border-zinc-200 dark:border-zinc-700 hover:border-primary/50 transition-colors group cursor-pointer"
-                    phx-click={JS.navigate(~p"/jobs/#{job.id}")}
+                    phx-click={JS.navigate(~p"/jobs/#{job}")}
                   >
                     <div class="flex items-start justify-between mb-2">
                       <div>
@@ -698,7 +698,7 @@ defmodule FieldHubWeb.CustomerLive.Index do
                 <% end %>
               <% end %>
 
-              <.link navigate={~p"/jobs/new?customer_id=#{@selected_customer.id}"}>
+              <.link navigate={~p"/jobs/new?customer_slug=#{@selected_customer.slug}"}>
                 <button class="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-bold text-primary bg-primary/10 rounded-xl hover:bg-primary/20 transition-all mt-4">
                   <.icon name="hero-plus" class="size-5" /> Create New Job
                 </button>

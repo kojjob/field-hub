@@ -27,7 +27,7 @@ defmodule FieldHubWeb.TechLive.JobCompleteTest do
 
   describe "Job Completion Flow" do
     test "renders completion form", %{conn: conn, job: job, customer: customer} do
-      {:ok, _view, html} = live(conn, ~p"/tech/jobs/#{job.id}/complete")
+      {:ok, _view, html} = live(conn, ~p"/tech/jobs/#{job.number}/complete")
 
       assert html =~ "Complete Job"
       assert html =~ customer.name
@@ -36,7 +36,7 @@ defmodule FieldHubWeb.TechLive.JobCompleteTest do
     end
 
     test "validates required fields", %{conn: conn, job: job} do
-      {:ok, view, _html} = live(conn, ~p"/tech/jobs/#{job.id}/complete")
+      {:ok, view, _html} = live(conn, ~p"/tech/jobs/#{job.number}/complete")
 
       result =
         view
@@ -47,7 +47,7 @@ defmodule FieldHubWeb.TechLive.JobCompleteTest do
     end
 
     test "completes job successfully", %{conn: conn, job: job, technician: technician} do
-      {:ok, view, _html} = live(conn, ~p"/tech/jobs/#{job.id}/complete")
+      {:ok, view, _html} = live(conn, ~p"/tech/jobs/#{job.number}/complete")
 
       view
       |> form("#job-completion-form",
@@ -89,9 +89,9 @@ defmodule FieldHubWeb.TechLive.JobCompleteTest do
         })
 
       assert {:error, {:live_redirect, %{to: path, flash: flash}}} =
-               live(conn, ~p"/tech/jobs/#{job.id}/complete")
+               live(conn, ~p"/tech/jobs/#{job.number}/complete")
 
-      assert path == ~p"/tech/jobs/#{job.id}"
+      assert path == ~p"/tech/jobs/#{job.number}"
       assert flash["error"] =~ "must be started"
     end
   end

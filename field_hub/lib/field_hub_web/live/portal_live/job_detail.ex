@@ -10,10 +10,10 @@ defmodule FieldHubWeb.PortalLive.JobDetail do
   alias FieldHub.Jobs.Job
 
   @impl true
-  def mount(%{"id" => id}, _session, socket) do
+  def mount(%{"number" => number}, _session, socket) do
     customer = socket.assigns.portal_customer
 
-    case get_job_for_customer(id, customer.id) do
+    case get_job_for_customer(number, customer.id) do
       nil ->
         {:ok,
          socket
@@ -33,9 +33,9 @@ defmodule FieldHubWeb.PortalLive.JobDetail do
     end
   end
 
-  defp get_job_for_customer(job_id, customer_id) do
+  defp get_job_for_customer(job_number, customer_id) do
     Job
-    |> where([j], j.id == ^job_id)
+    |> where([j], j.number == ^job_number)
     |> where([j], j.customer_id == ^customer_id)
     |> Repo.one()
     |> case do
@@ -89,7 +89,8 @@ defmodule FieldHubWeb.PortalLive.JobDetail do
                     "size-10 rounded-full flex items-center justify-center z-10 transition-colors duration-500",
                     if(status_is_reached?(@job.status, status),
                       do: "bg-primary text-white",
-                      else: "bg-white dark:bg-zinc-900 border-2 border-zinc-100 dark:border-zinc-800 text-zinc-300 dark:text-zinc-600"
+                      else:
+                        "bg-white dark:bg-zinc-900 border-2 border-zinc-100 dark:border-zinc-800 text-zinc-300 dark:text-zinc-600"
                     )
                   ]}>
                     <.icon name={icon} class="size-5" />
@@ -113,13 +114,19 @@ defmodule FieldHubWeb.PortalLive.JobDetail do
           <div class="md:col-span-2 space-y-6">
             <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-6 space-y-6">
               <div>
-                <h3 class="text-sm font-bold text-zinc-400 uppercase tracking-wider mb-2">Description</h3>
-                <p class="text-zinc-700 dark:text-zinc-300">{@job.description || "No description provided."}</p>
+                <h3 class="text-sm font-bold text-zinc-400 uppercase tracking-wider mb-2">
+                  Description
+                </h3>
+                <p class="text-zinc-700 dark:text-zinc-300">
+                  {@job.description || "No description provided."}
+                </p>
               </div>
 
               <%= if @job.status == "completed" and @job.work_performed do %>
                 <div class="pt-6 border-t border-zinc-100 dark:border-zinc-800">
-                  <h3 class="text-sm font-bold text-zinc-400 uppercase tracking-wider mb-2">Work Performed</h3>
+                  <h3 class="text-sm font-bold text-zinc-400 uppercase tracking-wider mb-2">
+                    Work Performed
+                  </h3>
                   <div class="prose prose-sm dark:prose-invert max-w-none whitespace-pre-wrap text-zinc-700 dark:text-zinc-300">
                     {@job.work_performed}
                   </div>
@@ -130,7 +137,9 @@ defmodule FieldHubWeb.PortalLive.JobDetail do
 
           <div class="space-y-6">
             <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-6">
-              <h3 class="text-sm font-bold text-zinc-400 uppercase tracking-wider mb-4">Service Info</h3>
+              <h3 class="text-sm font-bold text-zinc-400 uppercase tracking-wider mb-4">
+                Service Info
+              </h3>
 
               <div class="space-y-4">
                 <div>
@@ -158,8 +167,7 @@ defmodule FieldHubWeb.PortalLive.JobDetail do
                 <%= if @job.technician && @job.status == "en_route" do %>
                   <div class="mt-4 p-3 rounded-xl bg-primary/5 border border-primary/10">
                     <p class="text-xs text-primary font-medium flex items-center gap-2">
-                      <.icon name="hero-truck" class="size-4" />
-                      Technician is on the way!
+                      <.icon name="hero-truck" class="size-4" /> Technician is on the way!
                     </p>
                   </div>
                 <% end %>
@@ -188,5 +196,4 @@ defmodule FieldHubWeb.PortalLive.JobDetail do
     step_idx = Enum.find_index(order, &(&1 == step_status)) || 0
     current_idx >= step_idx
   end
-
 end

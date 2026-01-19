@@ -344,4 +344,20 @@ defmodule FieldHubWeb.Layouts do
     </div>
     """
   end
+
+  def nav_link_class(active) do
+    if active do
+      "bg-primary/10 text-primary group flex items-center gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-bold transition-all duration-200 border-l-2 border-primary"
+    else
+      "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white group flex items-center gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-semibold transition-all duration-200 border-l-2 border-transparent"
+    end
+  end
+
+  def nav_icon_class(active) do
+    if active do
+      "h-5 w-5 shrink-0 text-primary"
+    else
+      "h-5 w-5 shrink-0 text-zinc-400 dark:text-zinc-500 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors"
+    end
+  end
 end

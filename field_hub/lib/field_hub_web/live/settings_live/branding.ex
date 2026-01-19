@@ -23,6 +23,12 @@ defmodule FieldHubWeb.SettingsLive.Branding do
       |> assign(:page_title, "Branding Settings")
       |> assign(:current_nav, :branding)
       |> assign(:form, to_form(form_data, as: "branding"))
+      |> allow_upload(:logo,
+        accept: ~w(.jpg .jpeg .png .svg .webp),
+        max_entries: 1,
+        max_file_size: 2_000_000,
+        auto_upload: true
+      )
 
     {:ok, socket}
   end
@@ -89,27 +95,82 @@ defmodule FieldHubWeb.SettingsLive.Branding do
 
                 <div>
                   <label class="block text-sm font-bold text-zinc-700 dark:text-zinc-300 mb-2">
-                    Logo URL
+                    Organization Logo
                   </label>
-                  <div class="flex gap-3">
-                    <div class="size-12 rounded-xl bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 flex items-center justify-center overflow-hidden flex-shrink-0">
-                      <%= if @form[:logo_url].value && @form[:logo_url].value != "" do %>
-                        <img src={@form[:logo_url].value} class="size-10 object-contain" alt="Logo" />
-                      <% else %>
-                        <.icon name="hero-photo" class="size-6 text-zinc-400" />
-                      <% end %>
+                  <div class="flex flex-col gap-4">
+                    <div class="flex items-center gap-4">
+                      <div class="size-20 rounded-2xl bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 flex items-center justify-center overflow-hidden flex-shrink-0 relative group">
+                        <%= if @form[:logo_url].value && @form[:logo_url].value != "" do %>
+                          <img src={@form[:logo_url].value} class="size-16 object-contain" alt="Logo" />
+                          <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                            <label class="cursor-pointer p-2 bg-white/20 hover:bg-white/40 rounded-full text-white transition-colors">
+                              <.live_file_input upload={@uploads.logo} class="hidden" />
+                              <.icon name="hero-camera" class="size-5" />
+                            </label>
+                          </div>
+                        <% else %>
+                          <.icon name="hero-photo" class="size-8 text-zinc-400" />
+                          <label class="absolute inset-0 cursor-pointer flex items-center justify-center">
+                            <.live_file_input upload={@uploads.logo} class="hidden" />
+                          </label>
+                        <% end %>
+                      </div>
+                      <div class="flex-1 space-y-3">
+                        <div class="flex gap-2">
+                          <label class="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-sm transition-all cursor-pointer inline-flex items-center gap-2">
+                            <.live_file_input upload={@uploads.logo} class="hidden" />
+                            <.icon name="hero-arrow-up-tray" class="size-4" /> Upload
+                          </label>
+                          <input
+                            type="text"
+                            name="branding[logo_url]"
+                            value={@form[:logo_url].value}
+                            placeholder="Or paste image URL"
+                            class="flex-1 px-3 py-2 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-white placeholder:text-zinc-400 focus:ring-2 focus:ring-primary/20 text-sm font-medium"
+                          />
+                        </div>
+                        <p class="text-[10px] text-zinc-400 uppercase tracking-wide font-black">
+                          Formats: PNG, SVG, JPG, WEBP • Max 2MB
+                        </p>
+                      </div>
                     </div>
-                    <input
-                      type="text"
-                      name="branding[logo_url]"
-                      value={@form[:logo_url].value}
-                      placeholder="https://example.com/logo.png"
-                      class="flex-1 px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-white placeholder-zinc-400 focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all font-mono text-sm"
-                    />
+                    
+    <!-- Upload Progress -->
+                    <div
+                      :for={entry <- @uploads.logo.entries}
+                      class="space-y-2 p-3 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-100 dark:border-zinc-800"
+                    >
+                      <div class="flex items-center gap-3">
+                        <.live_img_preview entry={entry} class="size-10 rounded-lg object-cover" />
+                        <div class="flex-1">
+                          <div class="flex justify-between text-[10px] font-black uppercase text-zinc-500 mb-1">
+                            <span>{entry.client_name}</span>
+                            <span>{entry.progress}%</span>
+                          </div>
+                          <div class="h-1.5 w-full bg-zinc-200 dark:bg-zinc-700 rounded-full overflow-hidden">
+                            <div
+                              class="h-full bg-primary transition-all duration-300"
+                              style={"width: #{entry.progress}%"}
+                            >
+                            </div>
+                          </div>
+                        </div>
+                        <button
+                          phx-click="cancel_upload"
+                          phx-value-ref={entry.ref}
+                          class="p-1 text-zinc-400 hover:text-red-500 transition-colors"
+                        >
+                          <.icon name="hero-x-mark" class="size-5" />
+                        </button>
+                      </div>
+                      <p
+                        :for={err <- upload_errors(@uploads.logo, entry)}
+                        class="text-xs text-red-500 font-bold"
+                      >
+                        {Phoenix.Naming.humanize(err)}
+                      </p>
+                    </div>
                   </div>
-                  <p class="text-[10px] text-zinc-400 mt-2 uppercase tracking-wide font-bold">
-                    Use a PNG with transparency • Recommended height: 40px
-                  </p>
                 </div>
               </div>
             </div>
@@ -342,9 +403,31 @@ defmodule FieldHubWeb.SettingsLive.Branding do
     {:noreply, assign(socket, :form, to_form(params))}
   end
 
+  def handle_event("cancel_upload", %{"ref" => ref}, socket) do
+    {:noreply, cancel_upload(socket, :logo, ref)}
+  end
+
   @impl true
   def handle_event("save", %{"branding" => params}, socket) do
     org = socket.assigns.current_organization
+
+    # Handle logo upload
+    logo_url =
+      consume_uploaded_entries(socket, :logo, fn %{path: path}, entry ->
+        dest =
+          Path.join([
+            :code.priv_dir(:field_hub),
+            "static",
+            "uploads",
+            "#{entry.uuid}.#{ext(entry)}"
+          ])
+
+        File.cp!(path, dest)
+        {:ok, "/uploads/#{Path.basename(dest)}"}
+      end)
+      |> List.first()
+
+    params = if logo_url, do: Map.put(params, "logo_url", logo_url), else: params
 
     case Accounts.update_organization(org, %{
            brand_name: params["brand_name"],
@@ -361,5 +444,10 @@ defmodule FieldHubWeb.SettingsLive.Branding do
       {:error, _changeset} ->
         {:noreply, put_flash(socket, :error, "Could not update branding.")}
     end
+  end
+
+  defp ext(entry) do
+    [ext | _] = MIME.extensions(entry.client_type)
+    ext
   end
 end
