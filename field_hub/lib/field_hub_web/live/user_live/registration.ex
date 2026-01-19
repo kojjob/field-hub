@@ -167,6 +167,8 @@ defmodule FieldHubWeb.UserLive.Registration do
               <div class="flex items-start gap-3">
                 <input
                   type="checkbox"
+                  name={@form[:terms_accepted].name}
+                  value="true"
                   required
                   class="size-4 rounded border-slate-300 text-primary focus:ring-primary/20 mt-0.5"
                 />

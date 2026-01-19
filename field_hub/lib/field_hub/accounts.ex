@@ -374,7 +374,7 @@ defmodule FieldHub.Accounts do
   The user is in sudo mode when the last authentication was done no further
   than 20 minutes ago. The limit can be given as second argument in minutes.
   """
-  def sudo_mode?(user, minutes \\ -20)
+  def sudo_mode?(user, minutes \\ -30)
 
   def sudo_mode?(%User{authenticated_at: ts}, minutes) when is_struct(ts, DateTime) do
     DateTime.after?(ts, DateTime.utc_now() |> DateTime.add(minutes, :minute))
@@ -438,6 +438,22 @@ defmodule FieldHub.Accounts do
   """
   def change_user_password(user, attrs \\ %{}, opts \\ []) do
     User.password_changeset(user, attrs, opts)
+  end
+
+  @doc """
+  Updates the user profile (name, phone, avatar).
+  """
+  def update_user_profile(user, attrs) do
+    user
+    |> User.profile_changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for changing the user profile.
+  """
+  def change_user_profile(user, attrs \\ %{}) do
+    User.profile_changeset(user, attrs)
   end
 
   @doc """

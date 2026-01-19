@@ -42,7 +42,7 @@ defmodule FieldHubWeb.UserLive.RegistrationTest do
       {:ok, lv, _html} = live(conn, ~p"/users/register")
 
       email = unique_user_email()
-      form = form(lv, "#registration_form", user: valid_user_attributes(email: email))
+      form = form(lv, "#registration_form", user: valid_user_attributes(email: email) |> Map.put(:terms_accepted, "true"))
 
       {:ok, confirmation_lv, _html} =
         render_submit(form)

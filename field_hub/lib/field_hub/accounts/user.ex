@@ -47,6 +47,14 @@ defmodule FieldHub.Accounts.User do
     |> validate_email(opts)
   end
 
+  def profile_changeset(user, attrs) do
+    user
+    |> cast(attrs, [:name, :phone, :avatar_url])
+    |> validate_required([:name])
+    |> validate_length(:name, max: 255)
+    |> validate_length(:phone, max: 50)
+  end
+
   defp validate_email(changeset, opts) do
     changeset =
       changeset

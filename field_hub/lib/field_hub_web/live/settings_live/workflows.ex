@@ -19,6 +19,7 @@ defmodule FieldHubWeb.SettingsLive.Workflows do
     socket =
       socket
       |> assign(:page_title, "Workflow Settings")
+      |> assign(:current_nav, :workflows)
       |> assign(:statuses, statuses)
       |> assign(:presets, Workflows.industry_presets())
       |> assign(:editing_status, nil)
@@ -30,246 +31,296 @@ defmodule FieldHubWeb.SettingsLive.Workflows do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="max-w-5xl mx-auto">
-      <div class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
-        <div>
-          <h1 class="text-3xl font-bold text-zinc-900 dark:text-white tracking-tight">
-            Workflow Settings
-          </h1>
-          <p class="mt-2 text-zinc-600 dark:text-zinc-400 max-w-2xl">
-            Define the lifecycle of your {@task_label_plural |> String.downcase()}. Customize statuses and their transitions to match your operations.
-          </p>
-        </div>
-        <div class="flex gap-2">
-          <.button type="button" phx-click="add_status" variant="outline" class="gap-2">
-            <.icon name="hero-plus" class="size-4" /> Add Status
-          </.button>
-          <.button
-            type="button"
-            phx-click="save_all"
-            variant="primary"
-            class="gap-2 shadow-lg shadow-primary/20"
-          >
-            <.icon name="hero-check" class="size-4" /> Save Workflow
-          </.button>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        <!-- Main Content -->
-        <div class="lg:col-span-8 space-y-6">
-          <div class="bg-white dark:bg-zinc-800/50 rounded-2xl shadow-sm border border-zinc-200 dark:border-zinc-700/50 overflow-hidden">
-            <div class="p-4 border-b border-zinc-100 dark:border-zinc-700/50 bg-zinc-50/50 dark:bg-zinc-900/50 flex items-center justify-between">
-              <h2 class="text-sm font-semibold text-zinc-900 dark:text-white flex items-center gap-2">
-                <.icon name="hero-list-bullet" class="size-4 text-zinc-400" /> Active Phases
+    <div class="flex h-[calc(100vh-4rem)] overflow-hidden">
+      <!-- Main Content Area -->
+      <div class={[
+        "flex-1 flex flex-col min-w-0 transition-all duration-300 overflow-y-auto",
+        @editing_status && "lg:mr-[480px]"
+      ]}>
+        <div class="space-y-10 p-6 pb-20">
+          <!-- Page Heading (matches dashboard) -->
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <p class="text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-1">
+                System
+              </p>
+              <h2 class="text-3xl font-black tracking-tighter text-zinc-900 dark:text-white">
+                Lifecycle & Workflows
               </h2>
-              <span class="text-[10px] font-medium text-zinc-400 tracking-wider uppercase">
-                Order by sequence
-              </span>
+              <p class="mt-2 text-sm text-zinc-500 dark:text-zinc-400 max-w-lg">
+                Define the lifecycle of your {@task_label_plural |> String.downcase()}. Customize statuses and their transitions to match your operations.
+              </p>
             </div>
-
-            <div class="divide-y divide-zinc-100 dark:divide-zinc-700/50">
-              <%= for {status, index} <- Enum.with_index(@statuses) do %>
-                <div class="group p-4 flex items-center gap-4 hover:bg-zinc-50 dark:hover:bg-zinc-900/30 transition-colors">
-                  <div class="flex flex-col items-center gap-1 text-zinc-300 dark:text-zinc-600">
-                    <button
-                      phx-click="move_up"
-                      phx-value-index={index}
-                      class="hover:text-primary disabled:opacity-30"
-                      disabled={index == 0}
-                    >
-                      <.icon name="hero-chevron-up" class="size-4" />
-                    </button>
-                    <button
-                      phx-click="move_down"
-                      phx-value-index={index}
-                      class="hover:text-primary disabled:opacity-30"
-                      disabled={index == length(@statuses) - 1}
-                    >
-                      <.icon name="hero-chevron-down" class="size-4" />
-                    </button>
-                  </div>
-
-                  <div
-                    class="size-3 rounded-full shrink-0 shadow-sm"
-                    style={"background-color: #{get_field(status, :color, "#6B7280")}"}
-                  >
-                  </div>
-
-                  <div class="flex-1 min-w-0">
-                    <div class="flex items-center gap-2">
-                      <span class="font-semibold text-zinc-900 dark:text-white truncate">
-                        {get_field(status, :label, "Status")}
-                      </span>
-                      <span class="px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-[10px] font-mono text-zinc-500 uppercase tracking-tighter">
-                        {get_field(status, :key, "")}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button
-                      type="button"
-                      phx-click="edit_status"
-                      phx-value-index={index}
-                      class="p-2 text-zinc-500 hover:text-primary"
-                    >
-                      <.icon name="hero-pencil-square" class="size-4" />
-                    </button>
-                    <button
-                      type="button"
-                      phx-click="delete_status"
-                      phx-value-index={index}
-                      class="p-2 text-zinc-500 hover:text-red-500"
-                      data-confirm="Are you sure?"
-                    >
-                      <.icon name="hero-trash" class="size-4" />
-                    </button>
-                  </div>
-                </div>
-              <% end %>
+            <div class="flex flex-wrap items-center gap-3">
+              <.link navigate={~p"/dashboard"}>
+                <button class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-300 px-4 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-all border-b-2">
+                  <.icon name="hero-arrow-left" class="size-4" /> Back
+                </button>
+              </.link>
+              <button
+                type="button"
+                phx-click="add_status"
+                class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-300 px-4 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-all border-b-2"
+              >
+                <.icon name="hero-plus" class="size-4" /> Add Status
+              </button>
+              <button
+                type="button"
+                phx-click="save_all"
+                class="bg-primary hover:brightness-110 text-white px-6 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 shadow-xl shadow-primary/20 transition-all border-b-4 border-emerald-800 active:border-b-0 active:translate-y-1"
+              >
+                <.icon name="hero-check" class="size-5" /> Save Workflow
+              </button>
             </div>
-
-            <%= if Enum.empty?(@statuses) do %>
-              <div class="p-12 text-center">
-                <div class="size-16 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center mx-auto mb-4">
-                  <.icon name="hero-square-3-stack-3d" class="size-8 text-zinc-400" />
-                </div>
-                <h3 class="text-zinc-900 dark:text-white font-medium">No statuses defined</h3>
-                <p class="text-sm text-zinc-500 mt-1">
-                  Add your first status or apply a preset to get started.
-                </p>
-              </div>
-            <% end %>
           </div>
 
-    <!-- Visual Workflow Preview -->
-          <div class="bg-white dark:bg-zinc-800/50 rounded-[24px] shadow-sm border border-zinc-200 dark:border-zinc-700/50 p-6 overflow-hidden">
-            <h2 class="text-base font-semibold text-zinc-900 dark:text-white mb-6">
-              Workflow Sequence
-            </h2>
-            <div class="flex items-center flex-wrap gap-y-8">
-              <%= for {status, index} <- Enum.with_index(@statuses) do %>
-                <div class="flex items-center">
-                  <div class="relative group">
-                    <div class="px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 shadow-sm flex items-center gap-3">
+          <div class="grid grid-cols-1 xl:grid-cols-12 gap-8">
+            <!-- Main Content -->
+            <div class="xl:col-span-8 space-y-8">
+              <!-- Active Phases Card -->
+              <div class="bg-white dark:bg-zinc-900 rounded-[24px] border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
+                <div class="px-6 py-4 border-b border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-800/50 flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <div class="size-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                      <.icon name="hero-list-bullet" class="size-4 text-primary" />
+                    </div>
+                    <h3 class="text-sm font-black text-zinc-900 dark:text-white uppercase tracking-wider">
+                      Active Phases
+                    </h3>
+                  </div>
+                  <span class="text-[10px] font-black text-zinc-400 tracking-widest uppercase">
+                    {length(@statuses)} Total Phases
+                  </span>
+                </div>
+
+                <div class="divide-y divide-zinc-100 dark:divide-zinc-800">
+                  <%= for {status, index} <- Enum.with_index(@statuses) do %>
+                    <div class="group p-5 flex items-center gap-5 hover:bg-zinc-50 dark:hover:bg-zinc-800/30 transition-all">
+                      <div class="flex flex-col items-center gap-1.5 text-zinc-300 dark:text-zinc-600">
+                        <button
+                          phx-click="move_up"
+                          phx-value-index={index}
+                          class="hover:text-primary disabled:opacity-30 p-1"
+                          disabled={index == 0}
+                        >
+                          <.icon name="hero-chevron-up" class="size-4" />
+                        </button>
+                        <button
+                          phx-click="move_down"
+                          phx-value-index={index}
+                          class="hover:text-primary disabled:opacity-30 p-1"
+                          disabled={index == length(@statuses) - 1}
+                        >
+                          <.icon name="hero-chevron-down" class="size-4" />
+                        </button>
+                      </div>
+
                       <div
-                        class="size-2 rounded-full"
+                        class="size-5 rounded-lg shrink-0 shadow-sm border border-black/5 dark:border-white/5"
                         style={"background-color: #{get_field(status, :color, "#6B7280")}"}
                       >
                       </div>
-                      <span class="text-xs font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider">
-                        {get_field(status, :label, "Status")}
-                      </span>
-                    </div>
-                  </div>
-                  <%= if index < length(@statuses) - 1 do %>
-                    <div class="w-8 h-px bg-zinc-200 dark:bg-zinc-700 relative">
-                      <div class="absolute right-0 -top-[3px] border-t-4 border-b-4 border-l-4 border-t-transparent border-b-transparent border-l-zinc-200 dark:border-l-zinc-700">
+
+                      <div class="flex-1 min-w-0">
+                        <div class="flex items-center gap-3">
+                          <span class="font-black text-zinc-900 dark:text-white text-lg tracking-tight">
+                            {get_field(status, :label, "Status")}
+                          </span>
+                          <span class="px-2 py-0.5 rounded-md bg-zinc-100 dark:bg-zinc-800 text-[10px] font-black text-zinc-400 uppercase tracking-widest border border-zinc-200 dark:border-zinc-700">
+                            {get_field(status, :key, "")}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div class="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all transform translate-x-4 group-hover:translate-x-0">
+                        <button
+                          type="button"
+                          phx-click="edit_status"
+                          phx-value-index={index}
+                          class="size-10 rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-500 hover:text-primary hover:border-primary/30 flex items-center justify-center transition-all shadow-sm"
+                        >
+                          <.icon name="hero-pencil-square" class="size-5" />
+                        </button>
+                        <button
+                          type="button"
+                          phx-click="delete_status"
+                          phx-value-index={index}
+                          class="size-10 rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-500 hover:text-red-500 hover:border-red-500/30 flex items-center justify-center transition-all shadow-sm"
+                          data-confirm="Are you sure you want to delete this phase?"
+                        >
+                          <.icon name="hero-trash" class="size-5" />
+                        </button>
                       </div>
                     </div>
                   <% end %>
                 </div>
-              <% end %>
-            </div>
-          </div>
-        </div>
 
-    <!-- Sidebar / Presets -->
-        <div class="lg:col-span-4 space-y-6">
-          <div class="bg-white dark:bg-zinc-800 rounded-2xl shadow-sm border border-zinc-200 dark:border-zinc-700/50 p-6">
-            <h2 class="text-lg font-semibold text-zinc-900 dark:text-white mb-4 flex items-center gap-2">
-              <.icon name="hero-sparkles" class="size-5 text-primary" /> Industry Templates
-            </h2>
-            <p class="text-sm text-zinc-500 dark:text-zinc-400 mb-6">
-              Kickstart your workflow with these optimized presets.
-            </p>
-
-            <div class="space-y-3">
-              <%= for preset <- @presets do %>
-                <button
-                  type="button"
-                  phx-click="apply_preset"
-                  phx-value-preset={preset.key |> Atom.to_string()}
-                  class="w-full p-4 rounded-xl border border-zinc-100 dark:border-zinc-700 hover:border-primary hover:bg-primary/5 dark:hover:bg-primary/10 transition-all text-left group"
-                >
-                  <div class="flex items-center justify-between mb-1">
-                    <span class="text-sm font-bold text-zinc-900 dark:text-white group-hover:text-primary">
-                      {preset.name}
-                    </span>
-                    <.icon
-                      name="hero-arrow-path"
-                      class="size-3.5 text-zinc-400 opacity-0 group-hover:opacity-100 transition-opacity"
-                    />
+                <%= if Enum.empty?(@statuses) do %>
+                  <div class="p-20 text-center">
+                    <div class="size-20 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center mx-auto mb-6">
+                      <.icon name="hero-square-3-stack-3d" class="size-10 text-zinc-400" />
+                    </div>
+                    <h3 class="text-xl font-black text-zinc-900 dark:text-white tracking-tight">No statuses defined</h3>
+                    <p class="text-sm font-bold text-zinc-500 mt-2 uppercase tracking-wide">
+                      Add your first status or apply a template to get started.
+                    </p>
                   </div>
-                  <p class="text-xs text-zinc-500 line-clamp-1">{preset.description}</p>
-                </button>
-              <% end %>
-            </div>
-          </div>
+                <% end %>
+              </div>
 
-          <div class="bg-primary/5 border border-primary/10 rounded-2xl p-6">
-            <div class="flex gap-3">
-              <.icon name="hero-light-bulb" class="size-6 text-primary shrink-0" />
-              <div>
-                <h3 class="text-sm font-bold text-zinc-900 dark:text-primary">Pro Tip</h3>
-                <p class="text-xs text-zinc-600 dark:text-primary/80 mt-1 leading-relaxed">
-                  The order of statuses defines the default progression. Status keys like
-                  <span class="font-mono">completed</span>
-                  or <span class="font-mono">cancelled</span>
-                  are used for reporting.
-                </p>
+              <!-- Visual Workflow Preview -->
+              <div class="bg-white dark:bg-zinc-900 rounded-[24px] border border-zinc-200 dark:border-zinc-800 p-8 shadow-sm">
+                <div class="flex items-center gap-3 mb-8">
+                  <div class="size-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                    <.icon name="hero-arrow-right-circle" class="size-6 text-primary" />
+                  </div>
+                  <div>
+                    <h3 class="text-lg font-black text-zinc-900 dark:text-white tracking-tight">
+                      Workflow Visualization
+                    </h3>
+                    <p class="text-xs font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wide">
+                      Progression path for {@task_label_plural |> String.downcase()}
+                    </p>
+                  </div>
+                </div>
+
+                <div class="flex items-center flex-wrap gap-4">
+                  <%= for {status, index} <- Enum.with_index(@statuses) do %>
+                    <div class="flex items-center gap-4">
+                      <div class="relative flex flex-col items-center group">
+                        <div
+                          class="px-5 py-3 rounded-2xl border-2 bg-white dark:bg-zinc-950 shadow-lg flex items-center gap-3 transition-transform hover:scale-105"
+                          style={"border-color: #{get_field(status, :color, "#6B7280")}40"}
+                        >
+                          <div
+                            class="size-3 rounded-full"
+                            style={"background-color: #{get_field(status, :color, "#6B7280")}"}
+                          >
+                          </div>
+                          <span class="text-xs font-black text-zinc-700 dark:text-zinc-200 uppercase tracking-widest">
+                            {get_field(status, :label, "Status")}
+                          </span>
+                        </div>
+                      </div>
+                      <%= if index < length(@statuses) - 1 do %>
+                        <div class="flex items-center justify-center px-1">
+                          <.icon name="hero-chevron-right" class="size-5 text-zinc-300 dark:text-zinc-700 animate-pulse" />
+                        </div>
+                      <% end %>
+                    </div>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+
+            <!-- Sidebar / Presets -->
+            <div class="xl:col-span-4 space-y-6">
+              <div class="bg-white dark:bg-zinc-900 p-6 rounded-[24px] border border-zinc-200 dark:border-zinc-800 shadow-sm sticky top-8">
+                <div class="flex items-center gap-3 mb-6">
+                  <div class="size-11 rounded-xl bg-primary/10 flex items-center justify-center">
+                    <.icon name="hero-sparkles" class="text-primary size-6" />
+                  </div>
+                  <div>
+                    <h3 class="text-lg font-black text-zinc-900 dark:text-white tracking-tight">
+                      Industry Templates
+                    </h3>
+                    <p class="text-xs font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wide">
+                      Optimized for your sector
+                    </p>
+                  </div>
+                </div>
+
+                <div class="space-y-3">
+                  <%= for preset <- @presets do %>
+                    <button
+                      type="button"
+                      phx-click="apply_preset"
+                      phx-value-preset={preset.key |> Atom.to_string()}
+                      class="w-full p-4 rounded-2xl border border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-800/50 hover:border-primary hover:bg-white dark:hover:bg-zinc-800 transition-all group shadow-sm text-left"
+                    >
+                      <div class="flex items-center justify-between mb-1.5">
+                        <span class="text-sm font-black text-zinc-900 dark:text-white group-hover:text-primary transition-colors">
+                          {preset.name}
+                        </span>
+                        <.icon
+                          name="hero-arrow-path"
+                          class="size-4 text-zinc-400 group-hover:text-primary transition-colors group-hover:rotate-180 duration-500"
+                        />
+                      </div>
+                      <p class="text-[11px] font-bold text-zinc-500 uppercase tracking-wide leading-tight line-clamp-2">{preset.description}</p>
+                    </button>
+                  <% end %>
+                </div>
+
+                <div class="mt-8 p-6 bg-primary/5 rounded-[24px] border border-primary/10 relative overflow-hidden">
+                   <div class="relative z-10 flex gap-4">
+                      <div class="size-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                        <.icon name="hero-light-bulb" class="size-6 text-primary" />
+                      </div>
+                      <div>
+                        <h3 class="text-sm font-black text-zinc-900 dark:text-white tracking-tight">Pro Tip</h3>
+                        <p class="text-[11px] font-bold text-zinc-500 dark:text-zinc-400 mt-1 leading-relaxed uppercase tracking-wider">
+                          The order of statuses defines the default progression.
+                        </p>
+                      </div>
+                   </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Status Editor Modal -->
-    <%= if @editing_status do %>
+      <!-- Slide-in Status Editor Panel -->
       <div
-        class="fixed inset-0 bg-zinc-950/20 dark:bg-zinc-950/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-        phx-click="close_editor"
+        :if={@editing_status}
+        class="fixed right-0 top-0 bottom-0 w-[480px] bg-white dark:bg-zinc-900 border-l border-zinc-200 dark:border-zinc-700 shadow-2xl z-50 flex flex-col animate-in slide-in-from-right duration-300"
       >
-        <div
-          class="bg-white dark:bg-zinc-900 rounded-[32px] shadow-2xl border border-zinc-200 dark:border-zinc-800 w-full max-w-lg overflow-hidden"
-          phx-click-away="close_editor"
-        >
-          <div class="px-8 pt-8 pb-6">
-            <h3 class="text-2xl font-bold text-zinc-900 dark:text-white">
-              {if @editing_status.is_new, do: "New Status", else: "Edit Status"}
-            </h3>
-            <p class="text-sm text-zinc-500 mt-1">Configure phase details and visual identifier.</p>
+        <!-- Form Panel Header -->
+        <div class="p-6 border-b border-zinc-200 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-800/20 flex items-center justify-between">
+          <div>
+            <h2 class="text-xl font-black text-zinc-900 dark:text-white tracking-tighter">
+              {if @editing_status.is_new, do: "Add New Phase", else: "Modify Phase"}
+            </h2>
+            <p class="text-sm font-bold text-zinc-500 mt-1 uppercase tracking-wide">Configure progression details</p>
           </div>
+          <button
+            phx-click="close_editor"
+            class="size-8 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 flex items-center justify-center text-zinc-400 hover:text-zinc-600 transition-all"
+          >
+            <.icon name="hero-x-mark" class="size-5" />
+          </button>
+        </div>
 
-          <form phx-submit="save_status" class="px-8 pb-8 space-y-6">
+        <!-- Form Content -->
+        <div class="flex-1 overflow-y-auto p-8">
+          <form phx-submit="save_status" class="space-y-8">
             <input type="hidden" name="index" value={@editing_status.index} />
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label class="block text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-2">
+            <div class="grid grid-cols-1 gap-8">
+              <div class="space-y-2">
+                <label class="block text-sm font-black text-zinc-700 dark:text-zinc-300 uppercase tracking-widest">
                   Display Label
                 </label>
                 <input
                   type="text"
                   name="label"
                   value={@editing_status.label}
-                  class="w-full px-4 py-3 border border-zinc-300 dark:border-zinc-700 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 focus:ring-2 focus:ring-primary outline-none transition-all"
+                  class="w-full px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-white placeholder-zinc-400 focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all font-medium"
                   placeholder="e.g. In Progress"
                   required
                 />
               </div>
 
-              <div>
-                <label class="block text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-2">
+              <div class="space-y-2">
+                <label class="block text-sm font-black text-zinc-700 dark:text-zinc-300 uppercase tracking-widest">
                   Unique Key
                 </label>
                 <input
                   type="text"
                   name="key"
                   value={@editing_status.key}
-                  class="w-full px-4 py-3 border border-zinc-300 dark:border-zinc-700 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 focus:ring-2 focus:ring-primary outline-none transition-all font-mono text-sm"
+                  class="w-full px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-white placeholder-zinc-400 focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all font-mono text-sm uppercase"
                   placeholder="in_progress"
                   pattern="[a-z_]+"
                   required
@@ -277,60 +328,62 @@ defmodule FieldHubWeb.SettingsLive.Workflows do
               </div>
             </div>
 
-            <div class="bg-zinc-50 dark:bg-zinc-950 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800">
-              <label class="block text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-4">
-                Status Color
+            <div class="bg-zinc-50 dark:bg-zinc-950 p-6 rounded-[24px] border border-zinc-200 dark:border-zinc-800">
+              <label class="block text-sm font-black text-zinc-700 dark:text-zinc-300 uppercase tracking-widest mb-6 text-center">
+                Visual Identifier (Color)
               </label>
-              <div class="flex items-center gap-8">
-                <input
-                  type="color"
-                  name="color"
-                  value={@editing_status.color}
-                  class="h-14 w-20 rounded-xl border border-zinc-300 dark:border-zinc-700 cursor-pointer p-1 bg-white dark:bg-zinc-800"
-                />
-                <div class="flex-1">
-                  <p class="text-[10px] text-zinc-400 mb-2 uppercase font-bold tracking-widest">
-                    Live Visual
-                  </p>
-                  <div
-                    class="px-5 py-3 rounded-xl border-2 shadow-sm flex items-center gap-3 bg-white dark:bg-zinc-800"
-                    style={"border-color: #{@editing_status.color}40"}
-                  >
+              <div class="flex flex-col items-center gap-8">
+                <div class="flex flex-col items-center gap-6">
+                   <input
+                    type="color"
+                    name="color"
+                    value={@editing_status.color}
+                    class="size-20 rounded-2xl border-2 border-zinc-300 dark:border-zinc-700 cursor-pointer p-1 bg-white dark:bg-zinc-800 shadow-xl"
+                  />
+                  <div class="flex flex-col items-center">
+                    <p class="text-[10px] font-black text-zinc-400 mb-3 uppercase tracking-[0.2em]">
+                      Live Preview
+                    </p>
                     <div
-                      class="size-3 rounded-full shadow-sm"
-                      style={"background-color: #{@editing_status.color}"}
+                      class="px-6 py-3 rounded-2xl border-2 shadow-lg flex items-center gap-3 bg-white dark:bg-zinc-900"
+                      style={"border-color: #{@editing_status.color}40"}
                     >
+                      <div
+                        class="size-3 rounded-full"
+                        style={"background-color: #{@editing_status.color}"}
+                      >
+                      </div>
+                      <span
+                        class="text-xs font-black uppercase tracking-widest"
+                        style={"color: #{@editing_status.color}"}
+                      >
+                        {(@editing_status.label != "" && @editing_status.label) || "PREVIEW"}
+                      </span>
                     </div>
-                    <span
-                      class="text-xs font-bold uppercase tracking-wider"
-                      style={"color: #{@editing_status.color}"}
-                    >
-                      PREVIEW STATUS
-                    </span>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div class="flex justify-end gap-3 pt-4 border-t border-zinc-100 dark:border-zinc-800">
+            <div class="flex justify-end gap-3 pt-4">
               <button
                 type="button"
                 phx-click="close_editor"
-                class="px-5 py-2.5 text-sm font-semibold text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors"
+                class="px-6 py-3 rounded-xl text-sm font-bold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                class="px-8 py-2.5 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 font-bold rounded-xl hover:opacity-90 transition-all shadow-lg"
+                class="px-10 py-3 bg-primary hover:brightness-110 text-white rounded-xl font-bold text-sm shadow-xl shadow-primary/20 transition-all border-b-4 border-emerald-800 active:border-b-0 active:translate-y-1"
               >
-                Save Phase
+                {if @editing_status.is_new, do: "Add Phase", else: "Apply Changes"}
               </button>
             </div>
           </form>
         </div>
       </div>
-    <% end %>
+    </div>
     """
   end
 

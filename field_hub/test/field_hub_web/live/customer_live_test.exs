@@ -41,7 +41,7 @@ defmodule FieldHubWeb.CustomerLiveTest do
     test "saves new customer", %{conn: conn} do
       {:ok, index_live, _html} = live(conn, ~p"/customers")
 
-      assert index_live |> element("a", "New Customer") |> render_click() =~
+      assert index_live |> element("a", "Add Customer") |> render_click() =~
                "New Customer"
 
       assert_patch(index_live, ~p"/customers/new")
@@ -64,8 +64,7 @@ defmodule FieldHubWeb.CustomerLiveTest do
       customer = customer_fixture(org.id)
       {:ok, index_live, _html} = live(conn, ~p"/customers")
 
-      assert index_live |> element("#customers-#{customer.id} a", "Edit") |> render_click() =~
-               "Edit Customer"
+      assert index_live |> element("a[href*='/edit']") |> render_click() =~ "Edit Customer"
 
       assert_patch(index_live, ~p"/customers/#{customer}/edit")
 
@@ -83,7 +82,7 @@ defmodule FieldHubWeb.CustomerLiveTest do
       customer = customer_fixture(org.id)
       {:ok, index_live, _html} = live(conn, ~p"/customers")
 
-      assert index_live |> element("#customers-#{customer.id} a", "Delete") |> render_click()
+      assert index_live |> element("a[phx-click*='delete']") |> render_click()
       refute has_element?(index_live, "#customers-#{customer.id}")
     end
 
