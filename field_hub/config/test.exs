@@ -36,3 +36,6 @@ config :phoenix_live_view,
 # Sort query params output of verified routes for robust url comparisons
 config :phoenix,
   sort_verified_routes_query_params: true
+
+# Configure Swoosh Test adapter
+config :field_hub, FieldHub.Mailer, adapter: Swoosh.Adapters.Test

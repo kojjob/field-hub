@@ -86,6 +86,35 @@ defmodule FieldHub.Jobs do
   end
 
   @doc """
+  Returns active (non-completed, non-cancelled) jobs for a customer.
+  Used by the customer portal.
+  """
+  def list_active_jobs_for_customer(customer_id) do
+    Job
+    |> where([j], j.customer_id == ^customer_id)
+    |> where([j], j.status not in ["completed", "cancelled"])
+    |> order_by([j], asc: j.scheduled_date)
+    |> Repo.all()
+    |> Repo.preload([:technician, :customer])
+  end
+
+  @doc """
+  Returns completed jobs for a customer with an optional limit.
+  Used by the customer portal.
+  """
+  def list_completed_jobs_for_customer(customer_id, opts \\ []) do
+    limit = Keyword.get(opts, :limit, 10)
+
+    Job
+    |> where([j], j.customer_id == ^customer_id)
+    |> where([j], j.status == "completed")
+    |> order_by([j], desc: j.completed_at)
+    |> limit(^limit)
+    |> Repo.all()
+    |> Repo.preload([:technician, :customer])
+  end
+
+  @doc """
   Returns the list of unassigned jobs (no technician or no scheduled date).
 
   ## Examples
@@ -211,6 +240,7 @@ defmodule FieldHub.Jobs do
     end)
     |> run_transaction()
     |> broadcast_job_updated()
+    |> notify_job_dispatched()
   end
 
   @doc """
@@ -232,6 +262,7 @@ defmodule FieldHub.Jobs do
     end)
     |> run_transaction()
     |> broadcast_job_updated()
+    |> notify_job_scheduled()
   end
 
   @doc """
@@ -251,6 +282,7 @@ defmodule FieldHub.Jobs do
     end)
     |> run_transaction()
     |> broadcast_job_updated()
+    |> notify_job_dispatched()
   end
 
   @doc """
@@ -324,6 +356,7 @@ defmodule FieldHub.Jobs do
     end)
     |> run_transaction()
     |> broadcast_job_updated()
+    |> notify_job_completed()
   end
 
   @doc """
@@ -410,6 +443,12 @@ defmodule FieldHub.Jobs do
 
   defp broadcast_job_created({:ok, job}) do
     Broadcaster.broadcast_job_created(job)
+
+    # Send confirmation if it's already scheduled or has a customer
+    if job.customer_id do
+      FieldHub.Jobs.JobNotifier.deliver_job_confirmation(job)
+    end
+
     {:ok, job}
   end
 
@@ -421,4 +460,29 @@ defmodule FieldHub.Jobs do
   end
 
   defp broadcast_job_updated(error), do: error
+
+  # Add specific helpers for different update types to trigger notifications
+  defp notify_job_scheduled({:ok, job}) do
+    if job.customer_id do
+      FieldHub.Jobs.JobNotifier.deliver_job_confirmation(job)
+    end
+    {:ok, job}
+  end
+  defp notify_job_scheduled(error), do: error
+
+  defp notify_job_dispatched({:ok, job}) do
+    if job.customer_id do
+      FieldHub.Jobs.JobNotifier.deliver_technician_dispatch(job)
+    end
+    {:ok, job}
+  end
+  defp notify_job_dispatched(error), do: error
+
+  defp notify_job_completed({:ok, job}) do
+    if job.customer_id do
+      FieldHub.Jobs.JobNotifier.deliver_job_completion(job)
+    end
+    {:ok, job}
+  end
+  defp notify_job_completed(error), do: error
 end

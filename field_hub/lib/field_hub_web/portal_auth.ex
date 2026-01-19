@@ -41,4 +41,22 @@ defmodule FieldHubWeb.PortalAuth do
       |> halt()
     end
   end
+
+  @doc """
+  LiveView on_mount callback for portal authentication.
+  """
+  def on_mount(:mount_portal_customer, _params, session, socket) do
+    customer_id = session["portal_customer_id"]
+
+    customer =
+      if is_integer(customer_id) do
+        CRM.get_customer_for_portal(customer_id)
+      end
+
+    if customer do
+      {:cont, Phoenix.Component.assign(socket, :portal_customer, customer)}
+    else
+      {:halt, Phoenix.LiveView.redirect(socket, to: "/")}
+    end
+  end
 end

@@ -543,30 +543,30 @@ git push -u origin develop
 
 ### FH-040: Portal Authentication
 
-- [ ] **Test First:** Portal token grants access
-- [ ] **Implement:** Magic link login (token in URL)
-- [ ] **Implement:** Portal session management
-- [ ] **Implement:** Restrict to customer's own data
+- [x] **Test First:** Portal token grants access
+- [x] **Implement:** Magic link login (token in URL)
+- [x] **Implement:** Portal session management
+- [x] **Implement:** Restrict to customer's own data
 
 **Branch:** `feature/FH-040-portal-auth`
 
-### FH-041: Job Status Tracking
+### FH-041: Job Status Tracking ✅
 
-- [ ] **Test First:** Customer sees their scheduled job
-- [ ] **Implement:** `lib/field_hub_web/live/portal_live/status.ex`
-- [ ] **Implement:** Show technician name and ETA
-- [ ] **Implement:** Real-time status updates
-- [ ] **Implement:** Map showing tech location (when en route)
+- [x] **Test First:** Customer sees their scheduled job
+- [x] **Implement:** Show active jobs + recent completed jobs on `/portal`
+- [x] **Implement:** Show technician name and ETA
+- [x] **Implement:** Real-time status updates via PubSub
+- [ ] **Implement:** Map showing tech location (when en route) - (stretch)
 
-**Branch:** `feature/FH-041-portal-tracking`
+**Branch:** `feature/FH-040-customer-portal`
 
-### FH-042: Service History
+### FH-042: Service History ✅
 
-- [ ] **Implement:** List of past jobs
-- [ ] **Implement:** Job detail with work performed
+- [x] **Implement:** List of past jobs via `/portal/history`
+- [x] **Implement:** Job detail with work performed via `/portal/jobs/:id`
 - [ ] **Implement:** Invoice download (stretch)
 
-**Branch:** `feature/FH-042-portal-history`
+**Branch:** `feature/FH-040-customer-portal`
 
 ### FH-043: Self-Service Booking (Stretch)
 
