@@ -164,28 +164,29 @@ defmodule FieldHubWeb.PortalLive.JobDetail do
         </div>
 
         <%= if @job.status == "en_route" and @job.technician && @job.service_lat && @job.service_lng do %>
-           <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden shadow-sm">
-             <div class="p-4 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between bg-zinc-50/50 dark:bg-zinc-800/20">
-               <h3 class="text-sm font-bold text-zinc-900 dark:text-white flex items-center gap-2">
-                 <.icon name="hero-map" class="size-4 text-primary" />
-                 Live Technician Tracking
-               </h3>
-               <span class="relative flex h-2.5 w-2.5">
-                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                  <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary"></span>
+          <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden shadow-sm">
+            <div class="p-4 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between bg-zinc-50/50 dark:bg-zinc-800/20">
+              <h3 class="text-sm font-bold text-zinc-900 dark:text-white flex items-center gap-2">
+                <.icon name="hero-map" class="size-4 text-primary" /> Live Technician Tracking
+              </h3>
+              <span class="relative flex h-2.5 w-2.5">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75">
                 </span>
-             </div>
-             <div
-                id="live-map"
-                phx-hook="Map"
-                class="w-full h-64 z-0"
-                data-lat={@job.service_lat}
-                data-lng={@job.service_lng}
-                data-technicians={Jason.encode!([serialize_tech(@job.technician)])}
-                data-jobs={Jason.encode!([serialize_job(@job)])}
-                phx-update="ignore"
-             ></div>
-           </div>
+                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary"></span>
+              </span>
+            </div>
+            <div
+              id="live-map"
+              phx-hook="Map"
+              class="w-full h-64 z-0"
+              data-lat={@job.service_lat}
+              data-lng={@job.service_lng}
+              data-technicians={Jason.encode!([serialize_tech(@job.technician)])}
+              data-jobs={Jason.encode!([serialize_job(@job)])}
+              phx-update="ignore"
+            >
+            </div>
+          </div>
         <% end %>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">

@@ -216,25 +216,26 @@ defmodule FieldHubWeb.JobLive.Show do
                       Site Location
                     </p>
 
-                    <div class="h-28 rounded-2xl overflow-hidden border border-zinc-200 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-900 relative">
+                    <div class="h-32 rounded-3xl overflow-hidden border border-zinc-200/80 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-900 relative shadow-sm">
                       <%= if map_query do %>
                         <iframe
                           title="Job location map"
-                          class="absolute inset-0 h-full w-full"
+                          class="absolute inset-0 h-full w-full saturate-[1.05] contrast-[1.02]"
                           src={google_maps_embed_url(map_query)}
                           loading="lazy"
                           referrerpolicy="no-referrer-when-downgrade"
                           allowfullscreen
                         />
 
-                        <div class="absolute inset-0 pointer-events-none bg-gradient-to-t from-zinc-950/15 via-transparent to-transparent" />
+                        <div class="absolute inset-0 pointer-events-none bg-gradient-to-t from-zinc-950/20 via-transparent to-transparent" />
 
                         <a
                           href={google_maps_url(map_query)}
                           target="_blank"
                           rel="noreferrer"
-                          class="absolute top-3 right-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/90 dark:bg-zinc-950/40 backdrop-blur border border-zinc-200/60 dark:border-zinc-700 text-xs font-black text-zinc-700 dark:text-zinc-100 hover:brightness-105 transition-all"
+                          class="absolute top-3 right-3 inline-flex items-center gap-2 px-3.5 py-2 rounded-full bg-white/90 dark:bg-zinc-950/40 backdrop-blur border border-zinc-200/70 dark:border-zinc-700 text-xs font-black text-zinc-700 dark:text-zinc-100 shadow-md shadow-zinc-950/10 hover:brightness-105 transition-all"
                         >
+                          <.icon name="hero-arrow-top-right-on-square" class="size-4" />
                           View Large Map
                         </a>
                       <% else %>
