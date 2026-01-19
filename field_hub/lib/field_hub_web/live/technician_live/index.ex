@@ -32,10 +32,13 @@ defmodule FieldHubWeb.TechnicianLive.Index do
     {:noreply, apply_action(socket, socket.assigns.live_action, params)}
   end
 
-  defp apply_action(socket, :edit, %{"id" => id}) do
+  defp apply_action(socket, :edit, %{"slug" => slug}) do
     socket
     |> assign(:page_title, "Edit Technician")
-    |> assign(:technician, Dispatch.get_technician!(socket.assigns.current_organization.id, id))
+    |> assign(
+      :technician,
+      Dispatch.get_technician_by_slug!(socket.assigns.current_organization.id, slug)
+    )
   end
 
   defp apply_action(socket, :new, _params) do
@@ -91,8 +94,8 @@ defmodule FieldHubWeb.TechnicianLive.Index do
   end
 
   @impl true
-  def handle_event("delete", %{"id" => id}, socket) do
-    technician = Dispatch.get_technician!(socket.assigns.current_organization.id, id)
+  def handle_event("delete", %{"slug" => slug}, socket) do
+    technician = Dispatch.get_technician_by_slug!(socket.assigns.current_organization.id, slug)
     {:ok, _} = Dispatch.archive_technician(technician)
 
     {:noreply, stream_delete(socket, :technicians, technician)}
@@ -326,7 +329,9 @@ defmodule FieldHubWeb.TechnicianLive.Index do
                         <.icon name="hero-pencil-square" class="size-5" />
                       </.link>
                       <.link
-                        phx-click={JS.push("delete", value: %{id: technician.id}) |> hide("##{id}")}
+                        phx-click={
+                          JS.push("delete", value: %{slug: technician.slug}) |> hide("##{id}")
+                        }
                         phx-hook="StopPropagation"
                         data-confirm="Are you sure you want to retire this technician?"
                         class="p-2 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-red-600 dark:text-zinc-400 dark:hover:text-red-400 transition-all"

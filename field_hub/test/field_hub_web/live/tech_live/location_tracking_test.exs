@@ -51,7 +51,7 @@ defmodule FieldHubWeb.TechLive.LocationTrackingTest do
     job: job,
     technician: technician
   } do
-    {:ok, view, _html} = live(conn, ~p"/tech/jobs/#{job.id}")
+    {:ok, view, _html} = live(conn, ~p"/tech/jobs/#{job.number}")
 
     # Push the update_location event
     render_hook(view, "update_location", %{"lat" => 40.7128, "lng" => -74.0060})
@@ -70,7 +70,7 @@ defmodule FieldHubWeb.TechLive.LocationTrackingTest do
     # Job must be in on_site or in_progress status
     {:ok, job} = FieldHub.Jobs.arrive_on_site(job)
 
-    {:ok, view, _html} = live(conn, ~p"/tech/jobs/#{job.id}/complete")
+    {:ok, view, _html} = live(conn, ~p"/tech/jobs/#{job.number}/complete")
 
     # Push the update_location event
     render_hook(view, "update_location", %{"lat" => 51.5074, "lng" => -0.1278})

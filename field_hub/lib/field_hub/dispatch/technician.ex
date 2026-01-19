@@ -11,8 +11,10 @@ defmodule FieldHub.Dispatch.Technician do
   @statuses ~w(available on_job traveling en_route on_site busy break off_duty)
   @hex_color_regex ~r/^#[0-9A-Fa-f]{6}$/
 
+  @derive {Phoenix.Param, key: :slug}
   schema "technicians" do
     field :name, :string
+    field :slug, :string
     field :email, :string
     field :phone, :string
     field :status, :string, default: "off_duty"
@@ -54,6 +56,7 @@ defmodule FieldHub.Dispatch.Technician do
       :organization_id,
       :user_id,
       :name,
+      :slug,
       :email,
       :phone,
       :status,
@@ -68,6 +71,7 @@ defmodule FieldHub.Dispatch.Technician do
       :custom_fields
     ])
     |> validate_required([:organization_id, :name])
+    |> put_slug()
     |> validate_inclusion(:status, @statuses)
     |> validate_format(:email, ~r/^[^\s]+@[^\s]+\.[^\s]+$/, message: "has invalid format")
     |> validate_format(:color, @hex_color_regex, message: "must be a valid hex color code")
@@ -75,6 +79,33 @@ defmodule FieldHub.Dispatch.Technician do
     |> foreign_key_constraint(:organization_id)
     |> foreign_key_constraint(:user_id)
     |> unique_constraint(:email, name: :technicians_organization_id_email_index)
+    |> unique_constraint([:organization_id, :slug])
+  end
+
+  defp put_slug(changeset) do
+    name = get_field(changeset, :name)
+    slug = get_field(changeset, :slug)
+
+    if name && (is_nil(slug) || slug == "") do
+      put_change(changeset, :slug, generate_slug(name))
+    else
+      case get_change(changeset, :name) do
+        nil ->
+          changeset
+
+        name ->
+          put_change(changeset, :slug, generate_slug(name))
+      end
+    end
+  end
+
+  defp generate_slug(name) do
+    name
+    |> String.downcase()
+    |> String.replace(~r/[^\w\s-]/, "")
+    |> String.replace(~r/\s+/, "-")
+    |> String.replace(~r/-+/, "-")
+    |> String.trim("-")
   end
 
   @doc """

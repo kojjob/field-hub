@@ -10,10 +10,10 @@ defmodule FieldHubWeb.PortalLive.JobDetail do
   alias FieldHub.Jobs.Job
 
   @impl true
-  def mount(%{"id" => id}, _session, socket) do
+  def mount(%{"number" => number}, _session, socket) do
     customer = socket.assigns.portal_customer
 
-    case get_job_for_customer(id, customer.id) do
+    case get_job_for_customer(number, customer.id) do
       nil ->
         {:ok,
          socket
@@ -33,9 +33,9 @@ defmodule FieldHubWeb.PortalLive.JobDetail do
     end
   end
 
-  defp get_job_for_customer(job_id, customer_id) do
+  defp get_job_for_customer(job_number, customer_id) do
     Job
-    |> where([j], j.id == ^job_id)
+    |> where([j], j.number == ^job_number)
     |> where([j], j.customer_id == ^customer_id)
     |> Repo.one()
     |> case do
@@ -47,10 +47,63 @@ defmodule FieldHubWeb.PortalLive.JobDetail do
   @impl true
   def handle_info({:job_updated, job}, socket) do
     job = Repo.preload(job, [:technician, :customer], force: true)
-    {:noreply, assign(socket, :job, job)}
+    socket = assign(socket, :job, job)
+
+    if job.status == "en_route" do
+      {:noreply, push_map_update(socket)}
+    else
+      {:noreply, socket}
+    end
+  end
+
+  def handle_info({:job_location_updated, location}, socket) do
+    # Update tech location in assigns broadly or just push event
+    # We update the technician inside the job struct in assigns to keep state consistent
+    technician = socket.assigns.job.technician
+
+    updated_tech = %{technician | current_lat: location.lat, current_lng: location.lng}
+    updated_job = %{socket.assigns.job | technician: updated_tech}
+
+    socket = assign(socket, :job, updated_job)
+
+    {:noreply, push_map_update(socket)}
   end
 
   def handle_info(_, socket), do: {:noreply, socket}
+
+  defp push_map_update(socket) do
+    job = socket.assigns.job
+
+    if job.technician && job.service_lat && job.service_lng do
+      push_event(socket, "update_map_data", %{
+        technicians: [serialize_tech(job.technician)],
+        jobs: [serialize_job(job)]
+      })
+    else
+      socket
+    end
+  end
+
+  defp serialize_tech(tech) do
+    %{
+      id: tech.id,
+      name: tech.name,
+      status: tech.status,
+      current_lat: tech.current_lat,
+      current_lng: tech.current_lng,
+      color: tech.calendar_color || "#099268"
+    }
+  end
+
+  defp serialize_job(job) do
+    %{
+      id: job.id,
+      number: job.number,
+      title: job.title,
+      service_lat: job.service_lat,
+      service_lng: job.service_lng
+    }
+  end
 
   @impl true
   def render(assigns) do
@@ -89,7 +142,8 @@ defmodule FieldHubWeb.PortalLive.JobDetail do
                     "size-10 rounded-full flex items-center justify-center z-10 transition-colors duration-500",
                     if(status_is_reached?(@job.status, status),
                       do: "bg-primary text-white",
-                      else: "bg-white dark:bg-zinc-900 border-2 border-zinc-100 dark:border-zinc-800 text-zinc-300 dark:text-zinc-600"
+                      else:
+                        "bg-white dark:bg-zinc-900 border-2 border-zinc-100 dark:border-zinc-800 text-zinc-300 dark:text-zinc-600"
                     )
                   ]}>
                     <.icon name={icon} class="size-5" />
@@ -109,17 +163,49 @@ defmodule FieldHubWeb.PortalLive.JobDetail do
           </div>
         </div>
 
+        <%= if @job.status == "en_route" and @job.technician && @job.service_lat && @job.service_lng do %>
+          <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden shadow-sm">
+            <div class="p-4 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between bg-zinc-50/50 dark:bg-zinc-800/20">
+              <h3 class="text-sm font-bold text-zinc-900 dark:text-white flex items-center gap-2">
+                <.icon name="hero-map" class="size-4 text-primary" /> Live Technician Tracking
+              </h3>
+              <span class="relative flex h-2.5 w-2.5">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75">
+                </span>
+                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary"></span>
+              </span>
+            </div>
+            <div
+              id="live-map"
+              phx-hook="Map"
+              class="w-full h-64 z-0"
+              data-lat={@job.service_lat}
+              data-lng={@job.service_lng}
+              data-technicians={Jason.encode!([serialize_tech(@job.technician)])}
+              data-jobs={Jason.encode!([serialize_job(@job)])}
+              phx-update="ignore"
+            >
+            </div>
+          </div>
+        <% end %>
+
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div class="md:col-span-2 space-y-6">
             <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-6 space-y-6">
               <div>
-                <h3 class="text-sm font-bold text-zinc-400 uppercase tracking-wider mb-2">Description</h3>
-                <p class="text-zinc-700 dark:text-zinc-300">{@job.description || "No description provided."}</p>
+                <h3 class="text-sm font-bold text-zinc-400 uppercase tracking-wider mb-2">
+                  Description
+                </h3>
+                <p class="text-zinc-700 dark:text-zinc-300">
+                  {@job.description || "No description provided."}
+                </p>
               </div>
 
               <%= if @job.status == "completed" and @job.work_performed do %>
                 <div class="pt-6 border-t border-zinc-100 dark:border-zinc-800">
-                  <h3 class="text-sm font-bold text-zinc-400 uppercase tracking-wider mb-2">Work Performed</h3>
+                  <h3 class="text-sm font-bold text-zinc-400 uppercase tracking-wider mb-2">
+                    Work Performed
+                  </h3>
                   <div class="prose prose-sm dark:prose-invert max-w-none whitespace-pre-wrap text-zinc-700 dark:text-zinc-300">
                     {@job.work_performed}
                   </div>
@@ -130,7 +216,9 @@ defmodule FieldHubWeb.PortalLive.JobDetail do
 
           <div class="space-y-6">
             <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-6">
-              <h3 class="text-sm font-bold text-zinc-400 uppercase tracking-wider mb-4">Service Info</h3>
+              <h3 class="text-sm font-bold text-zinc-400 uppercase tracking-wider mb-4">
+                Service Info
+              </h3>
 
               <div class="space-y-4">
                 <div>
@@ -158,8 +246,7 @@ defmodule FieldHubWeb.PortalLive.JobDetail do
                 <%= if @job.technician && @job.status == "en_route" do %>
                   <div class="mt-4 p-3 rounded-xl bg-primary/5 border border-primary/10">
                     <p class="text-xs text-primary font-medium flex items-center gap-2">
-                      <.icon name="hero-truck" class="size-4" />
-                      Technician is on the way!
+                      <.icon name="hero-truck" class="size-4" /> Technician is on the way!
                     </p>
                   </div>
                 <% end %>
@@ -188,5 +275,4 @@ defmodule FieldHubWeb.PortalLive.JobDetail do
     step_idx = Enum.find_index(order, &(&1 == step_status)) || 0
     current_idx >= step_idx
   end
-
 end

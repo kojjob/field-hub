@@ -99,7 +99,7 @@ defmodule FieldHubWeb.PortalLive.Dashboard do
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <%= for job <- @active_jobs do %>
                 <.link
-                  navigate={~p"/portal/jobs/#{job.id}"}
+                  navigate={~p"/portal/jobs/#{job}"}
                   class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-5 hover:border-primary/50 transition-all group"
                 >
                   <div class="flex items-start justify-between mb-4">
@@ -109,7 +109,10 @@ defmodule FieldHubWeb.PortalLive.Dashboard do
                     ]}>
                       {String.replace(job.status, "_", " ")}
                     </span>
-                    <.icon name="hero-chevron-right" class="size-4 text-zinc-300 group-hover:translate-x-1 transition-transform" />
+                    <.icon
+                      name="hero-chevron-right"
+                      class="size-4 text-zinc-300 group-hover:translate-x-1 transition-transform"
+                    />
                   </div>
                   <h3 class="font-bold text-zinc-900 dark:text-white mb-1 group-hover:text-primary transition-colors">
                     {job.title}
@@ -121,8 +124,7 @@ defmodule FieldHubWeb.PortalLive.Dashboard do
                     </div>
                     <%= if job.technician do %>
                       <div class="flex items-center gap-2 text-xs text-zinc-500">
-                        <.icon name="hero-user" class="size-4" />
-                        Tech: {job.technician.name}
+                        <.icon name="hero-user" class="size-4" /> Tech: {job.technician.name}
                       </div>
                     <% end %>
                   </div>
@@ -135,7 +137,10 @@ defmodule FieldHubWeb.PortalLive.Dashboard do
         <section>
           <div class="flex items-center justify-between mb-6">
             <h2 class="text-lg font-bold text-zinc-900 dark:text-white">Recent Completed</h2>
-            <.link navigate={~p"/portal/history"} class="text-xs font-bold text-primary hover:underline">
+            <.link
+              navigate={~p"/portal/history"}
+              class="text-xs font-bold text-primary hover:underline"
+            >
               View All History
             </.link>
           </div>
@@ -146,16 +151,16 @@ defmodule FieldHubWeb.PortalLive.Dashboard do
             <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 divide-y divide-zinc-100 dark:divide-zinc-800">
               <%= for job <- @completed_jobs do %>
                 <.link
-                  navigate={~p"/portal/jobs/#{job.id}"}
+                  navigate={~p"/portal/jobs/#{job}"}
                   class="p-4 flex items-center justify-between hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors"
                 >
                   <div class="min-w-0 flex-1">
                     <p class="font-bold text-zinc-900 dark:text-white truncate">{job.title}</p>
                     <p class="text-xs text-zinc-500 mt-1">
-                       {Calendar.strftime(job.completed_at, "%b %d, %Y")}
-                       <%= if job.technician do %>
+                      {Calendar.strftime(job.completed_at, "%b %d, %Y")}
+                      <%= if job.technician do %>
                         • {job.technician.name}
-                       <% end %>
+                      <% end %>
                     </p>
                   </div>
                   <.icon name="hero-chevron-right" class="size-4 text-zinc-300" />
@@ -169,11 +174,19 @@ defmodule FieldHubWeb.PortalLive.Dashboard do
     """
   end
 
-  defp status_color_classes("pending"), do: "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400"
-  defp status_color_classes("en_route"), do: "bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400"
-  defp status_color_classes("arrived"), do: "bg-indigo-100 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400"
-  defp status_color_classes("in_progress"), do: "bg-primary/10 text-primary"
-  defp status_color_classes("completed"), do: "bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400"
-  defp status_color_classes(_), do: "bg-zinc-100 text-zinc-600"
+  defp status_color_classes("pending"),
+    do: "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400"
 
+  defp status_color_classes("en_route"),
+    do: "bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400"
+
+  defp status_color_classes("arrived"),
+    do: "bg-indigo-100 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400"
+
+  defp status_color_classes("in_progress"), do: "bg-primary/10 text-primary"
+
+  defp status_color_classes("completed"),
+    do: "bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400"
+
+  defp status_color_classes(_), do: "bg-zinc-100 text-zinc-600"
 end

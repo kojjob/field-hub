@@ -36,10 +36,24 @@ defmodule FieldHubWeb.JobLive.Index do
     {:noreply, apply_action(socket, socket.assigns.live_action, params)}
   end
 
-  defp apply_action(socket, :edit, %{"id" => id}) do
+  defp apply_action(socket, :edit, %{"number" => number}) do
     socket
     |> assign(:page_title, "Edit Job")
-    |> assign(:job, Jobs.get_job!(socket.assigns.current_organization.id, id))
+    |> assign(:job, Jobs.get_job_by_number!(socket.assigns.current_organization.id, number))
+  end
+
+  defp apply_action(socket, :new, %{"customer_slug" => slug}) do
+    customer = FieldHub.CRM.get_customer_by_slug!(socket.assigns.current_organization.id, slug)
+
+    socket
+    |> assign(:page_title, "New Job")
+    |> assign(:job, %Job{customer_id: customer.id})
+  end
+
+  defp apply_action(socket, :new, %{"customer_id" => customer_id}) do
+    socket
+    |> assign(:page_title, "New Job")
+    |> assign(:job, %Job{customer_id: customer_id})
   end
 
   defp apply_action(socket, :new, _params) do
@@ -81,8 +95,8 @@ defmodule FieldHubWeb.JobLive.Index do
   end
 
   @impl true
-  def handle_event("delete", %{"id" => id}, socket) do
-    job = Jobs.get_job!(socket.assigns.current_organization.id, id)
+  def handle_event("delete", %{"number" => number}, socket) do
+    job = Jobs.get_job_by_number!(socket.assigns.current_organization.id, number)
     {:ok, _} = Jobs.delete_job(job)
 
     {:noreply, stream_delete(socket, :jobs, job)}
@@ -143,7 +157,7 @@ defmodule FieldHubWeb.JobLive.Index do
               </.link>
             </div>
           </div>
-
+          
     <!-- KPI Cards Grid -->
           <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
             <FieldHubWeb.DashboardComponents.kpi_card
@@ -175,7 +189,7 @@ defmodule FieldHubWeb.JobLive.Index do
               variant={:simple}
             />
           </div>
-
+          
     <!-- Search & Filters Bar -->
           <div class="bg-white dark:bg-zinc-900 p-6 rounded-[24px] border border-zinc-200 dark:border-zinc-800 shadow-sm">
             <div class="flex items-center justify-between gap-4">
@@ -211,7 +225,7 @@ defmodule FieldHubWeb.JobLive.Index do
               </div>
             </div>
           </div>
-
+          
     <!-- Jobs Table Card -->
           <div class="bg-white dark:bg-zinc-900 rounded-[32px] border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
             <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-800">
@@ -332,7 +346,7 @@ defmodule FieldHubWeb.JobLive.Index do
                         <.icon name="hero-pencil-square" class="size-5" />
                       </.link>
                       <.link
-                        phx-click={JS.push("delete", value: %{id: job.id}) |> hide("##{id}")}
+                        phx-click={JS.push("delete", value: %{number: job.number}) |> hide("##{id}")}
                         phx-hook="StopPropagation"
                         data-confirm="Are you sure you want to delete this job?"
                         class="p-2 rounded-xl hover:bg-white dark:hover:bg-zinc-800 hover:text-red-600 dark:text-zinc-400 dark:hover:text-red-400 transition-all"
@@ -358,7 +372,7 @@ defmodule FieldHubWeb.JobLive.Index do
           </div>
         </div>
       </div>
-
+      
     <!-- Slide-over Panel -->
       <div
         :if={@live_action in [:new, :edit]}
@@ -377,7 +391,7 @@ defmodule FieldHubWeb.JobLive.Index do
               <.icon name="hero-x-mark" class="size-5" />
             </.link>
           </div>
-
+          
     <!-- Slide-over Content -->
           <div class="flex-1 overflow-y-auto p-6">
             <.live_component

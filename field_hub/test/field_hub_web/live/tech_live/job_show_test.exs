@@ -50,7 +50,7 @@ defmodule FieldHubWeb.TechLive.JobShowTest do
     end
 
     test "renders job details", %{conn: conn, job: job} do
-      {:ok, _view, html} = live(conn, ~p"/tech/jobs/#{job.id}")
+      {:ok, _view, html} = live(conn, ~p"/tech/jobs/#{job.number}")
 
       assert html =~ job.title
       assert html =~ job.description
@@ -58,7 +58,7 @@ defmodule FieldHubWeb.TechLive.JobShowTest do
     end
 
     test "shows customer info with call button", %{conn: conn, job: job} do
-      {:ok, _view, html} = live(conn, ~p"/tech/jobs/#{job.id}")
+      {:ok, _view, html} = live(conn, ~p"/tech/jobs/#{job.number}")
 
       # Assuming job_fixture creates a customer
       customer = FieldHub.Repo.preload(job, :customer).customer
@@ -67,7 +67,7 @@ defmodule FieldHubWeb.TechLive.JobShowTest do
     end
 
     test "shows navigation button", %{conn: conn, job: job} do
-      {:ok, _view, html} = live(conn, ~p"/tech/jobs/#{job.id}")
+      {:ok, _view, html} = live(conn, ~p"/tech/jobs/#{job.number}")
 
       assert html =~ "Navigate"
     end
@@ -81,14 +81,14 @@ defmodule FieldHubWeb.TechLive.JobShowTest do
         inserted_at: DateTime.add(DateTime.utc_now(), -86400, :second)
       })
 
-      {:ok, _view, html} = live(conn, ~p"/tech/jobs/#{job.id}")
+      {:ok, _view, html} = live(conn, ~p"/tech/jobs/#{job.number}")
       assert html =~ "Service History"
       assert html =~ "Previous Maintenance"
       assert html =~ "Cleaned filters"
     end
 
     test "handles status action: start_travel", %{conn: conn, job: job} do
-      {:ok, view, _html} = live(conn, ~p"/tech/jobs/#{job.id}")
+      {:ok, view, _html} = live(conn, ~p"/tech/jobs/#{job.number}")
 
       assert render(view) =~ "Start Travel"
 
@@ -106,7 +106,7 @@ defmodule FieldHubWeb.TechLive.JobShowTest do
       conn: conn,
       job: job
     } do
-      {:ok, view, _html} = live(conn, ~p"/tech/jobs/#{job.id}")
+      {:ok, view, _html} = live(conn, ~p"/tech/jobs/#{job.number}")
 
       view |> element("button", "Start Travel") |> render_click()
       view |> element("#status-confirm-modal-confirm") |> render_click()

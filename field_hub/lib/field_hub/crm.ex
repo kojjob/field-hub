@@ -78,6 +78,16 @@ defmodule FieldHub.CRM do
   end
 
   @doc """
+  Gets a single customer by their slug scoped to an organization.
+  """
+  def get_customer_by_slug!(org_id, slug) do
+    Customer
+    |> where([c], c.organization_id == ^org_id)
+    |> where([c], c.slug == ^slug)
+    |> Repo.one!()
+  end
+
+  @doc """
   Gets a portal-enabled customer by portal token.
 
   Returns `nil` when the token is invalid, the portal is disabled,

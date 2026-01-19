@@ -21,12 +21,19 @@ defmodule FieldHub.Dispatch.Broadcaster do
       broadcast(tech_topic(job.technician_id), {:job_updated, job})
     end
 
+    # Broadcast to job topic for customer portal
+    broadcast(job_topic(job.id), {:job_updated, job})
+
     {:ok, job}
   end
 
   def broadcast_technician_location(%Technician{} = tech) do
     broadcast(org_topic(tech.organization_id), {:technician_location_updated, tech})
     {:ok, tech}
+  end
+
+  def broadcast_job_location_update(job_id, lat, lng) do
+    broadcast(job_topic(job_id), {:job_location_updated, %{lat: lat, lng: lng}})
   end
 
   def broadcast_technician_created(%Technician{} = tech) do
@@ -59,8 +66,13 @@ defmodule FieldHub.Dispatch.Broadcaster do
     PubSub.subscribe(@pubsub, tech_topic(tech_id))
   end
 
+  def subscribe_to_job(job_id) do
+    PubSub.subscribe(@pubsub, job_topic(job_id))
+  end
+
   defp org_topic(org_id), do: "org:#{org_id}"
   defp tech_topic(tech_id), do: "tech:#{tech_id}"
+  defp job_topic(job_id), do: "job:#{job_id}"
 
   defp broadcast(topic, message) do
     PubSub.broadcast(@pubsub, topic, message)

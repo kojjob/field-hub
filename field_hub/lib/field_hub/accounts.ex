@@ -650,4 +650,8 @@ defmodule FieldHub.Accounts do
     |> User.notification_changeset(attrs)
     |> Repo.update()
   end
+
+  def change_user_notifications(%User{} = user, attrs \\ %{}) do
+    User.notification_changeset(user, attrs)
+  end
 end
