@@ -677,9 +677,9 @@ git push -u origin develop
 
 - [x] **Implement:** User Profile & Security Settings
 - [x] **Implement:** Organization settings (name, address, timezone)
-- [ ] **Implement:** User management (invite team members)
-- [ ] **Implement:** Notification settings
-- [ ] **Implement:** Subscription/billing page
+- [x] **Implement:** User management (invite team members)
+- [x] **Implement:** Notification settings
+- [x] **Implement:** Subscription/billing page
 
 **Branch:** `feature/FH-063-settings`
 

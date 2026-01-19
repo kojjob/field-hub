@@ -483,6 +483,41 @@ defmodule FieldHub.Accounts do
     |> update_user_and_delete_all_tokens()
   end
 
+  @doc """
+  Returns the list of users in an organization.
+  """
+  def list_org_users(%Organization{} = org) do
+    User
+    |> where(organization_id: ^org.id)
+    |> order_by(:name)
+    |> Repo.all()
+  end
+
+  @doc """
+  Invites a new user to the organization.
+  """
+  def invite_user(%Organization{} = org, attrs) do
+    # Generate a strong random password since the user will set their own later
+    password = Base.encode64(:crypto.strong_rand_bytes(32))
+
+    %User{}
+    |> User.registration_changeset(
+      Map.merge(attrs, %{"password" => password, "terms_accepted" => true})
+    )
+    |> Ecto.Changeset.put_change(:organization_id, org.id)
+    |> Ecto.Changeset.put_change(:role, attrs["role"] || "viewer")
+    |> Ecto.Changeset.put_change(:phone, attrs["phone"])
+    |> Ecto.Changeset.put_change(:avatar_url, attrs["avatar_url"])
+    |> Repo.insert()
+  end
+
+  @doc """
+  Deletes a user.
+  """
+  def delete_user(%User{} = user) do
+    Repo.delete(user)
+  end
+
   ## Session
 
   @doc """
@@ -608,5 +643,10 @@ defmodule FieldHub.Accounts do
         {:ok, {user, tokens_to_expire}}
       end
     end)
+  end
+  def update_user_notifications(%User{} = user, attrs) do
+    user
+    |> User.notification_changeset(attrs)
+    |> Repo.update()
   end
 end

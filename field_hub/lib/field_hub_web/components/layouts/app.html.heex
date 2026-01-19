@@ -180,6 +180,39 @@
               </li>
               <li>
                 <.link
+                  navigate={~p"/settings/users"}
+                  class={if assigns[:current_nav] == :users, do: "bg-zinc-900 dark:bg-zinc-800 text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-bold shadow-md shadow-zinc-900/10", else: "text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-semibold transition-all duration-200"}
+                >
+                  <.icon
+                    name="hero-users"
+                    class={if assigns[:current_nav] == :users, do: "h-5 w-5 shrink-0 text-white", else: "h-5 w-5 shrink-0 text-zinc-400 dark:text-zinc-500 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors"}
+                  /> Team
+                </.link>
+              </li>
+              <li>
+                <.link
+                  navigate={~p"/settings/notifications"}
+                  class={if assigns[:current_nav] == :notifications, do: "bg-zinc-900 dark:bg-zinc-800 text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-bold shadow-md shadow-zinc-900/10", else: "text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-semibold transition-all duration-200"}
+                >
+                  <.icon
+                    name="hero-bell"
+                    class={if assigns[:current_nav] == :notifications, do: "h-5 w-5 shrink-0 text-white", else: "h-5 w-5 shrink-0 text-zinc-400 dark:text-zinc-500 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors"}
+                  /> Notifications
+                </.link>
+              </li>
+              <li>
+                <.link
+                  navigate={~p"/settings/billing"}
+                  class={if assigns[:current_nav] == :billing, do: "bg-zinc-900 dark:bg-zinc-800 text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-bold shadow-md shadow-zinc-900/10", else: "text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-semibold transition-all duration-200"}
+                >
+                  <.icon
+                    name="hero-credit-card"
+                    class={if assigns[:current_nav] == :billing, do: "h-5 w-5 shrink-0 text-white", else: "h-5 w-5 shrink-0 text-zinc-400 dark:text-zinc-500 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors"}
+                  /> Billing
+                </.link>
+              </li>
+              <li>
+                <.link
                   navigate={~p"/settings/terminology"}
                   class={if assigns[:current_nav] == :terminology, do: "bg-zinc-900 dark:bg-zinc-800 text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-bold shadow-md shadow-zinc-900/10", else: "text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white group flex gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-semibold transition-all duration-200"}
                 >
