@@ -17,10 +17,31 @@ defmodule FieldHubWeb.Router do
     plug :accepts, ["json"]
   end
 
+  pipeline :portal do
+    plug FieldHubWeb.PortalAuth, :fetch_current_portal_customer
+  end
+
+  pipeline :require_portal_customer do
+    plug FieldHubWeb.PortalAuth, :require_portal_customer
+  end
+
   scope "/", FieldHubWeb do
     pipe_through :browser
 
     get "/", PageController, :home
+  end
+
+  scope "/portal", FieldHubWeb do
+    pipe_through [:browser, :portal]
+
+    get "/login/:token", PortalSessionController, :create
+    delete "/logout", PortalSessionController, :delete
+
+    scope "/" do
+      pipe_through [:require_portal_customer]
+
+      get "/", PortalController, :index
+    end
   end
 
   # Other scopes may use custom stacks.
