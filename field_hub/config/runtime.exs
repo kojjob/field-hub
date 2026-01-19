@@ -99,4 +99,12 @@ if config_env() == :prod do
   #       force_ssl: [hsts: true]
   #
   # Check `Plug.SSL` for all available options in `force_ssl`.
+
+  # Twilio SMS Configuration
+  if System.get_env("TWILIO_ACCOUNT_SID") do
+    config :field_hub, FieldHub.Notifications.SMS,
+      account_sid: System.get_env("TWILIO_ACCOUNT_SID"),
+      auth_token: System.get_env("TWILIO_AUTH_TOKEN"),
+      phone_number: System.get_env("TWILIO_PHONE_NUMBER")
+  end
 end
