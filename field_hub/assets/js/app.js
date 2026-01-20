@@ -31,6 +31,7 @@ import PushNotifications from "./hooks/push_notifications"
 import {MapHook} from "./hooks/map"
 import {GeolocationHook} from "./hooks/geolocation"
 import {PWAInstall, NetworkStatus, SMSPreference} from "./hooks/pwa"
+import {OfflineSync, OfflineAction, OfflineIndicator} from "./hooks/offline_sync"
 import "leaflet/dist/leaflet.css"
 
 // Custom hooks
@@ -44,6 +45,9 @@ const Hooks = {
   PWAInstall: PWAInstall,
   NetworkStatus: NetworkStatus,
   SMSPreference: SMSPreference,
+  OfflineSync: OfflineSync,
+  OfflineAction: OfflineAction,
+  OfflineIndicator: OfflineIndicator,
   PasswordToggle: {
     mounted() {
       const wrapper = this.el;

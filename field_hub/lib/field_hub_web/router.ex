@@ -50,10 +50,13 @@ defmodule FieldHubWeb.Router do
     end
   end
 
-  # Other scopes may use custom stacks.
-  # scope "/api", FieldHubWeb do
-  #   pipe_through :api
-  # end
+  # API Routes for offline sync and mobile apps
+  scope "/api", FieldHubWeb do
+    pipe_through [:api, :fetch_session, :fetch_current_scope_for_user]
+
+    # Technician sync endpoint (uses session auth for PWA)
+    post "/tech/sync", TechSyncController, :sync
+  end
 
   ## Authentication routes
 
