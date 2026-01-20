@@ -10,10 +10,12 @@ defmodule FieldHub.Jobs.JobNotifier do
 
   defp deliver(recipient_email, recipient_name, subject, body) do
     if recipient_email && recipient_email =~ "@" do
+      from_address = Application.get_env(:field_hub, :mail_from, "notifications@fieldhub.ai")
+
       email =
         new()
         |> to({recipient_name || "", recipient_email})
-        |> from({"FieldHub", "notifications@fieldhub.ai"})
+        |> from({"FieldHub", from_address})
         |> subject(subject)
         |> text_body(body)
 
