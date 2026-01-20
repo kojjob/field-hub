@@ -59,11 +59,13 @@ defmodule FieldHub.Billing do
   Generate an invoice from a job.
   """
   def generate_invoice_from_job(job_id, attrs \\ %{}) do
-    job = Repo.get!(FieldHub.Jobs.Job, job_id) |> Repo.preload([:customer, :technician, :organization])
+    job =
+      Repo.get!(FieldHub.Jobs.Job, job_id)
+      |> Repo.preload([:customer, :technician, :organization])
 
     # Calculate labor from job data
     labor_hours = calculate_labor_hours(job)
-    labor_rate = job.technician && job.technician.hourly_rate || Decimal.new(75)
+    labor_rate = (job.technician && job.technician.hourly_rate) || Decimal.new(75)
     labor_amount = Decimal.mult(labor_hours, labor_rate) |> Decimal.round(2)
 
     # Default tax rate from org settings or 8.25%
@@ -117,12 +119,14 @@ defmodule FieldHub.Billing do
 
   defp calculate_actual_minutes(nil, _), do: nil
   defp calculate_actual_minutes(_, nil), do: nil
+
   defp calculate_actual_minutes(started_at, completed_at) do
     DateTime.diff(completed_at, started_at, :minute)
   end
 
   defp get_org_tax_rate(org) do
     settings = org.settings || %{}
+
     case settings["tax_rate"] do
       nil -> nil
       rate when is_number(rate) -> Decimal.new(to_string(rate))

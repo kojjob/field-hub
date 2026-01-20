@@ -167,4 +167,14 @@ if config_env() == :prod do
 
   # Enable Swoosh API client for HTTP-based adapters
   config :swoosh, :api_client, Swoosh.ApiClient.Finch
+
+  # Stripe Payment Configuration
+  if stripe_secret = System.get_env("STRIPE_SECRET_KEY") do
+    config :stripity_stripe,
+      api_key: stripe_secret,
+      signing_secret: System.get_env("STRIPE_WEBHOOK_SECRET")
+  end
+
+  config :field_hub, :stripe,
+    publishable_key: System.get_env("STRIPE_PUBLISHABLE_KEY")
 end

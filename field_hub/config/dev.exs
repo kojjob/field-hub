@@ -2,7 +2,7 @@ import Config
 
 # Configure your database
 config :field_hub, FieldHub.Repo,
-  username: "postgres",
+  username: "kojo",
   password: "postgres",
   hostname: "localhost",
   database: "field_hub_dev",

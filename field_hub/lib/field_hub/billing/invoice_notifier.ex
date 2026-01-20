@@ -23,23 +23,28 @@ defmodule FieldHub.Billing.InvoiceNotifier do
     # Generate portal link
     url = url(FieldHubWeb.Endpoint, ~p"/portal/login/#{customer.portal_token}")
 
-    deliver(customer.email, customer.name, "New Invoice ##{invoice.number} from #{invoice.organization.name}", """
-    Hi #{customer.name},
+    deliver(
+      customer.email,
+      customer.name,
+      "New Invoice ##{invoice.number} from #{invoice.organization.name}",
+      """
+      Hi #{customer.name},
 
-    You have received a new invoice from #{invoice.organization.name}.
+      You have received a new invoice from #{invoice.organization.name}.
 
-    Invoice Details:
-    - Invoice #: #{invoice.number}
-    - Amount Due: $#{format_money(invoice.total_amount)}
-    - Due Date: #{format_date(invoice.due_date)}
+      Invoice Details:
+      - Invoice #: #{invoice.number}
+      - Amount Due: $#{format_money(invoice.total_amount)}
+      - Due Date: #{format_date(invoice.due_date)}
 
-    You can view and pay your invoice securely online by clicking the link below:
-    #{url}
+      You can view and pay your invoice securely online by clicking the link below:
+      #{url}
 
-    If you have any questions, please contact us at #{invoice.organization.email || "support@fieldhub.ai"}.
+      If you have any questions, please contact us at #{invoice.organization.email || "support@fieldhub.ai"}.
 
-    Thank you for your business!
-    """)
+      Thank you for your business!
+      """
+    )
   end
 
   defp deliver(recipient_email, recipient_name, subject, body) do

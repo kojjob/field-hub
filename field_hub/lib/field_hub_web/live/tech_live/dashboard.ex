@@ -36,15 +36,27 @@ defmodule FieldHubWeb.TechLive.Dashboard do
   @impl true
   def render(assigns) do
     ~H"""
-    <div id="offline-sync-container" phx-hook="OfflineSync" class="max-w-md mx-auto p-4 space-y-6 pb-24">
+    <div
+      id="offline-sync-container"
+      phx-hook="OfflineSync"
+      class="max-w-md mx-auto p-4 space-y-6 pb-24"
+    >
       <%!-- Offline Banner --%>
-      <div id="offline-banner" class="hidden bg-amber-500/10 border border-amber-500/30 rounded-xl p-3 flex items-center gap-3">
+      <div
+        id="offline-banner"
+        class="hidden bg-amber-500/10 border border-amber-500/30 rounded-xl p-3 flex items-center gap-3"
+      >
         <div class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></div>
-        <p class="text-sm text-amber-700 font-medium">You're offline. Changes will sync when connected.</p>
+        <p class="text-sm text-amber-700 font-medium">
+          You're offline. Changes will sync when connected.
+        </p>
       </div>
 
       <%!-- Pending Sync Banner --%>
-      <div id="pending-sync-banner" class="hidden bg-blue-500/10 border border-blue-500/30 rounded-xl p-3 flex items-center justify-between">
+      <div
+        id="pending-sync-banner"
+        class="hidden bg-blue-500/10 border border-blue-500/30 rounded-xl p-3 flex items-center justify-between"
+      >
         <div class="flex items-center gap-3">
           <.icon name="hero-arrow-path" class="w-5 h-5 text-blue-500 animate-spin" />
           <p class="text-sm text-blue-700 font-medium">
@@ -64,7 +76,10 @@ defmodule FieldHubWeb.TechLive.Dashboard do
             <div data-indicator class="w-2 h-2 rounded-full bg-emerald-500"></div>
             <span data-text class="text-xs text-gray-500">Online</span>
           </div>
-          <button phx-click="refresh" class="text-gray-500 hover:text-gray-900 p-1 active:scale-95 transition-transform">
+          <button
+            phx-click="refresh"
+            class="text-gray-500 hover:text-gray-900 p-1 active:scale-95 transition-transform"
+          >
             <.icon name="hero-arrow-path" class="w-5 h-5" />
           </button>
           <div class="text-sm text-gray-500">{Calendar.strftime(Date.utc_today(), "%a, %b %d")}</div>
@@ -88,7 +103,11 @@ defmodule FieldHubWeb.TechLive.Dashboard do
       <% end %>
 
       <%!-- PWA Install Prompt --%>
-      <div id="pwa-install" phx-hook="PWAInstall" class="hidden fixed bottom-20 left-4 right-4 bg-teal-600 text-white rounded-xl p-4 shadow-lg">
+      <div
+        id="pwa-install"
+        phx-hook="PWAInstall"
+        class="hidden fixed bottom-20 left-4 right-4 bg-teal-600 text-white rounded-xl p-4 shadow-lg"
+      >
         <div class="flex items-center justify-between">
           <div>
             <p class="font-semibold">Install FieldHub</p>
@@ -172,7 +191,11 @@ defmodule FieldHubWeb.TechLive.Dashboard do
   end
 
   @impl true
-  def handle_event("offline_status", %{"online" => online, "pending_count" => pending_count}, socket) do
+  def handle_event(
+        "offline_status",
+        %{"online" => online, "pending_count" => pending_count},
+        socket
+      ) do
     # JavaScript hook notifies us of offline/online status changes
     socket =
       socket

@@ -8,9 +8,29 @@ config :bcrypt_elixir, :log_rounds, 1
 # The MIX_TEST_PARTITION environment variable can be used
 # to provide built-in test partitioning in CI environment.
 # Run `mix help test` for more information.
+repo_username =
+  cond do
+    username = System.get_env("PGUSER") ->
+      username
+
+    username = System.get_env("POSTGRES_USER") ->
+      username
+
+    match?({:unix, :darwin}, :os.type()) ->
+      System.get_env("USER") || "postgres"
+
+    true ->
+      "postgres"
+  end
+
+repo_password =
+  System.get_env("PGPASSWORD") ||
+    System.get_env("POSTGRES_PASSWORD") ||
+    if(repo_username == "postgres", do: "postgres", else: nil)
+
 config :field_hub, FieldHub.Repo,
-  username: "postgres",
-  password: "postgres",
+  username: repo_username,
+  password: repo_password,
   hostname: "localhost",
   database: "field_hub_test#{System.get_env("MIX_TEST_PARTITION")}",
   pool: Ecto.Adapters.SQL.Sandbox,

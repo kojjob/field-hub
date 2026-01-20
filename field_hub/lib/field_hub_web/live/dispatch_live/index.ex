@@ -183,7 +183,11 @@ defmodule FieldHubWeb.DispatchLive.Index do
   end
 
   @impl true
-  def handle_event("assign_job_from_select", %{"job_id" => job_id, "technician_id" => tech_id}, socket) do
+  def handle_event(
+        "assign_job_from_select",
+        %{"job_id" => job_id, "technician_id" => tech_id},
+        socket
+      ) do
     org_id = socket.assigns.current_organization.id
     job = Jobs.get_job!(org_id, job_id)
 
@@ -192,16 +196,20 @@ defmodule FieldHubWeb.DispatchLive.Index do
 
     update_params = %{
       "technician_id" => tech_id_val,
-      "scheduled_date" => if(tech_id_val, do: Date.to_string(socket.assigns.selected_date), else: nil)
+      "scheduled_date" =>
+        if(tech_id_val, do: Date.to_string(socket.assigns.selected_date), else: nil)
     }
 
     case Jobs.update_job(job, update_params) do
       {:ok, updated_job} ->
         # Reload job with preloads for the slideout
-        updated_job = Jobs.get_job!(org_id, updated_job.id) |> FieldHub.Repo.preload([:customer, :technician])
+        updated_job =
+          Jobs.get_job!(org_id, updated_job.id) |> FieldHub.Repo.preload([:customer, :technician])
 
         message = if tech_id_val, do: "Job assigned successfully", else: "Job unassigned"
-        {:noreply, socket |> assign(:selected_job, updated_job) |> put_flash(:info, message) |> load_data()}
+
+        {:noreply,
+         socket |> assign(:selected_job, updated_job) |> put_flash(:info, message) |> load_data()}
 
       {:error, _changeset} ->
         {:noreply, put_flash(socket, :error, "Failed to update assignment")}
@@ -464,7 +472,7 @@ defmodule FieldHubWeb.DispatchLive.Index do
               Map
             </button>
           </div>
-
+          
     <!-- Date Navigation -->
           <div class="flex items-center gap-2">
             <button
@@ -488,7 +496,7 @@ defmodule FieldHubWeb.DispatchLive.Index do
           </div>
         </div>
       </div>
-
+      
     <!-- Main Content -->
       <div class="flex-1 flex overflow-hidden rounded-[24px] border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm">
         <!-- Unassigned Jobs Sidebar -->
@@ -559,7 +567,7 @@ defmodule FieldHubWeb.DispatchLive.Index do
             </div>
           <% end %>
         </div>
-
+        
     <!-- Calendar Grid or Map -->
         <div class="flex-1 overflow-auto relative bg-zinc-50/50 dark:bg-zinc-900/50 scrollbar-hide">
           <%= if @view_mode == :map do %>
@@ -599,7 +607,7 @@ defmodule FieldHubWeb.DispatchLive.Index do
                   </div>
                 <% end %>
               </div>
-
+              
     <!-- Time Slots -->
               <%= for slot <- time_slots() do %>
                 <div class="flex border-b border-zinc-100 dark:border-zinc-800 group hover:bg-zinc-50 dark:hover:bg-zinc-800/20 transition-colors">
@@ -607,7 +615,7 @@ defmodule FieldHubWeb.DispatchLive.Index do
                   <div class="w-20 shrink-0 border-r border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/50 p-4 text-[10px] font-black text-zinc-400 text-right sticky left-0 z-10">
                     {slot.label}
                   </div>
-
+                  
     <!-- Technician Columns -->
                   <%= for tech <- @technicians do %>
                     <div
@@ -639,7 +647,7 @@ defmodule FieldHubWeb.DispatchLive.Index do
             </div>
           <% end %>
         </div>
-
+        
     <!-- Technician Status Sidebar (Right) -->
         <div class="w-80 bg-white dark:bg-zinc-900 border-l border-zinc-200 dark:border-zinc-800 flex flex-col shrink-0">
           <div class="p-5 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between bg-zinc-50/50 dark:bg-zinc-800/30">
@@ -681,7 +689,7 @@ defmodule FieldHubWeb.DispatchLive.Index do
                     </div>
                   </div>
                 </div>
-
+                
     <!-- Current Active Job -->
                 <%= if tech.status == "on_job" || tech.status == "traveling" do %>
                   <%= if active_job = List.first(tech.jobs) do %>
@@ -703,7 +711,7 @@ defmodule FieldHubWeb.DispatchLive.Index do
           </div>
         </div>
       </div>
-
+      
     <!-- Job Details Slideout Panel -->
       <%= if @selected_job do %>
         <div
@@ -764,7 +772,7 @@ defmodule FieldHubWeb.DispatchLive.Index do
                   </p>
                 <% end %>
               </div>
-
+              
     <!-- Schedule Info -->
               <div class="bg-zinc-50 dark:bg-zinc-800/50 rounded-[24px] p-5 border border-zinc-100 dark:border-zinc-800">
                 <div class="flex items-center gap-3 mb-3">
@@ -791,7 +799,7 @@ defmodule FieldHubWeb.DispatchLive.Index do
                   <p class="text-zinc-500 italic font-medium">Not yet scheduled</p>
                 <% end %>
               </div>
-
+              
     <!-- Technician Info -->
               <div class="bg-zinc-50 dark:bg-zinc-800/50 rounded-[24px] p-5 border border-zinc-100 dark:border-zinc-800">
                 <div class="flex items-center gap-3 mb-3">
@@ -836,13 +844,13 @@ defmodule FieldHubWeb.DispatchLive.Index do
                 <% end %>
               </div>
             </div>
-
+            
     <!-- Quick Actions -->
             <div class="pt-8 border-t border-zinc-200 dark:border-zinc-800 space-y-4">
               <h4 class="text-xs font-black text-zinc-900 dark:text-white uppercase tracking-[0.2em]">
                 Management Actions
               </h4>
-
+              
     <!-- Status Change Buttons -->
               <div class="grid grid-cols-2 gap-3">
                 <%= if @selected_job.status != "en_route" do %>
@@ -886,7 +894,7 @@ defmodule FieldHubWeb.DispatchLive.Index do
                   </button>
                 <% end %>
               </div>
-
+              
     <!-- Unassign Button -->
               <%= if @selected_job.technician_id do %>
                 <button
