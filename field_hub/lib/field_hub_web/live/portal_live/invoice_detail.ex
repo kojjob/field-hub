@@ -94,8 +94,7 @@ defmodule FieldHubWeb.PortalLive.InvoiceDetail do
                 navigate={~p"/portal/invoices/#{@invoice.id}/pay"}
                 class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-white text-sm font-bold hover:bg-primary/90 transition-all"
               >
-                <.icon name="hero-credit-card" class="size-5" />
-                Pay Now
+                <.icon name="hero-credit-card" class="size-5" /> Pay Now
               </.link>
             <% end %>
             <button

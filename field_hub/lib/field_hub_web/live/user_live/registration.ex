@@ -19,7 +19,7 @@ defmodule FieldHubWeb.UserLive.Registration do
         <!-- Overlay Gradient -->
         <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent">
         </div>
-
+        
     <!-- Header Logo -->
         <div class="absolute top-8 left-8 z-10">
           <.link navigate={~p"/"} class="flex items-center gap-2.5">
@@ -29,7 +29,7 @@ defmodule FieldHubWeb.UserLive.Registration do
             <span class="text-xl font-black tracking-tight text-white">FieldHub</span>
           </.link>
         </div>
-
+        
     <!-- Testimonial -->
         <div class="absolute bottom-0 left-0 right-0 p-10 z-10">
           <blockquote class="space-y-4">
@@ -42,7 +42,7 @@ defmodule FieldHubWeb.UserLive.Registration do
           </blockquote>
         </div>
       </div>
-
+      
     <!-- Right Side: Form -->
       <div class="flex-1 flex flex-col overflow-y-auto">
         <!-- Mobile Header -->
@@ -65,7 +65,7 @@ defmodule FieldHubWeb.UserLive.Registration do
                 Join FieldHub and streamline your service business operations.
               </p>
             </div>
-
+            
     <!-- Social Login Buttons -->
             <div class="grid grid-cols-2 gap-3">
               <button
@@ -102,7 +102,7 @@ defmodule FieldHubWeb.UserLive.Registration do
                 Microsoft
               </button>
             </div>
-
+            
     <!-- Divider -->
             <div class="relative">
               <div class="absolute inset-0 flex items-center">
@@ -129,7 +129,7 @@ defmodule FieldHubWeb.UserLive.Registration do
                 <h3 class="text-sm font-bold text-red-800">Please fix the following:</h3>
                 <ul class="text-sm text-red-700 mt-1 list-disc list-inside space-y-0.5">
                   <%= for {field, {msg, _opts}} <- @form.errors do %>
-                    <li><%= humanize_field(field) %>: <%= msg %></li>
+                    <li>{humanize_field(field)}: {msg}</li>
                   <% end %>
                 </ul>
               </div>
@@ -184,7 +184,12 @@ defmodule FieldHubWeb.UserLive.Registration do
                 <label class="text-sm font-semibold text-slate-700">
                   Password
                 </label>
-                <div class="relative" id="reg-password-field-wrapper" phx-hook="PasswordToggle" phx-update="ignore">
+                <div
+                  class="relative"
+                  id="reg-password-field-wrapper"
+                  phx-hook="PasswordToggle"
+                  phx-update="ignore"
+                >
                   <input
                     type="password"
                     name={@form[:password].name}
@@ -215,14 +220,18 @@ defmodule FieldHubWeb.UserLive.Registration do
                   id="terms_accepted"
                   name={@form[:terms_accepted].name}
                   value="true"
-                  checked={Phoenix.HTML.Form.normalize_value("checkbox", @form[:terms_accepted].value)}
+                  checked={
+                    Phoenix.HTML.Form.normalize_value("checkbox", @form[:terms_accepted].value)
+                  }
                   class="size-4 rounded border-slate-300 text-primary focus:ring-primary/20 mt-0.5"
                 />
-                <label for="terms_accepted" class="text-sm text-slate-600 leading-tight cursor-pointer">
+                <label
+                  for="terms_accepted"
+                  class="text-sm text-slate-600 leading-tight cursor-pointer"
+                >
                   I agree to the
                   <span class="text-primary font-semibold hover:underline">Terms of Service</span>
-                  and
-                  <span class="text-primary font-semibold hover:underline">Privacy Policy</span>
+                  and <span class="text-primary font-semibold hover:underline">Privacy Policy</span>
                 </label>
               </div>
 

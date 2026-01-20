@@ -17,13 +17,17 @@ defmodule FieldHubWeb.TechnicianLive.FormComponent do
       >
         <div class="space-y-4">
           <!-- Avatar Color Selection with Label -->
-          <div class="flex items-center gap-4">
-            <div class="relative">
-              <.input
-                field={@form[:color]}
+          <div class="flex items-start gap-4">
+            <div>
+              <span class="label text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5 block">
+                Avatar Color
+              </span>
+              <input
                 type="color"
-                label="Avatar"
-                class="h-12 w-12 p-1 rounded-full overflow-hidden cursor-pointer"
+                id={@form[:color].id}
+                name={@form[:color].name}
+                value={@form[:color].value || "#3b82f6"}
+                class="h-12 w-12 p-0.5 rounded-lg border-2 border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800/50 cursor-pointer shadow-sm hover:border-primary transition-colors"
               />
             </div>
             <div class="flex-1">
@@ -63,7 +67,6 @@ defmodule FieldHubWeb.TechnicianLive.FormComponent do
             value={if @form[:skills].value, do: Enum.join(@form[:skills].value, ", "), else: ""}
             name="technician[skills_input]"
             placeholder="e.g. Electrical, HVAC, Plumbing (comma separated)"
-            class="w-full"
           />
         </div>
 

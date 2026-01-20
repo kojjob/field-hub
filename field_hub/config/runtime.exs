@@ -175,6 +175,5 @@ if config_env() == :prod do
       signing_secret: System.get_env("STRIPE_WEBHOOK_SECRET")
   end
 
-  config :field_hub, :stripe,
-    publishable_key: System.get_env("STRIPE_PUBLISHABLE_KEY")
+  config :field_hub, :stripe, publishable_key: System.get_env("STRIPE_PUBLISHABLE_KEY")
 end

@@ -30,8 +30,8 @@ defmodule FieldHubWeb.UserLive.ForgotPassword do
               Enter your email and we'll send you a secure link to sign in.
             </p>
           </div>
-
-          <!-- Success Message -->
+          
+    <!-- Success Message -->
           <div
             :if={@email_sent}
             id="success-banner"
@@ -48,8 +48,8 @@ defmodule FieldHubWeb.UserLive.ForgotPassword do
               </p>
             </div>
           </div>
-
-          <!-- Form -->
+          
+    <!-- Form -->
           <.form
             :if={!@email_sent}
             for={@form}
@@ -77,12 +77,11 @@ defmodule FieldHubWeb.UserLive.ForgotPassword do
               phx-disable-with="Sending..."
               class="w-full bg-primary text-white py-3.5 rounded-lg text-sm font-bold shadow-lg shadow-primary/20 hover:brightness-110 transition-all active:scale-[0.99] flex items-center justify-center gap-2"
             >
-              <.icon name="hero-envelope" class="size-4" />
-              Send Reset Link
+              <.icon name="hero-envelope" class="size-4" /> Send Reset Link
             </button>
           </.form>
-
-          <!-- Send Another -->
+          
+    <!-- Send Another -->
           <div :if={@email_sent} class="space-y-4">
             <button
               type="button"
@@ -92,22 +91,24 @@ defmodule FieldHubWeb.UserLive.ForgotPassword do
               Try a different email
             </button>
           </div>
-
-          <!-- Back to Login -->
+          
+    <!-- Back to Login -->
           <div class="text-center pt-2">
             <.link
               navigate={~p"/users/log-in"}
               class="inline-flex items-center gap-1 text-slate-500 text-sm hover:text-primary transition-colors"
             >
-              <.icon name="hero-arrow-left" class="size-4" />
-              Back to login
+              <.icon name="hero-arrow-left" class="size-4" /> Back to login
             </.link>
           </div>
         </div>
-
-        <!-- Footer -->
+        
+    <!-- Footer -->
         <p class="text-center text-xs text-slate-400 mt-6">
-          Need help? <a href="mailto:support@fieldhub.app" class="text-primary hover:underline">Contact support</a>
+          Need help?
+          <a href="mailto:support@fieldhub.app" class="text-primary hover:underline">
+            Contact support
+          </a>
         </p>
       </div>
     </div>
@@ -137,6 +138,7 @@ defmodule FieldHubWeb.UserLive.ForgotPassword do
         magic_url = url_fun.(token)
 
         require Logger
+
         Logger.info("""
 
         ========================================

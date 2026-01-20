@@ -159,7 +159,9 @@ defmodule FieldHubWeb.PortalLive.InvoicesTest do
         init_test_session(test_conn, %{portal_customer_id: test_customer.id})
 
       # Should redirect with error flash
-      assert {:error, {:live_redirect, %{to: "/portal/invoices", flash: %{"error" => "Invoice not found"}}}} =
+      assert {:error,
+              {:live_redirect,
+               %{to: "/portal/invoices", flash: %{"error" => "Invoice not found"}}}} =
                live(test_conn, ~p"/portal/invoices/#{invoice.id}")
     end
 

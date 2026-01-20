@@ -96,11 +96,33 @@ defmodule FieldHub.CRM.Customer do
     |> put_slug()
     |> validate_format(:email, ~r/^[^\s]+@[^\s]+\.[^\s]+$/, message: "has invalid format")
     |> validate_inclusion(:preferred_contact, @contact_methods)
-    |> validate_format(:state, @state_code_regex, message: "must be a 2-letter state code")
-    |> validate_format(:zip, @zip_code_regex, message: "must be a valid ZIP code")
+    |> validate_state_format()
+    |> validate_zip_format()
     |> foreign_key_constraint(:organization_id)
     |> unique_constraint([:portal_token])
     |> unique_constraint([:organization_id, :slug])
+  end
+
+  defp validate_state_format(changeset) do
+    country = get_field(changeset, :country)
+
+    if country in [nil, "US"] do
+      validate_format(changeset, :state, @state_code_regex,
+        message: "must be a 2-letter state code"
+      )
+    else
+      changeset
+    end
+  end
+
+  defp validate_zip_format(changeset) do
+    country = get_field(changeset, :country)
+
+    if country in [nil, "US"] do
+      validate_format(changeset, :zip, @zip_code_regex, message: "must be a valid ZIP code")
+    else
+      changeset
+    end
   end
 
   defp put_slug(changeset) do

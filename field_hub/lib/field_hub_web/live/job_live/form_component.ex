@@ -4,6 +4,7 @@ defmodule FieldHubWeb.JobLive.FormComponent do
   alias FieldHub.Jobs
   alias FieldHub.CRM
   alias FieldHub.Dispatch
+  alias FieldHub.Locations
 
   @impl true
   def render(assigns) do
@@ -55,7 +56,6 @@ defmodule FieldHubWeb.JobLive.FormComponent do
             field={@form[:description]}
             type="textarea"
             label="Description"
-            class="min-h-[100px]"
             placeholder="Detailed description of the work required..."
           />
 
@@ -110,21 +110,46 @@ defmodule FieldHubWeb.JobLive.FormComponent do
               label="Street Address"
               placeholder="123 Main Street"
             />
-            <div class="grid grid-cols-3 gap-4 mt-3">
+            <div class="grid grid-cols-2 gap-4 mt-3">
+              <.input
+                field={@form[:service_country]}
+                type="select"
+                label="Country"
+                prompt="Select country"
+                options={@countries}
+              />
+              <div>
+                <%= if @form[:service_country].value == "US" || is_nil(@form[:service_country].value) do %>
+                  <.input
+                    field={@form[:service_state]}
+                    type="select"
+                    label="State"
+                    prompt="Select state"
+                    options={@us_states}
+                  />
+                <% else %>
+                  <.input
+                    field={@form[:service_state]}
+                    type="text"
+                    label="State / Province"
+                    placeholder="State or Province"
+                  />
+                <% end %>
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4 mt-3">
               <.input
                 field={@form[:service_city]}
                 type="text"
                 label="City"
-              />
-              <.input
-                field={@form[:service_state]}
-                type="text"
-                label="State"
+                placeholder="e.g. Austin"
               />
               <.input
                 field={@form[:service_zip]}
                 type="text"
                 label="ZIP"
+                placeholder="e.g. 78701"
+                maxlength="10"
               />
             </div>
           </div>
@@ -184,6 +209,10 @@ defmodule FieldHubWeb.JobLive.FormComponent do
      |> assign(assigns)
      |> assign(:customers, customers)
      |> assign(:technicians, technicians)
+     |> assign(:customers, customers)
+     |> assign(:technicians, technicians)
+     |> assign(:countries, Locations.countries())
+     |> assign(:us_states, Locations.us_states())
      |> assign_form(changeset)}
   end
 
