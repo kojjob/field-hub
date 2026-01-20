@@ -42,20 +42,26 @@ defmodule FieldHubWeb.InvoiceLiveTest do
 
     test "displays invoice stats", %{conn: conn, org: org, customer: customer} do
       job1 = job_fixture(org.id, %{customer_id: customer.id})
-      invoice1 = invoice_fixture(job1, %{
-        labor_amount: Decimal.new("100.00"),
-        parts_amount: Decimal.new("50.00"),
-        tax_rate: Decimal.new("10.00")
-      })
+
+      invoice1 =
+        invoice_fixture(job1, %{
+          labor_amount: Decimal.new("100.00"),
+          parts_amount: Decimal.new("50.00"),
+          tax_rate: Decimal.new("10.00")
+        })
+
       Billing.send_invoice(invoice1)
       Billing.mark_invoice_paid(invoice1)
 
       job2 = job_fixture(org.id, %{customer_id: customer.id})
-      invoice2 = invoice_fixture(job2, %{
-        labor_amount: Decimal.new("200.00"),
-        parts_amount: Decimal.new("0"),
-        tax_rate: Decimal.new("0")
-      })
+
+      invoice2 =
+        invoice_fixture(job2, %{
+          labor_amount: Decimal.new("200.00"),
+          parts_amount: Decimal.new("0"),
+          tax_rate: Decimal.new("0")
+        })
+
       Billing.send_invoice(invoice2)
 
       {:ok, _view, html} = live(conn, ~p"/invoices")
@@ -64,7 +70,8 @@ defmodule FieldHubWeb.InvoiceLiveTest do
       assert html =~ "Total Invoiced"
       assert html =~ "Paid"
       assert html =~ "Outstanding"
-      assert html =~ "2" # invoice count
+      # invoice count
+      assert html =~ "2"
     end
 
     test "filters invoices by status", %{conn: conn, org: org, customer: customer} do
@@ -220,11 +227,12 @@ defmodule FieldHubWeb.InvoiceLiveTest do
     end
 
     test "displays labor details", %{conn: conn, job: job} do
-      invoice = invoice_fixture(job, %{
-        labor_hours: Decimal.new("2.5"),
-        labor_rate: Decimal.new("75.00"),
-        labor_amount: Decimal.new("187.50")
-      })
+      invoice =
+        invoice_fixture(job, %{
+          labor_hours: Decimal.new("2.5"),
+          labor_rate: Decimal.new("75.00"),
+          labor_amount: Decimal.new("187.50")
+        })
 
       {:ok, _view, html} = live(conn, ~p"/invoices/#{invoice.id}")
 
@@ -235,9 +243,10 @@ defmodule FieldHubWeb.InvoiceLiveTest do
     end
 
     test "displays parts amount", %{conn: conn, job: job} do
-      invoice = invoice_fixture(job, %{
-        parts_amount: Decimal.new("250.00")
-      })
+      invoice =
+        invoice_fixture(job, %{
+          parts_amount: Decimal.new("250.00")
+        })
 
       {:ok, _view, html} = live(conn, ~p"/invoices/#{invoice.id}")
 
@@ -246,11 +255,12 @@ defmodule FieldHubWeb.InvoiceLiveTest do
     end
 
     test "displays tax calculation", %{conn: conn, job: job} do
-      invoice = invoice_fixture(job, %{
-        labor_amount: Decimal.new("100.00"),
-        parts_amount: Decimal.new("0"),
-        tax_rate: Decimal.new("10.00")
-      })
+      invoice =
+        invoice_fixture(job, %{
+          labor_amount: Decimal.new("100.00"),
+          parts_amount: Decimal.new("0"),
+          tax_rate: Decimal.new("10.00")
+        })
 
       {:ok, _view, html} = live(conn, ~p"/invoices/#{invoice.id}")
 
@@ -259,9 +269,10 @@ defmodule FieldHubWeb.InvoiceLiveTest do
     end
 
     test "displays invoice notes", %{conn: conn, job: job} do
-      invoice = invoice_fixture(job, %{
-        notes: "Special instructions for the customer"
-      })
+      invoice =
+        invoice_fixture(job, %{
+          notes: "Special instructions for the customer"
+        })
 
       {:ok, _view, html} = live(conn, ~p"/invoices/#{invoice.id}")
 
@@ -281,11 +292,13 @@ defmodule FieldHubWeb.InvoiceLiveTest do
 
     test "displays line items", %{conn: conn, job: job} do
       invoice = invoice_fixture(job)
-      _line_item = line_item_fixture(invoice.id, %{
-        description: "Additional Service Fee",
-        quantity: Decimal.new("2.0"),
-        unit_price: Decimal.new("25.00")
-      })
+
+      _line_item =
+        line_item_fixture(invoice.id, %{
+          description: "Additional Service Fee",
+          quantity: Decimal.new("2.0"),
+          unit_price: Decimal.new("25.00")
+        })
 
       {:ok, _view, html} = live(conn, ~p"/invoices/#{invoice.id}")
 

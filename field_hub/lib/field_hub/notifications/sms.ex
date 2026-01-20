@@ -47,6 +47,7 @@ defmodule FieldHub.Notifications.SMS do
   Respects customer's SMS notification preferences.
   """
   def notify_technician_en_route(%{customer: nil}), do: {:error, :no_customer}
+
   def notify_technician_en_route(%{customer: customer} = job) when is_map(customer) do
     with {:phone, phone} when is_binary(phone) <- {:phone, customer.phone},
          {:enabled, true} <- {:enabled, customer.sms_notifications_enabled != false} do
@@ -78,6 +79,7 @@ defmodule FieldHub.Notifications.SMS do
   Respects customer's SMS notification preferences.
   """
   def notify_technician_arrived(%{customer: nil}), do: {:error, :no_customer}
+
   def notify_technician_arrived(%{customer: customer} = job) when is_map(customer) do
     with {:phone, phone} when is_binary(phone) <- {:phone, customer.phone},
          {:enabled, true} <- {:enabled, customer.sms_notifications_enabled != false} do
@@ -108,6 +110,7 @@ defmodule FieldHub.Notifications.SMS do
   Respects customer's SMS notification preferences.
   """
   def notify_job_completed(%{customer: nil}), do: {:error, :no_customer}
+
   def notify_job_completed(%{customer: customer} = job) when is_map(customer) do
     with {:phone, phone} when is_binary(phone) <- {:phone, customer.phone},
          {:enabled, true} <- {:enabled, customer.sms_notifications_enabled != false} do
@@ -140,6 +143,7 @@ defmodule FieldHub.Notifications.SMS do
   Respects customer's SMS notification preferences.
   """
   def notify_job_scheduled(%{customer: nil}), do: {:error, :no_customer}
+
   def notify_job_scheduled(%{customer: customer} = job) when is_map(customer) do
     with {:phone, phone} when is_binary(phone) <- {:phone, customer.phone},
          {:enabled, true} <- {:enabled, customer.sms_notifications_enabled != false} do
@@ -297,9 +301,10 @@ defmodule FieldHub.Notifications.SMS do
     :inets.start()
     :ssl.start()
 
-    headers_charlist = Enum.map(headers, fn {k, v} ->
-      {String.to_charlist(k), String.to_charlist(v)}
-    end)
+    headers_charlist =
+      Enum.map(headers, fn {k, v} ->
+        {String.to_charlist(k), String.to_charlist(v)}
+      end)
 
     request = {
       String.to_charlist(url),
@@ -314,7 +319,7 @@ defmodule FieldHub.Notifications.SMS do
       ssl: [verify: :verify_none]
     ]
 
-    case :httpc.request(:post, request, http_opts, [body_format: :binary]) do
+    case :httpc.request(:post, request, http_opts, body_format: :binary) do
       {:ok, {{_, 200, _}, _, response_body}} ->
         Jason.decode(response_body)
 
@@ -339,15 +344,16 @@ defmodule FieldHub.Notifications.SMS do
     # Add country code if missing
     case cleaned do
       "+" <> _ -> cleaned
-      _ when byte_size(cleaned) == 10 -> "+1" <> cleaned  # US number
+      # US number
+      _ when byte_size(cleaned) == 10 -> "+1" <> cleaned
       _ -> "+" <> cleaned
     end
   end
 
   defp enabled? do
     get_config(:account_sid) != nil and
-    get_config(:auth_token) != nil and
-    get_config(:phone_number) != nil
+      get_config(:auth_token) != nil and
+      get_config(:phone_number) != nil
   end
 
   defp get_config(key) do
@@ -355,6 +361,7 @@ defmodule FieldHub.Notifications.SMS do
   end
 
   defp first_name(nil), do: "there"
+
   defp first_name(name) do
     name |> String.split(" ") |> List.first() || "there"
   end
@@ -366,7 +373,8 @@ defmodule FieldHub.Notifications.SMS do
   defp get_customer_name(_), do: "Customer"
 
   defp estimated_arrival_minutes(%{travel_started_at: nil}), do: 15
-  defp estimated_arrival_minutes(_job), do: 10  # Already traveling
+  # Already traveling
+  defp estimated_arrival_minutes(_job), do: 10
 
   defp format_date(nil), do: "TBD"
   defp format_date(date), do: Calendar.strftime(date, "%B %d, %Y")

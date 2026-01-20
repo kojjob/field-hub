@@ -134,13 +134,17 @@ defmodule FieldHub.BillingTest do
       assert Date.diff(invoice.due_date, Date.utc_today()) == 30
     end
 
-    test "calculates labor from started_at and completed_at timestamps", %{org: org, customer: customer} do
+    test "calculates labor from started_at and completed_at timestamps", %{
+      org: org,
+      customer: customer
+    } do
       # Create a job and manually set timestamps for 2 hours of work
       job = job_fixture(org.id, %{customer_id: customer.id})
 
       # Update timestamps directly (bypassing changeset since these are lifecycle fields)
       started = ~U[2026-01-20 10:00:00Z]
       completed = ~U[2026-01-20 12:00:00Z]
+
       job
       |> Ecto.Changeset.change(%{started_at: started, completed_at: completed})
       |> FieldHub.Repo.update!()
@@ -150,7 +154,10 @@ defmodule FieldHub.BillingTest do
       assert Decimal.eq?(invoice.labor_hours, Decimal.new(2))
     end
 
-    test "calculates labor from estimated_duration_minutes when no actual", %{org: org, customer: customer} do
+    test "calculates labor from estimated_duration_minutes when no actual", %{
+      org: org,
+      customer: customer
+    } do
       job = job_fixture(org.id, %{customer_id: customer.id, estimated_duration_minutes: 90})
       {:ok, invoice} = Billing.generate_invoice_from_job(job.id)
 
@@ -164,21 +171,23 @@ defmodule FieldHub.BillingTest do
     end
 
     test "allows overriding attributes", %{job: job} do
-      {:ok, invoice} = Billing.generate_invoice_from_job(job.id, %{
-        notes: "Custom notes",
-        tax_rate: Decimal.new("10.00")
-      })
+      {:ok, invoice} =
+        Billing.generate_invoice_from_job(job.id, %{
+          notes: "Custom notes",
+          tax_rate: Decimal.new("10.00")
+        })
 
       assert invoice.notes =~ "Custom notes"
       assert Decimal.eq?(invoice.tax_rate, Decimal.new("10.00"))
     end
 
     test "calculates tax and total correctly", %{job: job} do
-      {:ok, invoice} = Billing.generate_invoice_from_job(job.id, %{
-        labor_amount: Decimal.new("100.00"),
-        parts_amount: Decimal.new("50.00"),
-        tax_rate: Decimal.new("10.00")
-      })
+      {:ok, invoice} =
+        Billing.generate_invoice_from_job(job.id, %{
+          labor_amount: Decimal.new("100.00"),
+          parts_amount: Decimal.new("50.00"),
+          tax_rate: Decimal.new("10.00")
+        })
 
       # Subtotal: 150, Tax: 15, Total: 165
       assert Decimal.eq?(invoice.tax_amount, Decimal.new("15.00"))
@@ -201,11 +210,12 @@ defmodule FieldHub.BillingTest do
     end
 
     test "recalculates totals on amount changes", %{invoice: invoice} do
-      {:ok, updated} = Billing.update_invoice(invoice, %{
-        labor_amount: Decimal.new("200.00"),
-        parts_amount: Decimal.new("100.00"),
-        tax_rate: Decimal.new("10.00")
-      })
+      {:ok, updated} =
+        Billing.update_invoice(invoice, %{
+          labor_amount: Decimal.new("200.00"),
+          parts_amount: Decimal.new("100.00"),
+          tax_rate: Decimal.new("10.00")
+        })
 
       # Subtotal: 300, Tax: 30, Total: 330
       assert Decimal.eq?(updated.tax_amount, Decimal.new("30.00"))
@@ -275,12 +285,13 @@ defmodule FieldHub.BillingTest do
     end
 
     test "add_line_item/2 creates a line item with calculated amount", %{invoice: invoice} do
-      {:ok, line_item} = Billing.add_line_item(invoice.id, %{
-        description: "Labor",
-        type: "labor",
-        quantity: Decimal.new("2.0"),
-        unit_price: Decimal.new("75.00")
-      })
+      {:ok, line_item} =
+        Billing.add_line_item(invoice.id, %{
+          description: "Labor",
+          type: "labor",
+          quantity: Decimal.new("2.0"),
+          unit_price: Decimal.new("75.00")
+        })
 
       assert line_item.invoice_id == invoice.id
       assert line_item.description == "Labor"
@@ -295,23 +306,25 @@ defmodule FieldHub.BillingTest do
     end
 
     test "add_line_item/2 validates type", %{invoice: invoice} do
-      {:error, changeset} = Billing.add_line_item(invoice.id, %{
-        description: "Test",
-        type: "invalid_type",
-        quantity: Decimal.new("1"),
-        unit_price: Decimal.new("10")
-      })
+      {:error, changeset} =
+        Billing.add_line_item(invoice.id, %{
+          description: "Test",
+          type: "invalid_type",
+          quantity: Decimal.new("1"),
+          unit_price: Decimal.new("10")
+        })
 
       assert "is invalid" in errors_on(changeset).type
     end
 
     test "remove_line_item/1 deletes the line item", %{invoice: invoice} do
-      {:ok, line_item} = Billing.add_line_item(invoice.id, %{
-        description: "Test",
-        type: "service",
-        quantity: Decimal.new("1"),
-        unit_price: Decimal.new("10")
-      })
+      {:ok, line_item} =
+        Billing.add_line_item(invoice.id, %{
+          description: "Test",
+          type: "service",
+          quantity: Decimal.new("1"),
+          unit_price: Decimal.new("10")
+        })
 
       {:ok, _} = Billing.remove_line_item(line_item.id)
 
@@ -331,21 +344,27 @@ defmodule FieldHub.BillingTest do
     test "returns correct statistics", %{org: org, customer: customer} do
       # Create and pay one invoice
       job1 = job_fixture(org.id, %{customer_id: customer.id})
-      invoice1 = invoice_fixture(job1, %{
-        labor_amount: Decimal.new("100.00"),
-        parts_amount: Decimal.new("0"),
-        tax_rate: Decimal.new("0")
-      })
+
+      invoice1 =
+        invoice_fixture(job1, %{
+          labor_amount: Decimal.new("100.00"),
+          parts_amount: Decimal.new("0"),
+          tax_rate: Decimal.new("0")
+        })
+
       Billing.send_invoice(invoice1)
       Billing.mark_invoice_paid(invoice1)
 
       # Create unpaid invoice
       job2 = job_fixture(org.id, %{customer_id: customer.id})
-      invoice2 = invoice_fixture(job2, %{
-        labor_amount: Decimal.new("200.00"),
-        parts_amount: Decimal.new("0"),
-        tax_rate: Decimal.new("0")
-      })
+
+      invoice2 =
+        invoice_fixture(job2, %{
+          labor_amount: Decimal.new("200.00"),
+          parts_amount: Decimal.new("0"),
+          tax_rate: Decimal.new("0")
+        })
+
       Billing.send_invoice(invoice2)
 
       stats = Billing.get_invoice_stats(org.id)
@@ -370,11 +389,13 @@ defmodule FieldHub.BillingTest do
     test "generates unique invoice numbers" do
       numbers =
         for _ <- 1..10 do
-          changeset = Invoice.changeset(%Invoice{}, %{
-            organization_id: 1,
-            customer_id: 1,
-            job_id: 1
-          })
+          changeset =
+            Invoice.changeset(%Invoice{}, %{
+              organization_id: 1,
+              customer_id: 1,
+              job_id: 1
+            })
+
           Ecto.Changeset.get_field(changeset, :number)
         end
 
@@ -382,11 +403,12 @@ defmodule FieldHub.BillingTest do
     end
 
     test "invoice number starts with INV-" do
-      changeset = Invoice.changeset(%Invoice{}, %{
-        organization_id: 1,
-        customer_id: 1,
-        job_id: 1
-      })
+      changeset =
+        Invoice.changeset(%Invoice{}, %{
+          organization_id: 1,
+          customer_id: 1,
+          job_id: 1
+        })
 
       number = Ecto.Changeset.get_field(changeset, :number)
       assert String.starts_with?(number, "INV-")

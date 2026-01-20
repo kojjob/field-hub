@@ -310,7 +310,7 @@ defmodule FieldHubWeb.JobLive.Show do
                   </div>
                 </div>
               </div>
-
+              
     <!-- Checklist & Tasks -->
               <div
                 id="job-checklist"
@@ -388,7 +388,7 @@ defmodule FieldHubWeb.JobLive.Show do
                   <% end %>
                 </div>
               </div>
-
+              
     <!-- Field Evidence & Media -->
               <div
                 id="job-media"
@@ -457,7 +457,7 @@ defmodule FieldHubWeb.JobLive.Show do
                   </div>
                 </div>
               </div>
-
+              
     <!-- Activity Log -->
               <div
                 id="job-activity"
@@ -510,7 +510,7 @@ defmodule FieldHubWeb.JobLive.Show do
                 </div>
               </div>
             </div>
-
+            
     <!-- Right column -->
             <div class="lg:col-span-4 space-y-6">
               <!-- Technician -->
@@ -566,7 +566,7 @@ defmodule FieldHubWeb.JobLive.Show do
                   <% end %>
                 </div>
               </div>
-
+              
     <!-- Financials -->
               <div
                 id="job-financials"
@@ -618,7 +618,7 @@ defmodule FieldHubWeb.JobLive.Show do
                   </div>
                 </div>
               </div>
-
+              
     <!-- Customer Support -->
               <div
                 id="job-support"

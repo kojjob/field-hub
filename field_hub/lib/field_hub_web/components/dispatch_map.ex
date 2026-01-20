@@ -45,8 +45,8 @@ defmodule FieldHubWeb.Components.DispatchMap do
           referrerpolicy="no-referrer"
           title="Dispatch Map"
         />
-
-        <!-- Map Legend Overlay -->
+        
+    <!-- Map Legend Overlay -->
         <div class="absolute bottom-4 left-4 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-sm rounded-2xl p-4 shadow-xl border border-zinc-200/50 dark:border-zinc-700/50 z-10">
           <h4 class="text-[10px] font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-3">
             Map Legend
@@ -54,16 +54,20 @@ defmodule FieldHubWeb.Components.DispatchMap do
           <div class="space-y-2">
             <div class="flex items-center gap-2">
               <div class="size-3 rounded-full bg-teal-500"></div>
-              <span class="text-xs font-bold text-zinc-700 dark:text-zinc-300">Technicians ({length(@technicians)})</span>
+              <span class="text-xs font-bold text-zinc-700 dark:text-zinc-300">
+                Technicians ({length(@technicians)})
+              </span>
             </div>
             <div class="flex items-center gap-2">
               <div class="size-3 rounded-sm bg-blue-500"></div>
-              <span class="text-xs font-bold text-zinc-700 dark:text-zinc-300">Jobs ({length(@jobs)})</span>
+              <span class="text-xs font-bold text-zinc-700 dark:text-zinc-300">
+                Jobs ({length(@jobs)})
+              </span>
             </div>
           </div>
         </div>
-
-        <!-- Marker List Panel -->
+        
+    <!-- Marker List Panel -->
         <div class="absolute top-4 right-4 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-sm rounded-2xl shadow-xl border border-zinc-200/50 dark:border-zinc-700/50 z-10 max-h-[300px] overflow-y-auto w-64">
           <div class="p-4 border-b border-zinc-100 dark:border-zinc-800">
             <h4 class="text-xs font-black text-zinc-900 dark:text-white">
@@ -90,12 +94,13 @@ defmodule FieldHubWeb.Components.DispatchMap do
                 </div>
               </div>
             <% end %>
-
-            <!-- Jobs -->
+            
+    <!-- Jobs -->
             <%= for job <- Enum.filter(@jobs, &has_job_location?/1) do %>
-              <div class="flex items-center gap-3 p-2 rounded-xl hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors cursor-pointer"
-                   phx-click="show_job_details"
-                   phx-value-job_id={job.id}
+              <div
+                class="flex items-center gap-3 p-2 rounded-xl hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors cursor-pointer"
+                phx-click="show_job_details"
+                phx-value-job_id={job.id}
               >
                 <div class="size-8 rounded-lg bg-blue-500/10 flex items-center justify-center">
                   <.icon name="hero-wrench-screwdriver" class="size-4 text-blue-600" />
@@ -157,7 +162,9 @@ defmodule FieldHubWeb.Components.DispatchMap do
   end
 
   # Calculate center point of all coordinates
-  defp calculate_center([]), do: {37.7749, -122.4194} # Default: San Francisco
+  # Default: San Francisco
+  defp calculate_center([]), do: {37.7749, -122.4194}
+
   defp calculate_center(coords) do
     {lats, lngs} =
       coords
@@ -205,6 +212,7 @@ defmodule FieldHubWeb.Components.DispatchMap do
   end
 
   defp initials(nil), do: "?"
+
   defp initials(name) do
     name
     |> String.split(" ")

@@ -65,15 +65,17 @@ defmodule FieldHubWeb.InvoiceLive.Index do
           </h2>
         </div>
       </div>
-
-      <!-- Stats Cards -->
+      
+    <!-- Stats Cards -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <div class="bg-white dark:bg-zinc-900 rounded-[24px] p-6 border border-zinc-200 dark:border-zinc-800 shadow-sm">
           <div class="flex items-center gap-3 mb-3">
             <div class="size-10 rounded-2xl bg-primary/10 flex items-center justify-center">
               <.icon name="hero-document-text" class="size-5 text-primary" />
             </div>
-            <span class="text-xs font-bold text-zinc-500 uppercase tracking-widest">Total Invoiced</span>
+            <span class="text-xs font-bold text-zinc-500 uppercase tracking-widest">
+              Total Invoiced
+            </span>
           </div>
           <p class="text-2xl font-black text-zinc-900 dark:text-white">
             ${format_money(@stats.total_invoiced)}
@@ -116,8 +118,8 @@ defmodule FieldHubWeb.InvoiceLive.Index do
           </p>
         </div>
       </div>
-
-      <!-- Filters -->
+      
+    <!-- Filters -->
       <div class="flex items-center gap-2">
         <%= for {label, value} <- [{"All", "all"}, {"Draft", "draft"}, {"Sent", "sent"}, {"Paid", "paid"}, {"Overdue", "overdue"}] do %>
           <button
@@ -126,15 +128,16 @@ defmodule FieldHubWeb.InvoiceLive.Index do
             class={[
               "px-4 py-2.5 text-xs font-bold rounded-xl transition-all",
               @filter == value && "bg-primary/10 text-primary border border-primary/20",
-              @filter != value && "text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 border border-transparent"
+              @filter != value &&
+                "text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 border border-transparent"
             ]}
           >
             {label}
           </button>
         <% end %>
       </div>
-
-      <!-- Invoice List -->
+      
+    <!-- Invoice List -->
       <div class="bg-white dark:bg-zinc-900 rounded-[24px] border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
         <%= if @invoices == [] do %>
           <div class="p-12 text-center">
@@ -181,7 +184,7 @@ defmodule FieldHubWeb.InvoiceLive.Index do
                   </td>
                   <td class="px-6 py-5">
                     <span class="text-sm text-zinc-600 dark:text-zinc-300">
-                      {invoice.customer && invoice.customer.name || "—"}
+                      {(invoice.customer && invoice.customer.name) || "—"}
                     </span>
                   </td>
                   <td class="px-6 py-5">
@@ -219,7 +222,10 @@ defmodule FieldHubWeb.InvoiceLive.Index do
 
   defp format_money(nil), do: "0.00"
   defp format_money(%Decimal{} = amount), do: Decimal.to_string(amount, :normal)
-  defp format_money(amount) when is_number(amount), do: :erlang.float_to_binary(amount / 1, decimals: 2)
+
+  defp format_money(amount) when is_number(amount),
+    do: :erlang.float_to_binary(amount / 1, decimals: 2)
+
   defp format_money(_), do: "0.00"
 
   defp format_date(nil), do: "—"

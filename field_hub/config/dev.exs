@@ -2,7 +2,7 @@ import Config
 
 # Configure your database
 config :field_hub, FieldHub.Repo,
-  username: "postgres",
+  username: "kojo",
   password: "postgres",
   hostname: "localhost",
   database: "field_hub_dev",
@@ -73,6 +73,9 @@ config :field_hub, FieldHubWeb.Endpoint,
 
 # Enable dev routes for dashboard and mailbox
 config :field_hub, dev_routes: true
+
+# Mark this as dev environment (used for logging magic links, etc.)
+config :field_hub, env: :dev
 
 # Do not include metadata nor timestamps in development logs
 config :logger, :default_formatter, format: "[$level] $message\n"

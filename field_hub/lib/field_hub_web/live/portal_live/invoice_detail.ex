@@ -1,179 +1,148 @@
-defmodule FieldHubWeb.InvoiceLive.Show do
+defmodule FieldHubWeb.PortalLive.InvoiceDetail do
   @moduledoc """
-  Invoice detail and preview LiveView.
-  Displays a beautiful, printable invoice matching our design system.
+  Customer portal invoice detail view.
+  Shows full invoice details with print-friendly layout.
   """
   use FieldHubWeb, :live_view
 
   alias FieldHub.Billing
-  alias FieldHub.Jobs
-  alias FieldHub.Repo
+  alias FieldHub.Billing.Invoice
+  import Ecto.Query
 
   @impl true
-  def mount(_params, _session, socket) do
-    user = socket.assigns.current_scope.user
-    org = FieldHub.Accounts.get_organization!(user.organization_id)
+  def mount(%{"id" => id}, _session, socket) do
+    customer = socket.assigns.portal_customer
 
-    {:ok,
-     socket
-     |> assign(:current_organization, org)
-     |> assign(:current_user, user)
-     |> assign(:current_nav, :jobs)}
-  end
-
-  @impl true
-  def handle_params(%{"id" => id}, _uri, socket) do
-    invoice = Billing.get_invoice!(socket.assigns.current_organization.id, id)
-    job = invoice.job && Repo.preload(invoice.job, [:technician])
-
-    {:noreply,
-     socket
-     |> assign(:page_title, "Invoice #{invoice.number}")
-     |> assign(:invoice, invoice)
-     |> assign(:job, job)}
-  end
-
-  @impl true
-  def handle_event("send_invoice", _params, socket) do
-    case Billing.send_invoice(socket.assigns.invoice) do
-      {:ok, invoice} ->
-        # Send email notification
-        send_invoice_email(invoice)
-
-        {:noreply,
+    case get_invoice_for_customer(id, customer.id) do
+      nil ->
+        {:ok,
          socket
-         |> assign(:invoice, invoice)
-         |> put_flash(:info, "Invoice sent to #{invoice.customer.email}")}
+         |> put_flash(:error, "Invoice not found")
+         |> push_navigate(to: ~p"/portal/invoices")}
 
-      {:error, _} ->
-        {:noreply, put_flash(socket, :error, "Failed to send invoice")}
+      invoice ->
+        # Mark as viewed if currently sent
+        invoice = maybe_mark_viewed(invoice)
+
+        {:ok,
+         socket
+         |> assign(:customer, customer)
+         |> assign(:invoice, invoice)
+         |> assign(:page_title, "Invoice #{invoice.number}")}
     end
   end
 
-  def handle_event("mark_paid", _params, socket) do
-    case Billing.mark_invoice_paid(socket.assigns.invoice) do
-      {:ok, invoice} ->
-        # Update job payment status
-        if socket.assigns.job do
-          Jobs.update_job(socket.assigns.job, %{payment_status: "paid"})
-        end
-
-        {:noreply,
-         socket
-         |> assign(:invoice, invoice)
-         |> put_flash(:info, "Invoice marked as paid")}
-
-      {:error, _} ->
-        {:noreply, put_flash(socket, :error, "Failed to update invoice")}
+  defp get_invoice_for_customer(invoice_id, customer_id) do
+    Invoice
+    |> where([i], i.id == ^invoice_id)
+    |> where([i], i.customer_id == ^customer_id)
+    |> FieldHub.Repo.one()
+    |> case do
+      nil -> nil
+      invoice -> FieldHub.Repo.preload(invoice, [:job, :organization, :line_items])
     end
   end
 
-  def handle_event("download_pdf", _params, socket) do
-    # For now, trigger browser print dialog
+  defp maybe_mark_viewed(%Invoice{status: "sent"} = invoice) do
+    case Billing.update_invoice(invoice, %{status: "viewed"}) do
+      {:ok, updated} -> FieldHub.Repo.preload(updated, [:job, :organization, :line_items])
+      _ -> invoice
+    end
+  end
+
+  defp maybe_mark_viewed(invoice), do: invoice
+
+  @impl true
+  def handle_event("print", _params, socket) do
     {:noreply, push_event(socket, "print_invoice", %{})}
-  end
-
-  defp send_invoice_email(invoice) do
-    # Send email notification
-    FieldHub.Billing.InvoiceNotifier.deliver_invoice(invoice)
-    :ok
   end
 
   @impl true
   def render(assigns) do
     ~H"""
     <div
-      class="min-h-screen bg-zinc-50 dark:bg-zinc-950 py-8 print:bg-white print:py-0"
-      id="invoice-page"
+      class="min-h-screen bg-zinc-50 dark:bg-zinc-950 print:bg-white"
+      id="portal-invoice"
       phx-hook="PrintInvoice"
     >
-      <!-- Action Bar (hidden when printing) -->
-      <div class="max-w-4xl mx-auto px-6 mb-6 print:hidden">
-        <div class="flex items-center justify-between">
-          <.link
-            navigate={~p"/jobs/#{(@job && @job.number) || ""}"}
-            class="inline-flex items-center gap-2 text-sm font-bold text-zinc-500 hover:text-primary transition-colors"
-          >
-            <.icon name="hero-arrow-left" class="size-4" /> Back to Job
-          </.link>
+      <%!-- Header (hidden on print) --%>
+      <header class="bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 sticky top-0 z-50 print:hidden">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
+          <div class="flex items-center gap-4">
+            <.link
+              navigate={~p"/portal/invoices"}
+              class="size-10 rounded-xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center hover:bg-zinc-200 dark:hover:hover:bg-zinc-700 transition-colors"
+            >
+              <.icon name="hero-arrow-left" class="size-5 text-zinc-600 dark:text-zinc-400" />
+            </.link>
+            <div>
+              <p class="text-[10px] font-black text-primary uppercase tracking-[0.2em]">
+                Invoice
+              </p>
+              <h1 class="text-lg font-bold text-zinc-900 dark:text-white">
+                {@invoice.number}
+              </h1>
+            </div>
+          </div>
 
           <div class="flex items-center gap-3">
-            <%= if @invoice.status == "draft" do %>
-              <button
-                phx-click="send_invoice"
-                class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-white text-sm font-bold shadow-lg shadow-primary/20 hover:brightness-110 transition-all"
+            <span class={"inline-flex items-center px-3 py-1 rounded-full text-xs font-black uppercase tracking-widest #{status_badge_class(@invoice.status)}"}>
+              {@invoice.status}
+            </span>
+            <%= if @invoice.status not in ["paid", "cancelled", "draft"] do %>
+              <.link
+                navigate={~p"/portal/invoices/#{@invoice.id}/pay"}
+                class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-white text-sm font-bold hover:bg-primary/90 transition-all"
               >
-                <.icon name="hero-paper-airplane" class="size-5" /> Send Invoice
-              </button>
+                <.icon name="hero-credit-card" class="size-5" />
+                Pay Now
+              </.link>
             <% end %>
-
-            <%= if @invoice.status in ["sent", "viewed", "overdue"] do %>
-              <button
-                phx-click="mark_paid"
-                class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 text-white text-sm font-bold shadow-lg shadow-emerald-600/20 hover:brightness-110 transition-all"
-              >
-                <.icon name="hero-check-circle" class="size-5" /> Mark as Paid
-              </button>
-            <% end %>
-
             <button
-              phx-click="download_pdf"
-              class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-200 text-sm font-bold hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-all"
+              phx-click="print"
+              class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-200 text-sm font-bold hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all"
             >
-              <.icon name="hero-arrow-down-tray" class="size-5" /> Download PDF
+              <.icon name="hero-printer" class="size-5" /> Print
             </button>
           </div>
         </div>
-        
-    <!-- Status Badge -->
-        <div class="mt-4 flex items-center gap-3">
-          <span class={"inline-flex items-center px-3 py-1 rounded-full text-xs font-black uppercase tracking-widest #{status_badge_class(@invoice.status)}"}>
-            {@invoice.status}
-          </span>
-          <%= if @invoice.status == "paid" && @invoice.paid_at do %>
-            <span class="text-sm text-zinc-500">
-              Paid on {Calendar.strftime(@invoice.paid_at, "%B %d, %Y")}
-            </span>
-          <% end %>
-        </div>
-      </div>
-      
-    <!-- Invoice Card -->
-      <div class="max-w-4xl mx-auto px-6 print:px-0">
-        <div class="bg-white dark:bg-zinc-900 rounded-[32px] border border-zinc-200 dark:border-zinc-800 shadow-xl overflow-hidden print:rounded-none print:border-0 print:shadow-none">
-          <!-- Invoice Header -->
-          <div class="p-8 sm:p-12 border-b border-zinc-100 dark:border-zinc-800 bg-gradient-to-br from-primary/5 to-transparent print:bg-white">
+      </header>
+
+      <main class="max-w-4xl mx-auto px-4 sm:px-6 py-8 print:px-0 print:py-0">
+        <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden print:rounded-none print:border-0">
+          <%!-- Invoice Header --%>
+          <div class="p-8 border-b border-zinc-100 dark:border-zinc-800 bg-gradient-to-br from-primary/5 to-transparent print:bg-white">
             <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-8">
-              <!-- Company Info -->
+              <%!-- Company Info --%>
               <div>
                 <div class="flex items-center gap-3 mb-4">
-                  <div class="size-12 rounded-2xl bg-primary flex items-center justify-center text-white">
+                  <div class="size-12 rounded-2xl bg-primary flex items-center justify-center text-white print:hidden">
                     <.icon name="hero-building-office-2" class="size-6" />
                   </div>
                   <div>
                     <h1 class="text-2xl font-black text-zinc-900 dark:text-white tracking-tight">
-                      {@current_organization.name}
+                      {@invoice.organization.name}
                     </h1>
                     <p class="text-sm text-zinc-500 dark:text-zinc-400">
-                      {@current_organization.email || "billing@example.com"}
+                      {@invoice.organization.email || "billing@example.com"}
                     </p>
                   </div>
                 </div>
                 <div class="text-sm text-zinc-600 dark:text-zinc-400 space-y-1">
-                  <%= if @current_organization.address_line1 do %>
-                    <p>{@current_organization.address_line1}</p>
+                  <%= if @invoice.organization.address_line1 do %>
+                    <p>{@invoice.organization.address_line1}</p>
                   <% end %>
                   <p>
-                    {@current_organization.city || "City"}, {@current_organization.state || "ST"} {@current_organization.zip ||
+                    {@invoice.organization.city || "City"}, {@invoice.organization.state || "ST"} {@invoice.organization.zip ||
                       "00000"}
                   </p>
-                  <%= if @current_organization.phone do %>
-                    <p>{@current_organization.phone}</p>
+                  <%= if @invoice.organization.phone do %>
+                    <p>{@invoice.organization.phone}</p>
                   <% end %>
                 </div>
               </div>
-              
-    <!-- Invoice Info -->
+
+              <%!-- Invoice Info --%>
               <div class="text-right">
                 <h2 class="text-3xl font-black text-primary tracking-tight mb-2">INVOICE</h2>
                 <p class="text-xl font-bold text-zinc-900 dark:text-white">{@invoice.number}</p>
@@ -194,9 +163,9 @@ defmodule FieldHubWeb.InvoiceLive.Show do
               </div>
             </div>
           </div>
-          
-    <!-- Bill To Section -->
-          <div class="p-8 sm:p-12 border-b border-zinc-100 dark:border-zinc-800">
+
+          <%!-- Bill To Section --%>
+          <div class="p-8 border-b border-zinc-100 dark:border-zinc-800">
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-8">
               <div>
                 <h4 class="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-3">
@@ -204,61 +173,41 @@ defmodule FieldHubWeb.InvoiceLive.Show do
                 </h4>
                 <div class="bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl p-5 border border-zinc-100 dark:border-zinc-800">
                   <p class="text-lg font-bold text-zinc-900 dark:text-white">
-                    {@invoice.customer.name}
+                    {@customer.name}
                   </p>
-                  <%= if @invoice.customer.email do %>
+                  <%= if @customer.email do %>
                     <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
-                      {@invoice.customer.email}
+                      {@customer.email}
                     </p>
                   <% end %>
-                  <%= if @invoice.customer.phone do %>
+                  <%= if @customer.phone do %>
                     <p class="text-sm text-zinc-500 dark:text-zinc-400">
-                      {@invoice.customer.phone}
-                    </p>
-                  <% end %>
-                  <%= if @invoice.customer.address_line1 do %>
-                    <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-2">
-                      {@invoice.customer.address_line1}
-                      <%= if @invoice.customer.address_line2 do %>
-                        <br />{@invoice.customer.address_line2}
-                      <% end %>
-                      <br />
-                      {@invoice.customer.city}, {@invoice.customer.state} {@invoice.customer.zip}
+                      {@customer.phone}
                     </p>
                   <% end %>
                 </div>
               </div>
 
-              <%= if @job do %>
+              <%= if @invoice.job do %>
                 <div>
                   <h4 class="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-3">
                     Service Details
                   </h4>
                   <div class="bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl p-5 border border-zinc-100 dark:border-zinc-800">
                     <p class="text-lg font-bold text-zinc-900 dark:text-white">
-                      {@job.title}
+                      {@invoice.job.title}
                     </p>
                     <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
-                      Job #{@job.number}
+                      Job #{@invoice.job.number}
                     </p>
-                    <%= if @job.technician do %>
-                      <p class="text-sm text-zinc-500 dark:text-zinc-400">
-                        Technician: {@job.technician.name}
-                      </p>
-                    <% end %>
-                    <%= if @job.completed_at do %>
-                      <p class="text-sm text-zinc-500 dark:text-zinc-400">
-                        Completed: {Calendar.strftime(@job.completed_at, "%B %d, %Y")}
-                      </p>
-                    <% end %>
                   </div>
                 </div>
               <% end %>
             </div>
           </div>
-          
-    <!-- Line Items / Financial Breakdown -->
-          <div class="p-8 sm:p-12">
+
+          <%!-- Charges Section --%>
+          <div class="p-8">
             <h4 class="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-4">
               Charges
             </h4>
@@ -282,7 +231,7 @@ defmodule FieldHubWeb.InvoiceLive.Show do
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-zinc-100 dark:divide-zinc-800">
-                  <!-- Labor Row -->
+                  <%!-- Labor Row --%>
                   <%= if Decimal.gt?(@invoice.labor_amount, Decimal.new(0)) do %>
                     <tr>
                       <td class="px-6 py-5">
@@ -304,8 +253,8 @@ defmodule FieldHubWeb.InvoiceLive.Show do
                       </td>
                     </tr>
                   <% end %>
-                  
-    <!-- Parts & Materials Row -->
+
+                  <%!-- Parts Row --%>
                   <%= if Decimal.gt?(@invoice.parts_amount, Decimal.new(0)) do %>
                     <tr>
                       <td class="px-6 py-5">
@@ -329,8 +278,8 @@ defmodule FieldHubWeb.InvoiceLive.Show do
                       </td>
                     </tr>
                   <% end %>
-                  
-    <!-- Dynamic Line Items -->
+
+                  <%!-- Line Items --%>
                   <%= for item <- @invoice.line_items || [] do %>
                     <tr>
                       <td class="px-6 py-5">
@@ -357,8 +306,8 @@ defmodule FieldHubWeb.InvoiceLive.Show do
                 </tbody>
               </table>
             </div>
-            
-    <!-- Totals -->
+
+            <%!-- Totals --%>
             <div class="mt-8 flex justify-end">
               <div class="w-full sm:w-80 space-y-3">
                 <div class="flex justify-between text-sm">
@@ -392,53 +341,85 @@ defmodule FieldHubWeb.InvoiceLive.Show do
                 </div>
               </div>
             </div>
-          </div>
-          
-    <!-- Notes & Terms -->
-          <%= if @invoice.notes || @invoice.terms do %>
-            <div class="p-8 sm:p-12 border-t border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-800/20">
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-8">
-                <%= if @invoice.notes do %>
-                  <div>
-                    <h4 class="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-2">
-                      Notes
-                    </h4>
-                    <p class="text-sm text-zinc-600 dark:text-zinc-300 whitespace-pre-line">
-                      {@invoice.notes}
-                    </p>
-                  </div>
-                <% end %>
 
-                <%= if @invoice.payment_instructions do %>
+            <%!-- Pay Now CTA (for unpaid invoices) --%>
+            <%= if @invoice.status not in ["paid", "cancelled", "draft"] do %>
+              <div class="mt-8 p-6 bg-gradient-to-r from-primary/10 to-primary/5 rounded-2xl border border-primary/20 print:hidden">
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
                   <div>
-                    <h4 class="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-2">
-                      Payment Instructions
-                    </h4>
-                    <p class="text-sm text-zinc-600 dark:text-zinc-300 whitespace-pre-line">
-                      {@invoice.payment_instructions}
-                    </p>
+                    <p class="text-lg font-bold text-zinc-900 dark:text-white">Ready to pay?</p>
+                    <p class="text-sm text-zinc-500">Secure online payment via credit card</p>
                   </div>
-                <% end %>
+                  <.link
+                    navigate={~p"/portal/invoices/#{@invoice.id}/pay"}
+                    class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-white font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/25"
+                  >
+                    <.icon name="hero-credit-card" class="size-5" />
+                    Pay ${format_money(@invoice.total_amount)} Now
+                  </.link>
+                </div>
+              </div>
+            <% end %>
+          </div>
+
+          <%!-- Payment Status Banner --%>
+          <%= if @invoice.status == "paid" do %>
+            <div class="p-6 bg-emerald-50 dark:bg-emerald-900/20 border-t border-emerald-100 dark:border-emerald-900/30">
+              <div class="flex items-center justify-center gap-3">
+                <div class="size-10 rounded-full bg-emerald-100 dark:bg-emerald-900/50 flex items-center justify-center">
+                  <.icon name="hero-check-circle" class="size-6 text-emerald-600" />
+                </div>
+                <div class="text-center">
+                  <p class="text-lg font-bold text-emerald-700 dark:text-emerald-400">Paid in Full</p>
+                  <%= if @invoice.paid_at do %>
+                    <p class="text-sm text-emerald-600 dark:text-emerald-500">
+                      Payment received on {Calendar.strftime(@invoice.paid_at, "%B %d, %Y")}
+                    </p>
+                  <% end %>
+                </div>
               </div>
             </div>
+          <% else %>
+            <%!-- Payment Instructions --%>
+            <%= if @invoice.payment_instructions do %>
+              <div class="p-8 border-t border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-800/20">
+                <h4 class="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-2">
+                  Payment Instructions
+                </h4>
+                <p class="text-sm text-zinc-600 dark:text-zinc-300 whitespace-pre-line">
+                  {@invoice.payment_instructions}
+                </p>
+              </div>
+            <% end %>
           <% end %>
-          
-    <!-- Footer -->
-          <div class="p-8 sm:p-12 border-t border-zinc-100 dark:border-zinc-800 text-center">
+
+          <%!-- Notes --%>
+          <%= if @invoice.notes do %>
+            <div class="p-8 border-t border-zinc-100 dark:border-zinc-800">
+              <h4 class="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-2">
+                Notes
+              </h4>
+              <p class="text-sm text-zinc-600 dark:text-zinc-300 whitespace-pre-line">
+                {@invoice.notes}
+              </p>
+            </div>
+          <% end %>
+
+          <%!-- Footer --%>
+          <div class="p-8 border-t border-zinc-100 dark:border-zinc-800 text-center">
             <p class="text-sm text-zinc-500 dark:text-zinc-400">
               Thank you for your business!
             </p>
             <p class="text-xs text-zinc-400 mt-2">
-              Questions? Contact us at {@current_organization.email || "support@example.com"}
+              Questions? Contact us at {@invoice.organization.email || "support@example.com"}
             </p>
           </div>
         </div>
-      </div>
+      </main>
     </div>
     """
   end
 
-  # Helper functions
   defp format_date(nil), do: "—"
   defp format_date(date), do: Calendar.strftime(date, "%B %d, %Y")
 

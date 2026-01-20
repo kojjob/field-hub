@@ -2,7 +2,10 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+    />
     <meta name="csrf-token" content={get_csrf_token()} />
     <meta
       name="description"
@@ -20,7 +23,7 @@
       }
     />
     
-    <!-- PWA Meta Tags -->
+<!-- PWA Meta Tags -->
     <meta name="theme-color" content="#0d9488" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -30,11 +33,11 @@
     <meta name="msapplication-TileColor" content="#0d9488" />
     <meta name="msapplication-config" content="none" />
     
-    <!-- Apple Touch Icons -->
+<!-- Apple Touch Icons -->
     <link rel="apple-touch-icon" href="/images/icon-192.png" />
     <link rel="apple-touch-icon" sizes="192x192" href="/images/icon-192.png" />
     <link rel="apple-touch-icon" sizes="512x512" href="/images/icon-512.png" />
-    
+
     <.live_title default="FieldHub" suffix=" · Phoenix Framework">
       {assigns[:page_title]}
     </.live_title>
@@ -81,7 +84,7 @@
         
         window.addEventListener("phx:set-theme", (e) => setTheme(e.target.dataset.phxTheme));
       })();
-      
+
       // Service Worker Registration
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {

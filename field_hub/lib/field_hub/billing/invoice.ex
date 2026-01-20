@@ -33,6 +33,10 @@ defmodule FieldHub.Billing.Invoice do
     field :terms, :string
     field :payment_instructions, :string
 
+    # Stripe payment tracking
+    field :stripe_checkout_session_id, :string
+    field :stripe_payment_intent_id, :string
+
     # Associations
     belongs_to :job, FieldHub.Jobs.Job
     belongs_to :customer, FieldHub.CRM.Customer
@@ -49,6 +53,7 @@ defmodule FieldHub.Billing.Invoice do
     labor_amount parts_amount materials_amount
     tax_rate tax_amount discount_amount total_amount
     labor_hours labor_rate notes terms payment_instructions
+    stripe_checkout_session_id stripe_payment_intent_id
   )a
 
   def changeset(invoice, attrs) do

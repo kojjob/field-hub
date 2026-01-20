@@ -41,9 +41,10 @@ defmodule FieldHub.Accounts.User do
   def registration_changeset(user, attrs, opts \\ []) do
     user
     |> cast(attrs, [:email, :password, :name, :company_name, :terms_accepted])
+    |> validate_required([:name], message: "Please enter your full name")
     |> validate_email(opts)
     |> validate_password(opts)
-    |> validate_acceptance(:terms_accepted, message: "must be accepted")
+    |> validate_acceptance(:terms_accepted, message: "You must agree to continue")
   end
 
   def email_changeset(user, attrs, opts \\ []) do
@@ -68,11 +69,11 @@ defmodule FieldHub.Accounts.User do
   defp validate_email(changeset, opts) do
     changeset =
       changeset
-      |> validate_required([:email])
+      |> validate_required([:email], message: "Please enter your email address")
       |> validate_format(:email, ~r/^[^@,;\s]+@[^@,;\s]+$/,
-        message: "must have the @ sign and no spaces"
+        message: "Please enter a valid email (e.g. name@company.com)"
       )
-      |> validate_length(:email, max: 160)
+      |> validate_length(:email, max: 160, message: "Email is too long")
 
     if Keyword.get(opts, :validate_unique, true) do
       changeset
@@ -116,8 +117,10 @@ defmodule FieldHub.Accounts.User do
 
   defp validate_password(changeset, opts) do
     changeset
-    |> validate_required([:password])
-    |> validate_length(:password, min: 12, max: 72)
+    |> validate_required([:password], message: "Please create a password")
+    |> validate_length(:password, min: 12, max: 72,
+      too_short: "Password must be at least 12 characters",
+      too_long: "Password is too long (max 72 characters)")
     # Examples of additional password validation:
     # |> validate_format(:password, ~r/[a-z]/, message: "at least one lower case character")
     # |> validate_format(:password, ~r/[A-Z]/, message: "at least one upper case character")
