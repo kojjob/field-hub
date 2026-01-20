@@ -72,7 +72,7 @@ defmodule FieldHubWeb.TechLive.Dashboard do
         <h1 class="text-2xl font-bold text-gray-900">Today's Jobs</h1>
         <div class="flex items-center gap-3">
           <%!-- Network Status Indicator --%>
-          <div id="network-status" phx-hook="OfflineIndicator" class="flex items-center gap-1.5">
+          <div id="tech-network-status" phx-hook="OfflineIndicator" class="flex items-center gap-1.5">
             <div data-indicator class="w-2 h-2 rounded-full bg-emerald-500"></div>
             <span data-text class="text-xs text-gray-500">Online</span>
           </div>
