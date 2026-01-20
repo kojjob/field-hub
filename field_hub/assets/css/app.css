@@ -10,87 +10,6 @@
    The heroicons installation itself is managed by your mix.exs */
 @plugin "../vendor/heroicons";
 
-/* daisyUI Tailwind Plugin. You can update this file by fetching the latest version with:
-   curl -sLO https://github.com/saadeghi/daisyui/releases/latest/download/daisyui.js
-   Make sure to look at the daisyUI changelog: https://daisyui.com/docs/changelog/ */
-@plugin "../vendor/daisyui" {
-  themes: false;
-}
-
-/* daisyUI theme plugin. You can update this file by fetching the latest version with:
-  curl -sLO https://github.com/saadeghi/daisyui/releases/latest/download/daisyui-theme.js
-  We ship with two themes, a light one inspired on Phoenix colors and a dark one inspired
-  on Elixir colors. Build your own at: https://daisyui.com/theme-generator/ */
-@plugin "../vendor/daisyui-theme" {
-  name: "dark";
-  default: false;
-  prefersdark: true;
-  color-scheme: "dark";
-  --color-base-100: oklch(30.33% 0.016 252.42);
-  --color-base-200: oklch(25.26% 0.014 253.1);
-  --color-base-300: oklch(20.15% 0.012 254.09);
-  --color-base-content: oklch(97.807% 0.029 256.847);
-  --color-primary: oklch(42% 0.10 175);        /* FieldHub Dark Teal */
-  --color-primary-content: oklch(100% 0 0);
-  --color-secondary: oklch(58% 0.233 277.117);
-  --color-secondary-content: oklch(96% 0.018 272.314);
-  --color-accent: oklch(60% 0.25 292.717);
-  --color-accent-content: oklch(96% 0.016 293.756);
-  --color-neutral: oklch(37% 0.044 257.287);
-  --color-neutral-content: oklch(98% 0.003 247.858);
-  --color-info: oklch(58% 0.158 241.966);
-  --color-info-content: oklch(97% 0.013 236.62);
-  --color-success: oklch(60% 0.118 184.704);
-  --color-success-content: oklch(98% 0.014 180.72);
-  --color-warning: oklch(66% 0.179 58.318);
-  --color-warning-content: oklch(98% 0.022 95.277);
-  --color-error: oklch(58% 0.253 17.585);
-  --color-error-content: oklch(96% 0.015 12.422);
-  --radius-selector: 0.25rem;
-  --radius-field: 0.25rem;
-  --radius-box: 0.5rem;
-  --size-selector: 0.21875rem;
-  --size-field: 0.21875rem;
-  --border: 1.5px;
-  --depth: 1;
-  --noise: 0;
-}
-
-@plugin "../vendor/daisyui-theme" {
-  name: "light";
-  default: true;
-  prefersdark: false;
-  color-scheme: "light";
-  --color-base-100: oklch(100% 0 0);           /* Pure White */
-  --color-base-200: oklch(98% 0 0);            /* Very Light Gray */
-  --color-base-300: oklch(96% 0.002 240);      /* Slate-50 equivalent */
-  --color-base-content: oklch(20% 0.01 240);   /* Dark Text */
-  --color-primary: oklch(42% 0.10 175);        /* FieldHub Dark Teal (#115e59) */
-  --color-primary-content: oklch(100% 0 0);    /* White Text on Primary */
-  --color-secondary: oklch(58% 0.233 277.117); /* Keep secondary or adjust if needed */
-  --color-secondary-content: oklch(98% 0.002 247.839);
-  --color-accent: oklch(60% 0.15 160);         /* Lighter Green Accent */
-  --color-accent-content: oklch(100% 0 0);
-  --color-neutral: oklch(44% 0.017 285.786);
-  --color-neutral-content: oklch(98% 0 0);
-  --color-info: oklch(62% 0.214 259.815);
-  --color-info-content: oklch(97% 0.014 254.604);
-  --color-success: oklch(70% 0.14 182.503);
-  --color-success-content: oklch(98% 0.014 180.72);
-  --color-warning: oklch(85% 0.16 85);         /* Brighter Amber */
-  --color-warning-content: oklch(20% 0.05 85);
-  --color-error: oklch(65% 0.22 25);
-  --color-error-content: oklch(98% 0 0);
-  --radius-selector: 0.5rem;
-  --radius-field: 0.5rem;
-  --radius-box: 1rem;
-  --size-selector: 0.25rem;
-  --size-field: 0.25rem;
-  --border: 1px;
-  --depth: 1;
-  --noise: 0;
-}
-
 /* Add variants based on LiveView classes */
 @custom-variant phx-click-loading (.phx-click-loading&, .phx-click-loading &);
 @custom-variant phx-submit-loading (.phx-submit-loading&, .phx-submit-loading &);
@@ -102,9 +21,16 @@
 /* Make LiveView wrapper divs transparent for layout */
 [data-phx-session], [data-phx-teleported-src] { display: contents }
 
-/* This file is for your main application CSS */
-
 @theme {
+  --color-primary: #115e59;
+  --color-primary-hover: #0d9488;
+  --color-secondary: #6366f1;
+  --color-accent: #10b981;
+  --color-neutral: #1e293b;
+  --color-base-100: #ffffff;
+  --color-base-200: #f8fafc;
+  --color-base-300: #f1f5f9;
+  
   --animate-gradient-x: gradient-x 15s ease infinite;
   --animate-fade-in: fade-in 1s ease-out forwards;
   --animate-slide-up: slide-up 0.8s ease-out forwards;
@@ -169,7 +95,6 @@
   }
 
   --animate-shake: shake 0.5s ease-in-out;
-
 }
 
 /* Landing Page Theme System */
@@ -181,7 +106,7 @@
   --fg: 15 23 42;           /* slate-900 */
   --muted: 71 85 105;       /* slate-600 */
   --muted2: 100 116 139;    /* slate-500 */
-  --border: 226 232 240;    /* slate-200 */
+  --border-color: 226 232 240;    /* slate-200 */
   --ring: 99 102 241;       /* indigo-500 */
   --shadow: 15 23 42;       /* slate-900 */
 }
@@ -194,11 +119,10 @@
   --fg: 248 250 252;        /* slate-50 */
   --muted: 148 163 184;     /* slate-400 */
   --muted2: 100 116 139;    /* slate-500 */
-  --border: 30 41 59;       /* slate-800 */
+  --border-color: 30 41 59;       /* slate-800 */
   --ring: 99 102 241;       /* indigo-500 */
   --shadow: 0 0 0;          /* not used */
 }
-
 
 body {
   font-family: "Plus Jakarta Sans", sans-serif;
@@ -210,6 +134,179 @@ h1, h2, h3, h4, .font-display {
   font-family: "Outfit", sans-serif;
 }
 
+/* =========================================
+   PURE TAILWIND COMPONENT IMPLEMENTATIONS
+   (To replace DaisyUI)
+   ========================================= */
+
+/* Button System */
+.btn {
+  @apply inline-flex items-center justify-center px-4 py-2 text-sm font-semibold transition-all duration-200 rounded-xl cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed active:scale-95;
+}
+
+.btn-primary {
+  @apply bg-primary text-white hover:bg-primary-hover shadow-md shadow-primary/20;
+}
+
+.btn-outline {
+  @apply border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200;
+}
+
+.btn-ghost {
+  @apply hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400;
+}
+
+.btn-soft {
+  @apply bg-primary/10 text-primary hover:bg-primary/20;
+}
+
+.btn-sm {
+  @apply px-3 py-1.5 text-xs;
+}
+
+/* Alert/Toast System */
+.toast {
+  @apply fixed flex flex-col gap-2 pointer-events-none;
+}
+
+.toast-top { @apply top-4; }
+.toast-end { @apply right-4; }
+
+.alert {
+  @apply flex items-center gap-3 p-4 rounded-2xl shadow-xl pointer-events-auto min-w-[320px] max-w-md animate-gradient-x border;
+}
+
+.alert-info {
+  @apply bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 text-slate-900 dark:text-white;
+}
+
+.alert-error {
+  @apply bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-900/50 text-red-700 dark:text-red-400;
+}
+
+/* Table System */
+.table {
+  @apply w-full text-left border-separate border-spacing-0;
+}
+
+.table th {
+  @apply px-4 py-3 text-xs font-bold tracking-wider uppercase text-slate-500 dark:text-slate-400 border-b border-slate-100 dark:border-slate-800;
+}
+
+.table td {
+  @apply px-4 py-4 text-sm text-slate-700 dark:text-slate-300 border-b border-slate-50 dark:border-slate-800/50;
+}
+
+.table-zebra tbody tr:nth-child(even) {
+  @apply bg-slate-50/50 dark:bg-slate-900/30;
+}
+
+/* Checkbox System */
+.checkbox {
+  @apply size-5 rounded-md border-2 border-slate-300 dark:border-slate-600 appearance-none cursor-pointer transition-all checked:bg-primary checked:border-primary relative;
+}
+
+.checkbox:checked::after {
+  content: "";
+  @apply absolute inset-0 flex items-center justify-center;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='white'%3E%3Cpath fill-rule='evenodd' d='M16.704 4.126a1 1 0 01.146 1.407l-8 10a1 1 0 01-1.428.139l-5-4l1.236-1.546L8.14 13.51l7.157-8.947a1 1 0 011.407-.146z' clip-rule='evenodd'/%3E%3C/svg%3E");
+}
+
+.checkbox-sm {
+  @apply size-4 rounded;
+}
+
+/* =========================================
+   PREMIUM FORM INPUT STYLING (v3 - Pure Tailwind)
+   ========================================= */
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="tel"],
+input[type="number"],
+input[type="search"],
+input[type="url"],
+input[type="date"],
+input[type="time"],
+input[type="datetime-local"],
+select,
+textarea,
+.input,
+.select,
+.textarea {
+  @apply w-full min-h-[44px] px-4 py-2 text-[15px] font-medium transition-all duration-200 outline-none rounded-xl;
+  @apply bg-slate-50 dark:bg-slate-800 border-[1.5px] border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-50;
+  @apply focus:bg-white dark:focus:bg-slate-900 focus:border-primary focus:ring-4 focus:ring-primary/10 focus:-translate-y-0.5;
+  @apply hover:border-slate-400 dark:hover:border-slate-600;
+}
+
+select {
+  @apply appearance-none cursor-pointer pr-10;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 18px;
+}
+
+textarea {
+  @apply min-h-[120px] py-3.5 leading-relaxed;
+}
+
+::placeholder {
+  @apply text-slate-400 dark:text-slate-500 font-normal opacity-70;
+}
+
+/* Form Structure Classes */
+.label, label > span.label {
+  @apply block text-[13.5px] font-semibold text-slate-600 dark:text-slate-400 mb-2 ml-0.5 tracking-tight;
+}
+
+.fieldset {
+  @apply mb-5 w-full;
+}
+
+/* Error States */
+.input-error,
+.select-error,
+.textarea-error {
+  @apply border-red-500 dark:border-red-500/50 bg-red-50 dark:bg-red-950/20 !important;
+  @apply focus:ring-red-500/10 !important;
+}
+
+.text-error {
+  @apply text-red-600 dark:text-red-400;
+}
+
+/* Leaflet Map Overrides */
+#map-view {
+  @apply absolute inset-0 w-full h-full z-[1];
+}
+
+#map-view .leaflet-container {
+  @apply w-full h-full;
+}
+
+.leaflet-div-icon, .tech-marker, .job-marker {
+  @apply bg-transparent border-none;
+}
+
+.leaflet-control-container {
+  @apply z-10;
+}
+
+.leaflet-popup-content-wrapper {
+  @apply rounded-2xl p-0 shadow-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900;
+}
+
+.leaflet-popup-content {
+  @apply m-3 font-sans text-sm text-slate-700 dark:text-slate-300;
+}
+
+[data-theme="dark"] .leaflet-tile {
+  filter: brightness(0.7) contrast(1.2) saturate(0.5) invert(1) hue-rotate(180deg);
+}
+
 /* Animation Utilities */
 .animate-in {
   animation: slide-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
@@ -219,105 +316,6 @@ h1, h2, h3, h4, .font-display {
   animation: fade-in 1s ease-out forwards;
 }
 
-.slide-in-from-right {
-  animation: slide-in-right 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-/* Dashboard Specific Utilities */
-.custom-shadow {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-}
-
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
-}
-
-.scrollbar-hide {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-.font-dashboard {
-  font-family: "Manrope", sans-serif;
-}
-
-/* Additional Animation Utilities */
-.slide-out-to-right {
-  animation: slide-out-right 0.2s ease-in forwards;
-}
-
-.scale-in {
-  animation: scale-in 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.slide-up-fade {
-  animation: slide-up-fade 0.3s ease-out forwards;
-}
-
-.bounce-in {
-  animation: bounce-in 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
-}
-
-.animate-shake {
-  animation: shake 0.5s ease-in-out;
-}
-
-/* Staggered animations for form fields */
-.stagger-1 { animation-delay: 0.05s; }
-.stagger-2 { animation-delay: 0.1s; }
-.stagger-3 { animation-delay: 0.15s; }
-.stagger-4 { animation-delay: 0.2s; }
-.stagger-5 { animation-delay: 0.25s; }
-
-/* Enhanced form inputs with focus animations and text visibility */
-input:focus, textarea:focus, select:focus {
-  transition: all 0.2s ease-out;
-}
-
-/* Ensure input text is always visible with proper contrast */
-input[type="text"],
-input[type="email"],
-input[type="password"],
-input[type="tel"],
-input[type="number"],
-input[type="search"],
-input[type="url"],
-textarea,
-select {
-  color: #1e293b !important; /* slate-800 - dark text for readability */
-  font-size: 16px; /* Prevents iOS zoom on focus */
-  font-weight: 500; /* Medium weight for better readability */
-  caret-color: #115e59; /* primary color for cursor */
-}
-
-/* Dark mode input text */
-[data-theme="dark"] input[type="text"],
-[data-theme="dark"] input[type="email"],
-[data-theme="dark"] input[type="password"],
-[data-theme="dark"] input[type="tel"],
-[data-theme="dark"] input[type="number"],
-[data-theme="dark"] input[type="search"],
-[data-theme="dark"] input[type="url"],
-[data-theme="dark"] textarea,
-[data-theme="dark"] select {
-  color: #f1f5f9 !important; /* slate-100 - light text for dark mode */
-  caret-color: #14b8a6; /* teal-500 for dark mode */
-}
-
-/* Placeholder text styling */
-input::placeholder,
-textarea::placeholder {
-  color: #94a3b8 !important; /* slate-400 */
-  font-weight: 400;
-  opacity: 1;
-}
-
-[data-theme="dark"] input::placeholder,
-[data-theme="dark"] textarea::placeholder {
-  color: #64748b !important; /* slate-500 for dark mode */
-}
-
-/* Panel transition utilities */
 .panel-slide-in {
   animation: slide-in-right 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
@@ -326,73 +324,6 @@ textarea::placeholder {
   animation: slide-out-right 0.2s ease-in forwards;
 }
 
-/* Leaflet Map Overrides */
-#map-view {
-  position: absolute !important;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  width: 100% !important;
-  height: 100% !important;
-  z-index: 1;
-}
-
-/* Ensure Leaflet container fills properly */
-#map-view .leaflet-container {
-  width: 100%;
-  height: 100%;
-}
-
-/* Fix tile positioning */
-#map-view .leaflet-tile-pane {
-  position: absolute;
-  left: 0;
-  top: 0;
-}
-
-/* Remove default Leaflet div icon background */
-.leaflet-div-icon {
-  background: transparent !important;
-  border: none !important;
-}
-
-.tech-marker,
-.job-marker {
-  background: transparent !important;
-  border: none !important;
-}
-
-/* Fix Leaflet controls z-index */
-.leaflet-control-container {
-  z-index: 10 !important;
-}
-
-/* Improve popup styling */
-.leaflet-popup-content-wrapper {
-  border-radius: 12px;
-  padding: 0;
-}
-
-.leaflet-popup-content {
-  margin: 8px 12px;
-  font-family: "Plus Jakarta Sans", sans-serif;
-}
-
-.leaflet-popup-tip {
-  border-radius: 2px;
-}
-
-/* Dark mode map adjustments */
-[data-theme="dark"] .leaflet-tile {
-  filter: brightness(0.8) contrast(1.1) saturate(0.8);
-}
-
-[data-theme="dark"] .leaflet-popup-content-wrapper {
-  background: rgb(var(--panel));
-  color: rgb(var(--fg));
-}
-
-[data-theme="dark"] .leaflet-popup-tip {
-  background: rgb(var(--panel));
+.animate-shake {
+  animation: shake 0.5s ease-in-out;
 }

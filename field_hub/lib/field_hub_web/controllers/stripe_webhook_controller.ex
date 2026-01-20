@@ -40,8 +40,11 @@ defmodule FieldHubWeb.StripeWebhookController do
             type: params["type"],
             data: %{object: atomize_keys(params["data"]["object"] || %{})}
           }
+
           {:ok, event}
-        error -> error
+
+        error ->
+          error
       end
     end
   end
@@ -50,6 +53,7 @@ defmodule FieldHubWeb.StripeWebhookController do
   defp atomize_keys(map) when is_map(map) do
     Map.new(map, fn {k, v} -> {String.to_atom(k), v} end)
   end
+
   defp atomize_keys(other), do: other
 
   defp handle_event(%Stripe.Event{type: "checkout.session.completed", data: %{object: session}}) do
@@ -64,7 +68,10 @@ defmodule FieldHubWeb.StripeWebhookController do
     end
   end
 
-  defp handle_event(%Stripe.Event{type: "payment_intent.succeeded", data: %{object: payment_intent}}) do
+  defp handle_event(%Stripe.Event{
+         type: "payment_intent.succeeded",
+         data: %{object: payment_intent}
+       }) do
     Logger.info("Payment intent succeeded: #{payment_intent.id}")
 
     case Payments.handle_payment_succeeded(payment_intent) do
@@ -76,7 +83,10 @@ defmodule FieldHubWeb.StripeWebhookController do
     end
   end
 
-  defp handle_event(%Stripe.Event{type: "payment_intent.payment_failed", data: %{object: payment_intent}}) do
+  defp handle_event(%Stripe.Event{
+         type: "payment_intent.payment_failed",
+         data: %{object: payment_intent}
+       }) do
     Logger.warning("Payment failed for intent: #{payment_intent.id}")
     # Could update invoice status or notify customer
   end

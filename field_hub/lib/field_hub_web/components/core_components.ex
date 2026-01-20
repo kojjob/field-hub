@@ -210,8 +210,8 @@ defmodule FieldHubWeb.CoreComponents do
       end)
 
     ~H"""
-    <div class="fieldset mb-2">
-      <label>
+    <div class="fieldset mb-3">
+      <label class="flex items-center gap-3 cursor-pointer group">
         <input
           type="hidden"
           name={@name}
@@ -219,16 +219,23 @@ defmodule FieldHubWeb.CoreComponents do
           disabled={@rest[:disabled]}
           form={@rest[:form]}
         />
-        <span class="label">
-          <input
-            type="checkbox"
-            id={@id}
-            name={@name}
-            value="true"
-            checked={@checked}
-            class={@class || "checkbox checkbox-sm"}
-            {@rest}
-          />{@label}
+        <input
+          type="checkbox"
+          id={@id}
+          name={@name}
+          value="true"
+          checked={@checked}
+          class={
+            @class ||
+              "w-5 h-5 rounded border-2 border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800/50 text-primary focus:ring-2 focus:ring-primary/20 focus:ring-offset-0 transition-all duration-200 cursor-pointer checked:bg-primary checked:border-primary"
+          }
+          {@rest}
+        />
+        <span
+          :if={@label}
+          class="text-sm font-medium text-slate-700 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-slate-100 transition-colors"
+        >
+          {@label}
         </span>
       </label>
       <.error :for={msg <- @errors}>{msg}</.error>
@@ -238,17 +245,26 @@ defmodule FieldHubWeb.CoreComponents do
 
   def input(%{type: "select"} = assigns) do
     ~H"""
-    <div class="fieldset mb-2">
+    <div class="fieldset mb-3">
       <label>
-        <span :if={@label} class="label mb-1">{@label}</span>
+        <span
+          :if={@label}
+          class="label text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5 block"
+        >
+          {@label}
+        </span>
         <select
           id={@id}
           name={@name}
-          class={[@class || "w-full select", @errors != [] && (@error_class || "select-error")]}
+          class={[
+            @class ||
+              "w-full px-4 py-2.5 bg-white dark:bg-slate-800/50 border border-slate-300 dark:border-slate-600 rounded-lg shadow-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200 cursor-pointer appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20stroke%3D%22%236b7280%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22m6%208%204%204%204-4%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.5rem_1.5rem] bg-[right_0.5rem_center] bg-no-repeat pr-10",
+            @errors != [] && (@error_class || "border-error focus:border-error focus:ring-error/20")
+          ]}
           multiple={@multiple}
           {@rest}
         >
-          <option :if={@prompt} value="">{@prompt}</option>
+          <option :if={@prompt} value="" class="text-slate-400">{@prompt}</option>
           {Phoenix.HTML.Form.options_for_select(@options, @value)}
         </select>
       </label>
@@ -259,15 +275,21 @@ defmodule FieldHubWeb.CoreComponents do
 
   def input(%{type: "textarea"} = assigns) do
     ~H"""
-    <div class="fieldset mb-2">
+    <div class="fieldset mb-3">
       <label>
-        <span :if={@label} class="label mb-1">{@label}</span>
+        <span
+          :if={@label}
+          class="label text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5 block"
+        >
+          {@label}
+        </span>
         <textarea
           id={@id}
           name={@name}
           class={[
-            @class || "w-full textarea",
-            @errors != [] && (@error_class || "textarea-error")
+            @class ||
+              "w-full px-4 py-2.5 bg-white dark:bg-slate-800/50 border border-slate-300 dark:border-slate-600 rounded-lg shadow-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200 resize-y min-h-[100px]",
+            @errors != [] && (@error_class || "border-error focus:border-error focus:ring-error/20")
           ]}
           {@rest}
         >{Phoenix.HTML.Form.normalize_value("textarea", @value)}</textarea>
@@ -280,17 +302,23 @@ defmodule FieldHubWeb.CoreComponents do
   # All other inputs text, datetime-local, url, password, etc. are handled here...
   def input(assigns) do
     ~H"""
-    <div class="fieldset mb-2">
+    <div class="fieldset mb-3">
       <label>
-        <span :if={@label} class="label mb-1">{@label}</span>
+        <span
+          :if={@label}
+          class="label text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5 block"
+        >
+          {@label}
+        </span>
         <input
           type={@type}
           name={@name}
           id={@id}
           value={Phoenix.HTML.Form.normalize_value(@type, @value)}
           class={[
-            @class || "w-full input",
-            @errors != [] && (@error_class || "input-error")
+            @class ||
+              "w-full px-4 py-2.5 bg-white dark:bg-slate-800/50 border border-slate-300 dark:border-slate-600 rounded-lg shadow-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200",
+            @errors != [] && (@error_class || "border-error focus:border-error focus:ring-error/20")
           ]}
           {@rest}
         />
@@ -308,9 +336,9 @@ defmodule FieldHubWeb.CoreComponents do
 
   def error(assigns) do
     ~H"""
-    <p class="mt-1.5 flex gap-2 items-center text-sm text-error">
-      <.icon name="hero-exclamation-circle" class="size-5" />
-      {render_slot(@inner_block)}
+    <p class="mt-2 flex gap-2 items-center text-sm text-red-600 dark:text-red-400">
+      <.icon name="hero-exclamation-circle" class="size-4 flex-shrink-0" />
+      <span>{render_slot(@inner_block)}</span>
     </p>
     """
   end
@@ -341,9 +369,12 @@ defmodule FieldHubWeb.CoreComponents do
   def simple_form(assigns) do
     ~H"""
     <.form :let={f} for={@for} as={@as} {@rest}>
-      <div class="space-y-4 bg-white dark:bg-zinc-800 p-2">
+      <div class="space-y-5">
         {render_slot(@inner_block, f)}
-        <div :for={action <- @actions} class="mt-2 flex items-center justify-between gap-6">
+        <div
+          :for={action <- @actions}
+          class="mt-6 pt-4 border-t border-slate-200 dark:border-slate-700"
+        >
           {render_slot(action, f)}
         </div>
       </div>
