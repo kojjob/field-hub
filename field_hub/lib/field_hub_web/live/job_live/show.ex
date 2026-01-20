@@ -77,11 +77,44 @@ defmodule FieldHubWeb.JobLive.Show do
   end
 
   def handle_event("support_email_update", _params, socket) do
-    {:noreply, put_flash(socket, :info, "Status update flow coming soon.")}
+    job = socket.assigns.job
+
+    case job.customer do
+      nil ->
+        {:noreply, put_flash(socket, :error, "No customer linked to this job.")}
+
+      customer ->
+        if customer.email && String.trim(customer.email) != "" do
+          # Send status update email
+          FieldHub.Jobs.JobNotifier.deliver_status_update(job, customer)
+          {:noreply, put_flash(socket, :info, "Status update email sent to #{customer.email}")}
+        else
+          {:noreply, put_flash(socket, :error, "Customer has no email address on file.")}
+        end
+    end
   end
 
   def handle_event("support_text_eta", _params, socket) do
-    {:noreply, put_flash(socket, :info, "ETA text flow coming soon.")}
+    job = socket.assigns.job
+
+    case job.customer do
+      nil ->
+        {:noreply, put_flash(socket, :error, "No customer linked to this job.")}
+
+      customer ->
+        if customer.phone && String.trim(customer.phone) != "" do
+          # Send ETA SMS
+          case FieldHub.Notifications.SMS.send_eta_update(job, customer) do
+            :ok ->
+              {:noreply, put_flash(socket, :info, "ETA text sent to #{customer.phone}")}
+
+            {:error, reason} ->
+              {:noreply, put_flash(socket, :error, "Failed to send SMS: #{reason}")}
+          end
+        else
+          {:noreply, put_flash(socket, :error, "Customer has no phone number on file.")}
+        end
+    end
   end
 
   def handle_event("chat_technician", _params, socket) do
@@ -254,7 +287,7 @@ defmodule FieldHubWeb.JobLive.Show do
                   </div>
                 </div>
               </div>
-              
+
     <!-- Checklist & Tasks -->
               <div
                 id="job-checklist"
@@ -332,7 +365,7 @@ defmodule FieldHubWeb.JobLive.Show do
                   <% end %>
                 </div>
               </div>
-              
+
     <!-- Field Evidence & Media -->
               <div
                 id="job-media"
@@ -401,7 +434,7 @@ defmodule FieldHubWeb.JobLive.Show do
                   </div>
                 </div>
               </div>
-              
+
     <!-- Activity Log -->
               <div
                 id="job-activity"
@@ -454,7 +487,7 @@ defmodule FieldHubWeb.JobLive.Show do
                 </div>
               </div>
             </div>
-            
+
     <!-- Right column -->
             <div class="lg:col-span-4 space-y-6">
               <!-- Technician -->
@@ -510,7 +543,7 @@ defmodule FieldHubWeb.JobLive.Show do
                   <% end %>
                 </div>
               </div>
-              
+
     <!-- Financials -->
               <div
                 id="job-financials"
@@ -562,7 +595,7 @@ defmodule FieldHubWeb.JobLive.Show do
                   </div>
                 </div>
               </div>
-              
+
     <!-- Customer Support -->
               <div
                 id="job-support"

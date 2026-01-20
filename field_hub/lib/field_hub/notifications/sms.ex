@@ -197,6 +197,65 @@ defmodule FieldHub.Notifications.SMS do
 
   def notify_technician_new_job(_job), do: {:error, :no_phone}
 
+  @doc """
+  Send ETA update SMS to customer (manual trigger from job details).
+  Used when dispatcher wants to send a quick ETA update.
+  """
+  def send_eta_update(job, customer) do
+    job = FieldHub.Repo.preload(job, [:technician])
+
+    cond do
+      !customer.phone || String.trim(customer.phone) == "" ->
+        {:error, "Customer has no phone number"}
+
+      customer.sms_notifications_enabled == false ->
+        {:error, "Customer has opted out of SMS notifications"}
+
+      true ->
+        tech_name = get_technician_name(job)
+        name = customer.name
+        eta = calculate_eta(job)
+
+        message = """
+        Hi #{first_name(name)}! 🕐
+
+        Quick update on your service:
+
+        Job: #{job.title}
+        #{if job.technician, do: "Technician: #{tech_name}", else: ""}
+        Status: #{humanize_status(job.status)}
+        #{eta}
+
+        We'll keep you updated!
+        """
+
+        case send_sms(customer.phone, String.trim(message)) do
+          {:ok, _sid} -> :ok
+          {:error, reason} -> {:error, inspect(reason)}
+        end
+    end
+  end
+
+  defp calculate_eta(job) do
+    case job.status do
+      "en_route" -> "ETA: ~#{estimated_arrival_minutes(job)} minutes"
+      "on_site" -> "Technician is on site"
+      "in_progress" -> "Work is in progress"
+      "scheduled" -> "Scheduled for #{format_date(job.scheduled_date)}"
+      _ -> ""
+    end
+  end
+
+  defp humanize_status(status) when is_binary(status) do
+    status
+    |> String.replace("_", " ")
+    |> String.split(" ")
+    |> Enum.map(&String.capitalize/1)
+    |> Enum.join(" ")
+  end
+
+  defp humanize_status(_), do: "Pending"
+
   # Private functions
 
   defp do_send_sms(to, body) do
