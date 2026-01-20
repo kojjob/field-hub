@@ -49,6 +49,9 @@ defmodule FieldHub.CRM.Customer do
     # Soft delete
     field :archived_at, :utc_datetime
 
+    # Notification preferences
+    field :sms_notifications_enabled, :boolean, default: true
+
     field :custom_fields, :map, default: %{}
 
     # Associations
@@ -86,6 +89,7 @@ defmodule FieldHub.CRM.Customer do
       :source,
       :referred_by,
       :archived_at,
+      :sms_notifications_enabled,
       :custom_fields
     ])
     |> validate_required([:organization_id, :name])

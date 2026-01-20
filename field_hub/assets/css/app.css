@@ -270,3 +270,74 @@ input:focus, textarea:focus, select:focus {
 .panel-slide-out {
   animation: slide-out-right 0.2s ease-in forwards;
 }
+
+/* Leaflet Map Overrides */
+#map-view {
+  position: absolute !important;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 1;
+}
+
+/* Ensure Leaflet container fills properly */
+#map-view .leaflet-container {
+  width: 100%;
+  height: 100%;
+}
+
+/* Fix tile positioning */
+#map-view .leaflet-tile-pane {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+/* Remove default Leaflet div icon background */
+.leaflet-div-icon {
+  background: transparent !important;
+  border: none !important;
+}
+
+.tech-marker,
+.job-marker {
+  background: transparent !important;
+  border: none !important;
+}
+
+/* Fix Leaflet controls z-index */
+.leaflet-control-container {
+  z-index: 10 !important;
+}
+
+/* Improve popup styling */
+.leaflet-popup-content-wrapper {
+  border-radius: 12px;
+  padding: 0;
+}
+
+.leaflet-popup-content {
+  margin: 8px 12px;
+  font-family: "Plus Jakarta Sans", sans-serif;
+}
+
+.leaflet-popup-tip {
+  border-radius: 2px;
+}
+
+/* Dark mode map adjustments */
+[data-theme="dark"] .leaflet-tile {
+  filter: brightness(0.8) contrast(1.1) saturate(0.8);
+}
+
+[data-theme="dark"] .leaflet-popup-content-wrapper {
+  background: rgb(var(--panel));
+  color: rgb(var(--fg));
+}
+
+[data-theme="dark"] .leaflet-popup-tip {
+  background: rgb(var(--panel));
+}

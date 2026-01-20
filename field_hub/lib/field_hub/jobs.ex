@@ -201,6 +201,10 @@ defmodule FieldHub.Jobs do
     # Normalize to string keys to avoid mixed keys error
     attrs = for {key, val} <- attrs, into: %{}, do: {to_string(key), val}
     attrs = Map.put_new(attrs, "number", Job.generate_job_number(org_id))
+
+    # Geocode address if lat/lng not provided
+    attrs = FieldHub.Geo.maybe_geocode_job_attrs(attrs)
+
     job_changeset = %Job{organization_id: org_id} |> Job.changeset(attrs)
 
     Multi.new()
@@ -225,6 +229,12 @@ defmodule FieldHub.Jobs do
 
   """
   def update_job(%Job{} = job, attrs) do
+    # Normalize to string keys
+    attrs = for {key, val} <- attrs, into: %{}, do: {to_string(key), val}
+
+    # Re-geocode if address changed
+    attrs = maybe_regeocode_on_update(job, attrs)
+
     Multi.new()
     |> Multi.update(:job, Job.changeset(job, attrs))
     |> Multi.insert(:event, fn %{job: updated_job} ->
@@ -235,6 +245,22 @@ defmodule FieldHub.Jobs do
     end)
     |> run_transaction()
     |> broadcast_job_updated()
+  end
+
+  # Only geocode if address fields changed
+  defp maybe_regeocode_on_update(job, attrs) do
+    address_changed? =
+      Enum.any?(~w(service_address service_city service_state service_zip), fn key ->
+        new_val = Map.get(attrs, key)
+        old_val = Map.get(job, String.to_existing_atom(key))
+        new_val != nil and new_val != old_val
+      end)
+
+    if address_changed? do
+      FieldHub.Geo.maybe_geocode_job_attrs(attrs)
+    else
+      attrs
+    end
   end
 
   @doc """
@@ -303,6 +329,7 @@ defmodule FieldHub.Jobs do
     |> run_transaction()
     |> broadcast_job_updated()
     |> notify_job_dispatched()
+    |> notify_technician_en_route()
   end
 
   @doc """
@@ -322,6 +349,7 @@ defmodule FieldHub.Jobs do
     end)
     |> run_transaction()
     |> broadcast_job_updated()
+    |> notify_technician_arrived()
   end
 
   @doc """
@@ -510,12 +538,46 @@ defmodule FieldHub.Jobs do
   defp notify_job_dispatched(error), do: error
 
   defp notify_job_completed({:ok, job}) do
+    job_with_preloads = preload_for_notifications(job)
+
     if job.customer_id do
+      # Email notification
       FieldHub.Jobs.JobNotifier.deliver_job_completion(job)
+      # SMS notification
+      FieldHub.Notifications.SMS.notify_job_completed(job_with_preloads)
     end
 
     {:ok, job}
   end
 
   defp notify_job_completed(error), do: error
+
+  @doc """
+  Sends SMS notification when technician starts travel.
+  Called from start_travel/1.
+  """
+  def notify_technician_en_route({:ok, job}) do
+    job_with_preloads = preload_for_notifications(job)
+    FieldHub.Notifications.SMS.notify_technician_en_route(job_with_preloads)
+    {:ok, job}
+  end
+
+  def notify_technician_en_route(error), do: error
+
+  @doc """
+  Sends SMS notification when technician arrives.
+  Called from arrive_on_site/1.
+  """
+  def notify_technician_arrived({:ok, job}) do
+    job_with_preloads = preload_for_notifications(job)
+    FieldHub.Notifications.SMS.notify_technician_arrived(job_with_preloads)
+    {:ok, job}
+  end
+
+  def notify_technician_arrived(error), do: error
+
+  # Preload customer and technician for notifications
+  defp preload_for_notifications(job) do
+    Repo.preload(job, [:customer, :technician])
+  end
 end
