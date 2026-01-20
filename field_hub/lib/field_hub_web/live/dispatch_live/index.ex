@@ -183,6 +183,32 @@ defmodule FieldHubWeb.DispatchLive.Index do
   end
 
   @impl true
+  def handle_event("assign_job_from_select", %{"job_id" => job_id, "technician_id" => tech_id}, socket) do
+    org_id = socket.assigns.current_organization.id
+    job = Jobs.get_job!(org_id, job_id)
+
+    # Handle empty string as unassign
+    tech_id_val = if tech_id == "", do: nil, else: tech_id
+
+    update_params = %{
+      "technician_id" => tech_id_val,
+      "scheduled_date" => if(tech_id_val, do: Date.to_string(socket.assigns.selected_date), else: nil)
+    }
+
+    case Jobs.update_job(job, update_params) do
+      {:ok, updated_job} ->
+        # Reload job with preloads for the slideout
+        updated_job = Jobs.get_job!(org_id, updated_job.id) |> FieldHub.Repo.preload([:customer, :technician])
+
+        message = if tech_id_val, do: "Job assigned successfully", else: "Job unassigned"
+        {:noreply, socket |> assign(:selected_job, updated_job) |> put_flash(:info, message) |> load_data()}
+
+      {:error, _changeset} ->
+        {:noreply, put_flash(socket, :error, "Failed to update assignment")}
+    end
+  end
+
+  @impl true
   def handle_event("unassign_job", %{"job_id" => job_id}, socket) do
     org_id = socket.assigns.current_organization.id
     job = Jobs.get_job!(org_id, job_id)
@@ -773,22 +799,40 @@ defmodule FieldHubWeb.DispatchLive.Index do
                     <.icon name="hero-bolt" class="size-5" />
                   </div>
                   <h4 class="text-xs font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
-                    Assignee
+                    Assign Technician
                   </h4>
                 </div>
+
+                <form phx-change="assign_job_from_select" class="space-y-3">
+                  <input type="hidden" name="job_id" value={@selected_job.id} />
+                  <select
+                    name="technician_id"
+                    class="w-full px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-sm font-bold text-zinc-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-primary transition-all"
+                  >
+                    <option value="">— Unassigned —</option>
+                    <%= for tech <- @technicians do %>
+                      <option
+                        value={tech.id}
+                        selected={@selected_job.technician_id == tech.id}
+                      >
+                        {tech.name} ({String.replace(tech.status, "_", " ")})
+                      </option>
+                    <% end %>
+                  </select>
+                </form>
+
                 <%= if @selected_job.technician do %>
-                  <div class="flex items-center gap-3">
+                  <div class="flex items-center gap-3 mt-3 p-3 bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-700">
                     <div
-                      class="size-8 rounded-full shadow-lg shadow-primary/10"
+                      class="size-8 rounded-full flex items-center justify-center text-white text-xs font-black shadow-lg shadow-primary/10"
                       style={"background-color: #{@selected_job.technician.color}"}
                     >
+                      {initials(@selected_job.technician.name)}
                     </div>
-                    <span class="text-lg font-bold text-zinc-900 dark:text-white">
+                    <span class="text-sm font-bold text-zinc-900 dark:text-white">
                       {@selected_job.technician.name}
                     </span>
                   </div>
-                <% else %>
-                  <p class="text-zinc-500 italic font-medium">Currently unassigned</p>
                 <% end %>
               </div>
             </div>

@@ -32,6 +32,7 @@ import {MapHook} from "./hooks/map"
 import {GeolocationHook} from "./hooks/geolocation"
 import {PWAInstall, NetworkStatus, SMSPreference} from "./hooks/pwa"
 import {OfflineSync, OfflineAction, OfflineIndicator} from "./hooks/offline_sync"
+import PrintInvoice from "./hooks/print_invoice"
 import "leaflet/dist/leaflet.css"
 
 // Custom hooks
@@ -48,6 +49,7 @@ const Hooks = {
   OfflineSync: OfflineSync,
   OfflineAction: OfflineAction,
   OfflineIndicator: OfflineIndicator,
+  PrintInvoice: PrintInvoice,
   PasswordToggle: {
     mounted() {
       const wrapper = this.el;

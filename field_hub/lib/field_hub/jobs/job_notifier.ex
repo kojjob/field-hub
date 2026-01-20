@@ -96,4 +96,43 @@ defmodule FieldHub.Jobs.JobNotifier do
     The #{job.organization.name} Team
     """)
   end
+
+  @doc """
+  Deliver status update email to customer.
+  """
+  def deliver_status_update(job, customer) do
+    job = FieldHub.Repo.preload(job, [:technician, :organization])
+    url = url(FieldHubWeb.Endpoint, ~p"/portal/login/#{customer.portal_token}")
+
+    status_message = status_to_message(job.status, job.technician)
+
+    deliver(customer.email, customer.name, "Job Status Update - #{job.organization.name}", """
+    Hi #{customer.name},
+
+    Here's an update on your service request "#{job.title}":
+
+    Current Status: #{String.upcase(String.replace(job.status, "_", " "))}
+    #{status_message}
+
+    #{if job.technician, do: "Technician: #{job.technician.name}", else: ""}
+    #{if job.scheduled_date, do: "Scheduled Date: #{Calendar.strftime(job.scheduled_date, "%b %d, %Y")}", else: ""}
+
+    Track your job in real-time:
+    #{url}
+
+    Questions? Reply to this email or call us.
+
+    Best regards,
+    The #{job.organization.name} Team
+    """)
+  end
+
+  defp status_to_message("scheduled", _tech), do: "Your appointment has been scheduled. We'll notify you when your technician is on the way."
+  defp status_to_message("dispatched", tech), do: "#{tech && tech.name || "Your technician"} has been assigned and will be heading your way soon."
+  defp status_to_message("en_route", tech), do: "#{tech && tech.name || "Your technician"} is on the way to your location!"
+  defp status_to_message("on_site", tech), do: "#{tech && tech.name || "Your technician"} has arrived at your location."
+  defp status_to_message("in_progress", _tech), do: "Work is currently in progress on your service request."
+  defp status_to_message("completed", _tech), do: "Your service has been completed. Thank you for choosing us!"
+  defp status_to_message("cancelled", _tech), do: "This job has been cancelled. Please contact us if you have questions."
+  defp status_to_message(status, _tech), do: "Your job status is: #{String.replace(status, "_", " ")}"
 end

@@ -176,6 +176,26 @@
 
               <li>
                 <div class="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-3 ml-2">
+                  Finance
+                </div>
+                <ul role="list" class="-mx-2 space-y-1">
+                  <li>
+                    <.link
+                      navigate={~p"/invoices"}
+                      class={nav_link_class(assigns[:current_nav] == :invoices)}
+                    >
+                      <.icon
+                        name="hero-banknotes"
+                        class={nav_icon_class(assigns[:current_nav] == :invoices)}
+                      />
+                      <span class="font-bold">Invoices</span>
+                    </.link>
+                  </li>
+                </ul>
+              </li>
+
+              <li>
+                <div class="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-3 ml-2">
                   Analytics
                 </div>
                 <ul role="list" class="-mx-2 space-y-1">
@@ -373,6 +393,26 @@
                     class={nav_icon_class(assigns[:current_nav] == :branding)}
                   />
                   <span class="font-bold">Customer Portal</span>
+                </.link>
+              </li>
+            </ul>
+          </li>
+
+          <li>
+            <div class="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-3 ml-2">
+              Finance
+            </div>
+            <ul role="list" class="-mx-2 space-y-1">
+              <li>
+                <.link
+                  navigate={~p"/invoices"}
+                  class={nav_link_class(assigns[:current_nav] == :invoices)}
+                >
+                  <.icon
+                    name="hero-banknotes"
+                    class={nav_icon_class(assigns[:current_nav] == :invoices)}
+                  />
+                  <span class="font-bold">Invoices</span>
                 </.link>
               </li>
             </ul>
