@@ -93,6 +93,10 @@ defmodule FieldHubWeb.Router do
       # Reports
       live "/reports", ReportLive.Index, :index
 
+      # Invoices
+      live "/invoices", InvoiceLive.Index, :index
+      live "/invoices/:id", InvoiceLive.Show, :show
+
       # Technician Mobile Views
       live "/tech/dashboard", TechLive.Dashboard, :index
       live "/tech/jobs/:number", TechLive.JobShow, :show

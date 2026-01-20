@@ -73,7 +73,30 @@ defmodule FieldHubWeb.JobLive.Show do
 
   @impl true
   def handle_event("generate_invoice", _params, socket) do
-    {:noreply, put_flash(socket, :info, "Invoice generation is coming soon.")}
+    job = socket.assigns.job
+
+    # Check if invoice already exists
+    case FieldHub.Billing.get_invoice_for_job(job.id) do
+      nil ->
+        # Generate new invoice
+        case FieldHub.Billing.generate_invoice_from_job(job.id) do
+          {:ok, invoice} ->
+            {:noreply,
+             socket
+             |> put_flash(:info, "Invoice #{invoice.number} generated successfully")
+             |> push_navigate(to: ~p"/invoices/#{invoice.id}")}
+
+          {:error, _changeset} ->
+            {:noreply, put_flash(socket, :error, "Failed to generate invoice")}
+        end
+
+      existing_invoice ->
+        # Invoice already exists, navigate to it
+        {:noreply,
+         socket
+         |> put_flash(:info, "Invoice already exists")
+         |> push_navigate(to: ~p"/invoices/#{existing_invoice.id}")}
+    end
   end
 
   def handle_event("support_email_update", _params, socket) do
