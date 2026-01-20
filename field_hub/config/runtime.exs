@@ -99,4 +99,72 @@ if config_env() == :prod do
   #       force_ssl: [hsts: true]
   #
   # Check `Plug.SSL` for all available options in `force_ssl`.
+
+  # Twilio SMS Configuration
+  if System.get_env("TWILIO_ACCOUNT_SID") do
+    config :field_hub, FieldHub.Notifications.SMS,
+      account_sid: System.get_env("TWILIO_ACCOUNT_SID"),
+      auth_token: System.get_env("TWILIO_AUTH_TOKEN"),
+      phone_number: System.get_env("TWILIO_PHONE_NUMBER")
+  end
+
+  # Email Configuration (Swoosh)
+  # Supports: Postmark, SendGrid, Resend, Mailgun
+  # Set MAIL_PROVIDER to your provider name
+  mail_provider = System.get_env("MAIL_PROVIDER", "postmark")
+  mail_from = System.get_env("MAIL_FROM_ADDRESS", "noreply@#{host}")
+
+  config :field_hub, :mail_from, mail_from
+
+  case mail_provider do
+    "postmark" ->
+      if api_key = System.get_env("POSTMARK_API_KEY") do
+        config :field_hub, FieldHub.Mailer,
+          adapter: Swoosh.Adapters.Postmark,
+          api_key: api_key
+      end
+
+    "sendgrid" ->
+      if api_key = System.get_env("SENDGRID_API_KEY") do
+        config :field_hub, FieldHub.Mailer,
+          adapter: Swoosh.Adapters.Sendgrid,
+          api_key: api_key
+      end
+
+    "resend" ->
+      if api_key = System.get_env("RESEND_API_KEY") do
+        config :field_hub, FieldHub.Mailer,
+          adapter: Swoosh.Adapters.Resend,
+          api_key: api_key
+      end
+
+    "mailgun" ->
+      if api_key = System.get_env("MAILGUN_API_KEY") do
+        config :field_hub, FieldHub.Mailer,
+          adapter: Swoosh.Adapters.Mailgun,
+          api_key: api_key,
+          domain: System.get_env("MAILGUN_DOMAIN")
+      end
+
+    "smtp" ->
+      # Generic SMTP (Gmail, etc.)
+      if smtp_host = System.get_env("SMTP_HOST") do
+        config :field_hub, FieldHub.Mailer,
+          adapter: Swoosh.Adapters.SMTP,
+          relay: smtp_host,
+          port: String.to_integer(System.get_env("SMTP_PORT", "587")),
+          username: System.get_env("SMTP_USERNAME"),
+          password: System.get_env("SMTP_PASSWORD"),
+          ssl: System.get_env("SMTP_SSL") == "true",
+          tls: :if_available,
+          auth: :always
+      end
+
+    _ ->
+      # Default to local adapter (for testing/development)
+      nil
+  end
+
+  # Enable Swoosh API client for HTTP-based adapters
+  config :swoosh, :api_client, Swoosh.ApiClient.Finch
 end

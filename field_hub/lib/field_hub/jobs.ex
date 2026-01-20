@@ -329,6 +329,7 @@ defmodule FieldHub.Jobs do
     |> run_transaction()
     |> broadcast_job_updated()
     |> notify_job_dispatched()
+    |> notify_technician_en_route()
   end
 
   @doc """
@@ -348,6 +349,7 @@ defmodule FieldHub.Jobs do
     end)
     |> run_transaction()
     |> broadcast_job_updated()
+    |> notify_technician_arrived()
   end
 
   @doc """
@@ -536,12 +538,46 @@ defmodule FieldHub.Jobs do
   defp notify_job_dispatched(error), do: error
 
   defp notify_job_completed({:ok, job}) do
+    job_with_preloads = preload_for_notifications(job)
+
     if job.customer_id do
+      # Email notification
       FieldHub.Jobs.JobNotifier.deliver_job_completion(job)
+      # SMS notification
+      FieldHub.Notifications.SMS.notify_job_completed(job_with_preloads)
     end
 
     {:ok, job}
   end
 
   defp notify_job_completed(error), do: error
+
+  @doc """
+  Sends SMS notification when technician starts travel.
+  Called from start_travel/1.
+  """
+  def notify_technician_en_route({:ok, job}) do
+    job_with_preloads = preload_for_notifications(job)
+    FieldHub.Notifications.SMS.notify_technician_en_route(job_with_preloads)
+    {:ok, job}
+  end
+
+  def notify_technician_en_route(error), do: error
+
+  @doc """
+  Sends SMS notification when technician arrives.
+  Called from arrive_on_site/1.
+  """
+  def notify_technician_arrived({:ok, job}) do
+    job_with_preloads = preload_for_notifications(job)
+    FieldHub.Notifications.SMS.notify_technician_arrived(job_with_preloads)
+    {:ok, job}
+  end
+
+  def notify_technician_arrived(error), do: error
+
+  # Preload customer and technician for notifications
+  defp preload_for_notifications(job) do
+    Repo.preload(job, [:customer, :technician])
+  end
 end

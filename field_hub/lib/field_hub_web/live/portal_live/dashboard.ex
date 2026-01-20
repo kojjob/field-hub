@@ -5,6 +5,7 @@ defmodule FieldHubWeb.PortalLive.Dashboard do
   use FieldHubWeb, :live_view
 
   alias FieldHub.Jobs
+  alias FieldHub.CRM
 
   @impl true
   def mount(_params, _session, socket) do
@@ -40,6 +41,28 @@ defmodule FieldHubWeb.PortalLive.Dashboard do
   end
 
   def handle_info(_, socket), do: {:noreply, socket}
+
+  @impl true
+  def handle_event("update_sms_preference", %{"enabled" => enabled}, socket) do
+    customer = socket.assigns.customer
+
+    case CRM.update_customer(customer, %{sms_notifications_enabled: enabled}) do
+      {:ok, updated_customer} ->
+        socket =
+          socket
+          |> assign(:customer, updated_customer)
+          |> put_flash(:info, if(enabled, do: "SMS notifications enabled", else: "SMS notifications disabled"))
+
+        {:noreply, socket}
+
+      {:error, _changeset} ->
+        {:noreply, put_flash(socket, :error, "Failed to update preference")}
+    end
+  end
+
+  def handle_event("show_toast", %{"message" => message, "type" => type}, socket) do
+    {:noreply, put_flash(socket, String.to_atom(type), message)}
+  end
 
   @impl true
   def render(assigns) do
@@ -168,6 +191,56 @@ defmodule FieldHubWeb.PortalLive.Dashboard do
               <% end %>
             </div>
           <% end %>
+        </section>
+
+        <!-- SMS Notification Preferences -->
+        <section>
+          <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-6">
+            <div class="flex items-start gap-4">
+              <div class="size-12 rounded-xl bg-teal-100 dark:bg-teal-900/30 flex items-center justify-center flex-shrink-0">
+                <.icon name="hero-device-phone-mobile" class="size-6 text-teal-600 dark:text-teal-400" />
+              </div>
+              <div class="flex-1">
+                <h3 class="text-lg font-bold text-zinc-900 dark:text-white mb-1">
+                  SMS Notifications
+                </h3>
+                <p class="text-sm text-zinc-500 mb-4">
+                  Get text message updates when your technician is on the way, arrives, or completes the job.
+                </p>
+
+                <div id="sms-preference-toggle" phx-hook="SMSPreference" class="flex items-center justify-between p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-xl">
+                  <div class="flex items-center gap-3">
+                    <.icon name="hero-chat-bubble-left-right" class="size-5 text-zinc-400" />
+                    <div>
+                      <p class="font-semibold text-zinc-900 dark:text-white text-sm">
+                        Receive SMS updates
+                      </p>
+                      <p class="text-xs text-zinc-500">
+                        <%= if @customer.phone do %>
+                          To: {@customer.phone}
+                        <% else %>
+                          No phone number on file
+                        <% end %>
+                      </p>
+                    </div>
+                  </div>
+
+                  <%= if @customer.phone do %>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        class="sr-only peer"
+                        checked={@customer.sms_notifications_enabled}
+                      />
+                      <div class="w-11 h-6 bg-zinc-300 dark:bg-zinc-600 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                    </label>
+                  <% else %>
+                    <span class="text-xs text-zinc-400">Not available</span>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          </div>
         </section>
       </main>
     </div>

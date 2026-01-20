@@ -454,12 +454,13 @@ git push -u origin develop
 
 ## Phase 3: Technician Mobile
 
-### FH-030: Mobile Layout & PWA Setup
+### FH-030: Mobile Layout & PWA Setup ✅
 
-- [ ] **Implement:** Mobile-first layout for tech views
-- [ ] **Implement:** PWA manifest.json
-- [ ] **Implement:** Service worker for offline caching
-- [ ] **Implement:** "Add to Home Screen" support
+- [x] **Implement:** Mobile-first layout for tech views
+- [x] **Implement:** PWA manifest.json
+- [x] **Implement:** Service worker for offline caching
+- [x] **Implement:** "Add to Home Screen" support (PWA install prompt)
+- [x] **Implement:** PWA icons (192x192, 512x512)
 - [ ] **Test:** Works on iOS Safari, Android Chrome
 
 **Branch:** `feature/FH-030-pwa-setup`
@@ -527,13 +528,14 @@ git push -u origin develop
 
 **Branch:** `feature/FH-036-job-completion`
 
-### FH-037: Offline Support
+### FH-037: Offline Support ✅
 
-- [ ] **Implement:** IndexedDB storage for pending updates
-- [ ] **Implement:** Queue job updates when offline
-- [ ] **Implement:** Sync when connection restored
-- [ ] **Implement:** Offline indicator UI
-- [ ] **Test:** Complete job while offline, syncs later
+- [x] **Implement:** IndexedDB storage for pending updates (`offline_storage.js`)
+- [x] **Implement:** Queue job updates when offline (OfflineAction hook)
+- [x] **Implement:** Sync when connection restored (OfflineSync hook + API)
+- [x] **Implement:** Offline indicator UI (dashboard banner)
+- [x] **Implement:** Sync API endpoint (`/api/tech/sync`)
+- [ ] **Test:** Complete job while offline, syncs later (E2E test pending)
 
 **Branch:** `feature/FH-037-offline-support`
 

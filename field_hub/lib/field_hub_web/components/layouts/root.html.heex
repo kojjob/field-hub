@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
     <meta name="csrf-token" content={get_csrf_token()} />
     <meta
       name="description"
@@ -19,6 +19,22 @@
           "FieldHub - The comprehensive white-label Field Service Management platform."
       }
     />
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#0d9488" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="FieldHub" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="application-name" content="FieldHub" />
+    <meta name="msapplication-TileColor" content="#0d9488" />
+    <meta name="msapplication-config" content="none" />
+    
+    <!-- Apple Touch Icons -->
+    <link rel="apple-touch-icon" href="/images/icon-192.png" />
+    <link rel="apple-touch-icon" sizes="192x192" href="/images/icon-192.png" />
+    <link rel="apple-touch-icon" sizes="512x512" href="/images/icon-512.png" />
+    
     <.live_title default="FieldHub" suffix=" · Phoenix Framework">
       {assigns[:page_title]}
     </.live_title>
@@ -42,6 +58,7 @@
     <script defer phx-track-static type="text/javascript" src={~p"/assets/js/app.js"}>
     </script>
     <script>
+      // Theme switching
       (() => {
         const setTheme = (theme) => {
           if (theme === "system") {
@@ -64,6 +81,28 @@
         
         window.addEventListener("phx:set-theme", (e) => setTheme(e.target.dataset.phxTheme));
       })();
+      
+      // Service Worker Registration
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js', { scope: '/' })
+            .then(reg => {
+              console.log('[PWA] Service Worker registered:', reg.scope);
+              
+              // Check for updates
+              reg.addEventListener('updatefound', () => {
+                const newWorker = reg.installing;
+                newWorker.addEventListener('statechange', () => {
+                  if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                    console.log('[PWA] New version available!');
+                    // Could show update prompt here
+                  }
+                });
+              });
+            })
+            .catch(err => console.warn('[PWA] Service Worker registration failed:', err));
+        });
+      }
     </script>
   </head>
   <body>
