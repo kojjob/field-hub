@@ -30,6 +30,7 @@ import {SignaturePadHook} from "./hooks/signature_pad"
 import PushNotifications from "./hooks/push_notifications"
 import {MapHook} from "./hooks/map"
 import {GeolocationHook} from "./hooks/geolocation"
+import {PWAInstall, NetworkStatus, SMSPreference} from "./hooks/pwa"
 import "leaflet/dist/leaflet.css"
 
 // Custom hooks
@@ -40,6 +41,9 @@ const Hooks = {
   PushNotifications: PushNotifications,
   Map: MapHook,
   Geolocation: GeolocationHook,
+  PWAInstall: PWAInstall,
+  NetworkStatus: NetworkStatus,
+  SMSPreference: SMSPreference,
   PasswordToggle: {
     mounted() {
       const wrapper = this.el;

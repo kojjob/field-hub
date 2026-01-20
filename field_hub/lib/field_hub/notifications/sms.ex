@@ -44,98 +44,131 @@ defmodule FieldHub.Notifications.SMS do
 
   @doc """
   Notifies customer that technician is on the way.
+  Respects customer's SMS notification preferences.
   """
-  def notify_technician_en_route(%{customer: %{phone: phone, name: name}} = job)
-      when is_binary(phone) do
-    tech_name = get_technician_name(job)
+  def notify_technician_en_route(%{customer: nil}), do: {:error, :no_customer}
+  def notify_technician_en_route(%{customer: customer} = job) when is_map(customer) do
+    with {:phone, phone} when is_binary(phone) <- {:phone, customer.phone},
+         {:enabled, true} <- {:enabled, customer.sms_notifications_enabled != false} do
+      tech_name = get_technician_name(job)
+      name = customer.name
 
-    message = """
-    Hi #{first_name(name)}! 🚗
+      message = """
+      Hi #{first_name(name)}! 🚗
 
-    Your technician #{tech_name} is now on the way for your appointment.
+      Your technician #{tech_name} is now on the way for your appointment.
 
-    Job: #{job.title}
-    ETA: ~#{estimated_arrival_minutes(job)} minutes
+      Job: #{job.title}
+      ETA: ~#{estimated_arrival_minutes(job)} minutes
 
-    Reply STOP to unsubscribe.
-    """
+      Reply STOP to unsubscribe.
+      """
 
-    send_sms(phone, String.trim(message))
+      send_sms(phone, String.trim(message))
+    else
+      {:phone, _} -> {:error, :no_phone}
+      {:enabled, _} -> {:ok, :sms_disabled}
+    end
   end
 
-  def notify_technician_en_route(_job), do: {:error, :no_phone}
+  def notify_technician_en_route(_job), do: {:error, :no_customer}
 
   @doc """
   Notifies customer that technician has arrived.
+  Respects customer's SMS notification preferences.
   """
-  def notify_technician_arrived(%{customer: %{phone: phone, name: name}} = job)
-      when is_binary(phone) do
-    tech_name = get_technician_name(job)
+  def notify_technician_arrived(%{customer: nil}), do: {:error, :no_customer}
+  def notify_technician_arrived(%{customer: customer} = job) when is_map(customer) do
+    with {:phone, phone} when is_binary(phone) <- {:phone, customer.phone},
+         {:enabled, true} <- {:enabled, customer.sms_notifications_enabled != false} do
+      tech_name = get_technician_name(job)
+      name = customer.name
 
-    message = """
-    Hi #{first_name(name)}! 👋
+      message = """
+      Hi #{first_name(name)}! 👋
 
-    Good news! #{tech_name} has arrived for your appointment.
+      Good news! #{tech_name} has arrived for your appointment.
 
-    Job: #{job.title}
+      Job: #{job.title}
 
-    Thank you for choosing us!
-    """
+      Thank you for choosing us!
+      """
 
-    send_sms(phone, String.trim(message))
+      send_sms(phone, String.trim(message))
+    else
+      {:phone, _} -> {:error, :no_phone}
+      {:enabled, _} -> {:ok, :sms_disabled}
+    end
   end
 
-  def notify_technician_arrived(_job), do: {:error, :no_phone}
+  def notify_technician_arrived(_job), do: {:error, :no_customer}
 
   @doc """
   Notifies customer that job is complete.
+  Respects customer's SMS notification preferences.
   """
-  def notify_job_completed(%{customer: %{phone: phone, name: name}} = job)
-      when is_binary(phone) do
-    message = """
-    Hi #{first_name(name)}! ✅
+  def notify_job_completed(%{customer: nil}), do: {:error, :no_customer}
+  def notify_job_completed(%{customer: customer} = job) when is_map(customer) do
+    with {:phone, phone} when is_binary(phone) <- {:phone, customer.phone},
+         {:enabled, true} <- {:enabled, customer.sms_notifications_enabled != false} do
+      name = customer.name
 
-    Great news! Your service has been completed.
+      message = """
+      Hi #{first_name(name)}! ✅
 
-    Job: #{job.title}
-    #{if job.actual_amount, do: "Total: $#{job.actual_amount}", else: ""}
+      Great news! Your service has been completed.
 
-    Thank you for your business! We'd love your feedback.
+      Job: #{job.title}
+      #{if job.actual_amount, do: "Total: $#{job.actual_amount}", else: ""}
 
-    Reply STOP to unsubscribe.
-    """
+      Thank you for your business! We'd love your feedback.
 
-    send_sms(phone, String.trim(message))
+      Reply STOP to unsubscribe.
+      """
+
+      send_sms(phone, String.trim(message))
+    else
+      {:phone, _} -> {:error, :no_phone}
+      {:enabled, _} -> {:ok, :sms_disabled}
+    end
   end
 
-  def notify_job_completed(_job), do: {:error, :no_phone}
+  def notify_job_completed(_job), do: {:error, :no_customer}
 
   @doc """
   Notifies customer of a scheduled appointment.
+  Respects customer's SMS notification preferences.
   """
-  def notify_job_scheduled(%{customer: %{phone: phone, name: name}} = job)
-      when is_binary(phone) do
-    date = format_date(job.scheduled_date)
-    time = format_time(job.scheduled_start)
+  def notify_job_scheduled(%{customer: nil}), do: {:error, :no_customer}
+  def notify_job_scheduled(%{customer: customer} = job) when is_map(customer) do
+    with {:phone, phone} when is_binary(phone) <- {:phone, customer.phone},
+         {:enabled, true} <- {:enabled, customer.sms_notifications_enabled != false} do
+      name = customer.name
+      date = format_date(job.scheduled_date)
+      time = format_time(job.scheduled_start)
 
-    message = """
-    Hi #{first_name(name)}! 📅
+      message = """
+      Hi #{first_name(name)}! 📅
 
-    Your appointment has been scheduled:
+      Your appointment has been scheduled:
 
-    #{job.title}
-    📆 #{date}
-    🕐 #{time}
+      #{job.title}
+      📆 #{date}
+      🕐 #{time}
 
-    We'll notify you when your technician is on the way.
+      We'll notify you when your technician is on the way.
 
-    Reply STOP to unsubscribe.
-    """
+      Reply STOP to unsubscribe.
+      """
 
-    send_sms(phone, String.trim(message))
+      send_sms(phone, String.trim(message))
+    else
+      {:phone, _} -> {:error, :no_phone}
+      {:enabled, _} -> {:ok, :sms_disabled}
+    end
   end
 
-  def notify_job_scheduled(_job), do: {:error, :no_phone}
+  def notify_job_scheduled(_job), do: {:error, :no_customer}
 
   @doc """
   Notifies technician of a new job assignment.

@@ -21,7 +21,8 @@ defmodule FieldHub.Notifications.SMSTest do
 
       customer = %{
         name: "John Smith",
-        phone: "+15551234567"
+        phone: "+15551234567",
+        sms_notifications_enabled: true
       }
 
       technician = %{
