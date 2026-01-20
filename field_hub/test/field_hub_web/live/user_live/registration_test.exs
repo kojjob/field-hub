@@ -33,7 +33,7 @@ defmodule FieldHubWeb.UserLive.RegistrationTest do
         |> render_change(user: %{"email" => "with spaces"})
 
       assert result =~ "Create Your Account"
-      assert result =~ "must have the @ sign and no spaces"
+      assert result =~ "Please enter a valid email"
     end
   end
 

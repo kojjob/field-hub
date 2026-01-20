@@ -74,6 +74,9 @@ config :field_hub, FieldHubWeb.Endpoint,
 # Enable dev routes for dashboard and mailbox
 config :field_hub, dev_routes: true
 
+# Mark this as dev environment (used for logging magic links, etc.)
+config :field_hub, env: :dev
+
 # Do not include metadata nor timestamps in development logs
 config :logger, :default_formatter, format: "[$level] $message\n"
 
