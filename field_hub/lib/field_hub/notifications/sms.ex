@@ -47,6 +47,7 @@ defmodule FieldHub.Notifications.SMS do
   Respects customer's SMS notification preferences.
   """
   def notify_technician_en_route(%{customer: nil}), do: {:error, :no_customer}
+
   def notify_technician_en_route(%{customer: customer} = job) when is_map(customer) do
     with {:phone, phone} when is_binary(phone) <- {:phone, customer.phone},
          {:enabled, true} <- {:enabled, customer.sms_notifications_enabled != false} do
@@ -78,6 +79,7 @@ defmodule FieldHub.Notifications.SMS do
   Respects customer's SMS notification preferences.
   """
   def notify_technician_arrived(%{customer: nil}), do: {:error, :no_customer}
+
   def notify_technician_arrived(%{customer: customer} = job) when is_map(customer) do
     with {:phone, phone} when is_binary(phone) <- {:phone, customer.phone},
          {:enabled, true} <- {:enabled, customer.sms_notifications_enabled != false} do
@@ -108,6 +110,7 @@ defmodule FieldHub.Notifications.SMS do
   Respects customer's SMS notification preferences.
   """
   def notify_job_completed(%{customer: nil}), do: {:error, :no_customer}
+
   def notify_job_completed(%{customer: customer} = job) when is_map(customer) do
     with {:phone, phone} when is_binary(phone) <- {:phone, customer.phone},
          {:enabled, true} <- {:enabled, customer.sms_notifications_enabled != false} do
@@ -140,6 +143,7 @@ defmodule FieldHub.Notifications.SMS do
   Respects customer's SMS notification preferences.
   """
   def notify_job_scheduled(%{customer: nil}), do: {:error, :no_customer}
+
   def notify_job_scheduled(%{customer: customer} = job) when is_map(customer) do
     with {:phone, phone} when is_binary(phone) <- {:phone, customer.phone},
          {:enabled, true} <- {:enabled, customer.sms_notifications_enabled != false} do
@@ -197,6 +201,65 @@ defmodule FieldHub.Notifications.SMS do
 
   def notify_technician_new_job(_job), do: {:error, :no_phone}
 
+  @doc """
+  Send ETA update SMS to customer (manual trigger from job details).
+  Used when dispatcher wants to send a quick ETA update.
+  """
+  def send_eta_update(job, customer) do
+    job = FieldHub.Repo.preload(job, [:technician])
+
+    cond do
+      !customer.phone || String.trim(customer.phone) == "" ->
+        {:error, "Customer has no phone number"}
+
+      customer.sms_notifications_enabled == false ->
+        {:error, "Customer has opted out of SMS notifications"}
+
+      true ->
+        tech_name = get_technician_name(job)
+        name = customer.name
+        eta = calculate_eta(job)
+
+        message = """
+        Hi #{first_name(name)}! 🕐
+
+        Quick update on your service:
+
+        Job: #{job.title}
+        #{if job.technician, do: "Technician: #{tech_name}", else: ""}
+        Status: #{humanize_status(job.status)}
+        #{eta}
+
+        We'll keep you updated!
+        """
+
+        case send_sms(customer.phone, String.trim(message)) do
+          {:ok, _sid} -> :ok
+          {:error, reason} -> {:error, inspect(reason)}
+        end
+    end
+  end
+
+  defp calculate_eta(job) do
+    case job.status do
+      "en_route" -> "ETA: ~#{estimated_arrival_minutes(job)} minutes"
+      "on_site" -> "Technician is on site"
+      "in_progress" -> "Work is in progress"
+      "scheduled" -> "Scheduled for #{format_date(job.scheduled_date)}"
+      _ -> ""
+    end
+  end
+
+  defp humanize_status(status) when is_binary(status) do
+    status
+    |> String.replace("_", " ")
+    |> String.split(" ")
+    |> Enum.map(&String.capitalize/1)
+    |> Enum.join(" ")
+  end
+
+  defp humanize_status(_), do: "Pending"
+
   # Private functions
 
   defp do_send_sms(to, body) do
@@ -238,9 +301,10 @@ defmodule FieldHub.Notifications.SMS do
     :inets.start()
     :ssl.start()
 
-    headers_charlist = Enum.map(headers, fn {k, v} ->
-      {String.to_charlist(k), String.to_charlist(v)}
-    end)
+    headers_charlist =
+      Enum.map(headers, fn {k, v} ->
+        {String.to_charlist(k), String.to_charlist(v)}
+      end)
 
     request = {
       String.to_charlist(url),
@@ -255,7 +319,7 @@ defmodule FieldHub.Notifications.SMS do
       ssl: [verify: :verify_none]
     ]
 
-    case :httpc.request(:post, request, http_opts, [body_format: :binary]) do
+    case :httpc.request(:post, request, http_opts, body_format: :binary) do
       {:ok, {{_, 200, _}, _, response_body}} ->
         Jason.decode(response_body)
 
@@ -280,15 +344,16 @@ defmodule FieldHub.Notifications.SMS do
     # Add country code if missing
     case cleaned do
       "+" <> _ -> cleaned
-      _ when byte_size(cleaned) == 10 -> "+1" <> cleaned  # US number
+      # US number
+      _ when byte_size(cleaned) == 10 -> "+1" <> cleaned
       _ -> "+" <> cleaned
     end
   end
 
   defp enabled? do
     get_config(:account_sid) != nil and
-    get_config(:auth_token) != nil and
-    get_config(:phone_number) != nil
+      get_config(:auth_token) != nil and
+      get_config(:phone_number) != nil
   end
 
   defp get_config(key) do
@@ -296,6 +361,7 @@ defmodule FieldHub.Notifications.SMS do
   end
 
   defp first_name(nil), do: "there"
+
   defp first_name(name) do
     name |> String.split(" ") |> List.first() || "there"
   end
@@ -307,7 +373,8 @@ defmodule FieldHub.Notifications.SMS do
   defp get_customer_name(_), do: "Customer"
 
   defp estimated_arrival_minutes(%{travel_started_at: nil}), do: 15
-  defp estimated_arrival_minutes(_job), do: 10  # Already traveling
+  # Already traveling
+  defp estimated_arrival_minutes(_job), do: 10
 
   defp format_date(nil), do: "TBD"
   defp format_date(date), do: Calendar.strftime(date, "%B %d, %Y")

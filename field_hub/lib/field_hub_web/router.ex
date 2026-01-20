@@ -47,7 +47,17 @@ defmodule FieldHubWeb.Router do
       live "/", PortalLive.Dashboard, :index
       live "/jobs/:number", PortalLive.JobDetail, :show
       live "/history", PortalLive.History, :index
+      live "/invoices", PortalLive.Invoices, :index
+      live "/invoices/:id", PortalLive.InvoiceDetail, :show
+      live "/invoices/:id/pay", PortalLive.InvoicePayment, :pay
     end
+  end
+
+  # Stripe webhook (requires raw body for signature verification)
+  scope "/webhooks", FieldHubWeb do
+    pipe_through [:api]
+
+    post "/stripe", StripeWebhookController, :webhook
   end
 
   # API Routes for offline sync and mobile apps
@@ -93,6 +103,10 @@ defmodule FieldHubWeb.Router do
       # Reports
       live "/reports", ReportLive.Index, :index
 
+      # Invoices
+      live "/invoices", InvoiceLive.Index, :index
+      live "/invoices/:id", InvoiceLive.Show, :show
+
       # Technician Mobile Views
       live "/tech/dashboard", TechLive.Dashboard, :index
       live "/tech/jobs/:number", TechLive.JobShow, :show
@@ -123,6 +137,7 @@ defmodule FieldHubWeb.Router do
       live "/users/register", UserLive.Registration, :new
       live "/users/log-in", UserLive.Login, :new
       live "/users/log-in/:token", UserLive.Confirmation, :new
+      live "/users/forgot-password", UserLive.ForgotPassword, :new
     end
 
     post "/users/log-in", UserSessionController, :create

@@ -231,13 +231,28 @@ defmodule FieldHub.CRM do
   end
 
   @doc """
+  Ensures the customer has a portal token and portal enabled.
+  """
+  def ensure_portal_access(%Customer{} = customer) do
+    cond do
+      customer.portal_token && customer.portal_enabled ->
+        {:ok, customer}
+
+      customer.portal_token ->
+        # Token exists but portal disabled
+        update_customer(customer, %{portal_enabled: true})
+
+      true ->
+        # No token
+        customer
+        |> Ecto.Changeset.change(%{portal_enabled: true})
+        |> Customer.generate_portal_token()
+        |> Repo.update()
+    end
+  end
+
+  @doc """
   Returns an `%Ecto.Changeset{}` for tracking customer changes.
-
-  ## Examples
-
-      iex> change_customer(customer)
-      %Ecto.Changeset{data: %Customer{}}
-
   """
   def change_customer(%Customer{} = customer, attrs \\ %{}) do
     Customer.changeset(customer, attrs)

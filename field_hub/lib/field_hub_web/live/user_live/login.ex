@@ -24,7 +24,7 @@ defmodule FieldHubWeb.UserLive.Login do
           </a>
         </div>
       </header>
-      
+
     <!-- Main Content -->
       <div class="pt-20 min-h-screen flex">
         <!-- Left Side: Form -->
@@ -37,6 +37,29 @@ defmodule FieldHubWeb.UserLive.Login do
               <p class="text-slate-500 font-medium">
                 Please enter your details to sign in.
               </p>
+            </div>
+
+            <%!-- Error Alert Banner --%>
+            <div
+              :if={@error_message}
+              id="login-error-banner"
+              class="bg-red-50 border border-red-200 rounded-xl p-4 flex items-start gap-3 animate-shake"
+              role="alert"
+            >
+              <div class="shrink-0">
+                <.icon name="hero-exclamation-triangle" class="size-5 text-red-500" />
+              </div>
+              <div>
+                <h3 class="text-sm font-bold text-red-800">Login Failed</h3>
+                <p class="text-sm text-red-700 mt-0.5">{@error_message}</p>
+              </div>
+              <button
+                type="button"
+                phx-click="dismiss_error"
+                class="ml-auto shrink-0 text-red-400 hover:text-red-600"
+              >
+                <.icon name="hero-x-mark" class="size-4" />
+              </button>
             </div>
 
             <.form
@@ -58,7 +81,8 @@ defmodule FieldHubWeb.UserLive.Login do
                   type="email"
                   placeholder="e.g. john@servicepro.com"
                   required
-                  class="w-full !bg-white border border-slate-200 !rounded-lg !h-12 !px-4 focus:!ring-2 focus:!ring-primary/20 focus:!border-primary transition-all"
+                  phx-debounce="300"
+                  class={"w-full !bg-white !text-slate-900 border !rounded-lg !h-12 !px-4 focus:!ring-2 focus:!ring-primary/20 focus:!border-primary transition-all placeholder:text-slate-400 #{if @error_message, do: "!border-red-300 !ring-red-100", else: "border-slate-200"}"}
                 />
               </div>
 
@@ -68,7 +92,7 @@ defmodule FieldHubWeb.UserLive.Login do
                     Password
                   </label>
                   <.link
-                    navigate={~p"/users/settings"}
+                    navigate={~p"/users/forgot-password"}
                     class="text-sm font-semibold text-primary hover:underline"
                   >
                     Forgot password?
@@ -81,7 +105,7 @@ defmodule FieldHubWeb.UserLive.Login do
                     id="password-input"
                     placeholder="Enter your password"
                     required
-                    class="w-full bg-white border border-slate-300 rounded-lg h-12 px-4 pr-12 focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none transition-all"
+                    class={"w-full bg-white text-slate-900 border rounded-lg h-12 px-4 pr-12 focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none transition-all placeholder:text-slate-400 #{if @error_message, do: "border-red-300 ring-1 ring-red-100", else: "border-slate-300"}"}
                   />
                   <button
                     type="button"
@@ -129,7 +153,7 @@ defmodule FieldHubWeb.UserLive.Login do
             </div>
           </div>
         </div>
-        
+
     <!-- Right Side: Product Preview -->
         <div class="hidden lg:flex lg:w-[55%] bg-slate-100 items-center justify-center p-16">
           <div class="relative max-w-lg">
@@ -142,7 +166,7 @@ defmodule FieldHubWeb.UserLive.Login do
                   Job Completed
                 </div>
               </div>
-              
+
     <!-- Mock App Interface -->
               <div class="bg-slate-50 rounded-2xl p-5 border border-slate-100">
                 <div class="flex items-center justify-between mb-4">
@@ -165,7 +189,7 @@ defmodule FieldHubWeb.UserLive.Login do
                   </div>
                 </div>
               </div>
-              
+
     <!-- Technician Info -->
               <div class="flex items-center gap-3 pt-2">
                 <img
@@ -179,7 +203,7 @@ defmodule FieldHubWeb.UserLive.Login do
                 </div>
               </div>
             </div>
-            
+
     <!-- Tagline -->
             <div class="text-center mt-8 space-y-2">
               <h2 class="text-2xl font-black text-slate-900 tracking-tight">
@@ -192,7 +216,7 @@ defmodule FieldHubWeb.UserLive.Login do
           </div>
         </div>
       </div>
-      
+
     <!-- Footer -->
       <footer class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 py-3 px-6">
         <div class="max-w-7xl mx-auto flex items-center justify-between text-xs text-slate-400">
@@ -216,12 +240,29 @@ defmodule FieldHubWeb.UserLive.Login do
 
     form = to_form(%{"email" => email}, as: "user")
 
-    {:ok, assign(socket, form: form, trigger_submit: false, show_password: false)}
+    # Only read flash error once we're connected (prevents double-mount clearing issue)
+    error_message =
+      if connected?(socket) do
+        Phoenix.Flash.get(socket.assigns.flash, :error)
+      else
+        nil
+      end
+
+    {:ok,
+     socket
+     |> assign(form: form, trigger_submit: false, show_password: false)
+     |> assign(error_message: error_message)
+     |> then(fn s -> if connected?(socket), do: clear_flash(s, :error), else: s end)}
   end
 
   @impl true
   def handle_event("toggle_password", _params, socket) do
     {:noreply, assign(socket, :show_password, !socket.assigns.show_password)}
+  end
+
+  @impl true
+  def handle_event("dismiss_error", _params, socket) do
+    {:noreply, assign(socket, :error_message, nil)}
   end
 
   @impl true

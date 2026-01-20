@@ -6,6 +6,7 @@ defmodule FieldHubWeb.PortalLive.Dashboard do
 
   alias FieldHub.Jobs
   alias FieldHub.CRM
+  alias FieldHub.Billing
 
   @impl true
   def mount(_params, _session, socket) do
@@ -17,12 +18,14 @@ defmodule FieldHubWeb.PortalLive.Dashboard do
 
     active_jobs = Jobs.list_active_jobs_for_customer(customer.id)
     completed_jobs = Jobs.list_completed_jobs_for_customer(customer.id, limit: 5)
+    unpaid_invoices = list_unpaid_invoices(customer.id)
 
     socket =
       socket
       |> assign(:customer, customer)
       |> assign(:active_jobs, active_jobs)
       |> assign(:completed_jobs, completed_jobs)
+      |> assign(:unpaid_invoices, unpaid_invoices)
       |> assign(:page_title, "Your Jobs")
 
     {:ok, socket}
@@ -51,7 +54,10 @@ defmodule FieldHubWeb.PortalLive.Dashboard do
         socket =
           socket
           |> assign(:customer, updated_customer)
-          |> put_flash(:info, if(enabled, do: "SMS notifications enabled", else: "SMS notifications disabled"))
+          |> put_flash(
+            :info,
+            if(enabled, do: "SMS notifications enabled", else: "SMS notifications disabled")
+          )
 
         {:noreply, socket}
 
@@ -193,12 +199,70 @@ defmodule FieldHubWeb.PortalLive.Dashboard do
           <% end %>
         </section>
 
-        <!-- SMS Notification Preferences -->
+        <%!-- Outstanding Invoices Section --%>
+        <%= if length(@unpaid_invoices) > 0 do %>
+          <section>
+            <div class="flex items-center justify-between mb-6">
+              <div class="flex items-center gap-3">
+                <div class="size-10 rounded-xl bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
+                  <.icon name="hero-document-text" class="size-5 text-amber-600" />
+                </div>
+                <div>
+                  <h2 class="text-lg font-bold text-zinc-900 dark:text-white">
+                    Outstanding Invoices
+                  </h2>
+                  <p class="text-xs text-zinc-500">Payment pending</p>
+                </div>
+              </div>
+              <.link
+                navigate={~p"/portal/invoices"}
+                class="text-xs font-bold text-primary hover:underline"
+              >
+                View All
+              </.link>
+            </div>
+
+            <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 divide-y divide-zinc-100 dark:divide-zinc-800">
+              <%= for invoice <- @unpaid_invoices do %>
+                <.link
+                  navigate={~p"/portal/invoices/#{invoice.id}"}
+                  class="p-4 flex items-center justify-between hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors"
+                >
+                  <div class="min-w-0 flex-1">
+                    <div class="flex items-center gap-2">
+                      <p class="font-bold text-zinc-900 dark:text-white">{invoice.number}</p>
+                      <span class={[
+                        "px-2 py-0.5 rounded-lg text-[10px] font-black uppercase",
+                        invoice_status_class(invoice.status)
+                      ]}>
+                        {invoice.status}
+                      </span>
+                    </div>
+                    <p class="text-xs text-zinc-500 mt-1">
+                      Due: {Calendar.strftime(invoice.due_date, "%b %d, %Y")}
+                    </p>
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <span class="text-lg font-black text-primary">
+                      ${format_money(invoice.total_amount)}
+                    </span>
+                    <.icon name="hero-chevron-right" class="size-4 text-zinc-300" />
+                  </div>
+                </.link>
+              <% end %>
+            </div>
+          </section>
+        <% end %>
+
+        <%!-- SMS Notification Preferences --%>
         <section>
           <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-6">
             <div class="flex items-start gap-4">
               <div class="size-12 rounded-xl bg-teal-100 dark:bg-teal-900/30 flex items-center justify-center flex-shrink-0">
-                <.icon name="hero-device-phone-mobile" class="size-6 text-teal-600 dark:text-teal-400" />
+                <.icon
+                  name="hero-device-phone-mobile"
+                  class="size-6 text-teal-600 dark:text-teal-400"
+                />
               </div>
               <div class="flex-1">
                 <h3 class="text-lg font-bold text-zinc-900 dark:text-white mb-1">
@@ -208,7 +272,11 @@ defmodule FieldHubWeb.PortalLive.Dashboard do
                   Get text message updates when your technician is on the way, arrives, or completes the job.
                 </p>
 
-                <div id="sms-preference-toggle" phx-hook="SMSPreference" class="flex items-center justify-between p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-xl">
+                <div
+                  id="sms-preference-toggle"
+                  phx-hook="SMSPreference"
+                  class="flex items-center justify-between p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-xl"
+                >
                   <div class="flex items-center gap-3">
                     <.icon name="hero-chat-bubble-left-right" class="size-5 text-zinc-400" />
                     <div>
@@ -232,7 +300,8 @@ defmodule FieldHubWeb.PortalLive.Dashboard do
                         class="sr-only peer"
                         checked={@customer.sms_notifications_enabled}
                       />
-                      <div class="w-11 h-6 bg-zinc-300 dark:bg-zinc-600 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                      <div class="w-11 h-6 bg-zinc-300 dark:bg-zinc-600 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary">
+                      </div>
                     </label>
                   <% else %>
                     <span class="text-xs text-zinc-400">Not available</span>
@@ -262,4 +331,28 @@ defmodule FieldHubWeb.PortalLive.Dashboard do
     do: "bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400"
 
   defp status_color_classes(_), do: "bg-zinc-100 text-zinc-600"
+
+  defp list_unpaid_invoices(customer_id) do
+    import Ecto.Query
+
+    Billing.Invoice
+    |> Billing.Invoice.for_customer(customer_id)
+    |> where([i], i.status in ["sent", "viewed", "overdue"])
+    |> order_by([i], desc: i.inserted_at)
+    |> limit(5)
+    |> FieldHub.Repo.all()
+  end
+
+  defp invoice_status_class("sent"), do: "bg-blue-50 text-blue-600"
+  defp invoice_status_class("viewed"), do: "bg-purple-50 text-purple-600"
+  defp invoice_status_class("overdue"), do: "bg-red-50 text-red-600"
+  defp invoice_status_class(_), do: "bg-zinc-100 text-zinc-600"
+
+  defp format_money(nil), do: "0.00"
+  defp format_money(%Decimal{} = amount), do: Decimal.to_string(amount, :normal)
+
+  defp format_money(amount) when is_number(amount),
+    do: :erlang.float_to_binary(amount / 1, decimals: 2)
+
+  defp format_money(_), do: "0.00"
 end

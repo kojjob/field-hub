@@ -116,12 +116,14 @@ defmodule FieldHubWeb.TechSyncController do
 
   defp parse_money(nil), do: nil
   defp parse_money(""), do: nil
+
   defp parse_money(value) when is_binary(value) do
     case Float.parse(value) do
       {amount, _} -> Decimal.from_float(amount)
       :error -> nil
     end
   end
+
   defp parse_money(value) when is_number(value), do: Decimal.new(value)
   defp parse_money(_), do: nil
 

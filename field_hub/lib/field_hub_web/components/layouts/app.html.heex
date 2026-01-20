@@ -176,6 +176,26 @@
 
               <li>
                 <div class="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-3 ml-2">
+                  Finance
+                </div>
+                <ul role="list" class="-mx-2 space-y-1">
+                  <li>
+                    <.link
+                      navigate={~p"/invoices"}
+                      class={nav_link_class(assigns[:current_nav] == :invoices)}
+                    >
+                      <.icon
+                        name="hero-banknotes"
+                        class={nav_icon_class(assigns[:current_nav] == :invoices)}
+                      />
+                      <span class="font-bold">Invoices</span>
+                    </.link>
+                  </li>
+                </ul>
+              </li>
+
+              <li>
+                <div class="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-3 ml-2">
                   Analytics
                 </div>
                 <ul role="list" class="-mx-2 space-y-1">
@@ -380,6 +400,26 @@
 
           <li>
             <div class="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-3 ml-2">
+              Finance
+            </div>
+            <ul role="list" class="-mx-2 space-y-1">
+              <li>
+                <.link
+                  navigate={~p"/invoices"}
+                  class={nav_link_class(assigns[:current_nav] == :invoices)}
+                >
+                  <.icon
+                    name="hero-banknotes"
+                    class={nav_icon_class(assigns[:current_nav] == :invoices)}
+                  />
+                  <span class="font-bold">Invoices</span>
+                </.link>
+              </li>
+            </ul>
+          </li>
+
+          <li>
+            <div class="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-3 ml-2">
               Analytics
             </div>
             <ul role="list" class="-mx-2 space-y-1">
@@ -446,19 +486,25 @@
             </ul>
           </li>
           
-          <!-- PWA Install Banner -->
+<!-- PWA Install Banner -->
           <li class="mt-auto pt-4 border-t border-zinc-200 dark:border-zinc-800">
             <button
               id="pwa-install-btn"
               phx-hook="PWAInstall"
               class="hidden w-full group flex items-center gap-x-3 rounded-xl p-3 text-sm font-semibold bg-gradient-to-r from-primary/10 to-teal-500/10 text-primary hover:from-primary/20 hover:to-teal-500/20 transition-all duration-300 border border-primary/20"
             >
-              <.icon name="hero-device-phone-mobile" class="h-5 w-5 group-hover:scale-110 transition-transform" />
+              <.icon
+                name="hero-device-phone-mobile"
+                class="h-5 w-5 group-hover:scale-110 transition-transform"
+              />
               <span class="flex-1 text-left">Install App</span>
-              <.icon name="hero-arrow-down-tray" class="h-4 w-4 opacity-60 group-hover:opacity-100" />
+              <.icon
+                name="hero-arrow-down-tray"
+                class="h-4 w-4 opacity-60 group-hover:opacity-100"
+              />
             </button>
             
-            <!-- Network Status -->
+<!-- Network Status -->
             <div
               id="network-status"
               phx-hook="NetworkStatus"

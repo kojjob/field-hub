@@ -3,6 +3,7 @@ defmodule FieldHubWeb.JobLive.FormComponent do
 
   alias FieldHub.Jobs
   alias FieldHub.CRM
+  alias FieldHub.Dispatch
 
   @impl true
   def render(assigns) do
@@ -54,17 +55,101 @@ defmodule FieldHubWeb.JobLive.FormComponent do
             field={@form[:description]}
             type="textarea"
             label="Description"
-            class="min-h-[120px]"
+            class="min-h-[100px]"
             placeholder="Detailed description of the work required..."
           />
 
-          <.input
-            field={@form[:customer_id]}
-            type="select"
-            label="Customer"
-            prompt="Select a customer"
-            options={@customers}
-          />
+          <div class="grid grid-cols-2 gap-4">
+            <.input
+              field={@form[:customer_id]}
+              type="select"
+              label="Customer"
+              prompt="Select a customer"
+              options={@customers}
+            />
+            <.input
+              field={@form[:technician_id]}
+              type="select"
+              label="Assign Technician"
+              prompt="Unassigned"
+              options={@technicians}
+            />
+          </div>
+
+          <div class="border-t border-zinc-200 dark:border-zinc-700 pt-4 mt-4">
+            <h4 class="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-3">
+              Scheduling
+            </h4>
+            <div class="grid grid-cols-3 gap-4">
+              <.input
+                field={@form[:scheduled_date]}
+                type="date"
+                label="Date"
+              />
+              <.input
+                field={@form[:scheduled_start]}
+                type="time"
+                label="Start Time"
+              />
+              <.input
+                field={@form[:estimated_duration_minutes]}
+                type="number"
+                label="Duration (min)"
+                placeholder="60"
+              />
+            </div>
+          </div>
+
+          <div class="border-t border-zinc-200 dark:border-zinc-700 pt-4 mt-4">
+            <h4 class="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-3">
+              Service Address
+            </h4>
+            <.input
+              field={@form[:service_address]}
+              type="text"
+              label="Street Address"
+              placeholder="123 Main Street"
+            />
+            <div class="grid grid-cols-3 gap-4 mt-3">
+              <.input
+                field={@form[:service_city]}
+                type="text"
+                label="City"
+              />
+              <.input
+                field={@form[:service_state]}
+                type="text"
+                label="State"
+              />
+              <.input
+                field={@form[:service_zip]}
+                type="text"
+                label="ZIP"
+              />
+            </div>
+          </div>
+
+          <div class="border-t border-zinc-200 dark:border-zinc-700 pt-4 mt-4">
+            <h4 class="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-3">
+              Financials
+            </h4>
+            <div class="grid grid-cols-2 gap-4">
+              <.input
+                field={@form[:quoted_amount]}
+                type="number"
+                label="Quoted Amount ($)"
+                step="0.01"
+                placeholder="0.00"
+              />
+              <.input
+                field={@form[:actual_amount]}
+                type="number"
+                label="Actual Amount ($)"
+                step="0.01"
+                placeholder="0.00"
+              />
+            </div>
+          </div>
         </div>
 
         <:actions>
@@ -89,10 +174,16 @@ defmodule FieldHubWeb.JobLive.FormComponent do
       CRM.list_customers(assigns.current_organization.id)
       |> Enum.map(&{&1.name, &1.id})
 
+    # Load technicians for assignment
+    technicians =
+      Dispatch.list_technicians(assigns.current_organization.id)
+      |> Enum.map(&{&1.name, &1.id})
+
     {:ok,
      socket
      |> assign(assigns)
      |> assign(:customers, customers)
+     |> assign(:technicians, technicians)
      |> assign_form(changeset)}
   end
 

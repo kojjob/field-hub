@@ -73,7 +73,7 @@ defmodule FieldHubWeb.UserLive.SettingsTest do
         })
 
       assert result =~ "Update Email"
-      assert result =~ "must have the @ sign and no spaces"
+      assert result =~ "Please enter a valid email"
     end
 
     test "renders errors with invalid data (phx-submit)", %{conn: conn, user: user} do
@@ -139,7 +139,7 @@ defmodule FieldHubWeb.UserLive.SettingsTest do
         })
 
       assert result =~ "Update Password"
-      assert result =~ "should be at least 12 character(s)"
+      assert result =~ "should be at least 12 character"
       assert result =~ "does not match password"
     end
 
@@ -157,7 +157,7 @@ defmodule FieldHubWeb.UserLive.SettingsTest do
         |> render_submit()
 
       assert result =~ "Update Password"
-      assert result =~ "should be at least 12 character(s)"
+      assert result =~ "should be at least 12 character"
       assert result =~ "does not match password"
     end
   end

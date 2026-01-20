@@ -35,3 +35,4 @@ field_hub-*.tar
 npm-debug.log
 /assets/node_modules/
 
+.env

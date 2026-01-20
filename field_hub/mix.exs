@@ -85,7 +85,10 @@ defmodule FieldHub.MixProject do
 
       # Email sending
       {:swoosh, "~> 1.17"},
-      {:gen_smtp, "~> 1.2"}
+      {:gen_smtp, "~> 1.2"},
+
+      # Payment processing
+      {:stripity_stripe, "~> 3.2"}
     ]
   end
 

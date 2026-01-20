@@ -14,10 +14,11 @@ defmodule FieldHub.Notifications.SMSTest do
 
   describe "notification templates" do
     setup do
-      {:ok, org} = FieldHub.Accounts.create_organization(%{
-        name: "Test Org",
-        slug: "test-org-#{System.unique_integer([:positive])}"
-      })
+      {:ok, org} =
+        FieldHub.Accounts.create_organization(%{
+          name: "Test Org",
+          slug: "test-org-#{System.unique_integer([:positive])}"
+        })
 
       customer = %{
         name: "John Smith",
