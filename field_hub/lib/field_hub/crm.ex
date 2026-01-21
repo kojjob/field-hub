@@ -257,4 +257,20 @@ defmodule FieldHub.CRM do
   def change_customer(%Customer{} = customer, attrs \\ %{}) do
     Customer.changeset(customer, attrs)
   end
+
+  @doc """
+  Checks if a customer should receive a notification for a given event and channel.
+  """
+  def should_notify_customer?(%Customer{preferences: preferences}, event, channel) do
+    case preferences do
+      %FieldHub.CRM.CustomerNotificationPreferences{} = prefs ->
+        key = String.to_existing_atom("#{event}_#{channel}")
+        Map.get(prefs, key, true)
+
+      _ ->
+        true
+    end
+  rescue
+    _ -> true
+  end
 end

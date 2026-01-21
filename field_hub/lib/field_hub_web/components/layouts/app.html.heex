@@ -597,6 +597,14 @@
       <div class="max-w-[1600px] mx-auto p-4 sm:p-6 lg:p-8">
         <.flash_group flash={@flash} />
         {@inner_content}
+
+        <%= if assigns[:current_user] do %>
+          <.live_component
+            module={FieldHubWeb.Components.PushNotificationHandler}
+            id="push-notifications"
+            user_id={@current_user.id}
+          />
+        <% end %>
       </div>
     </main>
   </div>

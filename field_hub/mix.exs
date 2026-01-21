@@ -88,7 +88,8 @@ defmodule FieldHub.MixProject do
       {:gen_smtp, "~> 1.2"},
 
       # Payment processing
-      {:stripity_stripe, "~> 3.2"}
+      {:stripity_stripe, "~> 3.2"},
+      {:web_push_encryption, "~> 0.3"}
     ]
   end
 

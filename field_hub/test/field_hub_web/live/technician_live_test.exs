@@ -115,4 +115,15 @@ defmodule FieldHubWeb.TechnicianLiveTest do
       refute has_element?(index_live, "#technicians-#{tech.id}")
     end
   end
+
+  describe "Show" do
+    test "displays technician details", %{conn: conn, org: org} do
+      tech = technician_fixture(org.id)
+      {:ok, _show_live, html} = live(conn, ~p"/technicians/#{tech.slug}")
+
+      assert html =~ tech.name
+      assert html =~ "Productivity Index"
+      assert html =~ "Real-time Location"
+    end
+  end
 end

@@ -22,6 +22,8 @@ defmodule FieldHub.Accounts.User do
     field :notify_on_job_updates, :boolean, default: true
     field :notify_marketing, :boolean, default: false
 
+    embeds_one :preferences, FieldHub.Accounts.NotificationPreferences, on_replace: :update
+
     belongs_to :organization, FieldHub.Accounts.Organization
 
     timestamps(type: :utc_datetime)
@@ -64,6 +66,7 @@ defmodule FieldHub.Accounts.User do
   def notification_changeset(user, attrs) do
     user
     |> cast(attrs, [:notify_on_new_jobs, :notify_on_job_updates, :notify_marketing])
+    |> cast_embed(:preferences)
   end
 
   defp validate_email(changeset, opts) do
@@ -118,9 +121,12 @@ defmodule FieldHub.Accounts.User do
   defp validate_password(changeset, opts) do
     changeset
     |> validate_required([:password], message: "Please create a password")
-    |> validate_length(:password, min: 12, max: 72,
+    |> validate_length(:password,
+      min: 12,
+      max: 72,
       too_short: "Password must be at least 12 characters",
-      too_long: "Password is too long (max 72 characters)")
+      too_long: "Password is too long (max 72 characters)"
+    )
     # Examples of additional password validation:
     # |> validate_format(:password, ~r/[a-z]/, message: "at least one lower case character")
     # |> validate_format(:password, ~r/[A-Z]/, message: "at least one upper case character")

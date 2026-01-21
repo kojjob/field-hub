@@ -24,7 +24,7 @@ defmodule FieldHubWeb.UserLive.Login do
           </a>
         </div>
       </header>
-
+      
     <!-- Main Content -->
       <div class="pt-20 min-h-screen flex">
         <!-- Left Side: Form -->
@@ -153,7 +153,7 @@ defmodule FieldHubWeb.UserLive.Login do
             </div>
           </div>
         </div>
-
+        
     <!-- Right Side: Product Preview -->
         <div class="hidden lg:flex lg:w-[55%] bg-slate-100 items-center justify-center p-16">
           <div class="relative max-w-lg">
@@ -166,7 +166,7 @@ defmodule FieldHubWeb.UserLive.Login do
                   Job Completed
                 </div>
               </div>
-
+              
     <!-- Mock App Interface -->
               <div class="bg-slate-50 rounded-2xl p-5 border border-slate-100">
                 <div class="flex items-center justify-between mb-4">
@@ -189,7 +189,7 @@ defmodule FieldHubWeb.UserLive.Login do
                   </div>
                 </div>
               </div>
-
+              
     <!-- Technician Info -->
               <div class="flex items-center gap-3 pt-2">
                 <img
@@ -203,7 +203,7 @@ defmodule FieldHubWeb.UserLive.Login do
                 </div>
               </div>
             </div>
-
+            
     <!-- Tagline -->
             <div class="text-center mt-8 space-y-2">
               <h2 class="text-2xl font-black text-slate-900 tracking-tight">
@@ -216,7 +216,7 @@ defmodule FieldHubWeb.UserLive.Login do
           </div>
         </div>
       </div>
-
+      
     <!-- Footer -->
       <footer class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 py-3 px-6">
         <div class="max-w-7xl mx-auto flex items-center justify-between text-xs text-slate-400">

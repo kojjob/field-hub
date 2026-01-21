@@ -115,11 +115,13 @@ defmodule FieldHub.Payments do
             unit_amount: decimal_to_cents(invoice.labor_amount),
             product_data: %{
               name: "Labor",
-              description: "#{format_decimal(invoice.labor_hours)} hours at $#{format_decimal(invoice.labor_rate)}/hr"
+              description:
+                "#{format_decimal(invoice.labor_hours)} hours at $#{format_decimal(invoice.labor_rate)}/hr"
             }
           },
           quantity: 1
         }
+
         items ++ [item]
       else
         items
@@ -138,6 +140,7 @@ defmodule FieldHub.Payments do
           },
           quantity: 1
         }
+
         items ++ [item]
       else
         items
@@ -156,6 +159,7 @@ defmodule FieldHub.Payments do
           },
           quantity: 1
         }
+
         items ++ [item]
       else
         items
@@ -174,6 +178,7 @@ defmodule FieldHub.Payments do
           },
           quantity: 1
         }
+
         items ++ [item]
       else
         items
@@ -192,6 +197,7 @@ defmodule FieldHub.Payments do
           },
           quantity: 1
         }
+
         items ++ [item]
       else
         items
@@ -217,6 +223,7 @@ defmodule FieldHub.Payments do
   end
 
   defp decimal_to_cents(nil), do: 0
+
   defp decimal_to_cents(%Decimal{} = amount) do
     amount
     |> Decimal.mult(100)

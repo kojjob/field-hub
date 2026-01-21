@@ -43,6 +43,7 @@ defmodule FieldHub.Jobs.Job do
     field :service_city, :string
     field :service_state, :string
     field :service_zip, :string
+    field :service_country, :string, default: "US"
     field :service_lat, :float
     field :service_lng, :float
 
@@ -111,6 +112,7 @@ defmodule FieldHub.Jobs.Job do
       :service_city,
       :service_state,
       :service_zip,
+      :service_country,
       :service_lat,
       :service_lng,
       :work_performed,
@@ -142,6 +144,19 @@ defmodule FieldHub.Jobs.Job do
     |> foreign_key_constraint(:customer_id)
     |> foreign_key_constraint(:technician_id)
     |> unique_constraint([:organization_id, :number])
+    |> validate_service_state_format()
+  end
+
+  defp validate_service_state_format(changeset) do
+    country = get_field(changeset, :service_country)
+
+    if country in [nil, "US"] do
+      validate_format(changeset, :service_state, ~r/^[A-Z]{2}$/,
+        message: "must be a 2-letter state code"
+      )
+    else
+      changeset
+    end
   end
 
   @doc """

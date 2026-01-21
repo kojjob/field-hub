@@ -74,26 +74,23 @@ defmodule FieldHubWeb.PortalLive.InvoicePayment do
   def render(assigns) do
     ~H"""
     <div class="min-h-screen bg-zinc-50 dark:bg-zinc-950">
-      <header class="bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 sticky top-0 z-50">
-        <div class="max-w-2xl mx-auto px-4 sm:px-6 py-4 flex items-center gap-4">
+      <main class="max-w-2xl mx-auto px-4 sm:px-6 py-12">
+        <div class="mb-8 text-center">
           <.link
             navigate={~p"/portal/invoices/#{@invoice.id}"}
-            class="size-10 rounded-xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
+            class="inline-flex items-center gap-2 text-sm font-bold text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition-colors mb-6"
           >
-            <.icon name="hero-arrow-left" class="size-5 text-zinc-600 dark:text-zinc-400" />
+            <.icon name="hero-arrow-left" class="size-4" />
+            Back to Invoice
           </.link>
-          <div>
-            <p class="text-[10px] font-black text-primary uppercase tracking-[0.2em]">
-              Pay Invoice
-            </p>
-            <h1 class="text-lg font-bold text-zinc-900 dark:text-white">
-              {@invoice.number}
-            </h1>
-          </div>
-        </div>
-      </header>
 
-      <main class="max-w-2xl mx-auto px-4 sm:px-6 py-8">
+          <h1 class="text-3xl font-black text-zinc-900 dark:text-white tracking-tight mb-2">
+            Secure Payment
+          </h1>
+          <p class="text-zinc-500 dark:text-zinc-400">
+            Invoice {@invoice.number}
+          </p>
+        </div>
         <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden">
           <%!-- Amount Summary --%>
           <div class="p-8 text-center border-b border-zinc-100 dark:border-zinc-800 bg-gradient-to-br from-primary/5 to-transparent">
@@ -149,9 +146,27 @@ defmodule FieldHubWeb.PortalLive.InvoicePayment do
                 ]}
               >
                 <%= if @loading do %>
-                  <svg class="animate-spin size-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  <svg
+                    class="animate-spin size-5"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      class="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      stroke-width="4"
+                    >
+                    </circle>
+                    <path
+                      class="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    >
+                    </path>
                   </svg>
                   Processing...
                 <% else %>
@@ -161,8 +176,18 @@ defmodule FieldHubWeb.PortalLive.InvoicePayment do
               </button>
 
               <div class="mt-6 flex items-center justify-center gap-3 text-zinc-400">
-                <svg width="49" height="20" fill="currentColor" viewBox="0 0 49 20" xmlns="http://www.w3.org/2000/svg">
-                  <path fill-rule="evenodd" clip-rule="evenodd" d="M48.4 10.1c0-3.3-1.6-5.9-4.6-5.9s-4.8 2.6-4.8 5.9c0 3.9 2.1 5.8 5.2 5.8 1.5 0 2.6-.3 3.5-.8v-2.6c-.8.4-1.7.7-2.9.7-1.2 0-2.2-.4-2.3-1.8h5.9v-.9c0-.2.01-.4.01-.4zm-6-1.2c0-1.4.8-1.9 1.6-1.9.8 0 1.5.6 1.5 1.9h-3.1zm-6.7-4.7c-1.2 0-1.9.5-2.4 1l-.2-.9h-2.6V20l3-.6v-3.7c.4.3 1.1.8 2.2.8 2.2 0 4.2-1.8 4.2-5.7 0-3.6-2-5.6-4.2-5.6zm-.7 8.6c-.7 0-1.2-.3-1.5-.6v-4.8c.3-.4.8-.7 1.5-.7 1.2 0 2 1.3 2 3s-.8 3.1-2 3.1zm-8.5-9.4l3-.6V0l-3 .6v2.8zm0 1.1h3v10.6h-3V4.5zm-3.2 0l-.2-1h-2.6v10.6h3V7.5c.7-.9 1.9-.8 2.3-.6V4.5c-.4-.2-1.9-.4-2.5.8v-.8zm-6.2-2.9l-2.9.6-.01 9.7c0 1.8 1.3 3.1 3.2 3.1 1 0 1.7-.2 2.2-.4v-2.4c-.4.1-2.4.6-2.4-1V7.2h2.4V4.5h-2.4l-.01-2.9zm-7.8 5.7c0-.5.4-.7 1.1-.7.9 0 2.1.3 3 .8V4.7c-1-.4-2-.5-3-.5-2.4 0-4.1 1.3-4.1 3.4 0 3.4 4.7 2.8 4.7 4.3 0 .6-.5.8-1.2.8-1.1 0-2.5-.4-3.5-1v2.7c1.2.5 2.4.8 3.5.8 2.5 0 4.2-1.2 4.2-3.4.01-3.6-4.7-3-4.7-4.4z"/>
+                <svg
+                  width="49"
+                  height="20"
+                  fill="currentColor"
+                  viewBox="0 0 49 20"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    clip-rule="evenodd"
+                    d="M48.4 10.1c0-3.3-1.6-5.9-4.6-5.9s-4.8 2.6-4.8 5.9c0 3.9 2.1 5.8 5.2 5.8 1.5 0 2.6-.3 3.5-.8v-2.6c-.8.4-1.7.7-2.9.7-1.2 0-2.2-.4-2.3-1.8h5.9v-.9c0-.2.01-.4.01-.4zm-6-1.2c0-1.4.8-1.9 1.6-1.9.8 0 1.5.6 1.5 1.9h-3.1zm-6.7-4.7c-1.2 0-1.9.5-2.4 1l-.2-.9h-2.6V20l3-.6v-3.7c.4.3 1.1.8 2.2.8 2.2 0 4.2-1.8 4.2-5.7 0-3.6-2-5.6-4.2-5.6zm-.7 8.6c-.7 0-1.2-.3-1.5-.6v-4.8c.3-.4.8-.7 1.5-.7 1.2 0 2 1.3 2 3s-.8 3.1-2 3.1zm-8.5-9.4l3-.6V0l-3 .6v2.8zm0 1.1h3v10.6h-3V4.5zm-3.2 0l-.2-1h-2.6v10.6h3V7.5c.7-.9 1.9-.8 2.3-.6V4.5c-.4-.2-1.9-.4-2.5.8v-.8zm-6.2-2.9l-2.9.6-.01 9.7c0 1.8 1.3 3.1 3.2 3.1 1 0 1.7-.2 2.2-.4v-2.4c-.4.1-2.4.6-2.4-1V7.2h2.4V4.5h-2.4l-.01-2.9zm-7.8 5.7c0-.5.4-.7 1.1-.7.9 0 2.1.3 3 .8V4.7c-1-.4-2-.5-3-.5-2.4 0-4.1 1.3-4.1 3.4 0 3.4 4.7 2.8 4.7 4.3 0 .6-.5.8-1.2.8-1.1 0-2.5-.4-3.5-1v2.7c1.2.5 2.4.8 3.5.8 2.5 0 4.2-1.2 4.2-3.4.01-3.6-4.7-3-4.7-4.4z"
+                  />
                 </svg>
                 <span class="text-xs">Secure payment</span>
               </div>
@@ -200,6 +225,9 @@ defmodule FieldHubWeb.PortalLive.InvoicePayment do
 
   defp format_money(nil), do: "0.00"
   defp format_money(%Decimal{} = amount), do: Decimal.to_string(amount, :normal)
-  defp format_money(amount) when is_number(amount), do: :erlang.float_to_binary(amount / 1, decimals: 2)
+
+  defp format_money(amount) when is_number(amount),
+    do: :erlang.float_to_binary(amount / 1, decimals: 2)
+
   defp format_money(_), do: "0.00"
 end

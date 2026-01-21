@@ -2,6 +2,7 @@ defmodule FieldHubWeb.CustomerLive.FormComponent do
   use FieldHubWeb, :live_component
 
   alias FieldHub.CRM
+  alias FieldHub.Locations
 
   @impl true
   def render(assigns) do
@@ -16,7 +17,7 @@ defmodule FieldHubWeb.CustomerLive.FormComponent do
         class="space-y-8"
       >
         <div class="space-y-6">
-          <!-- Contact Info Section -->
+          <%!-- Contact Info Section --%>
           <div>
             <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4 border-b border-slate-200 dark:border-slate-700 pb-2">
               Contact Information
@@ -27,7 +28,6 @@ defmodule FieldHubWeb.CustomerLive.FormComponent do
                 type="text"
                 label="Customer Name"
                 placeholder="e.g. Acme Inc. or John Doe"
-                class="w-full rounded-lg border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:border-primary focus:ring-primary sm:text-sm p-3 transition-shadow shadow-sm"
               />
               <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <.input
@@ -35,20 +35,18 @@ defmodule FieldHubWeb.CustomerLive.FormComponent do
                   type="email"
                   label="Email Address"
                   placeholder="name@example.com"
-                  class="w-full rounded-lg border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:border-primary focus:ring-primary sm:text-sm p-3 transition-shadow shadow-sm"
                 />
                 <.input
                   field={@form[:phone]}
                   type="tel"
                   label="Phone Number"
                   placeholder="(555) 123-4567"
-                  class="w-full rounded-lg border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:border-primary focus:ring-primary sm:text-sm p-3 transition-shadow shadow-sm"
                 />
               </div>
             </div>
           </div>
-          
-    <!-- Address Section -->
+
+          <%!-- Address Section --%>
           <div>
             <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4 border-b border-slate-200 dark:border-slate-700 pb-2">
               Service Address
@@ -61,7 +59,6 @@ defmodule FieldHubWeb.CustomerLive.FormComponent do
                     type="text"
                     label="Street Address"
                     placeholder="123 Main St"
-                    class="w-full rounded-lg border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:border-primary focus:ring-primary sm:text-sm p-3 transition-shadow shadow-sm"
                   />
                 </div>
                 <.input
@@ -69,8 +66,35 @@ defmodule FieldHubWeb.CustomerLive.FormComponent do
                   type="text"
                   label="Unit/Apt"
                   placeholder="Unit B"
-                  class="w-full rounded-lg border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:border-primary focus:ring-primary sm:text-sm p-3 transition-shadow shadow-sm"
                 />
+              </div>
+
+              <div class="grid grid-cols-2 gap-5">
+                <.input
+                  field={@form[:country]}
+                  type="select"
+                  label="Country"
+                  options={@countries}
+                  prompt="Select country"
+                />
+                <div class="col-span-1">
+                  <%= if @form[:country].value == "US" || is_nil(@form[:country].value) do %>
+                    <.input
+                      field={@form[:state]}
+                      type="select"
+                      label="State"
+                      prompt="Select state"
+                      options={@us_states}
+                    />
+                  <% else %>
+                    <.input
+                      field={@form[:state]}
+                      type="text"
+                      label="State / Province"
+                      placeholder="Province or State"
+                    />
+                  <% end %>
+                </div>
               </div>
 
               <div class="grid grid-cols-2 md:grid-cols-3 gap-5">
@@ -78,27 +102,22 @@ defmodule FieldHubWeb.CustomerLive.FormComponent do
                   field={@form[:city]}
                   type="text"
                   label="City"
-                  class="w-full rounded-lg border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:border-primary focus:ring-primary sm:text-sm p-3 transition-shadow shadow-sm"
-                />
-                <.input
-                  field={@form[:state]}
-                  type="text"
-                  label="State"
-                  class="w-full rounded-lg border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:border-primary focus:ring-primary sm:text-sm p-3 transition-shadow shadow-sm"
+                  placeholder="e.g. Austin"
                 />
                 <div class="col-span-2 md:col-span-1">
                   <.input
                     field={@form[:zip]}
                     type="text"
                     label="ZIP Code"
-                    class="w-full rounded-lg border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:border-primary focus:ring-primary sm:text-sm p-3 transition-shadow shadow-sm"
+                    placeholder="e.g. 78701"
+                    maxlength="10"
                   />
                 </div>
               </div>
             </div>
           </div>
-          
-    <!-- Access Info Section -->
+
+          <%!-- Access Info Section --%>
           <div class="bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 relative overflow-hidden group">
             <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity pointer-events-none">
               <.icon
@@ -123,14 +142,12 @@ defmodule FieldHubWeb.CustomerLive.FormComponent do
                   type="text"
                   label="Gate / Door Code"
                   placeholder="e.g. #1234"
-                  class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 focus:border-primary focus:ring-primary sm:text-sm p-3.5 transition-shadow shadow-sm font-mono text-center tracking-widest text-primary font-bold"
                 />
                 <.input
                   field={@form[:special_instructions]}
                   type="textarea"
                   label="Technician Notes"
                   placeholder="Key location, dog warning, etc."
-                  class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 focus:border-primary focus:ring-primary sm:text-sm p-3.5 transition-shadow shadow-sm min-h-[80px]"
                 />
               </div>
             </div>
@@ -157,6 +174,8 @@ defmodule FieldHubWeb.CustomerLive.FormComponent do
     {:ok,
      socket
      |> assign(assigns)
+     |> assign(:countries, Locations.countries())
+     |> assign(:us_states, Locations.us_states())
      |> assign_form(changeset)}
   end
 

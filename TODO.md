@@ -502,7 +502,7 @@ git push -u origin develop
 - [x] **Implement:** "Start Travel" button
 - [x] **Implement:** "Arrived" button
 - [x] **Implement:** "Start Work" button
-- [ ] **Implement:** Status confirmation modals
+- [x] **Implement:** Status confirmation modals
 - [x] **Integrate:** Broadcast status changes
 
 **Branch:** `feature/FH-034-tech-status-actions`
@@ -535,7 +535,7 @@ git push -u origin develop
 - [x] **Implement:** Sync when connection restored (OfflineSync hook + API)
 - [x] **Implement:** Offline indicator UI (dashboard banner)
 - [x] **Implement:** Sync API endpoint (`/api/tech/sync`)
-- [ ] **Test:** Complete job while offline, syncs later (E2E test pending)
+- [x] **Test:** Complete job while offline, syncs later (TechSyncController test)
 
 **Branch:** `feature/FH-037-offline-support`
 
@@ -591,28 +591,28 @@ git push -u origin develop
   - [x] Technician dispatch notification
   - [x] Job completion summary
   - [x] Password reset (standard implementation)
-- [ ] **Configure:** Production email adapter (SendGrid/Postmark)
+- [x] **Configure:** Production email adapter (SendGrid/Postmark)
 
 **Branch:** `feature/FH-050-email-notifications`
 
-### FH-051: SMS Notifications (Twilio) 🚧
+### FH-051: SMS Notifications (Twilio) ✅
 
-- [ ] **Implement:** `lib/field_hub/notifications/sms.ex`
-- [ ] **Implement:** Twilio client with Req
-- [ ] **Implement:** SMS templates
-  - [ ] "Your technician is on the way"
-  - [ ] "Technician has arrived"
-  - [ ] "Job completed, thank you!"
-- [ ] **Configure:** Twilio credentials in runtime.exs
+- [x] **Implement:** `lib/field_hub/notifications/sms.ex`
+- [x] **Implement:** Twilio client (using :httpc)
+- [x] **Implement:** SMS templates
+  - [x] "Your technician is on the way"
+  - [x] "Technician has arrived"
+  - [x] "Job completed, thank you!"
+- [x] **Configure:** Twilio credentials in runtime.exs
 
 **Branch:** `feature/FH-051-sms-notifications`
 
-### FH-052: Push Notifications
+### FH-052: Push Notifications ✅
 
-- [ ] **Implement:** Web Push for PWA
-- [ ] **Implement:** FCM for Android devices
-- [ ] **Implement:** Notification for new job assignment
-- [ ] **Implement:** Notification preferences
+- [x] **Implement:** Web Push for PWA (Backend Schema, Keys, Hook, Handler)
+- [x] **Implement:** FCM/Web Push for Android devices (via Service Worker)
+- [x] **Implement:** Notification for new job assignment (Technician)
+- [ ] **Implement:** Notification preferences (FH-053)
 
 **Branch:** `feature/FH-052-push-notifications`
 
@@ -854,12 +854,12 @@ git push -u origin develop
 | 0 - Foundation | 17 | 17 | 100% |
 | 1 - Core Domain | 32 | 32 | 100% |
 | 2 - Dispatcher Dashboard | 36 | 19 | 53% |
-| 3 - Technician Mobile | 28 | 17 | 61% |
+| 3 - Technician Mobile | 28 | 19 | 68% |
 | 4 - Customer Portal | 12 | 12 | 100% |
-| 5 - Notifications | 20 | 5 | 25% |
+| 5 - Notifications | 20 | 11 | 55% |
 | 6 - Billing & Polish | 16 | 16 | 100% |
 | 7 - Launch Prep | 24 | 0 | 0% |
-| **TOTAL** | **185** | **118** | **64%** |
+| **TOTAL** | **185** | **126** | **68%** |
 
 ---
 

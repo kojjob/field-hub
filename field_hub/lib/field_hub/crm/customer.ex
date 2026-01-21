@@ -8,6 +8,8 @@ defmodule FieldHub.CRM.Customer do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias FieldHub.CRM.CustomerNotificationPreferences
+
   @derive {Phoenix.Param, key: :slug}
   @contact_methods ~w(phone email sms)
   @state_code_regex ~r/^[A-Z]{2}$/
@@ -51,6 +53,7 @@ defmodule FieldHub.CRM.Customer do
 
     # Notification preferences
     field :sms_notifications_enabled, :boolean, default: true
+    embeds_one :preferences, CustomerNotificationPreferences, on_replace: :update
 
     field :custom_fields, :map, default: %{}
 
@@ -92,15 +95,38 @@ defmodule FieldHub.CRM.Customer do
       :sms_notifications_enabled,
       :custom_fields
     ])
+    |> cast_embed(:preferences)
     |> validate_required([:organization_id, :name])
     |> put_slug()
     |> validate_format(:email, ~r/^[^\s]+@[^\s]+\.[^\s]+$/, message: "has invalid format")
     |> validate_inclusion(:preferred_contact, @contact_methods)
-    |> validate_format(:state, @state_code_regex, message: "must be a 2-letter state code")
-    |> validate_format(:zip, @zip_code_regex, message: "must be a valid ZIP code")
+    |> validate_state_format()
+    |> validate_zip_format()
     |> foreign_key_constraint(:organization_id)
     |> unique_constraint([:portal_token])
     |> unique_constraint([:organization_id, :slug])
+  end
+
+  defp validate_state_format(changeset) do
+    country = get_field(changeset, :country)
+
+    if country in [nil, "US"] do
+      validate_format(changeset, :state, @state_code_regex,
+        message: "must be a 2-letter state code"
+      )
+    else
+      changeset
+    end
+  end
+
+  defp validate_zip_format(changeset) do
+    country = get_field(changeset, :country)
+
+    if country in [nil, "US"] do
+      validate_format(changeset, :zip, @zip_code_regex, message: "must be a valid ZIP code")
+    else
+      changeset
+    end
   end
 
   defp put_slug(changeset) do
