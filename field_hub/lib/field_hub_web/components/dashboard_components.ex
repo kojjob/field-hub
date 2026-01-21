@@ -75,7 +75,7 @@ defmodule FieldHubWeb.DashboardComponents do
       <div :if={@variant == :stars} class="flex items-center gap-1 mt-auto">
         <.icon :for={_ <- 1..5} name="hero-star" class="text-amber-400 size-4 fill-current" />
       </div>
-      
+
     <!-- Mini Chart Placeholder (for Revenue) -->
       <div
         :if={@variant == :simple && @icon == "payments"}
@@ -231,40 +231,47 @@ defmodule FieldHubWeb.DashboardComponents do
   """
   def priority_jobs_table(assigns) do
     ~H"""
-    <div class="bg-white dark:bg-zinc-900 rounded-[32px] border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden mt-8">
-      <div class="p-6 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between">
-        <h3 class="text-lg font-black text-zinc-900 dark:text-white tracking-tight">
-          Next 5 Priority Jobs
-        </h3>
-        <button class="flex items-center gap-2 text-xs font-bold text-zinc-400 hover:text-primary transition-colors">
-          Sorted by Priority <.icon name="hero-chevron-down" class="size-4" />
+    <div class="bg-white dark:bg-zinc-900 rounded-[32px] border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
+      <div class="p-8 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
+        <div>
+          <h3 class="text-xl font-black text-zinc-900 dark:text-white tracking-tight">
+            Next 5 Priority Jobs
+          </h3>
+          <p class="text-xs font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mt-1">
+            Dispatch Queue • Real-time
+          </p>
+        </div>
+        <button class="px-5 py-2.5 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl text-xs font-black text-zinc-600 dark:text-zinc-300 flex items-center gap-2 hover:bg-zinc-100 transition-all">
+          View All Jobs <.icon name="hero-arrow-right" class="size-4" />
         </button>
       </div>
       <div class="overflow-x-auto">
         <table class="w-full text-left">
           <thead>
-            <tr class="text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest border-b border-zinc-100 dark:border-zinc-800">
-              <th class="px-8 py-4">Job Details</th>
-              <th class="px-8 py-4">Technician</th>
-              <th class="px-8 py-4">Schedule</th>
-              <th class="px-8 py-4 text-center">Status</th>
-              <th class="px-8 py-4"></th>
+            <tr class="text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest border-b border-zinc-50 dark:border-zinc-800">
+              <th class="px-8 py-5">Job Details</th>
+              <th class="px-8 py-5">Technician</th>
+              <th class="px-8 py-5">Schedule</th>
+              <th class="px-8 py-5 text-center">Status</th>
+              <th class="px-8 py-5"></th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-zinc-50 dark:divide-zinc-800/50">
+          <tbody class="divide-y divide-zinc-50 dark:divide-zinc-800/50 text-dashboard">
             <%= for {id, name, loc, tech, time, status, status_class, color} <- [
               {"#12818", "HVAC Repair", "Downtown Medical Center", "Elena Rossi", "Today, 14:00", "ON THE WAY", "text-amber-600 bg-amber-500/10 border-amber-500/20", "bg-red-500"},
-              {"#12819", "Electrical Panel", "Sunrise Apartments", "James Wilson", "Today, 15:30", "SCHEDULED", "text-primary bg-primary/10 border-primary/20", "bg-primary"}
+              {"#12819", "Electrical Panel", "Sunrise Apartments", "James Wilson", "Today, 15:30", "SCHEDULED", "text-primary bg-primary/10 border-primary/20", "bg-primary"},
+              {"#12820", "Leak Detection", "Pacific Heights", "Sarah L.", "Today, 16:45", "SCHEDULED", "text-primary bg-primary/10 border-primary/20", "bg-primary"},
+              {"#12821", "Maintenance", "City Hall", "Marcus J.", "Tomorrow, 09:00", "PENDING", "text-zinc-500 bg-zinc-100 border-zinc-200", "bg-zinc-400"}
             ] do %>
-              <tr class="group hover:bg-zinc-50 dark:hover:bg-zinc-800/20 transition-colors">
+              <tr class="group hover:bg-zinc-50 dark:hover:bg-zinc-800/20 transition-all duration-300">
                 <td class="px-8 py-6">
                   <div class="flex items-center gap-4">
                     <div class={["w-1 h-10 rounded-full", color]}></div>
                     <div>
-                      <p class="text-[14px] font-black text-zinc-900 dark:text-white">
+                      <p class="text-[15px] font-black text-zinc-900 dark:text-white group-hover:text-primary transition-colors">
                         {id} - {name}
                       </p>
-                      <p class="text-[11px] text-zinc-500 dark:text-zinc-400 font-medium">
+                      <p class="text-[12px] text-zinc-500 dark:text-zinc-400 font-bold mt-0.5">
                         {loc}
                       </p>
                     </div>
@@ -272,25 +279,30 @@ defmodule FieldHubWeb.DashboardComponents do
                 </td>
                 <td class="px-8 py-6">
                   <div class="flex items-center gap-3">
-                    <img
-                      src={"https://i.pravatar.cc/150?u=#{tech}"}
-                      class="size-8 rounded-full object-cover border-2 border-zinc-100 dark:border-zinc-800 shadow-sm"
-                    />
-                    <span class="text-xs font-bold text-zinc-700 dark:text-zinc-300">{tech}</span>
+                    <div class="size-9 rounded-xl border-2 border-white dark:border-zinc-800 shadow-sm overflow-hidden group-hover:scale-110 transition-transform">
+                      <img
+                        src={"https://i.pravatar.cc/150?u=#{tech}"}
+                        class="size-full object-cover"
+                      />
+                    </div>
+                    <span class="text-sm font-black text-zinc-700 dark:text-zinc-300">{tech}</span>
                   </div>
                 </td>
                 <td class="px-8 py-6">
-                  <p class="text-[13px] font-bold text-zinc-900 dark:text-white leading-tight">
+                  <p class="text-[14px] font-black text-zinc-900 dark:text-white leading-tight">
                     {time}
                   </p>
-                  <p class="text-[10px] text-zinc-500 dark:text-zinc-400 font-medium italic mt-0.5">
-                    Duration: 2h 30m
-                  </p>
+                  <div class="flex items-center gap-1.5 mt-1">
+                    <div class="size-1.5 rounded-full bg-zinc-200 dark:bg-zinc-700"></div>
+                    <p class="text-[11px] text-zinc-500 dark:text-zinc-400 font-bold uppercase tracking-wider">
+                      Est. 2h 30m
+                    </p>
+                  </div>
                 </td>
                 <td class="px-8 py-6">
                   <div class="flex justify-center">
                     <span class={[
-                      "px-3 py-1 rounded-lg text-[9px] font-black border tracking-wider",
+                      "px-3.5 py-1.5 rounded-xl text-[10px] font-black border tracking-widest shadow-sm",
                       status_class
                     ]}>
                       {status}
@@ -298,7 +310,7 @@ defmodule FieldHubWeb.DashboardComponents do
                   </div>
                 </td>
                 <td class="px-8 py-6 text-right">
-                  <button class="size-8 flex items-center justify-center text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition-colors">
+                  <button class="size-10 flex items-center justify-center rounded-xl hover:bg-white dark:hover:bg-zinc-800 text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-all border border-transparent hover:border-zinc-200">
                     <.icon name="hero-ellipsis-vertical" class="size-5" />
                   </button>
                 </td>
@@ -306,6 +318,199 @@ defmodule FieldHubWeb.DashboardComponents do
             <% end %>
           </tbody>
         </table>
+      </div>
+    </div>
+    """
+  end
+
+  @doc """
+  Financial health overview component.
+  """
+  attr :stats, :map, required: true
+
+  def billing_overview(assigns) do
+    ~H"""
+    <div class="bg-white dark:bg-zinc-900 p-8 rounded-[32px] border border-zinc-200 dark:border-zinc-800 shadow-sm h-full flex flex-col gap-8">
+      <div class="flex items-center justify-between">
+        <div>
+          <h3 class="text-xl font-black text-zinc-900 dark:text-white tracking-tight">
+            Financial Health
+          </h3>
+          <p class="text-xs font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
+            Invoicing & Revenue Stats
+          </p>
+        </div>
+        <div class="size-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center">
+          <.icon name="hero-banknotes" class="size-6 text-emerald-500" />
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-6">
+        <div class="space-y-1 p-5 rounded-2xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-100 dark:border-zinc-800">
+          <p class="text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
+            Total Paid
+          </p>
+          <p class="text-2xl font-black text-emerald-600 tracking-tighter">
+            ${format_large_money(@stats.total_paid)}
+          </p>
+        </div>
+        <div class="space-y-1 p-5 rounded-2xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-100 dark:border-zinc-800">
+          <p class="text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
+            Outstanding
+          </p>
+          <p class="text-2xl font-black text-amber-600 tracking-tighter">
+            ${format_large_money(@stats.outstanding)}
+          </p>
+        </div>
+      </div>
+
+      <div class="space-y-4 flex-1">
+        <div class="flex items-center justify-between text-xs font-bold">
+          <span class="text-zinc-500 uppercase tracking-widest">Billing Progress</span>
+          <span class="text-zinc-900 dark:text-white">{billing_progress(@stats)}%</span>
+        </div>
+        <div class="h-3 w-full bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden flex gap-0.5">
+          <div
+            class="h-full bg-emerald-500 rounded-l-full transition-all duration-1000"
+            style={"width: #{billing_progress(@stats)}%"}
+          >
+          </div>
+          <div
+            class="h-full bg-amber-500 transition-all duration-1000"
+            style={"width: #{outstanding_percent(@stats)}%"}
+          >
+          </div>
+          <div class="h-full flex-1 bg-zinc-200 dark:bg-zinc-700 rounded-r-full"></div>
+        </div>
+        <div class="flex gap-4">
+          <div class="flex items-center gap-2">
+            <div class="size-2 rounded-full bg-emerald-500"></div>
+            <span class="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Paid</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="size-2 rounded-full bg-amber-500"></div>
+            <span class="text-[10px] font-black text-zinc-400 uppercase tracking-widest">
+              Pending
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <button class="w-full py-4 rounded-2xl bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 text-sm font-black hover:brightness-110 transition-all shadow-xl shadow-zinc-900/10 active:scale-[0.98]">
+        Download Fiscal Report
+      </button>
+    </div>
+    """
+  end
+
+  defp format_large_money(nil), do: "0.00"
+
+  defp format_large_money(%Decimal{} = amount) do
+    cond do
+      Decimal.gt?(amount, 1_000_000) ->
+        Decimal.div(amount, 1_000_000) |> Decimal.round(1) |> Decimal.to_string(:normal) |> Kernel.<>("M")
+
+      Decimal.gt?(amount, 1_000) ->
+        Decimal.div(amount, 1_000) |> Decimal.round(1) |> Decimal.to_string(:normal) |> Kernel.<>("K")
+
+      true ->
+        Decimal.round(amount, 2) |> Decimal.to_string(:normal)
+    end
+  end
+
+  defp format_large_money(amount) when is_number(amount) do
+    if amount >= 1000 do
+      "#{Float.round(amount / 1000, 1)}K"
+    else
+      :erlang.float_to_binary(amount / 1, decimals: 2)
+    end
+  end
+
+  defp billing_progress(stats) do
+    total = stats.total_invoiced |> Decimal.to_float()
+    paid = stats.total_paid |> Decimal.to_float()
+    if total > 0, do: round(paid / total * 100), else: 0
+  end
+
+  defp outstanding_percent(stats) do
+    total = stats.total_invoiced |> Decimal.to_float()
+    outstanding = stats.outstanding |> Decimal.to_float()
+    if total > 0, do: round(outstanding / total * 100), else: 0
+  end
+
+  @doc """
+  Revenue trend chart component.
+  """
+  def revenue_trend_chart(assigns) do
+    ~H"""
+    <div class="bg-white dark:bg-zinc-900 p-8 rounded-[32px] border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-col gap-10 h-full">
+      <div class="flex items-center justify-between">
+        <div>
+          <h3 class="text-xl font-black text-zinc-900 dark:text-white tracking-tight">
+            Revenue Performance
+          </h3>
+          <p class="text-xs font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mt-1">
+            Weekly Cycle Comparison
+          </p>
+        </div>
+        <div class="flex items-center gap-3">
+          <div class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-primary/10 border border-primary/20 text-[10px] font-black text-primary uppercase tracking-wider">
+            Current Week
+          </div>
+          <div class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">
+            Previous
+          </div>
+        </div>
+      </div>
+
+      <div class="flex-1 flex items-end justify-between px-2 gap-5 group mt-5">
+        <%= for {day, h1, h2} <- [
+          {"MON", 65, 40},
+          {"TUE", 85, 50},
+          {"WED", 95, 35},
+          {"THU", 75, 45},
+          {"FRI", 100, 70},
+          {"SAT", 40, 20},
+          {"SUN", 25, 10}
+        ] do %>
+          <div class="flex-1 flex flex-col items-center gap-6 group/bar h-full">
+            <div class="w-full flex-1 flex flex-row items-end justify-center gap-1.5">
+              <div
+                class="w-3 bg-primary rounded-full transition-all duration-700 group-hover/bar:scale-y-110 group-hover/bar:brightness-110 shadow-lg shadow-primary/20"
+                style={"height: #{h1}%"}
+              >
+              </div>
+              <div
+                class="w-3 bg-zinc-100 dark:bg-zinc-800 rounded-full transition-all duration-1000 delay-100"
+                style={"height: #{h2}%"}
+              >
+              </div>
+            </div>
+            <span class="text-[11px] font-black text-zinc-400 dark:text-zinc-500 tracking-widest group-hover/bar:text-primary transition-colors">
+              {day}
+            </span>
+          </div>
+        <% end %>
+      </div>
+
+      <div class="pt-8 border-t border-zinc-50 dark:border-zinc-800 flex items-center justify-between">
+        <div class="flex items-center gap-6">
+          <div class="space-y-1">
+            <p class="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Avg daily</p>
+            <p class="text-lg font-black text-zinc-900 dark:text-white">$2,480</p>
+          </div>
+          <div class="space-y-1">
+            <p class="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Peak week</p>
+            <p class="text-lg font-black text-zinc-900 dark:text-white">$18.2K</p>
+          </div>
+        </div>
+        <div class="flex -space-x-2">
+          <img
+            :for={i <- 1..3}
+            src={"https://i.pravatar.cc/150?u=#{i+10}"}
+            class="size-8 rounded-full border-2 border-white dark:border-zinc-900 object-cover"
+          />
+        </div>
       </div>
     </div>
     """

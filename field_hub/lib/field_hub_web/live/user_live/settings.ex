@@ -185,7 +185,7 @@ defmodule FieldHubWeb.UserLive.Settings do
             <.icon name="hero-users" class="w-5 h-5" /> Team Management
           </.link>
         </aside>
-        
+
     <!-- Main Content Area -->
         <div class="flex-1 space-y-8">
           <%= if @current_tab == :profile do %>
@@ -431,7 +431,7 @@ defmodule FieldHubWeb.UserLive.Settings do
                             Trial Ends
                           </p>
                           <p class="text-sm font-bold text-zinc-700 dark:text-zinc-200">
-                            {Calendar.strftime(@current_organization.trial_ends_at, "%b %d, %Y")}
+                            {format_date(@current_organization.trial_ends_at)}
                           </p>
                         </div>
                       </div>
@@ -482,7 +482,7 @@ defmodule FieldHubWeb.UserLive.Settings do
                   </div>
                 </div>
               </div>
-              
+
     <!-- Billing History -->
               <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
                 <div class="p-6 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
@@ -557,7 +557,7 @@ defmodule FieldHubWeb.UserLive.Settings do
                   <.icon name="hero-plus" class="size-5" /> Invite Member
                 </button>
               </div>
-              
+
     <!-- Team Members Table -->
               <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
                 <div class="overflow-x-auto">
@@ -621,7 +621,7 @@ defmodule FieldHubWeb.UserLive.Settings do
                             </div>
                           </td>
                           <td class="px-6 py-4 text-zinc-500">
-                            {Calendar.strftime(user.inserted_at, "%b %d, %Y")}
+                            {format_date(user.inserted_at)}
                           </td>
                           <td class="px-6 py-4 text-right">
                             <%= if user.id != @current_scope.user.id do %>
@@ -641,7 +641,7 @@ defmodule FieldHubWeb.UserLive.Settings do
                   </table>
                 </div>
               </div>
-              
+
     <!-- Invite Hint -->
               <div class="p-6 rounded-2xl bg-zinc-50 dark:bg-zinc-900/50 border border-dashed border-zinc-200 dark:border-zinc-800 flex items-center gap-4">
                 <div class="size-10 rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 flex items-center justify-center text-zinc-400">
@@ -660,7 +660,7 @@ defmodule FieldHubWeb.UserLive.Settings do
           <% end %>
         </div>
       </div>
-      
+
     <!-- Invite Member Modal -->
       <.modal
         :if={@show_invite_modal}
@@ -966,4 +966,8 @@ defmodule FieldHubWeb.UserLive.Settings do
     [ext | _] = MIME.extensions(entry.client_type)
     ext
   end
+
+  defp format_date(nil), do: "N/A"
+  defp format_date(%{__struct__: _} = date), do: Calendar.strftime(date, "%b %d, %Y")
+  defp format_date(_), do: "N/A"
 end

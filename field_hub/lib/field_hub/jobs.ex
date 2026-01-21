@@ -99,6 +99,16 @@ defmodule FieldHub.Jobs do
   end
 
   @doc """
+  Counts jobs by status for an organization.
+  """
+  def count_jobs_by_status(org_id, statuses) when is_list(statuses) do
+    Job
+    |> where([j], j.organization_id == ^org_id)
+    |> where([j], j.status in ^statuses)
+    |> Repo.aggregate(:count, :id)
+  end
+
+  @doc """
   Counts active jobs for an organization.
   """
   def count_active_jobs(org_id) do
