@@ -1,25 +1,49 @@
 /**
- * A hook to request permission for push notifications and save the device token.
+ * A hook to request permission for push notifications and save the subscription.
  * 
  * Usage:
- * <div phx-hook="PushNotifications" id="push-notifications-handler" />
- * 
- * Server-side handling:
- * def handle_event("save_device_token", %{"token" => token, "type" => type}, socket) do
- *   # Call Context to save token
- *   {:noreply, socket}
- * end
+ * <div phx-hook="PushNotifications" id="push-handler" data-vapid-key="..." />
  */
+
+function urlBase64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding)
+    .replace(/\-/g, '+')
+    .replace(/_/g, '/');
+
+  const rawData = window.atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
+
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i);
+  }
+  return outputArray;
+}
+
 export default {
   mounted() {
+    this.vapidKey = this.el.dataset.vapidKey;
+    
+    if (!this.vapidKey) {
+      console.warn("PushNotifications: Missing data-vapid-key");
+      return;
+    }
+
+    if (!("Notification" in window)) {
+      console.warn("This browser does not support desktop notification");
+      return;
+    }
+
+    this.pushEvent("permission_status", {status: Notification.permission});
+
+    // Handle user action to request permission
     this.handleEvent("request_permission", () => {
       this.requestPermission();
     });
 
-    // Check specific flag if we should auto-request
-    // or just check existing permission
+    // Auto-check if already granted to ensure subscription is up to date
     if (Notification.permission === "granted") {
-      this.getAndSaveToken();
+      this.ensureSubscription();
     }
   },
 
@@ -31,30 +55,41 @@ export default {
 
     Notification.requestPermission().then((permission) => {
       if (permission === "granted") {
-        this.getAndSaveToken();
+        this.ensureSubscription();
       }
     });
   },
 
-  getAndSaveToken() {
-    // In a real implementation with Firebase or Web Push:
-    // 1. Get Service Worker registration
-    // 2. Subscribe to PushManager or get FCM token
+  async ensureSubscription() {
+    if (!('serviceWorker' in navigator)) return;
+
+    try {
+      const registration = await navigator.serviceWorker.ready;
+      
+      let subscription = await registration.pushManager.getSubscription();
+
+      if (!subscription) {
+        subscription = await registration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: urlBase64ToUint8Array(this.vapidKey)
+        });
+      }
+
+      // Send subscription to server
+      this.sendSubscriptionToServer(subscription);
+
+    } catch (err) {
+      console.error("Push subscription failed:", err);
+    }
+  },
+
+  sendSubscriptionToServer(subscription) {
+    const subJson = JSON.parse(JSON.stringify(subscription));
     
-    // For now, we simulate a token for the "Remember device token" feature
-    // unless the service worker provides a real one.
-    
-    console.log("Push Notification permission granted.");
-    
-    // Placeholder for actual token retrieval
-    // const token = await getToken(messaging, { vapidKey: '...' });
-    
-    // We send a mock token to satisfy the requirement until FCM is fully configured
-    const mockToken = "device-token-" + Date.now();
-    
-    this.pushEvent("save_device_token", { 
-      token: mockToken, 
-      type: "fcm" // Defaulting to FCM as per schema
+    this.pushEvent("save_subscription", {
+      endpoint: subJson.endpoint,
+      keys: subJson.keys,
+      user_agent: navigator.userAgent
     });
   }
 };

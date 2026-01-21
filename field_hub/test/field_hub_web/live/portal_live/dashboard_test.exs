@@ -31,18 +31,27 @@ defmodule FieldHubWeb.PortalLive.DashboardTest do
       assert html =~ "System Live"
     end
 
-    test "updates sms preference via hook", %{conn: conn, customer: customer} do
+    test "updates notification preferences via form", %{conn: conn, customer: customer} do
       {:ok, view, _html} = live(conn, ~p"/portal")
 
-      # Toggle off via hook pushEvent
-      render_hook(view, "update_sms_preference", %{enabled: false})
+      # Use form submission instead of hook
+      # Assuming we are toggling job_scheduled_sms
+      view
+      |> form("#preferences-modal form", %{
+        "customer" => %{
+          "preferences" => %{
+            "job_scheduled_sms" => "false"
+          }
+        }
+      })
+      |> render_submit()
 
       # Verify persistence in DB
       updated_customer = CRM.get_customer_for_portal(customer.id)
-      assert updated_customer.sms_notifications_enabled == false
+      assert updated_customer.preferences.job_scheduled_sms == false
 
       # Verify flash message
-      assert render(view) =~ "SMS notifications disabled"
+      assert render(view) =~ "Preferences saved successfully"
     end
 
     test "uses dynamic terminology for job labels", %{conn: conn, org: org, customer: customer} do

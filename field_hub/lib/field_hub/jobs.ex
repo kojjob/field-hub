@@ -9,6 +9,7 @@ defmodule FieldHub.Jobs do
   alias FieldHub.Jobs.Job
   alias FieldHub.Jobs.JobEvent
   alias FieldHub.Dispatch.Broadcaster
+  alias FieldHub.Notifications.Push
   alias Ecto.Multi
 
   @doc """
@@ -297,6 +298,7 @@ defmodule FieldHub.Jobs do
     |> run_transaction()
     |> broadcast_job_updated()
     |> notify_job_dispatched()
+    |> notify_technician_assigned()
   end
 
   @doc """
@@ -432,6 +434,7 @@ defmodule FieldHub.Jobs do
     end)
     |> run_transaction()
     |> broadcast_job_updated()
+    |> notify_technician_job_cancelled()
   end
 
   @doc """
@@ -529,7 +532,12 @@ defmodule FieldHub.Jobs do
   # Add specific helpers for different update types to trigger notifications
   defp notify_job_scheduled({:ok, job}) do
     if job.customer_id do
-      FieldHub.Jobs.JobNotifier.deliver_job_confirmation(job)
+      job = Repo.preload(job, :customer)
+      customer = job.customer
+
+      if FieldHub.CRM.should_notify_customer?(customer, :job_scheduled, :email) do
+        FieldHub.Jobs.JobNotifier.deliver_job_confirmation(job)
+      end
     end
 
     {:ok, job}
@@ -539,7 +547,14 @@ defmodule FieldHub.Jobs do
 
   defp notify_job_dispatched({:ok, job}) do
     if job.customer_id do
-      FieldHub.Jobs.JobNotifier.deliver_technician_dispatch(job)
+      job = Repo.preload(job, :customer)
+      customer = job.customer
+
+      # Mapping dispatch/assignment to 'technician_en_route' or 'job_scheduled' is ambiguous.
+      # Using 'technician_en_route_email' as proxy for "Someone is coming"
+      if FieldHub.CRM.should_notify_customer?(customer, :technician_en_route, :email) do
+        FieldHub.Jobs.JobNotifier.deliver_technician_dispatch(job)
+      end
     end
 
     {:ok, job}
@@ -551,10 +566,17 @@ defmodule FieldHub.Jobs do
     job_with_preloads = preload_for_notifications(job)
 
     if job.customer_id do
+      customer = job_with_preloads.customer
+
       # Email notification
-      FieldHub.Jobs.JobNotifier.deliver_job_completion(job)
+      if FieldHub.CRM.should_notify_customer?(customer, :job_completed, :email) do
+        FieldHub.Jobs.JobNotifier.deliver_job_completion(job)
+      end
+
       # SMS notification
-      FieldHub.Notifications.SMS.notify_job_completed(job_with_preloads)
+      if FieldHub.CRM.should_notify_customer?(customer, :job_completed, :sms) do
+        FieldHub.Notifications.SMS.notify_job_completed(job_with_preloads)
+      end
     end
 
     {:ok, job}
@@ -568,7 +590,12 @@ defmodule FieldHub.Jobs do
   """
   def notify_technician_en_route({:ok, job}) do
     job_with_preloads = preload_for_notifications(job)
-    FieldHub.Notifications.SMS.notify_technician_en_route(job_with_preloads)
+    customer = job_with_preloads.customer
+
+    if job.customer_id && FieldHub.CRM.should_notify_customer?(customer, :technician_en_route, :sms) do
+      FieldHub.Notifications.SMS.notify_technician_en_route(job_with_preloads)
+    end
+
     {:ok, job}
   end
 
@@ -580,7 +607,12 @@ defmodule FieldHub.Jobs do
   """
   def notify_technician_arrived({:ok, job}) do
     job_with_preloads = preload_for_notifications(job)
-    FieldHub.Notifications.SMS.notify_technician_arrived(job_with_preloads)
+    customer = job_with_preloads.customer
+
+    if job.customer_id && FieldHub.CRM.should_notify_customer?(customer, :technician_arrived, :sms) do
+      FieldHub.Notifications.SMS.notify_technician_arrived(job_with_preloads)
+    end
+
     {:ok, job}
   end
 
@@ -590,4 +622,50 @@ defmodule FieldHub.Jobs do
   defp preload_for_notifications(job) do
     Repo.preload(job, [:customer, :technician])
   end
+
+  defp notify_technician_assigned({:ok, job}) do
+    Task.start(fn ->
+      job = Repo.preload(job, technician: :user)
+
+      if job.technician && job.technician.user do
+        user = job.technician.user
+
+        if FieldHub.Accounts.should_notify?(user, :job_assignment, :push) do
+          Push.send_notification(
+            user.id,
+            "New Job Assigned",
+            "Job ##{job.number} has been assigned to you at #{job.service_city}.",
+            %{job_id: job.id, type: "job_assigned"}
+          )
+        end
+      end
+    end)
+
+    {:ok, job}
+  end
+
+  defp notify_technician_assigned(error), do: error
+
+  defp notify_technician_job_cancelled({:ok, job}) do
+    Task.start(fn ->
+      job = Repo.preload(job, technician: :user)
+
+      if job.technician && job.technician.user do
+        user = job.technician.user
+
+        if FieldHub.Accounts.should_notify?(user, :job_cancellation, :push) do
+          Push.send_notification(
+            user.id,
+            "Job Cancelled",
+            "Job ##{job.number} has been cancelled.",
+            %{job_id: job.id, type: "job_cancelled"}
+          )
+        end
+      end
+    end)
+
+    {:ok, job}
+  end
+
+  defp notify_technician_job_cancelled(error), do: error
 end

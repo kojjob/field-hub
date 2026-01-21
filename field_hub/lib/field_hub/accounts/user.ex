@@ -22,6 +22,8 @@ defmodule FieldHub.Accounts.User do
     field :notify_on_job_updates, :boolean, default: true
     field :notify_marketing, :boolean, default: false
 
+    embeds_one :preferences, FieldHub.Accounts.NotificationPreferences, on_replace: :update
+
     belongs_to :organization, FieldHub.Accounts.Organization
 
     timestamps(type: :utc_datetime)
@@ -64,6 +66,7 @@ defmodule FieldHub.Accounts.User do
   def notification_changeset(user, attrs) do
     user
     |> cast(attrs, [:notify_on_new_jobs, :notify_on_job_updates, :notify_marketing])
+    |> cast_embed(:preferences)
   end
 
   defp validate_email(changeset, opts) do

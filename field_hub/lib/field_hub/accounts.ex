@@ -645,6 +645,7 @@ defmodule FieldHub.Accounts do
     end)
   end
 
+
   def update_user_notifications(%User{} = user, attrs) do
     user
     |> User.notification_changeset(attrs)
@@ -653,5 +654,23 @@ defmodule FieldHub.Accounts do
 
   def change_user_notifications(%User{} = user, attrs \\ %{}) do
     User.notification_changeset(user, attrs)
+  end
+
+  @doc """
+  Checks if a user should receive a notification for a given event and channel.
+
+  ## Examples
+
+      iex> should_notify?(user, :job_assignment, :push)
+      true
+
+  """
+  def should_notify?(%User{preferences: nil}, _event, _channel), do: true
+
+  def should_notify?(%User{preferences: preferences}, event, channel) do
+    key = String.to_existing_atom("#{event}_#{channel}")
+    Map.get(preferences, key, true)
+  rescue
+    _ -> true
   end
 end

@@ -27,6 +27,8 @@ defmodule FieldHubWeb.PortalLive.Dashboard do
     # New: Fetch terminology
     terminology = Terminology.get_terminology(customer.organization)
 
+    changeset = CRM.change_customer(customer)
+
     socket =
       socket
       |> assign(:customer, customer)
@@ -39,6 +41,8 @@ defmodule FieldHubWeb.PortalLive.Dashboard do
       |> assign(:trust_score, trust_score)
       |> assign(:terminology, terminology)
       |> assign(:page_title, "Dashboard")
+      |> assign(:form, to_form(changeset))
+      |> assign(:show_preferences_modal, false)
 
     {:ok, socket}
   end
@@ -58,23 +62,29 @@ defmodule FieldHubWeb.PortalLive.Dashboard do
   def handle_info(_, socket), do: {:noreply, socket}
 
   @impl true
-  def handle_event("update_sms_preference", %{"enabled" => enabled}, socket) do
-    customer = socket.assigns.customer
+  def handle_event("validate_preferences", %{"customer" => customer_params}, socket) do
+    changeset =
+      socket.assigns.customer
+      |> CRM.change_customer(customer_params)
+      |> Map.put(:action, :validate)
 
-    case CRM.update_customer(customer, %{sms_notifications_enabled: enabled}) do
+    {:noreply, assign(socket, form: to_form(changeset))}
+  end
+
+  def handle_event("save_preferences", %{"customer" => customer_params}, socket) do
+    case CRM.update_customer(socket.assigns.customer, customer_params) do
       {:ok, updated_customer} ->
         socket =
           socket
           |> assign(:customer, updated_customer)
-          |> put_flash(
-            :info,
-            if(enabled, do: "SMS notifications enabled", else: "SMS notifications disabled")
-          )
+          |> assign(:form, to_form(CRM.change_customer(updated_customer)))
+          |> put_flash(:info, "Preferences saved successfully")
+          |> push_event("close_modal", %{to: "#preferences-modal"})
 
         {:noreply, socket}
 
-      {:error, _changeset} ->
-        {:noreply, put_flash(socket, :error, "Failed to update preference")}
+      {:error, changeset} ->
+        {:noreply, assign(socket, form: to_form(changeset), show_preferences_modal: true)}
     end
   end
 
@@ -334,51 +344,139 @@ defmodule FieldHubWeb.PortalLive.Dashboard do
               </div>
             <% end %>
 
-            <%!-- SMS Preferences --%>
+            <%!-- Notification Preferences --%>
             <div class="bg-white dark:bg-zinc-900 rounded-[40px] border border-zinc-200 dark:border-zinc-800 p-8">
               <div class="size-12 rounded-2xl bg-zinc-900 dark:bg-white flex items-center justify-center mb-6">
-                <.icon name="hero-megaphone" class="size-6 text-white dark:text-zinc-900" />
+                <.icon name="hero-bell" class="size-6 text-white dark:text-zinc-900" />
               </div>
-              <h3 class="text-xl font-black text-zinc-900 dark:text-white tracking-tight mb-2">Live Communication</h3>
+              <h3 class="text-xl font-black text-zinc-900 dark:text-white tracking-tight mb-2">Notifications</h3>
               <p class="text-sm text-zinc-500 font-medium mb-8 leading-relaxed">
-                Stay updated with real-time text alerts for every step of the service cycle.
+                Manage how you receive updates about your service appointments, invoices, and job status.
               </p>
 
-              <div
-                id="sms-preference-toggle"
-                phx-hook="SMSPreference"
-                class="flex items-center justify-between p-5 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl border border-zinc-100 dark:border-zinc-800"
+              <button
+                type="button"
+                phx-click={show_modal("preferences-modal")}
+                class="w-full flex items-center justify-between p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl border border-zinc-100 dark:border-zinc-800 text-left hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors group"
               >
                 <div>
-                  <p class="font-bold text-zinc-900 dark:text-white text-sm">SMS Awareness</p>
+                  <p class="font-bold text-zinc-900 dark:text-white text-sm">Manage Settings</p>
                   <p class="text-[10px] text-zinc-400 font-black uppercase tracking-wider mt-0.5">
-                    <%= if @customer.phone do %>
-                      {@customer.phone}
-                    <% else %>
-                      Phone Missing
-                    <% end %>
+                    Email & SMS
                   </p>
                 </div>
-
-                <%= if @customer.phone do %>
-                  <label class="relative inline-flex items-center cursor-pointer group">
-                    <input
-                      type="checkbox"
-                      class="sr-only peer"
-                      checked={@customer.sms_notifications_enabled}
-                    />
-                    <div class="w-12 h-6 bg-zinc-200 dark:bg-zinc-700 rounded-full peer peer-checked:after:translate-x-6 peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:start-[4px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-500">
-                    </div>
-                  </label>
-                <% else %>
-                  <span class="text-[10px] font-black text-amber-500 uppercase tracking-widest">Action Needed</span>
-                <% end %>
-              </div>
+                <div class="size-8 rounded-full bg-white dark:bg-zinc-700 flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
+                  <.icon name="hero-cog-6-tooth" class="size-4 text-zinc-500 dark:text-zinc-300" />
+                </div>
+              </button>
             </div>
           </div>
         </div>
       </main>
     </div>
+
+    <.modal id="preferences-modal">
+      <div class="sm:max-w-lg w-full">
+        <div class="mb-6">
+          <div class="flex items-center gap-3 mb-2">
+            <div class="size-10 rounded-xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
+              <.icon name="hero-bell" class="size-5 text-zinc-900 dark:text-white" />
+            </div>
+            <h3 class="text-xl font-bold text-zinc-900 dark:text-white">Notification Settings</h3>
+          </div>
+          <p class="text-sm text-zinc-500">Fine-tune how you receive updates from {@customer.organization.name}.</p>
+        </div>
+
+        <.form for={@form} phx-change="validate_preferences" phx-submit="save_preferences" class="space-y-6">
+          <.inputs_for :let={pref} field={@form[:preferences]}>
+            <div class="divide-y divide-zinc-100 dark:divide-zinc-800 border border-zinc-100 dark:border-zinc-800 rounded-2xl bg-zinc-50/50 dark:bg-zinc-900/50 overflow-hidden">
+               <!-- Job Scheduling -->
+               <div class="p-4 grid grid-cols-12 gap-4 items-center hover:bg-white dark:hover:bg-zinc-800 transition-colors">
+                  <div class="col-span-8">
+                     <p class="text-sm font-bold text-zinc-900 dark:text-white">Service Scheduled</p>
+                     <p class="text-xs text-zinc-500">When an appointment is confirmed</p>
+                  </div>
+                  <div class="col-span-2 text-center">
+                     <span class="text-[10px] font-bold text-zinc-400 uppercase block mb-1">Email</span>
+                     <.input field={pref[:job_scheduled_email]} type="switch" />
+                  </div>
+                  <div class="col-span-2 text-center">
+                     <span class="text-[10px] font-bold text-zinc-400 uppercase block mb-1">SMS</span>
+                     <.input field={pref[:job_scheduled_sms]} type="switch" />
+                  </div>
+               </div>
+
+               <!-- Tech En Route -->
+                <div class="p-4 grid grid-cols-12 gap-4 items-center hover:bg-white dark:hover:bg-zinc-800 transition-colors">
+                  <div class="col-span-8">
+                     <p class="text-sm font-bold text-zinc-900 dark:text-white">Technician En Route</p>
+                     <p class="text-xs text-zinc-500">When your technician is on the way</p>
+                  </div>
+                  <div class="col-span-2 text-center">
+                     <.input field={pref[:technician_en_route_email]} type="switch" />
+                  </div>
+                  <div class="col-span-2 text-center">
+                     <.input field={pref[:technician_en_route_sms]} type="switch" />
+                  </div>
+               </div>
+
+               <!-- Tech Arrived -->
+                <div class="p-4 grid grid-cols-12 gap-4 items-center hover:bg-white dark:hover:bg-zinc-800 transition-colors">
+                  <div class="col-span-8">
+                     <p class="text-sm font-bold text-zinc-900 dark:text-white">Technician Arrived</p>
+                     <p class="text-xs text-zinc-500">When the technician is at your property</p>
+                  </div>
+                  <div class="col-span-2 text-center">
+                     <.input field={pref[:technician_arrived_email]} type="switch" />
+                  </div>
+                  <div class="col-span-2 text-center">
+                     <.input field={pref[:technician_arrived_sms]} type="switch" />
+                  </div>
+               </div>
+
+               <!-- Completed -->
+                <div class="p-4 grid grid-cols-12 gap-4 items-center hover:bg-white dark:hover:bg-zinc-800 transition-colors">
+                  <div class="col-span-8">
+                     <p class="text-sm font-bold text-zinc-900 dark:text-white">Service Completed</p>
+                     <p class="text-xs text-zinc-500">Completion reports and details</p>
+                  </div>
+                  <div class="col-span-2 text-center">
+                     <.input field={pref[:job_completed_email]} type="switch" />
+                  </div>
+                  <div class="col-span-2 text-center">
+                     <.input field={pref[:job_completed_sms]} type="switch" />
+                  </div>
+               </div>
+            </div>
+
+            <div class="mt-6 flex flex-col gap-3">
+              <div class="flex items-center justify-between p-4 bg-zinc-50/50 dark:bg-zinc-900/50 rounded-xl border border-zinc-100 dark:border-zinc-800">
+                <div>
+                  <p class="text-sm font-bold text-zinc-900 dark:text-white">Financial Updates</p>
+                  <p class="text-xs text-zinc-500">Receive invoices and receipts via email</p>
+                </div>
+                 <.input field={pref[:invoice_email]} type="switch" />
+              </div>
+
+               <div class="flex items-center justify-between p-4 bg-zinc-50/50 dark:bg-zinc-900/50 rounded-xl border border-zinc-100 dark:border-zinc-800">
+                <div>
+                  <p class="text-sm font-bold text-zinc-900 dark:text-white">News & Tips</p>
+                  <p class="text-xs text-zinc-500">Occasional updates and maintenance tips</p>
+                </div>
+                 <.input field={pref[:marketing_email]} type="switch" />
+              </div>
+            </div>
+          </.inputs_for>
+
+          <div class="flex items-center justify-end gap-3 pt-6 border-t border-zinc-100 dark:border-zinc-800">
+             <button type="button" phx-click={hide_modal("preferences-modal")} class="px-4 py-2 rounded-xl text-sm font-bold text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors">Cancel</button>
+             <.button type="submit" class="bg-primary hover:bg-primary/90 text-white rounded-xl px-4 py-2 text-sm font-bold shadow-lg shadow-primary/20">
+               Save Changes
+             </.button>
+          </div>
+        </.form>
+      </div>
+    </.modal>
     """
   end
 
