@@ -27,7 +27,12 @@ defmodule FieldHubWeb.TechSyncController do
   ```
   """
   def sync(conn, params) do
-    user = conn.assigns[:current_user]
+    # Extract user from current_scope (set by fetch_current_scope_for_user plug)
+    user =
+      case conn.assigns[:current_scope] do
+        %{user: %{id: _} = user} -> user
+        _ -> nil
+      end
 
     case user do
       nil ->

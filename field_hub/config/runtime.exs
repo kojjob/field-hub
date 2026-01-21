@@ -176,4 +176,12 @@ if config_env() == :prod do
   end
 
   config :field_hub, :stripe, publishable_key: System.get_env("STRIPE_PUBLISHABLE_KEY")
+
+  # Web Push Configuration
+  if vapid_public = System.get_env("VAPID_PUBLIC_KEY") do
+    config :web_push_encryption, :vapid_details,
+      subject: System.get_env("VAPID_SUBJECT", "mailto:admin@#{host}"),
+      public_key: vapid_public,
+      private_key: System.get_env("VAPID_PRIVATE_KEY")
+  end
 end

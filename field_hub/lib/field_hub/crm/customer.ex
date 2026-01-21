@@ -8,6 +8,8 @@ defmodule FieldHub.CRM.Customer do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias FieldHub.CRM.CustomerNotificationPreferences
+
   @derive {Phoenix.Param, key: :slug}
   @contact_methods ~w(phone email sms)
   @state_code_regex ~r/^[A-Z]{2}$/
@@ -49,8 +51,10 @@ defmodule FieldHub.CRM.Customer do
     # Soft delete
     field :archived_at, :utc_datetime
 
+
     # Notification preferences
     field :sms_notifications_enabled, :boolean, default: true
+    embeds_one :preferences, CustomerNotificationPreferences, on_replace: :update
 
     field :custom_fields, :map, default: %{}
 
@@ -92,6 +96,7 @@ defmodule FieldHub.CRM.Customer do
       :sms_notifications_enabled,
       :custom_fields
     ])
+    |> cast_embed(:preferences)
     |> validate_required([:organization_id, :name])
     |> put_slug()
     |> validate_format(:email, ~r/^[^\s]+@[^\s]+\.[^\s]+$/, message: "has invalid format")

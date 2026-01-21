@@ -313,7 +313,7 @@ defmodule FieldHubWeb.UserLive.Settings do
                     Notification Preferences
                   </h3>
                   <p class="text-xs font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wide">
-                    Manage how you receive updates
+                    Manage how you receive updates across different channels
                   </p>
                 </div>
               </div>
@@ -324,67 +324,78 @@ defmodule FieldHubWeb.UserLive.Settings do
                 phx-change="update_notifications"
                 class="space-y-8"
               >
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  <div class="space-y-4">
-                    <h4 class="text-sm font-black text-zinc-900 dark:text-white uppercase tracking-wider">
-                      Email Notifications
-                    </h4>
-                    <div class="space-y-4">
-                      <div class="flex items-center justify-between p-4 rounded-xl border border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-800/20">
-                        <div>
-                          <p class="font-bold text-zinc-900 dark:text-white">New Job Assignments</p>
-                          <p class="text-xs text-zinc-500">
-                            When you are assigned to a new field job.
-                          </p>
-                        </div>
-                        <.input field={@notification_form[:notify_on_new_jobs]} type="checkbox" />
-                      </div>
+                <.inputs_for :let={pref} field={@notification_form[:preferences]}>
+                  <div class="divide-y divide-zinc-100 dark:divide-zinc-800 border border-zinc-100 dark:border-zinc-800 rounded-xl bg-zinc-50/30 dark:bg-zinc-800/20">
+                    <!-- Header Row -->
+                    <div class="grid grid-cols-12 gap-4 p-4 text-[10px] font-black uppercase text-zinc-500 tracking-widest bg-zinc-50/50 dark:bg-zinc-800/50 rounded-t-xl">
+                      <div class="col-span-6 md:col-span-5">Event Type</div>
+                      <div class="col-span-2 text-center">Email</div>
+                      <div class="col-span-2 text-center">SMS</div>
+                      <div class="col-span-2 text-center">Push</div>
+                    </div>
 
-                      <div class="flex items-center justify-between p-4 rounded-xl border border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-800/20">
-                        <div>
-                          <p class="font-bold text-zinc-900 dark:text-white">Job Progress Updates</p>
-                          <p class="text-xs text-zinc-500">
-                            When a job status changes or comments are added.
-                          </p>
-                        </div>
-                        <.input field={@notification_form[:notify_on_job_updates]} type="checkbox" />
+                    <!-- Job Assignment -->
+                    <div class="grid grid-cols-12 gap-4 p-4 items-center hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors">
+                      <div class="col-span-6 md:col-span-5">
+                        <p class="font-bold text-zinc-900 dark:text-white text-sm">New Job Assignments</p>
+                        <p class="text-xs text-zinc-500">When you are assigned to a new job</p>
                       </div>
+                      <div class="col-span-2 flex justify-center">
+                        <.input field={pref[:job_assignment_email]} type="checkbox" class="checkbox-primary" />
+                      </div>
+                      <div class="col-span-2 flex justify-center">
+                        <.input field={pref[:job_assignment_sms]} type="checkbox" class="checkbox-primary" />
+                      </div>
+                      <div class="col-span-2 flex justify-center">
+                        <.input field={pref[:job_assignment_push]} type="checkbox" class="checkbox-primary" />
+                      </div>
+                    </div>
 
-                      <div class="flex items-center justify-between p-4 rounded-xl border border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-800/20">
-                        <div>
-                          <p class="font-bold text-zinc-900 dark:text-white">Marketing & News</p>
-                          <p class="text-xs text-zinc-500">
-                            Updates about new features and best practices.
-                          </p>
-                        </div>
-                        <.input field={@notification_form[:notify_marketing]} type="checkbox" />
+                    <!-- Job Cancellation -->
+                    <div class="grid grid-cols-12 gap-4 p-4 items-center hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors">
+                      <div class="col-span-6 md:col-span-5">
+                        <p class="font-bold text-zinc-900 dark:text-white text-sm">Job Cancellations</p>
+                        <p class="text-xs text-zinc-500">When a job is removed from your schedule</p>
+                      </div>
+                      <div class="col-span-2 flex justify-center">
+                        <.input field={pref[:job_cancellation_email]} type="checkbox" class="checkbox-primary" />
+                      </div>
+                      <div class="col-span-2 flex justify-center">
+                        <.input field={pref[:job_cancellation_sms]} type="checkbox" class="checkbox-primary" />
+                      </div>
+                      <div class="col-span-2 flex justify-center">
+                        <.input field={pref[:job_cancellation_push]} type="checkbox" class="checkbox-primary" />
+                      </div>
+                    </div>
+
+                    <!-- Job Updates -->
+                    <div class="grid grid-cols-12 gap-4 p-4 items-center hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors">
+                      <div class="col-span-6 md:col-span-5">
+                        <p class="font-bold text-zinc-900 dark:text-white text-sm">Job Updates</p>
+                        <p class="text-xs text-zinc-500">Status changes and comments</p>
+                      </div>
+                      <div class="col-span-2 flex justify-center">
+                        <.input field={pref[:job_update_email]} type="checkbox" class="checkbox-primary" />
+                      </div>
+                      <div class="col-span-2 flex justify-center">
+                         <.input field={pref[:job_update_sms]} type="checkbox" class="checkbox-primary" />
+                      </div>
+                      <div class="col-span-2 flex justify-center">
+                         <.input field={pref[:job_update_push]} type="checkbox" class="checkbox-primary" />
                       </div>
                     </div>
                   </div>
 
-                  <div class="space-y-4">
-                    <h4 class="text-sm font-black text-zinc-900 dark:text-white uppercase tracking-wider">
-                      Push Notifications
-                    </h4>
-                    <div class="space-y-4 opacity-75">
-                      <div class="flex items-center justify-between p-4 rounded-xl border border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-800/20">
+                  <div class="mt-6 p-4 rounded-xl border border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-800/20">
+                     <div class="flex items-center justify-between">
                         <div>
-                          <p class="font-bold text-zinc-900 dark:text-white">In-App Notifications</p>
-                          <p class="text-xs text-zinc-500">
-                            Real-time alerts while using the platform.
-                          </p>
+                          <p class="font-bold text-zinc-900 dark:text-white">Marketing Emails</p>
+                          <p class="text-xs text-zinc-500">Updates about new features and best practices</p>
                         </div>
-                        <input type="checkbox" class="toggle toggle-primary" checked disabled />
-                      </div>
-
-                      <div class="p-4 rounded-xl border border-dashed border-zinc-200 dark:border-zinc-700 bg-zinc-50/10">
-                        <p class="text-sm text-zinc-500 text-center">
-                          Push notifications are enabled on your mobile devices natively.
-                        </p>
-                      </div>
-                    </div>
+                        <.input field={pref[:marketing_email]} type="checkbox" class="checkbox-primary" />
+                     </div>
                   </div>
-                </div>
+                </.inputs_for>
               </.form>
             </div>
           <% end %>

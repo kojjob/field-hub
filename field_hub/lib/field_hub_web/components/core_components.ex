@@ -169,7 +169,7 @@ defmodule FieldHubWeb.CoreComponents do
   attr :type, :string,
     default: "text",
     values: ~w(checkbox color date datetime-local email file month number password
-               search select tel text textarea time url week hidden)
+               search select tel text textarea time url week hidden switch)
 
   attr :field, Phoenix.HTML.FormField,
     doc: "a form field struct retrieved from the form, for example: @form[:email]"
@@ -200,6 +200,42 @@ defmodule FieldHubWeb.CoreComponents do
   def input(%{type: "hidden"} = assigns) do
     ~H"""
     <input type="hidden" id={@id} name={@name} value={@value} {@rest} />
+    """
+  end
+
+  def input(%{type: "switch"} = assigns) do
+    assigns =
+      assigns
+      |> assign_new(:checked, fn ->
+        Phoenix.HTML.Form.normalize_value("checkbox", assigns[:value])
+      end)
+
+    ~H"""
+    <div class="fieldset mb-3">
+      <label class="flex items-center gap-3 cursor-pointer group">
+        <input type="hidden" name={@name} value="false" disabled={@rest[:disabled]} />
+        <div class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus-within:ring-2 focus-within:ring-primary/20 focus-within:ring-offset-2">
+          <input
+            type="checkbox"
+            id={@id}
+            name={@name}
+            value="true"
+            checked={@checked}
+            class="peer sr-only"
+            {@rest}
+          />
+          <span class="h-6 w-11 rounded-full bg-zinc-200 dark:bg-zinc-700 peer-checked:bg-primary transition-colors"></span>
+          <span class="absolute left-1 size-4 transform rounded-full bg-white transition-transform peer-checked:translate-x-5 shadow-sm"></span>
+        </div>
+        <span
+          :if={@label}
+          class="text-sm font-medium text-slate-700 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-slate-100 transition-colors"
+        >
+          {@label}
+        </span>
+      </label>
+      <.error :for={msg <- @errors}>{msg}</.error>
+    </div>
     """
   end
 
@@ -419,7 +455,7 @@ defmodule FieldHubWeb.CoreComponents do
         phx-click={@on_close}
         aria-hidden="true"
       />
-      
+
     <!-- Panel -->
       <div
         id={"#{@id}-panel"}
@@ -444,12 +480,12 @@ defmodule FieldHubWeb.CoreComponents do
             <.icon name="hero-x-mark" class="size-5" />
           </button>
         </div>
-        
+
     <!-- Content -->
         <div class="flex-1 overflow-y-auto p-6">
           {render_slot(@inner_block)}
         </div>
-        
+
     <!-- Footer -->
         <div
           :if={@footer != []}
@@ -539,25 +575,22 @@ defmodule FieldHubWeb.CoreComponents do
             id={"#{@id}-container"}
             class="w-full max-w-2xl overflow-hidden rounded-3xl bg-white dark:bg-zinc-900 text-left shadow-2xl ring-1 ring-zinc-200 dark:ring-zinc-800 transition-all duration-300 transform scale-95 opacity-0 sm:my-8"
           >
-            <!-- Modal Header -->
-            <div class="flex items-center justify-between px-6 py-5 border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-800/30">
-              <div class="flex-1" id={"#{@id}-content"}>
-                {render_slot(@inner_block)}
-              </div>
+            <!-- Modal Header (Close Button) -->
+            <div class="flex items-center justify-end px-4 py-4 border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-800/30">
               <button
                 phx-click={JS.exec("data-cancel", to: "##{@id}")}
-                class="p-2 -mr-2 text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-xl transition-all"
+                class="p-2 text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-xl transition-all"
                 aria-label="close"
               >
                 <.icon name="hero-x-mark" class="size-5" />
               </button>
             </div>
-            
-    <!-- Modal Body (for forms without confirm/cancel) -->
-            <div :if={@confirm == [] and @cancel == []} class="p-6">
+
+            <!-- Modal Content -->
+            <div id={"#{@id}-content"} class="p-6">
               {render_slot(@inner_block)}
             </div>
-            
+
     <!-- Modal Footer (for confirm dialogs) -->
             <div
               :if={@confirm != [] or @cancel != []}

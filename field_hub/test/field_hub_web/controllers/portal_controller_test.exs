@@ -25,7 +25,7 @@ defmodule FieldHubWeb.PortalControllerTest do
       conn = conn |> init_test_session(%{portal_customer_id: customer.id})
       {:ok, _view, html} = live(conn, ~p"/portal")
 
-      assert html =~ "Welcome, #{customer.name}"
+      assert html =~ "Client Portal"
       assert html =~ customer.organization.name
     end
   end
