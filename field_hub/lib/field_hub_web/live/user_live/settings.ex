@@ -185,7 +185,7 @@ defmodule FieldHubWeb.UserLive.Settings do
             <.icon name="hero-users" class="w-5 h-5" /> Team Management
           </.link>
         </aside>
-
+        
     <!-- Main Content Area -->
         <div class="flex-1 space-y-8">
           <%= if @current_tab == :profile do %>
@@ -333,67 +333,109 @@ defmodule FieldHubWeb.UserLive.Settings do
                       <div class="col-span-2 text-center">SMS</div>
                       <div class="col-span-2 text-center">Push</div>
                     </div>
-
-                    <!-- Job Assignment -->
+                    
+    <!-- Job Assignment -->
                     <div class="grid grid-cols-12 gap-4 p-4 items-center hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors">
                       <div class="col-span-6 md:col-span-5">
-                        <p class="font-bold text-zinc-900 dark:text-white text-sm">New Job Assignments</p>
+                        <p class="font-bold text-zinc-900 dark:text-white text-sm">
+                          New Job Assignments
+                        </p>
                         <p class="text-xs text-zinc-500">When you are assigned to a new job</p>
                       </div>
                       <div class="col-span-2 flex justify-center">
-                        <.input field={pref[:job_assignment_email]} type="checkbox" class="checkbox-primary" />
+                        <.input
+                          field={pref[:job_assignment_email]}
+                          type="checkbox"
+                          class="checkbox-primary"
+                        />
                       </div>
                       <div class="col-span-2 flex justify-center">
-                        <.input field={pref[:job_assignment_sms]} type="checkbox" class="checkbox-primary" />
+                        <.input
+                          field={pref[:job_assignment_sms]}
+                          type="checkbox"
+                          class="checkbox-primary"
+                        />
                       </div>
                       <div class="col-span-2 flex justify-center">
-                        <.input field={pref[:job_assignment_push]} type="checkbox" class="checkbox-primary" />
+                        <.input
+                          field={pref[:job_assignment_push]}
+                          type="checkbox"
+                          class="checkbox-primary"
+                        />
                       </div>
                     </div>
-
-                    <!-- Job Cancellation -->
+                    
+    <!-- Job Cancellation -->
                     <div class="grid grid-cols-12 gap-4 p-4 items-center hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors">
                       <div class="col-span-6 md:col-span-5">
-                        <p class="font-bold text-zinc-900 dark:text-white text-sm">Job Cancellations</p>
+                        <p class="font-bold text-zinc-900 dark:text-white text-sm">
+                          Job Cancellations
+                        </p>
                         <p class="text-xs text-zinc-500">When a job is removed from your schedule</p>
                       </div>
                       <div class="col-span-2 flex justify-center">
-                        <.input field={pref[:job_cancellation_email]} type="checkbox" class="checkbox-primary" />
+                        <.input
+                          field={pref[:job_cancellation_email]}
+                          type="checkbox"
+                          class="checkbox-primary"
+                        />
                       </div>
                       <div class="col-span-2 flex justify-center">
-                        <.input field={pref[:job_cancellation_sms]} type="checkbox" class="checkbox-primary" />
+                        <.input
+                          field={pref[:job_cancellation_sms]}
+                          type="checkbox"
+                          class="checkbox-primary"
+                        />
                       </div>
                       <div class="col-span-2 flex justify-center">
-                        <.input field={pref[:job_cancellation_push]} type="checkbox" class="checkbox-primary" />
+                        <.input
+                          field={pref[:job_cancellation_push]}
+                          type="checkbox"
+                          class="checkbox-primary"
+                        />
                       </div>
                     </div>
-
-                    <!-- Job Updates -->
+                    
+    <!-- Job Updates -->
                     <div class="grid grid-cols-12 gap-4 p-4 items-center hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors">
                       <div class="col-span-6 md:col-span-5">
                         <p class="font-bold text-zinc-900 dark:text-white text-sm">Job Updates</p>
                         <p class="text-xs text-zinc-500">Status changes and comments</p>
                       </div>
                       <div class="col-span-2 flex justify-center">
-                        <.input field={pref[:job_update_email]} type="checkbox" class="checkbox-primary" />
+                        <.input
+                          field={pref[:job_update_email]}
+                          type="checkbox"
+                          class="checkbox-primary"
+                        />
                       </div>
                       <div class="col-span-2 flex justify-center">
-                         <.input field={pref[:job_update_sms]} type="checkbox" class="checkbox-primary" />
+                        <.input
+                          field={pref[:job_update_sms]}
+                          type="checkbox"
+                          class="checkbox-primary"
+                        />
                       </div>
                       <div class="col-span-2 flex justify-center">
-                         <.input field={pref[:job_update_push]} type="checkbox" class="checkbox-primary" />
+                        <.input
+                          field={pref[:job_update_push]}
+                          type="checkbox"
+                          class="checkbox-primary"
+                        />
                       </div>
                     </div>
                   </div>
 
                   <div class="mt-6 p-4 rounded-xl border border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-800/20">
-                     <div class="flex items-center justify-between">
-                        <div>
-                          <p class="font-bold text-zinc-900 dark:text-white">Marketing Emails</p>
-                          <p class="text-xs text-zinc-500">Updates about new features and best practices</p>
-                        </div>
-                        <.input field={pref[:marketing_email]} type="checkbox" class="checkbox-primary" />
-                     </div>
+                    <div class="flex items-center justify-between">
+                      <div>
+                        <p class="font-bold text-zinc-900 dark:text-white">Marketing Emails</p>
+                        <p class="text-xs text-zinc-500">
+                          Updates about new features and best practices
+                        </p>
+                      </div>
+                      <.input field={pref[:marketing_email]} type="checkbox" class="checkbox-primary" />
+                    </div>
                   </div>
                 </.inputs_for>
               </.form>
@@ -493,7 +535,7 @@ defmodule FieldHubWeb.UserLive.Settings do
                   </div>
                 </div>
               </div>
-
+              
     <!-- Billing History -->
               <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
                 <div class="p-6 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
@@ -568,7 +610,7 @@ defmodule FieldHubWeb.UserLive.Settings do
                   <.icon name="hero-plus" class="size-5" /> Invite Member
                 </button>
               </div>
-
+              
     <!-- Team Members Table -->
               <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
                 <div class="overflow-x-auto">
@@ -652,7 +694,7 @@ defmodule FieldHubWeb.UserLive.Settings do
                   </table>
                 </div>
               </div>
-
+              
     <!-- Invite Hint -->
               <div class="p-6 rounded-2xl bg-zinc-50 dark:bg-zinc-900/50 border border-dashed border-zinc-200 dark:border-zinc-800 flex items-center gap-4">
                 <div class="size-10 rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 flex items-center justify-center text-zinc-400">
@@ -671,7 +713,7 @@ defmodule FieldHubWeb.UserLive.Settings do
           <% end %>
         </div>
       </div>
-
+      
     <!-- Invite Member Modal -->
       <.modal
         :if={@show_invite_modal}

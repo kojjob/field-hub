@@ -109,26 +109,33 @@ defmodule FieldHubWeb.PortalLive.JobDetail do
   def render(assigns) do
     ~H"""
     <div class="min-h-screen bg-zinc-50 dark:bg-zinc-950">
-      <header class="bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 sticky top-0 z-50">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 py-4 flex items-center gap-4">
-          <.link
-            navigate={~p"/portal"}
-            class="size-10 rounded-xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center hover:bg-zinc-200 dark:hover:hover:bg-zinc-700 transition-colors"
-          >
-            <.icon name="hero-arrow-left" class="size-5 text-zinc-600 dark:text-zinc-400" />
-          </.link>
-          <div class="flex-1 min-w-0">
-            <p class="text-[10px] font-black text-primary uppercase tracking-[0.2em]">
-              Job Details
-            </p>
-            <h1 class="text-lg font-bold text-zinc-900 dark:text-white truncate">
+      <main class="max-w-4xl mx-auto px-4 sm:px-6 py-12 space-y-8">
+        <%!-- Header Section --%>
+        <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-6">
+          <div>
+            <.link
+              navigate={~p"/portal"}
+              class="inline-flex items-center gap-2 text-sm font-bold text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition-colors mb-4"
+            >
+              <.icon name="hero-arrow-left" class="size-4" />
+              Back to Dashboard
+            </.link>
+            <div class="flex items-center gap-3 mb-1">
+              <span class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400">
+                Job {@job.number}
+              </span>
+              <%= if @job.status == "en_route" do %>
+                 <span class="relative flex h-2.5 w-2.5">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary"></span>
+                </span>
+              <% end %>
+            </div>
+            <h1 class="text-3xl font-black text-zinc-900 dark:text-white tracking-tight">
               {@job.title}
             </h1>
           </div>
         </div>
-      </header>
-
-      <main class="max-w-4xl mx-auto px-4 sm:px-6 py-8 space-y-8">
         <%!-- Status Timeline --%>
         <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-8">
           <div class="relative">

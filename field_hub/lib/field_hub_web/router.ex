@@ -87,6 +87,7 @@ defmodule FieldHubWeb.Router do
       live "/technicians", TechnicianLive.Index, :index
       live "/technicians/new", TechnicianLive.Index, :new
       live "/technicians/:slug/edit", TechnicianLive.Index, :edit
+      live "/technicians/:slug", TechnicianLive.Show, :show
 
       live "/customers", CustomerLive.Index, :index
       live "/customers/new", CustomerLive.Index, :new

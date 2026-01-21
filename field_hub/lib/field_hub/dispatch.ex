@@ -59,6 +59,7 @@ defmodule FieldHub.Dispatch do
     Technician
     |> where([t], t.organization_id == ^org_id)
     |> where([t], t.slug == ^slug)
+    |> preload(:user)
     |> Repo.one!()
   end
 

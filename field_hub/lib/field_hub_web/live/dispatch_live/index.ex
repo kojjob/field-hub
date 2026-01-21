@@ -538,7 +538,7 @@ defmodule FieldHubWeb.DispatchLive.Index do
                         {job.title}
                       </div>
                       <div class="text-[11px] text-zinc-500 dark:text-zinc-400 font-medium truncate">
-                        {job.customer.name}
+                        {if job.customer, do: job.customer.name, else: "No Customer"}
                       </div>
                     </div>
                     <button
@@ -636,7 +636,7 @@ defmodule FieldHubWeb.DispatchLive.Index do
                         >
                           <div class="font-bold truncate text-[13px]">{job.title}</div>
                           <div class="opacity-70 truncate text-[11px] font-medium mt-0.5">
-                            {job.customer.name}
+                            {if job.customer, do: job.customer.name, else: "No Customer"}
                           </div>
                         </div>
                       <% end %>
@@ -701,7 +701,7 @@ defmodule FieldHubWeb.DispatchLive.Index do
                         {active_job.title}
                       </div>
                       <div class="text-zinc-500 dark:text-zinc-400 truncate mt-0.5">
-                        {active_job.customer.name}
+                        {if active_job.customer, do: active_job.customer.name, else: "No Customer"}
                       </div>
                     </div>
                   <% end %>
@@ -763,9 +763,9 @@ defmodule FieldHubWeb.DispatchLive.Index do
                   </h4>
                 </div>
                 <p class="text-lg font-bold text-zinc-900 dark:text-white">
-                  {@selected_job.customer.name}
+                  {if @selected_job.customer, do: @selected_job.customer.name, else: "No Customer"}
                 </p>
-                <%= if @selected_job.customer.phone do %>
+                <%= if @selected_job.customer && @selected_job.customer.phone do %>
                   <p class="text-sm text-zinc-500 dark:text-zinc-400 font-medium mt-1 flex items-center gap-2">
                     <.icon name="hero-phone" class="size-4" />
                     {@selected_job.customer.phone}

@@ -75,7 +75,7 @@ defmodule FieldHubWeb.DashboardComponents do
       <div :if={@variant == :stars} class="flex items-center gap-1 mt-auto">
         <.icon :for={_ <- 1..5} name="hero-star" class="text-amber-400 size-4 fill-current" />
       </div>
-
+      
     <!-- Mini Chart Placeholder (for Revenue) -->
       <div
         :if={@variant == :simple && @icon == "payments"}
@@ -408,10 +408,16 @@ defmodule FieldHubWeb.DashboardComponents do
   defp format_large_money(%Decimal{} = amount) do
     cond do
       Decimal.gt?(amount, 1_000_000) ->
-        Decimal.div(amount, 1_000_000) |> Decimal.round(1) |> Decimal.to_string(:normal) |> Kernel.<>("M")
+        Decimal.div(amount, 1_000_000)
+        |> Decimal.round(1)
+        |> Decimal.to_string(:normal)
+        |> Kernel.<>("M")
 
       Decimal.gt?(amount, 1_000) ->
-        Decimal.div(amount, 1_000) |> Decimal.round(1) |> Decimal.to_string(:normal) |> Kernel.<>("K")
+        Decimal.div(amount, 1_000)
+        |> Decimal.round(1)
+        |> Decimal.to_string(:normal)
+        |> Kernel.<>("K")
 
       true ->
         Decimal.round(amount, 2) |> Decimal.to_string(:normal)

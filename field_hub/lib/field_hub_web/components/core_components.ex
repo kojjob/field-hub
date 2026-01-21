@@ -224,8 +224,10 @@ defmodule FieldHubWeb.CoreComponents do
             class="peer sr-only"
             {@rest}
           />
-          <span class="h-6 w-11 rounded-full bg-zinc-200 dark:bg-zinc-700 peer-checked:bg-primary transition-colors"></span>
-          <span class="absolute left-1 size-4 transform rounded-full bg-white transition-transform peer-checked:translate-x-5 shadow-sm"></span>
+          <span class="h-6 w-11 rounded-full bg-zinc-200 dark:bg-zinc-700 peer-checked:bg-primary transition-colors">
+          </span>
+          <span class="absolute left-1 size-4 transform rounded-full bg-white transition-transform peer-checked:translate-x-5 shadow-sm">
+          </span>
         </div>
         <span
           :if={@label}
@@ -455,7 +457,7 @@ defmodule FieldHubWeb.CoreComponents do
         phx-click={@on_close}
         aria-hidden="true"
       />
-
+      
     <!-- Panel -->
       <div
         id={"#{@id}-panel"}
@@ -480,12 +482,12 @@ defmodule FieldHubWeb.CoreComponents do
             <.icon name="hero-x-mark" class="size-5" />
           </button>
         </div>
-
+        
     <!-- Content -->
         <div class="flex-1 overflow-y-auto p-6">
           {render_slot(@inner_block)}
         </div>
-
+        
     <!-- Footer -->
         <div
           :if={@footer != []}
@@ -585,12 +587,12 @@ defmodule FieldHubWeb.CoreComponents do
                 <.icon name="hero-x-mark" class="size-5" />
               </button>
             </div>
-
-            <!-- Modal Content -->
+            
+    <!-- Modal Content -->
             <div id={"#{@id}-content"} class="p-6">
               {render_slot(@inner_block)}
             </div>
-
+            
     <!-- Modal Footer (for confirm dialogs) -->
             <div
               :if={@confirm != [] or @cancel != []}

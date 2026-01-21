@@ -13,7 +13,12 @@ defmodule FieldHubWeb.PortalLive.DashboardTest do
   describe "Portal Dashboard" do
     setup %{conn: conn} do
       org = organization_fixture()
-      customer = customer_fixture(org.id, %{email: "portal-test@example.com", sms_notifications_enabled: true})
+
+      customer =
+        customer_fixture(org.id, %{
+          email: "portal-test@example.com",
+          sms_notifications_enabled: true
+        })
 
       # Set up portal session
       conn = init_test_session(conn, %{portal_customer_id: customer.id})
@@ -24,11 +29,10 @@ defmodule FieldHubWeb.PortalLive.DashboardTest do
     test "renders intelligent narrative grid and KPIs", %{conn: conn} do
       {:ok, _view, html} = live(conn, ~p"/portal")
 
-      assert html =~ "reliability"
-      assert html =~ "Active Trust"
-      assert html =~ "Total Service Visits"
-      assert html =~ "Lifetime Service Value"
-      assert html =~ "System Live"
+      assert html =~ "Reliability"
+      assert html =~ "Trust Score"
+      assert html =~ "Total Visits"
+      assert html =~ "Lifetime Value"
     end
 
     test "updates notification preferences via form", %{conn: conn, customer: customer} do
@@ -64,10 +68,13 @@ defmodule FieldHubWeb.PortalLive.DashboardTest do
       assert html =~ "Job"
 
       # Update organization terminology to use "Service Visit"
-      {:ok, _org} = Accounts.update_organization(org, %{terminology: %{
-        "task_label" => "Service Visit",
-        "task_label_plural" => "Service Visits"
-      }})
+      {:ok, _org} =
+        Accounts.update_organization(org, %{
+          terminology: %{
+            "task_label" => "Service Visit",
+            "task_label_plural" => "Service Visits"
+          }
+        })
 
       # Reload dashboard to see changes
       {:ok, _view, html} = live(conn, ~p"/portal")

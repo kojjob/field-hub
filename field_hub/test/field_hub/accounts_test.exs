@@ -58,7 +58,8 @@ defmodule FieldHub.AccountsTest do
     test "validates email when given" do
       {:error, changeset} = Accounts.register_user(%{email: "not valid"})
 
-      assert %{email: ["Please enter a valid email (e.g. name@company.com)"]} = errors_on(changeset)
+      assert %{email: ["Please enter a valid email (e.g. name@company.com)"]} =
+               errors_on(changeset)
     end
 
     test "validates maximum values for email for security" do
