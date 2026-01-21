@@ -25,7 +25,7 @@ defmodule FieldHubWeb.PortalControllerTest do
       conn = conn |> init_test_session(%{portal_customer_id: customer.id})
       {:ok, _view, html} = live(conn, ~p"/portal")
 
-      assert html =~ "Client Portal"
+      assert html =~ "Welcome back"
       assert html =~ customer.organization.name
     end
   end
@@ -37,7 +37,7 @@ defmodule FieldHubWeb.PortalControllerTest do
 
       {:ok, _view, html} = live(conn, ~p"/portal/jobs/#{job.number}")
       assert html =~ "Repair Leak"
-      assert html =~ "Job Details"
+      assert html =~ "Back to Dashboard"
     end
 
     test "redirects for job not belonging to customer", %{

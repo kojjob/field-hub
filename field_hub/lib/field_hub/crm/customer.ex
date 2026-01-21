@@ -51,7 +51,6 @@ defmodule FieldHub.CRM.Customer do
     # Soft delete
     field :archived_at, :utc_datetime
 
-
     # Notification preferences
     field :sms_notifications_enabled, :boolean, default: true
     embeds_one :preferences, CustomerNotificationPreferences, on_replace: :update

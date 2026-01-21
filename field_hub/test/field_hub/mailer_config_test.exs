@@ -34,7 +34,6 @@ defmodule FieldHub.MailerConfigTest do
       assert Code.ensure_loaded?(InvoiceNotifier)
       assert Code.ensure_loaded?(UserNotifier)
     end
-
   end
 
   describe "production environment requirements" do

@@ -93,7 +93,12 @@ defmodule FieldHubWeb.InvoiceLive.Show do
 
     # Check if Stripe is configured
     unless Payments.stripe_configured?() do
-      {:noreply, put_flash(socket, :error, "Payment processing is not configured. Please set up Stripe API keys.")}
+      {:noreply,
+       put_flash(
+         socket,
+         :error,
+         "Payment processing is not configured. Please set up Stripe API keys."
+       )}
     else
       # Build success and cancel URLs
       base_url = FieldHubWeb.Endpoint.url()
@@ -121,29 +126,37 @@ defmodule FieldHubWeb.InvoiceLive.Show do
     line_items = invoice.line_items || []
 
     # Calculate labor amount from labor line items
-    labor_amount = line_items
+    labor_amount =
+      line_items
       |> Enum.filter(fn li -> li.type == "labor" end)
-      |> Enum.reduce(Decimal.new(0), fn li, acc -> Decimal.add(acc, li.amount || Decimal.new(0)) end)
+      |> Enum.reduce(Decimal.new(0), fn li, acc ->
+        Decimal.add(acc, li.amount || Decimal.new(0))
+      end)
 
     # Calculate parts amount from parts line items
-    parts_amount = line_items
+    parts_amount =
+      line_items
       |> Enum.filter(fn li -> li.type == "parts" end)
-      |> Enum.reduce(Decimal.new(0), fn li, acc -> Decimal.add(acc, li.amount || Decimal.new(0)) end)
+      |> Enum.reduce(Decimal.new(0), fn li, acc ->
+        Decimal.add(acc, li.amount || Decimal.new(0))
+      end)
 
     # Add existing parts_amount that may not be in line_items (legacy data)
     # Keep the greater of calculated or existing if there are no parts line items
-    parts_amount = if Enum.any?(line_items, fn li -> li.type == "parts" end) do
-      parts_amount
-    else
-      invoice.parts_amount || Decimal.new(0)
-    end
+    parts_amount =
+      if Enum.any?(line_items, fn li -> li.type == "parts" end) do
+        parts_amount
+      else
+        invoice.parts_amount || Decimal.new(0)
+      end
 
     # Keep existing labor_amount if no labor line items (legacy data)
-    labor_amount = if Enum.any?(line_items, fn li -> li.type == "labor" end) do
-      labor_amount
-    else
-      invoice.labor_amount || Decimal.new(0)
-    end
+    labor_amount =
+      if Enum.any?(line_items, fn li -> li.type == "labor" end) do
+        labor_amount
+      else
+        invoice.labor_amount || Decimal.new(0)
+      end
 
     # Calculate subtotal
     subtotal = Decimal.add(labor_amount, parts_amount)
@@ -154,20 +167,23 @@ defmodule FieldHubWeb.InvoiceLive.Show do
 
     # Calculate tax
     tax_rate = invoice.tax_rate || Decimal.new("8.25")
-    tax_amount = Decimal.mult(after_discount, Decimal.div(tax_rate, Decimal.new(100)))
+
+    tax_amount =
+      Decimal.mult(after_discount, Decimal.div(tax_rate, Decimal.new(100)))
       |> Decimal.round(2)
 
     # Calculate total
     total_amount = Decimal.add(after_discount, tax_amount) |> Decimal.round(2)
 
     case Billing.update_invoice(invoice, %{
-      labor_amount: labor_amount,
-      parts_amount: parts_amount,
-      total_amount: total_amount
-    }) do
+           labor_amount: labor_amount,
+           parts_amount: parts_amount,
+           total_amount: total_amount
+         }) do
       {:ok, updated_invoice} ->
         # Reload the invoice to get fresh data with associations
-        refreshed_invoice = Billing.get_invoice!(socket.assigns.current_organization.id, updated_invoice.id)
+        refreshed_invoice =
+          Billing.get_invoice!(socket.assigns.current_organization.id, updated_invoice.id)
 
         {:noreply,
          socket
@@ -181,11 +197,12 @@ defmodule FieldHubWeb.InvoiceLive.Show do
 
   # Labor Modal Handlers
   def handle_event("add_labor_row", _params, socket) do
-    technician_name = if socket.assigns.job && socket.assigns.job.technician do
-      socket.assigns.job.technician.name
-    else
-      ""
-    end
+    technician_name =
+      if socket.assigns.job && socket.assigns.job.technician do
+        socket.assigns.job.technician.name
+      else
+        ""
+      end
 
     {:noreply,
      socket
@@ -217,10 +234,10 @@ defmodule FieldHubWeb.InvoiceLive.Show do
       new_labor_amount = Decimal.add(current_labor, labor_amount)
 
       case Billing.update_invoice(socket.assigns.invoice, %{
-        labor_hours: hours,
-        labor_rate: rate,
-        labor_amount: new_labor_amount
-      }) do
+             labor_hours: hours,
+             labor_rate: rate,
+             labor_amount: new_labor_amount
+           }) do
         {:ok, updated_invoice} ->
           {:noreply,
            socket
@@ -270,19 +287,23 @@ defmodule FieldHubWeb.InvoiceLive.Show do
 
       # Create line item
       case Billing.add_line_item(socket.assigns.invoice.id, %{
-        description: description,
-        type: "parts",
-        quantity: quantity,
-        unit_price: price,
-        amount: part_amount
-      }) do
+             description: description,
+             type: "parts",
+             quantity: quantity,
+             unit_price: price,
+             amount: part_amount
+           }) do
         {:ok, _line_item} ->
           # Update invoice parts total
-          {:ok, updated_invoice} = Billing.update_invoice(socket.assigns.invoice, %{parts_amount: new_parts_amount})
+          {:ok, updated_invoice} =
+            Billing.update_invoice(socket.assigns.invoice, %{parts_amount: new_parts_amount})
 
           {:noreply,
            socket
-           |> assign(:invoice, Billing.get_invoice!(socket.assigns.current_organization.id, updated_invoice.id))
+           |> assign(
+             :invoice,
+             Billing.get_invoice!(socket.assigns.current_organization.id, updated_invoice.id)
+           )
            |> assign(:show_part_modal, false)
            |> put_flash(:info, "Part added: #{description}")}
 
@@ -296,6 +317,7 @@ defmodule FieldHubWeb.InvoiceLive.Show do
 
   defp parse_decimal(""), do: nil
   defp parse_decimal(nil), do: nil
+
   defp parse_decimal(value) when is_binary(value) do
     case Decimal.parse(value) do
       {decimal, _} -> decimal
@@ -333,7 +355,7 @@ defmodule FieldHubWeb.InvoiceLive.Show do
               <% end %>
               <span class="text-zinc-900 dark:text-white font-semibold">GENERATE INVOICE</span>
             </nav>
-
+            
     <!-- Action Buttons -->
             <div class="flex items-center gap-3">
               <button
@@ -355,7 +377,7 @@ defmodule FieldHubWeb.InvoiceLive.Show do
           </div>
         </div>
       </header>
-
+      
     <!-- Page Header -->
       <div class="max-w-[1600px] mx-auto px-6 py-6 print:hidden">
         <div class="flex items-center justify-between">
@@ -367,12 +389,11 @@ defmodule FieldHubWeb.InvoiceLive.Show do
             phx-click="request_payment"
             class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 text-sm font-semibold hover:opacity-90 transition-all"
           >
-            <.icon name="hero-credit-card" class="size-4" />
-            Request Online Payment
+            <.icon name="hero-credit-card" class="size-4" /> Request Online Payment
           </button>
         </div>
       </div>
-
+      
     <!-- Main Content - Two Column Layout -->
       <div class="max-w-[1600px] mx-auto px-6 pb-12">
         <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
@@ -406,7 +427,7 @@ defmodule FieldHubWeb.InvoiceLive.Show do
                       </div>
                     </div>
                   </div>
-
+                  
     <!-- Invoice Info -->
                   <div class="text-right">
                     <h2 class="text-4xl font-black text-zinc-900 dark:text-white tracking-tight">
@@ -435,7 +456,7 @@ defmodule FieldHubWeb.InvoiceLive.Show do
                   </div>
                 </div>
               </div>
-
+              
     <!-- Bill To / Service Location -->
               <div class="px-8 sm:px-10 pb-8">
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-8">
@@ -466,7 +487,7 @@ defmodule FieldHubWeb.InvoiceLive.Show do
                       <% end %>
                     </div>
                   </div>
-
+                  
     <!-- Service Location -->
                   <%= if @job do %>
                     <div>
@@ -490,7 +511,7 @@ defmodule FieldHubWeb.InvoiceLive.Show do
                   <% end %>
                 </div>
               </div>
-
+              
     <!-- Line Items Table -->
               <div class="border-t border-zinc-100 dark:border-zinc-800">
                 <table class="w-full">
@@ -516,7 +537,7 @@ defmodule FieldHubWeb.InvoiceLive.Show do
                       <tr>
                         <td class="px-8 sm:px-10 py-5">
                           <p class="font-semibold text-zinc-900 dark:text-white">
-                            Technical Labor - {@job && @job.title || "Service"}
+                            Technical Labor - {(@job && @job.title) || "Service"}
                           </p>
                           <%= if @job && @job.technician do %>
                             <p class="text-sm text-zinc-400 mt-0.5">
@@ -535,7 +556,7 @@ defmodule FieldHubWeb.InvoiceLive.Show do
                         </td>
                       </tr>
                     <% end %>
-
+                    
     <!-- Parts & Materials -->
                     <%= if Decimal.gt?(@invoice.parts_amount, Decimal.new(0)) do %>
                       <tr>
@@ -558,7 +579,7 @@ defmodule FieldHubWeb.InvoiceLive.Show do
                         </td>
                       </tr>
                     <% end %>
-
+                    
     <!-- Dynamic Line Items -->
                     <%= for item <- @invoice.line_items || [] do %>
                       <tr>
@@ -586,7 +607,7 @@ defmodule FieldHubWeb.InvoiceLive.Show do
                   </tbody>
                 </table>
               </div>
-
+              
     <!-- Totals Section -->
               <div class="px-8 sm:px-10 py-8 border-t border-zinc-100 dark:border-zinc-800">
                 <div class="flex justify-end">
@@ -625,7 +646,7 @@ defmodule FieldHubWeb.InvoiceLive.Show do
                   </div>
                 </div>
               </div>
-
+              
     <!-- Terms & Notes -->
               <%= if @invoice.notes || @invoice.terms do %>
                 <div class="px-8 sm:px-10 py-6 border-t border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-800/20">
@@ -639,7 +660,7 @@ defmodule FieldHubWeb.InvoiceLive.Show do
               <% end %>
             </div>
           </div>
-
+          
     <!-- Right Column: Adjustments Sidebar -->
           <div class="xl:col-span-1 print:hidden space-y-3">
             <!-- Adjustments Header -->
@@ -647,7 +668,7 @@ defmodule FieldHubWeb.InvoiceLive.Show do
               <.icon name="hero-adjustments-horizontal" class="size-5 text-violet-600" />
               <h2 class="text-base font-semibold text-zinc-800 dark:text-white">Adjustments</h2>
             </div>
-
+            
     <!-- Labor Hours Section -->
             <div class="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-100 dark:border-zinc-800 shadow-sm overflow-hidden">
               <button
@@ -673,22 +694,28 @@ defmodule FieldHubWeb.InvoiceLive.Show do
                     <!-- Column Headers Row -->
                     <div class="flex items-center gap-2">
                       <div class="flex-1">
-                        <span class="text-[9px] font-medium text-zinc-400 uppercase tracking-wider">TECHNICIAN</span>
+                        <span class="text-[9px] font-medium text-zinc-400 uppercase tracking-wider">
+                          TECHNICIAN
+                        </span>
                       </div>
                       <div class="w-16 text-center">
-                        <span class="text-[9px] font-medium text-zinc-400 uppercase tracking-wider">HOURS</span>
+                        <span class="text-[9px] font-medium text-zinc-400 uppercase tracking-wider">
+                          HOURS
+                        </span>
                       </div>
                       <div class="w-16 text-right">
-                        <span class="text-[9px] font-medium text-zinc-400 uppercase tracking-wider">RATE</span>
+                        <span class="text-[9px] font-medium text-zinc-400 uppercase tracking-wider">
+                          RATE
+                        </span>
                       </div>
                     </div>
-
-                    <!-- Input Row -->
+                    
+    <!-- Input Row -->
                     <div class="flex items-center gap-2">
                       <div class="flex-1">
                         <input
                           type="text"
-                          value={@job && @job.technician && @job.technician.name || "—"}
+                          value={(@job && @job.technician && @job.technician.name) || "—"}
                           readonly
                           class="w-full px-2.5 py-2 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-sm text-zinc-700 dark:text-zinc-300"
                         />
@@ -708,8 +735,8 @@ defmodule FieldHubWeb.InvoiceLive.Show do
                         />
                       </div>
                     </div>
-
-                    <!-- Add Row Button - Dashed Style -->
+                    
+    <!-- Add Row Button - Dashed Style -->
                     <button
                       phx-click="add_labor_row"
                       class="mt-2 w-full py-2 text-xs font-medium text-zinc-400 hover:text-violet-600 transition-colors flex items-center justify-center gap-1.5 border border-dashed border-zinc-200 dark:border-zinc-700 rounded-lg hover:border-violet-300 hover:bg-violet-50/50"
@@ -720,7 +747,7 @@ defmodule FieldHubWeb.InvoiceLive.Show do
                 </div>
               <% end %>
             </div>
-
+            
     <!-- Parts & Materials Section -->
             <div class="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-100 dark:border-zinc-800 shadow-sm overflow-hidden">
               <button
@@ -732,7 +759,9 @@ defmodule FieldHubWeb.InvoiceLive.Show do
                   <div class="size-7 rounded-lg bg-slate-100 dark:bg-slate-900/30 flex items-center justify-center">
                     <.icon name="hero-cube" class="size-3.5 text-slate-600 dark:text-slate-400" />
                   </div>
-                  <span class="font-medium text-zinc-800 dark:text-white text-sm">Parts & Materials</span>
+                  <span class="font-medium text-zinc-800 dark:text-white text-sm">
+                    Parts & Materials
+                  </span>
                 </div>
                 <.icon
                   name={if @parts_section_open, do: "hero-chevron-up", else: "hero-chevron-down"}
@@ -749,23 +778,29 @@ defmodule FieldHubWeb.InvoiceLive.Show do
                         <%= for item <- Enum.filter(@invoice.line_items || [], fn li -> li.type == "parts" end) do %>
                           <div class="flex items-center justify-between py-1.5 px-2 bg-zinc-50 dark:bg-zinc-800/50 rounded-lg">
                             <div class="flex-1 min-w-0">
-                              <span class="text-xs text-zinc-600 dark:text-zinc-300 truncate block"><%= item.description %></span>
-                              <span class="text-[10px] text-zinc-400"><%= format_decimal(item.quantity) %> × $<%= format_money(item.unit_price) %></span>
+                              <span class="text-xs text-zinc-600 dark:text-zinc-300 truncate block">
+                                {item.description}
+                              </span>
+                              <span class="text-[10px] text-zinc-400">
+                                {format_decimal(item.quantity)} × ${format_money(item.unit_price)}
+                              </span>
                             </div>
                             <span class="text-xs font-medium text-zinc-900 dark:text-white ml-2">
-                              $<%= format_money(item.amount) %>
+                              ${format_money(item.amount)}
                             </span>
                           </div>
                         <% end %>
                       </div>
                     <% end %>
-
-                    <!-- Total Parts -->
+                    
+    <!-- Total Parts -->
                     <%= if Decimal.gt?(@invoice.parts_amount || Decimal.new(0), Decimal.new(0)) do %>
                       <div class="flex items-center justify-between py-2 border-t border-zinc-100 dark:border-zinc-700">
-                        <span class="text-sm font-medium text-zinc-600 dark:text-zinc-300">Total Parts</span>
+                        <span class="text-sm font-medium text-zinc-600 dark:text-zinc-300">
+                          Total Parts
+                        </span>
                         <span class="text-sm font-semibold text-zinc-900 dark:text-white">
-                          $<%= format_money(@invoice.parts_amount) %>
+                          ${format_money(@invoice.parts_amount)}
                         </span>
                       </div>
                     <% else %>
@@ -783,7 +818,7 @@ defmodule FieldHubWeb.InvoiceLive.Show do
                 </div>
               <% end %>
             </div>
-
+            
     <!-- Discounts & Fees Section -->
             <div class="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-100 dark:border-zinc-800 shadow-sm overflow-hidden">
               <button
@@ -795,7 +830,9 @@ defmodule FieldHubWeb.InvoiceLive.Show do
                   <div class="size-7 rounded-lg bg-pink-100 dark:bg-pink-900/30 flex items-center justify-center">
                     <.icon name="hero-tag" class="size-3.5 text-pink-600 dark:text-pink-400" />
                   </div>
-                  <span class="font-medium text-zinc-800 dark:text-white text-sm">Discounts & Fees</span>
+                  <span class="font-medium text-zinc-800 dark:text-white text-sm">
+                    Discounts & Fees
+                  </span>
                 </div>
                 <.icon
                   name={if @discounts_section_open, do: "hero-chevron-up", else: "hero-chevron-down"}
@@ -819,8 +856,8 @@ defmodule FieldHubWeb.InvoiceLive.Show do
                         <.icon name="hero-trash" class="size-4" />
                       </button>
                     </div>
-
-                    <!-- Info Box -->
+                    
+    <!-- Info Box -->
                     <div class="mt-3 px-3 py-2 bg-amber-50/80 dark:bg-amber-900/20 rounded-lg">
                       <p class="text-[10px] text-amber-700 dark:text-amber-400 flex items-start gap-1.5">
                         <.icon name="hero-information-circle" class="size-3 mt-0.5 flex-shrink-0" />
@@ -831,7 +868,7 @@ defmodule FieldHubWeb.InvoiceLive.Show do
                 </div>
               <% end %>
             </div>
-
+            
     <!-- Tax Settings Section -->
             <div class="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-100 dark:border-zinc-800 shadow-sm overflow-hidden">
               <button
@@ -841,7 +878,10 @@ defmodule FieldHubWeb.InvoiceLive.Show do
               >
                 <div class="flex items-center gap-2">
                   <div class="size-7 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
-                    <.icon name="hero-receipt-percent" class="size-3.5 text-emerald-600 dark:text-emerald-400" />
+                    <.icon
+                      name="hero-receipt-percent"
+                      class="size-3.5 text-emerald-600 dark:text-emerald-400"
+                    />
                   </div>
                   <span class="font-medium text-zinc-800 dark:text-white text-sm">Tax Settings</span>
                 </div>
@@ -854,7 +894,9 @@ defmodule FieldHubWeb.InvoiceLive.Show do
               <%= if @tax_section_open do %>
                 <div class="px-4 pb-4 border-t border-zinc-100 dark:border-zinc-800">
                   <div class="pt-3">
-                    <label class="text-[9px] font-medium text-zinc-400 uppercase tracking-wider">TAX RATE</label>
+                    <label class="text-[9px] font-medium text-zinc-400 uppercase tracking-wider">
+                      TAX RATE
+                    </label>
                     <div class="mt-1.5 flex items-center gap-2">
                       <input
                         type="text"
@@ -867,30 +909,39 @@ defmodule FieldHubWeb.InvoiceLive.Show do
                 </div>
               <% end %>
             </div>
-
+            
     <!-- Summary Card - Dark Navy Theme -->
-            <div class="rounded-xl p-4 shadow-lg mt-4" style="background: linear-gradient(145deg, #1e1b4b 0%, #0f172a 100%);">
+            <div
+              class="rounded-xl p-4 shadow-lg mt-4"
+              style="background: linear-gradient(145deg, #1e1b4b 0%, #0f172a 100%);"
+            >
               <div class="space-y-2">
                 <!-- Subtotal Row -->
                 <div class="flex justify-between items-center">
-                  <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">SUBTOTAL</span>
-                  <span class="text-sm font-bold text-white">${format_money(subtotal(@invoice))}</span>
+                  <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
+                    SUBTOTAL
+                  </span>
+                  <span class="text-sm font-bold text-white">
+                    ${format_money(subtotal(@invoice))}
+                  </span>
                 </div>
-
-                <!-- Adjustments Row -->
+                
+    <!-- Adjustments Row -->
                 <%= if Decimal.gt?(@invoice.discount_amount || Decimal.new(0), Decimal.new(0)) do %>
                   <div class="flex justify-between items-center">
-                    <span class="text-[10px] font-semibold text-pink-400 uppercase tracking-wider">ADJUSTMENTS</span>
+                    <span class="text-[10px] font-semibold text-pink-400 uppercase tracking-wider">
+                      ADJUSTMENTS
+                    </span>
                     <span class="text-sm font-bold text-pink-400">
                       -${format_money(@invoice.discount_amount)}
                     </span>
                   </div>
                 <% end %>
-
-                <!-- Divider -->
+                
+    <!-- Divider -->
                 <div class="border-t border-slate-600/50 my-2"></div>
-
-                <!-- Total Section -->
+                
+    <!-- Total Section -->
                 <div class="flex justify-between items-end">
                   <div>
                     <span class="text-[9px] font-medium text-slate-500 uppercase tracking-wider block">
@@ -913,18 +964,28 @@ defmodule FieldHubWeb.InvoiceLive.Show do
           </div>
         </div>
       </div>
-
-      <!-- Add Labor Modal -->
+      
+    <!-- Add Labor Modal -->
       <%= if @show_labor_modal do %>
-        <div class="fixed inset-0 z-50 flex items-center justify-center p-4" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div
+          class="fixed inset-0 z-50 flex items-center justify-center p-4"
+          aria-labelledby="modal-title"
+          role="dialog"
+          aria-modal="true"
+        >
           <!-- Background overlay -->
-          <div class="fixed inset-0 bg-zinc-900/75 transition-opacity" phx-click="close_labor_modal"></div>
-
-          <!-- Modal panel -->
+          <div class="fixed inset-0 bg-zinc-900/75 transition-opacity" phx-click="close_labor_modal">
+          </div>
+          
+    <!-- Modal panel -->
           <div class="relative bg-white dark:bg-zinc-900 rounded-2xl shadow-xl w-full max-w-md p-6 z-10">
             <div class="flex items-center justify-between mb-4">
               <h3 class="text-lg font-semibold text-zinc-900 dark:text-white">Add Labor</h3>
-              <button type="button" phx-click="close_labor_modal" class="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300">
+              <button
+                type="button"
+                phx-click="close_labor_modal"
+                class="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
+              >
                 <.icon name="hero-x-mark" class="size-5" />
               </button>
             </div>
@@ -932,7 +993,9 @@ defmodule FieldHubWeb.InvoiceLive.Show do
             <form phx-submit="save_labor" phx-change="update_labor_form">
               <div class="space-y-4">
                 <div>
-                  <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Technician</label>
+                  <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
+                    Technician
+                  </label>
                   <input
                     type="text"
                     name="technician"
@@ -944,7 +1007,9 @@ defmodule FieldHubWeb.InvoiceLive.Show do
 
                 <div class="grid grid-cols-2 gap-4">
                   <div>
-                    <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Hours</label>
+                    <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
+                      Hours
+                    </label>
                     <input
                       type="number"
                       name="hours"
@@ -956,7 +1021,9 @@ defmodule FieldHubWeb.InvoiceLive.Show do
                     />
                   </div>
                   <div>
-                    <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Rate ($/hr)</label>
+                    <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
+                      Rate ($/hr)
+                    </label>
                     <input
                       type="number"
                       name="rate"
@@ -989,18 +1056,28 @@ defmodule FieldHubWeb.InvoiceLive.Show do
           </div>
         </div>
       <% end %>
-
-      <!-- Add Part Modal -->
+      
+    <!-- Add Part Modal -->
       <%= if @show_part_modal do %>
-        <div class="fixed inset-0 z-50 flex items-center justify-center p-4" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div
+          class="fixed inset-0 z-50 flex items-center justify-center p-4"
+          aria-labelledby="modal-title"
+          role="dialog"
+          aria-modal="true"
+        >
           <!-- Background overlay -->
-          <div class="fixed inset-0 bg-zinc-900/75 transition-opacity" phx-click="close_part_modal"></div>
-
-          <!-- Modal panel -->
+          <div class="fixed inset-0 bg-zinc-900/75 transition-opacity" phx-click="close_part_modal">
+          </div>
+          
+    <!-- Modal panel -->
           <div class="relative bg-white dark:bg-zinc-900 rounded-2xl shadow-xl w-full max-w-md p-6 z-10">
             <div class="flex items-center justify-between mb-4">
               <h3 class="text-lg font-semibold text-zinc-900 dark:text-white">Add Part</h3>
-              <button type="button" phx-click="close_part_modal" class="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300">
+              <button
+                type="button"
+                phx-click="close_part_modal"
+                class="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
+              >
                 <.icon name="hero-x-mark" class="size-5" />
               </button>
             </div>
@@ -1008,7 +1085,9 @@ defmodule FieldHubWeb.InvoiceLive.Show do
             <form phx-submit="save_part" phx-change="update_part_form">
               <div class="space-y-4">
                 <div>
-                  <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Description</label>
+                  <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
+                    Description
+                  </label>
                   <input
                     type="text"
                     name="description"
@@ -1020,7 +1099,9 @@ defmodule FieldHubWeb.InvoiceLive.Show do
 
                 <div class="grid grid-cols-2 gap-4">
                   <div>
-                    <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Quantity</label>
+                    <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
+                      Quantity
+                    </label>
                     <input
                       type="number"
                       name="quantity"
@@ -1032,7 +1113,9 @@ defmodule FieldHubWeb.InvoiceLive.Show do
                     />
                   </div>
                   <div>
-                    <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Unit Price ($)</label>
+                    <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
+                      Unit Price ($)
+                    </label>
                     <input
                       type="number"
                       name="price"

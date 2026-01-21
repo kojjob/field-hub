@@ -65,49 +65,44 @@ defmodule FieldHubWeb.PortalLive.InvoiceDetail do
       id="portal-invoice"
       phx-hook="PrintInvoice"
     >
-      <%!-- Header (hidden on print) --%>
-      <header class="bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 sticky top-0 z-50 print:hidden">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
-          <div class="flex items-center gap-4">
+      <main class="max-w-4xl mx-auto px-4 sm:px-6 py-12 print:px-0 print:py-0">
+        <%!-- Header Section (hidden on print) --%>
+        <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-6 mb-8 print:hidden">
+          <div>
             <.link
               navigate={~p"/portal/invoices"}
-              class="size-10 rounded-xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center hover:bg-zinc-200 dark:hover:hover:bg-zinc-700 transition-colors"
+              class="inline-flex items-center gap-2 text-sm font-bold text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition-colors mb-4"
             >
-              <.icon name="hero-arrow-left" class="size-5 text-zinc-600 dark:text-zinc-400" />
+              <.icon name="hero-arrow-left" class="size-4" />
+              Back to Invoices
             </.link>
-            <div>
-              <p class="text-[10px] font-black text-primary uppercase tracking-[0.2em]">
-                Invoice
-              </p>
-              <h1 class="text-lg font-bold text-zinc-900 dark:text-white">
-                {@invoice.number}
-              </h1>
+            <div class="flex items-center gap-3 mb-1">
+              <span class={"inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-widest #{status_badge_class(@invoice.status)}"}>
+                {@invoice.status}
+              </span>
             </div>
+            <h1 class="text-3xl font-black text-zinc-900 dark:text-white tracking-tight">
+              Invoice {@invoice.number}
+            </h1>
           </div>
 
-          <div class="flex items-center gap-3">
-            <span class={"inline-flex items-center px-3 py-1 rounded-full text-xs font-black uppercase tracking-widest #{status_badge_class(@invoice.status)}"}>
-              {@invoice.status}
-            </span>
+          <div class="flex items-center gap-3 mt-2 sm:mt-0">
             <%= if @invoice.status not in ["paid", "cancelled", "draft"] do %>
               <.link
                 navigate={~p"/portal/invoices/#{@invoice.id}/pay"}
-                class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-white text-sm font-bold hover:bg-primary/90 transition-all"
+                class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-white text-sm font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20"
               >
                 <.icon name="hero-credit-card" class="size-5" /> Pay Now
               </.link>
             <% end %>
             <button
               phx-click="print"
-              class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-200 text-sm font-bold hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all"
+              class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-200 text-sm font-bold border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-all shadow-sm"
             >
               <.icon name="hero-printer" class="size-5" /> Print
             </button>
           </div>
         </div>
-      </header>
-
-      <main class="max-w-4xl mx-auto px-4 sm:px-6 py-8 print:px-0 print:py-0">
         <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden print:rounded-none print:border-0">
           <%!-- Invoice Header --%>
           <div class="p-8 border-b border-zinc-100 dark:border-zinc-800 bg-gradient-to-br from-primary/5 to-transparent print:bg-white">

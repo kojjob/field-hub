@@ -38,13 +38,7 @@ defmodule FieldHubWeb.TechSyncControllerTest do
         scheduled_start: ~T[10:00:00]
       })
 
-    {:ok,
-     conn: conn,
-     org: org,
-     user: user,
-     technician: technician,
-     customer: customer,
-     job: job}
+    {:ok, conn: conn, org: org, user: user, technician: technician, customer: customer, job: job}
   end
 
   describe "POST /api/tech/sync - authentication" do
@@ -224,7 +218,7 @@ defmodule FieldHubWeb.TechSyncControllerTest do
         |> put_req_header("content-type", "application/json")
         |> post(~p"/api/tech/sync", %{
           action: "start_travel",
-          job_id: 999999999
+          job_id: 999_999_999
         })
 
       assert json_response(conn, 404)["error"] == "Job not found"

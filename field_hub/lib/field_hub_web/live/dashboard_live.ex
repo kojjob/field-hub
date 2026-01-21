@@ -16,7 +16,14 @@ defmodule FieldHubWeb.DashboardLive do
 
     # Job stats
     open_jobs_count = FieldHub.Jobs.count_jobs_by_status(org_id, ["unscheduled", "scheduled"])
-    in_progress_jobs_count = FieldHub.Jobs.count_jobs_by_status(org_id, ["dispatched", "en_route", "on_site", "in_progress"])
+
+    in_progress_jobs_count =
+      FieldHub.Jobs.count_jobs_by_status(org_id, [
+        "dispatched",
+        "en_route",
+        "on_site",
+        "in_progress"
+      ])
 
     {:ok,
      socket
@@ -38,7 +45,7 @@ defmodule FieldHubWeb.DashboardLive do
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <p class="text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-1">
-            Operations Intelligence
+            Operations Intelligence (Vertical View)
           </p>
           <h2 class="text-3xl font-black tracking-tighter text-zinc-900 dark:text-white">
             {task_singular} & Billing Overview
@@ -58,7 +65,7 @@ defmodule FieldHubWeb.DashboardLive do
       </div>
 
     <!-- KPI Row -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
         <FieldHubWeb.DashboardComponents.kpi_card
           label="Total Revenue"
           value={"$#{format_money(@billing_stats.total_invoiced)}"}
@@ -116,6 +123,9 @@ defmodule FieldHubWeb.DashboardLive do
 
   defp format_money(nil), do: "0.00"
   defp format_money(%Decimal{} = amount), do: Decimal.to_string(Decimal.round(amount, 2), :normal)
-  defp format_money(amount) when is_number(amount), do: :erlang.float_to_binary(amount / 1, decimals: 2)
+
+  defp format_money(amount) when is_number(amount),
+    do: :erlang.float_to_binary(amount / 1, decimals: 2)
+
   defp format_money(_), do: "0.00"
 end

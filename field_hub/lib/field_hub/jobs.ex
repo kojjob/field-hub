@@ -592,7 +592,8 @@ defmodule FieldHub.Jobs do
     job_with_preloads = preload_for_notifications(job)
     customer = job_with_preloads.customer
 
-    if job.customer_id && FieldHub.CRM.should_notify_customer?(customer, :technician_en_route, :sms) do
+    if job.customer_id &&
+         FieldHub.CRM.should_notify_customer?(customer, :technician_en_route, :sms) do
       FieldHub.Notifications.SMS.notify_technician_en_route(job_with_preloads)
     end
 
@@ -609,7 +610,8 @@ defmodule FieldHub.Jobs do
     job_with_preloads = preload_for_notifications(job)
     customer = job_with_preloads.customer
 
-    if job.customer_id && FieldHub.CRM.should_notify_customer?(customer, :technician_arrived, :sms) do
+    if job.customer_id &&
+         FieldHub.CRM.should_notify_customer?(customer, :technician_arrived, :sms) do
       FieldHub.Notifications.SMS.notify_technician_arrived(job_with_preloads)
     end
 

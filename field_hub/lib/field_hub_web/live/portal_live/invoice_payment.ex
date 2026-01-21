@@ -74,26 +74,23 @@ defmodule FieldHubWeb.PortalLive.InvoicePayment do
   def render(assigns) do
     ~H"""
     <div class="min-h-screen bg-zinc-50 dark:bg-zinc-950">
-      <header class="bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 sticky top-0 z-50">
-        <div class="max-w-2xl mx-auto px-4 sm:px-6 py-4 flex items-center gap-4">
+      <main class="max-w-2xl mx-auto px-4 sm:px-6 py-12">
+        <div class="mb-8 text-center">
           <.link
             navigate={~p"/portal/invoices/#{@invoice.id}"}
-            class="size-10 rounded-xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
+            class="inline-flex items-center gap-2 text-sm font-bold text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition-colors mb-6"
           >
-            <.icon name="hero-arrow-left" class="size-5 text-zinc-600 dark:text-zinc-400" />
+            <.icon name="hero-arrow-left" class="size-4" />
+            Back to Invoice
           </.link>
-          <div>
-            <p class="text-[10px] font-black text-primary uppercase tracking-[0.2em]">
-              Pay Invoice
-            </p>
-            <h1 class="text-lg font-bold text-zinc-900 dark:text-white">
-              {@invoice.number}
-            </h1>
-          </div>
-        </div>
-      </header>
 
-      <main class="max-w-2xl mx-auto px-4 sm:px-6 py-8">
+          <h1 class="text-3xl font-black text-zinc-900 dark:text-white tracking-tight mb-2">
+            Secure Payment
+          </h1>
+          <p class="text-zinc-500 dark:text-zinc-400">
+            Invoice {@invoice.number}
+          </p>
+        </div>
         <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden">
           <%!-- Amount Summary --%>
           <div class="p-8 text-center border-b border-zinc-100 dark:border-zinc-800 bg-gradient-to-br from-primary/5 to-transparent">

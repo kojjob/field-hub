@@ -26,9 +26,15 @@ defmodule FieldHub.Accounts.NotificationPreferences do
   def changeset(preferences, attrs) do
     preferences
     |> cast(attrs, [
-      :job_assignment_email, :job_assignment_sms, :job_assignment_push,
-      :job_cancellation_email, :job_cancellation_sms, :job_cancellation_push,
-      :job_update_email, :job_update_sms, :job_update_push,
+      :job_assignment_email,
+      :job_assignment_sms,
+      :job_assignment_push,
+      :job_cancellation_email,
+      :job_cancellation_sms,
+      :job_cancellation_push,
+      :job_update_email,
+      :job_update_sms,
+      :job_update_push,
       :marketing_email
     ])
   end

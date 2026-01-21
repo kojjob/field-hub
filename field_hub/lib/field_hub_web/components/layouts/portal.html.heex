@@ -11,8 +11,53 @@
     <script defer phx-track-static type="text/javascript" src={~p"/assets/app.js"}>
     </script>
   </head>
-  <body class="bg-zinc-50 dark:bg-zinc-950 antialiased">
+  <body class="bg-zinc-50 dark:bg-zinc-950 antialiased font-sans selection:bg-emerald-500/20 selection:text-emerald-700">
     <.flash_group flash={@flash} />
-    {@inner_content}
+    
+    <header class="sticky top-0 z-50 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-xl border-b border-zinc-200 dark:border-zinc-800">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+        <div class="flex items-center gap-8">
+          <.link navigate={~p"/portal"} class="flex items-center gap-3 hover:opacity-80 transition-opacity">
+            <div class="size-8 rounded-lg bg-zinc-900 dark:bg-zinc-100 flex items-center justify-center text-zinc-100 dark:text-zinc-900 font-black text-sm shadow-md shadow-zinc-900/5">
+              FH
+            </div>
+            <span class="font-bold text-lg text-zinc-900 dark:text-white tracking-tight">FieldHub</span>
+          </.link>
+          
+          <nav class="hidden md:flex items-center gap-1">
+            <.link navigate={~p"/portal"} class="px-3 py-1.5 rounded-lg text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all">
+              Overview
+            </.link>
+            <.link navigate={~p"/portal/history"} class="px-3 py-1.5 rounded-lg text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all">
+              History
+            </.link>
+            <.link navigate={~p"/portal/invoices"} class="px-3 py-1.5 rounded-lg text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all">
+              Billing
+            </.link>
+          </nav>
+        </div>
+
+        <div class="flex items-center gap-4">
+          <div class="flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/5 border border-emerald-500/20">
+            <div class="size-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.4)]"></div>
+            <span class="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">
+              System Live
+            </span>
+          </div>
+          
+          <.link
+            href={~p"/portal/logout"}
+            method="delete"
+            class="text-sm font-medium text-zinc-500 hover:text-red-500 transition-colors"
+          >
+            Log out
+          </.link>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      {@inner_content}
+    </main>
   </body>
 </html>

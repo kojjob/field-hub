@@ -36,16 +36,18 @@ defmodule FieldHub.Notifications.Push do
     if Enum.empty?(subscriptions) do
       {:ok, :no_subscriptions}
     else
-      payload = Jason.encode!(%{
-        title: title,
-        body: body,
-        icon: "/images/icon-192.png",
-        data: data
-      })
+      payload =
+        Jason.encode!(%{
+          title: title,
+          body: body,
+          icon: "/images/icon-192.png",
+          data: data
+        })
 
-      results = Enum.map(subscriptions, fn sub ->
-        send_single_notification(sub, payload)
-      end)
+      results =
+        Enum.map(subscriptions, fn sub ->
+          send_single_notification(sub, payload)
+        end)
 
       {:ok, results}
     end

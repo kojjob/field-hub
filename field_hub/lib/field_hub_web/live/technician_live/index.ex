@@ -256,7 +256,8 @@ defmodule FieldHubWeb.TechnicianLive.Index do
                 <tr
                   :for={{id, technician} <- @streams.technicians}
                   id={id}
-                  class="group hover:bg-primary/5 dark:hover:bg-primary/10 transition-colors"
+                  class="group hover:bg-primary/5 dark:hover:bg-primary/10 transition-colors cursor-pointer"
+                  phx-click={JS.navigate(~p"/technicians/#{technician.slug}")}
                 >
                   <td class="whitespace-nowrap py-5 pl-8 pr-3">
                     <div class="flex items-center gap-4">

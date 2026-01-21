@@ -23,7 +23,9 @@ defmodule FieldHubWeb.PortalLive.Dashboard do
     unpaid_invoices = list_unpaid_invoices(customer.id)
 
     # New: Fetch total lifetime stats
-    {lifetime_invoiced, total_service_count, avg_completion_days, trust_score} = fetch_lifetime_stats(customer.id)
+    {lifetime_invoiced, total_service_count, avg_completion_days, trust_score} =
+      fetch_lifetime_stats(customer.id)
+
     # New: Fetch terminology
     terminology = Terminology.get_terminology(customer.organization)
 
@@ -95,149 +97,112 @@ defmodule FieldHubWeb.PortalLive.Dashboard do
   @impl true
   def render(assigns) do
     ~H"""
+  @impl true
+  def render(assigns) do
+    ~H"""
     <div class="min-h-screen bg-zinc-50 dark:bg-zinc-950">
-      <header class="bg-white/80 dark:bg-zinc-950/80 backdrop-blur-xl border-b border-zinc-200 dark:border-zinc-800 sticky top-0 z-50">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
-          <div class="flex items-center gap-4">
-            <div class="size-11 rounded-2xl bg-zinc-900 dark:bg-zinc-100 flex items-center justify-center text-zinc-100 dark:text-zinc-900 font-black text-xl shadow-lg shadow-zinc-900/10">
-              {String.at(@customer.organization.name, 0)}
-            </div>
-            <div>
-              <p class="text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-0.5">
-                {@customer.organization.name}
-              </p>
-              <h1 class="text-xl font-bold text-zinc-900 dark:text-white tracking-tight">
-                Client Portal <span class="text-zinc-400 dark:text-zinc-600 font-medium mx-2">/</span> {@customer.name}
-              </h1>
-            </div>
-          </div>
-
-          <div class="flex items-center gap-4">
-                <div class="flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20">
-                  <div class="size-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.6)]"></div>
-                  <span class="text-[10px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-widest">System Live</span>
-                </div>
-            <.link
-              href={~p"/portal/logout"}
-              method="delete"
-              class="size-10 rounded-xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-600 dark:text-zinc-400 hover:text-red-600 dark:hover:text-red-400 transition-all hover:rotate-12"
-              title="Log out"
-            >
-              <.icon name="hero-arrow-right-on-rectangle" class="size-5" />
-            </.link>
-          </div>
-        </div>
-      </header>
-
-      <main class="max-w-6xl mx-auto px-4 sm:px-6 py-10">
-        <!-- Intelligent KPI Grid -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-          <.kpi_widget
-            label="Lifetime Service Value"
-            value={"$#{format_money(@lifetime_invoiced)}"}
-            subtext="Total across all services"
-            icon="hero-banknotes"
-            color="emerald"
-          />
-          <.kpi_widget
-            label="Total Service Visits"
-            value={to_string(@total_service_count)}
-            subtext="Completed jobs"
-            icon="hero-check-badge"
-            color="primary"
-          />
-          <.kpi_widget
-            label="Avg Completion"
-            value={"#{@avg_completion_days} Days"}
-            subtext="From request to finish"
-            icon="hero-clock"
-            color="amber"
-          />
-          <.kpi_widget
-            label="Active Trust"
-            value={"#{@trust_score}%"}
-            subtext="Service reliability"
-            icon="hero-shield-check"
-            color="teal"
-          />
+      <main class="max-w-6xl mx-auto px-4 sm:px-6 py-12">
+        <!-- Hero Greetings -->
+        <div class="mb-12">
+          <p class="text-sm font-medium text-zinc-500 dark:text-zinc-400 mb-1">
+            {Calendar.strftime(Date.utc_today(), "%A, %B %d, %Y")}
+          </p>
+          <h1 class="text-3xl sm:text-4xl font-black text-zinc-900 dark:text-white tracking-tight">
+            Welcome back, {@customer.name}
+          </h1>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
-          <!-- Main Area (65%) -->
-          <div class="lg:col-span-8 space-y-12">
+        <div class="grid grid-cols-1 xl:grid-cols-12 gap-12">
+          <!-- Main Content Column (Left) -->
+          <div class="xl:col-span-8 space-y-12">
+
+            <!-- KPI Summary Row -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+               <.kpi_widget
+                label="Trust Score"
+                value={"#{@trust_score}%"}
+                subtext="Reliability"
+                icon="hero-shield-check"
+                color="emerald"
+              />
+              <.kpi_widget
+                label="Avg Service"
+                value={"#{@avg_completion_days}d"}
+                subtext="Turnaround"
+                icon="hero-clock"
+                color="blue"
+              />
+              <.kpi_widget
+                label="Total Visits"
+                value={to_string(@total_service_count)}
+                subtext="Lifetime"
+                icon="hero-clipboard-document-check"
+                color="zinc"
+              />
+              <.kpi_widget
+                label="Lifetime Value"
+                value={"$#{format_money(@lifetime_invoiced)}"}
+                subtext="Invoiced"
+                icon="hero-banknotes"
+                color="zinc"
+              />
+            </div>
+
             <!-- Active Jobs Section -->
             <section>
-              <div class="flex items-center gap-3 mb-8">
-                <div class="size-10 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20">
-                  <.icon name="hero-bolt" class="size-5 text-white" />
-                </div>
-                <div>
-                  <h2 class="text-2xl font-black text-zinc-900 dark:text-white tracking-tight">Active {@terminology["task_label_plural"]}</h2>
-                  <p class="text-sm text-zinc-500 font-medium">Real-time status of your current services</p>
-                </div>
+              <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-bold text-zinc-900 dark:text-white tracking-tight flex items-center gap-2">
+                  <.icon name="hero-bolt" class="size-5 text-zinc-400" />
+                  Active {@terminology["task_label_plural"]}
+                </h2>
               </div>
 
               <%= if Enum.empty?(@active_jobs) do %>
-                <div class="bg-white dark:bg-zinc-900 rounded-[32px] border-2 border-dashed border-zinc-200 dark:border-zinc-800 p-16 text-center">
-                  <div class="size-20 mx-auto mb-6 rounded-3xl bg-zinc-50 dark:bg-zinc-800/50 flex items-center justify-center border border-zinc-100 dark:border-zinc-800">
-                    <.icon name="hero-calendar" class="size-10 text-zinc-300 dark:text-zinc-600" />
+                <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-12 text-center shadow-sm">
+                  <div class="size-16 mx-auto mb-4 rounded-full bg-zinc-50 dark:bg-zinc-800 flex items-center justify-center">
+                    <.icon name="hero-check" class="size-8 text-zinc-300 dark:text-zinc-600" />
                   </div>
-                  <h3 class="text-xl font-bold text-zinc-900 dark:text-white mb-2">Operations clear</h3>
-                  <p class="text-zinc-500 max-w-xs mx-auto text-sm font-medium">
-                    You have no active or scheduled services at this time.
+                  <h3 class="text-base font-bold text-zinc-900 dark:text-white mb-1">
+                    All caught up
+                  </h3>
+                  <p class="text-sm text-zinc-500 font-medium">
+                    No active services scheduled at the moment.
                   </p>
                 </div>
               <% else %>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-4">
                   <%= for job <- @active_jobs do %>
                     <.link
                       navigate={~p"/portal/jobs/#{job}"}
-                      class="relative bg-white dark:bg-zinc-900 rounded-[32px] border border-zinc-200 dark:border-zinc-800 p-6 hover:shadow-2xl hover:shadow-primary/5 transition-all group overflow-hidden"
+                      class="block bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-6 hover:border-primary/50 transition-colors shadow-sm group hover:shadow-md"
                     >
-                      <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                        <.icon name="hero-bolt" class="size-24 text-primary" />
-                      </div>
-                      <div class="flex items-start justify-between mb-6 relative z-10">
-                        <span class={[
-                          "px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border shadow-sm",
-                          status_color_theme(job.status)
-                        ]}>
-                          {String.replace(job.status, "_", " ")}
-                        </span>
-                        <div class="size-8 rounded-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-100 dark:border-zinc-700 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors">
-                          <.icon
-                            name="hero-arrow-up-right"
-                            class="size-4"
-                          />
+                      <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+                        <div>
+                          <div class="flex items-center gap-2 mb-2">
+                            <span class={[
+                              "px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border",
+                              status_color_theme(job.status)
+                            ]}>
+                              {String.replace(job.status, "_", " ")}
+                            </span>
+                            <span class="text-xs text-zinc-400 font-medium">#{job.number}</span>
+                          </div>
+                          <h3 class="text-lg font-bold text-zinc-900 dark:text-white mb-2 group-hover:text-primary transition-colors">
+                            {job.title}
+                          </h3>
                         </div>
-                      </div>
-                      <h3 class="text-lg font-bold text-zinc-900 dark:text-white mb-2 group-hover:text-primary transition-colors relative z-10">
-                        {job.title}
-                      </h3>
-                      <div class="space-y-3 mt-6 relative z-10">
-                        <div class="flex items-center gap-3">
-                          <div class="size-8 rounded-lg bg-zinc-50 dark:bg-zinc-800 flex items-center justify-center text-zinc-400">
+                        <div class="sm:text-right">
+                          <div class="flex items-center sm:justify-end gap-2 text-zinc-600 dark:text-zinc-400 mb-1">
                             <.icon name="hero-calendar" class="size-4" />
+                            <span class="text-sm font-bold">{format_date(job.scheduled_date)}</span>
                           </div>
-                          <div>
-                            <p class="text-[10px] uppercase font-black text-zinc-400 tracking-wider leading-none mb-1">Schedule</p>
-                            <p class="text-xs font-bold text-zinc-700 dark:text-zinc-300">
-                              {format_date(job.scheduled_date)}
-                            </p>
-                          </div>
-                        </div>
-                        <%= if job.technician do %>
-                          <div class="flex items-center gap-3 pt-3 border-t border-zinc-50 dark:border-zinc-800">
-                            <img
-                              src={"https://ui-avatars.com/api/?name=#{URI.encode(job.technician.name)}&background=random&color=fff&bold=true"}
-                              class="size-8 rounded-lg object-cover"
-                            />
-                            <div>
-                              <p class="text-[10px] uppercase font-black text-zinc-400 tracking-wider leading-none mb-1">{@terminology["worker_label"]}</p>
-                              <p class="text-xs font-bold text-zinc-700 dark:text-zinc-300">{job.technician.name}</p>
+                           <%= if job.technician do %>
+                            <div class="flex items-center sm:justify-end gap-2 text-xs text-zinc-500">
+                              <span class="font-medium text-zinc-400">{@terminology["worker_label"]}:</span>
+                              {job.technician.name}
                             </div>
-                          </div>
-                        <% end %>
+                          <% end %>
+                        </div>
                       </div>
                     </.link>
                   <% end %>
@@ -245,132 +210,111 @@ defmodule FieldHubWeb.PortalLive.Dashboard do
               <% end %>
             </section>
 
-            <!-- Service History Table-style -->
+            <!-- Recent History (Compact) -->
             <section>
-              <div class="flex items-center justify-between mb-8">
-                <div class="flex items-center gap-3">
-                  <div class="size-10 rounded-xl bg-zinc-900 dark:bg-zinc-100 flex items-center justify-center">
-                    <.icon name="hero-clock" class="size-5 text-white dark:text-zinc-900" />
-                  </div>
-                  <div>
-                    <h2 class="text-2xl font-black text-zinc-900 dark:text-white tracking-tight">{@terminology["task_label"]} Intelligence</h2>
-                    <p class="text-sm text-zinc-500 font-medium">Chronological record of service performance</p>
-                  </div>
-                </div>
+              <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-bold text-zinc-900 dark:text-white tracking-tight flex items-center gap-2">
+                  <.icon name="hero-clock" class="size-5 text-zinc-400" />
+                  Recent History
+                </h2>
                 <.link
                   navigate={~p"/portal/history"}
-                  class="px-4 py-2 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs font-bold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors shadow-sm"
+                  class="text-xs font-bold text-primary hover:text-primary/80 transition-colors flex items-center gap-1"
                 >
-                  Explore All
+                  View All <.icon name="hero-arrow-right" class="size-3" />
                 </.link>
               </div>
 
-              <%= if Enum.empty?(@completed_jobs) do %>
-                <p class="text-zinc-400 text-sm font-medium italic">Your service history is currently empty.</p>
-              <% else %>
-                <div class="bg-white dark:bg-zinc-900 rounded-[32px] border border-zinc-200 dark:border-zinc-800 overflow-hidden shadow-sm">
-                  <table class="w-full text-left">
-                    <thead>
-                      <tr class="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] bg-zinc-50/50 dark:bg-zinc-800/30">
-                        <th class="px-8 py-4">Service Details</th>
-                        <th class="px-8 py-4">Completed On</th>
-                        <th class="px-8 py-4 text-right"></th>
+              <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden shadow-sm">
+                <table class="w-full text-left">
+                  <thead class="bg-zinc-50/50 dark:bg-zinc-800/30 border-b border-zinc-100 dark:border-zinc-800">
+                    <tr>
+                      <th class="px-6 py-4 text-[10px] font-black text-zinc-400 uppercase tracking-widest">Service</th>
+                      <th class="px-6 py-4 text-[10px] font-black text-zinc-400 uppercase tracking-widest text-right">Date</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-zinc-50 dark:divide-zinc-800/50">
+                    <%= for job <- @completed_jobs do %>
+                      <tr class="group hover:bg-zinc-50 dark:hover:bg-zinc-800/30 transition-colors cursor-pointer" phx-click={JS.navigate(~p"/portal/jobs/#{job}")}>
+                        <td class="px-6 py-4">
+                          <p class="text-sm font-bold text-zinc-900 dark:text-white mb-0.5">{job.title}</p>
+                          <p class="text-[10px] text-zinc-400">#{job.number}</p>
+                        </td>
+                        <td class="px-6 py-4 text-right">
+                          <p class="text-xs font-medium text-zinc-600 dark:text-zinc-400">
+                            {format_date(job.completed_at)}
+                          </p>
+                        </td>
                       </tr>
-                    </thead>
-                    <tbody class="divide-y divide-zinc-50 dark:divide-zinc-800/50">
-                      <%= for job <- @completed_jobs do %>
-                        <tr class="group hover:bg-zinc-50 dark:hover:bg-zinc-800/10 transition-colors cursor-pointer" phx-click={JS.navigate(~p"/portal/jobs/#{job}")}>
-                          <td class="px-8 py-6">
-                            <p class="font-bold text-zinc-900 dark:text-white group-hover:text-primary transition-colors">{job.title}</p>
-                            <p class="text-[11px] text-zinc-500 font-medium mt-0.5">#{job.number}</p>
-                          </td>
-                          <td class="px-8 py-6">
-                            <p class="text-xs font-bold text-zinc-700 dark:text-zinc-300">
-                              {format_date(job.completed_at)}
-                            </p>
-                            <p class="text-[10px] text-zinc-400 font-medium mt-0.5 whitespace-nowrap">
-                              <%= if job.technician do %>
-                                Verified by {job.technician.name}
-                              <% end %>
-                            </p>
-                          </td>
-                          <td class="px-8 py-6 text-right">
-                             <.icon name="hero-chevron-right" class="size-4 text-zinc-300 group-hover:translate-x-1 transition-transform" />
-                          </td>
-                        </tr>
-                      <% end %>
-                    </tbody>
-                  </table>
-                </div>
-              <% end %>
+                    <% end %>
+                  </tbody>
+                </table>
+              </div>
             </section>
           </div>
 
-          <!-- Sidebar Area (35%) -->
-          <div class="lg:col-span-4 space-y-8">
-            <%!-- Outstanding Financials --%>
-            <%= if length(@unpaid_invoices) > 0 do %>
-              <div class="bg-amber-50 dark:bg-amber-500/5 rounded-[40px] border-2 border-amber-100 dark:border-amber-500/20 p-8">
-                <div class="flex items-center gap-3 mb-8">
-                  <div class="size-12 rounded-2xl bg-amber-500 flex items-center justify-center shadow-lg shadow-amber-500/20">
-                    <.icon name="hero-credit-card" class="size-6 text-white" />
+          <!-- Sidebar (Right) -->
+          <aside class="xl:col-span-4 space-y-10">
+            <!-- Action Card: Invoices -->
+             <%= if length(@unpaid_invoices) > 0 do %>
+              <div class="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/30 dark:to-orange-950/30 rounded-3xl border border-amber-100 dark:border-amber-900/50 p-6">
+                <div class="flex items-center gap-3 mb-4">
+                  <div class="size-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-600 dark:text-amber-400">
+                    <.icon name="hero-exclamation-circle" class="size-6" />
                   </div>
-                  <div>
-                    <h3 class="text-xl font-black text-amber-900 dark:text-amber-400 leading-tight">Financial<br/>Outstanding</h3>
-                  </div>
+                  <h3 class="text-lg font-bold text-amber-900 dark:text-amber-100">Action Required</h3>
                 </div>
 
-                <div class="space-y-4 mb-8">
+                <p class="text-sm text-amber-800/80 dark:text-amber-200/60 font-medium mb-6">
+                  You have <strong>{length(@unpaid_invoices)} unpaid invoices</strong>. Please settle your balance to avoid service interruptions.
+                </p>
+
+                <div class="space-y-3">
                   <%= for invoice <- @unpaid_invoices do %>
-                    <.link
-                      navigate={~p"/portal/invoices/#{invoice.id}"}
-                      class="block p-4 bg-white dark:bg-zinc-900 rounded-2xl border border-amber-200 dark:border-amber-500/10 hover:border-amber-500 transition-all shadow-sm group"
-                    >
-                      <div class="flex items-center justify-between mb-2">
-                        <span class="text-[10px] font-black text-amber-600 dark:text-amber-500 uppercase tracking-widest">{invoice.number}</span>
-                        <span class="text-lg font-black text-zinc-900 dark:text-white">${format_money(invoice.total_amount)}</span>
-                      </div>
-                      <p class="text-xs text-zinc-500 font-medium italic">Due {Calendar.strftime(invoice.due_date, "%b %d")}</p>
-                    </.link>
+                    <div class="bg-white/60 dark:bg-zinc-900/60 rounded-xl p-3 flex items-center justify-between border border-amber-200/50 dark:border-amber-900/30">
+                       <span class="text-xs font-bold text-zinc-700 dark:text-zinc-300">#{invoice.number}</span>
+                       <span class="text-sm font-black text-amber-600 dark:text-amber-500">${format_money(invoice.total_amount)}</span>
+                    </div>
                   <% end %>
                 </div>
 
                 <.link
                   navigate={~p"/portal/invoices"}
-                  class="w-full flex items-center justify-center gap-2 py-4 bg-amber-500 hover:bg-amber-600 text-white font-black rounded-2xl transition-all shadow-lg shadow-amber-500/20 active:scale-95 group"
+                  class="mt-6 w-full flex items-center justify-center gap-2 py-3 bg-amber-500 hover:bg-amber-600 text-white text-sm font-bold rounded-xl shadow-lg shadow-amber-500/20 transition-all"
                 >
-                  Settle Balance <.icon name="hero-arrow-right" class="size-4 group-hover:translate-x-1 transition-transform" />
+                  Pay Now <.icon name="hero-arrow-right" class="size-4" />
                 </.link>
               </div>
             <% end %>
 
-            <%!-- Notification Preferences --%>
-            <div class="bg-white dark:bg-zinc-900 rounded-[40px] border border-zinc-200 dark:border-zinc-800 p-8">
-              <div class="size-12 rounded-2xl bg-zinc-900 dark:bg-white flex items-center justify-center mb-6">
-                <.icon name="hero-bell" class="size-6 text-white dark:text-zinc-900" />
-              </div>
-              <h3 class="text-xl font-black text-zinc-900 dark:text-white tracking-tight mb-2">Notifications</h3>
-              <p class="text-sm text-zinc-500 font-medium mb-8 leading-relaxed">
-                Manage how you receive updates about your service appointments, invoices, and job status.
-              </p>
+            <!-- Quick Attributes -->
+            <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-6">
+              <h3 class="text-sm font-bold text-zinc-900 dark:text-white mb-6 uppercase tracking-wider">Settings</h3>
 
               <button
                 type="button"
                 phx-click={show_modal("preferences-modal")}
-                class="w-full flex items-center justify-between p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl border border-zinc-100 dark:border-zinc-800 text-left hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors group"
+                class="w-full flex items-center justify-between p-3 rounded-xl hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors group"
               >
-                <div>
-                  <p class="font-bold text-zinc-900 dark:text-white text-sm">Manage Settings</p>
-                  <p class="text-[10px] text-zinc-400 font-black uppercase tracking-wider mt-0.5">
-                    Email & SMS
-                  </p>
+                <div class="flex items-center gap-3">
+                  <div class="size-8 rounded-lg bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-500 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">
+                    <.icon name="hero-bell" class="size-4" />
+                  </div>
+                  <div class="text-left">
+                    <p class="text-sm font-bold text-zinc-900 dark:text-white">Notifications</p>
+                    <p class="text-xs text-zinc-500">Email & SMS preferences</p>
+                  </div>
                 </div>
-                <div class="size-8 rounded-full bg-white dark:bg-zinc-700 flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
-                  <.icon name="hero-cog-6-tooth" class="size-4 text-zinc-500 dark:text-zinc-300" />
-                </div>
+                <.icon name="hero-chevron-right" class="size-4 text-zinc-400 group-hover:translate-x-1 transition-transform" />
               </button>
+
+              <div class="mt-4 pt-4 border-t border-zinc-100 dark:border-zinc-800">
+                <p class="text-[10px] font-medium text-zinc-400 text-center">
+                  Account ID: <span class="font-mono">{@customer.id |> to_string() |> String.slice(0, 8)}</span>
+                </p>
+              </div>
             </div>
-          </div>
+          </aside>
         </div>
       </main>
     </div>
@@ -384,69 +328,76 @@ defmodule FieldHubWeb.PortalLive.Dashboard do
             </div>
             <h3 class="text-xl font-bold text-zinc-900 dark:text-white">Notification Settings</h3>
           </div>
-          <p class="text-sm text-zinc-500">Fine-tune how you receive updates from {@customer.organization.name}.</p>
+          <p class="text-sm text-zinc-500">
+            Fine-tune how you receive updates from {@customer.organization.name}.
+          </p>
         </div>
 
-        <.form for={@form} phx-change="validate_preferences" phx-submit="save_preferences" class="space-y-6">
+        <.form
+          for={@form}
+          phx-change="validate_preferences"
+          phx-submit="save_preferences"
+          class="space-y-6"
+        >
           <.inputs_for :let={pref} field={@form[:preferences]}>
             <div class="divide-y divide-zinc-100 dark:divide-zinc-800 border border-zinc-100 dark:border-zinc-800 rounded-2xl bg-zinc-50/50 dark:bg-zinc-900/50 overflow-hidden">
-               <!-- Job Scheduling -->
-               <div class="p-4 grid grid-cols-12 gap-4 items-center hover:bg-white dark:hover:bg-zinc-800 transition-colors">
-                  <div class="col-span-8">
-                     <p class="text-sm font-bold text-zinc-900 dark:text-white">Service Scheduled</p>
-                     <p class="text-xs text-zinc-500">When an appointment is confirmed</p>
-                  </div>
-                  <div class="col-span-2 text-center">
-                     <span class="text-[10px] font-bold text-zinc-400 uppercase block mb-1">Email</span>
-                     <.input field={pref[:job_scheduled_email]} type="switch" />
-                  </div>
-                  <div class="col-span-2 text-center">
-                     <span class="text-[10px] font-bold text-zinc-400 uppercase block mb-1">SMS</span>
-                     <.input field={pref[:job_scheduled_sms]} type="switch" />
-                  </div>
-               </div>
+              <!-- Job Scheduling -->
+              <div class="p-4 grid grid-cols-12 gap-4 items-center hover:bg-white dark:hover:bg-zinc-800 transition-colors">
+                <div class="col-span-8">
+                  <p class="text-sm font-bold text-zinc-900 dark:text-white">Service Scheduled</p>
+                  <p class="text-xs text-zinc-500">When an appointment is confirmed</p>
+                </div>
+                <div class="col-span-2 text-center">
+                  <span class="text-[10px] font-bold text-zinc-400 uppercase block mb-1">Email</span>
+                  <.input field={pref[:job_scheduled_email]} type="switch" />
+                </div>
+                <div class="col-span-2 text-center">
+                  <span class="text-[10px] font-bold text-zinc-400 uppercase block mb-1">SMS</span>
+                  <.input field={pref[:job_scheduled_sms]} type="switch" />
+                </div>
+              </div>
 
-               <!-- Tech En Route -->
-                <div class="p-4 grid grid-cols-12 gap-4 items-center hover:bg-white dark:hover:bg-zinc-800 transition-colors">
-                  <div class="col-span-8">
-                     <p class="text-sm font-bold text-zinc-900 dark:text-white">Technician En Route</p>
-                     <p class="text-xs text-zinc-500">When your technician is on the way</p>
-                  </div>
-                  <div class="col-span-2 text-center">
-                     <.input field={pref[:technician_en_route_email]} type="switch" />
-                  </div>
-                  <div class="col-span-2 text-center">
-                     <.input field={pref[:technician_en_route_sms]} type="switch" />
-                  </div>
-               </div>
+    <!-- Tech En Route -->
+              <div class="p-4 grid grid-cols-12 gap-4 items-center hover:bg-white dark:hover:bg-zinc-800 transition-colors">
+                <div class="col-span-8">
+                  <p class="text-sm font-bold text-zinc-900 dark:text-white">Technician En Route</p>
+                  <p class="text-xs text-zinc-500">When your technician is on the way</p>
+                </div>
+                <div class="col-span-2 text-center">
+                  <.input field={pref[:technician_en_route_email]} type="switch" />
+                </div>
+                <div class="col-span-2 text-center">
+                  <.input field={pref[:technician_en_route_sms]} type="switch" />
+                </div>
+              </div>
 
-               <!-- Tech Arrived -->
-                <div class="p-4 grid grid-cols-12 gap-4 items-center hover:bg-white dark:hover:bg-zinc-800 transition-colors">
-                  <div class="col-span-8">
-                     <p class="text-sm font-bold text-zinc-900 dark:text-white">Technician Arrived</p>
-                     <p class="text-xs text-zinc-500">When the technician is at your property</p>
-                  </div>
-                  <div class="col-span-2 text-center">
-                     <.input field={pref[:technician_arrived_email]} type="switch" />
-                  </div>
-                  <div class="col-span-2 text-center">
-                     <.input field={pref[:technician_arrived_sms]} type="switch" />
-                  </div>
-               </div>
+    <!-- Tech Arrived -->
+              <div class="p-4 grid grid-cols-12 gap-4 items-center hover:bg-white dark:hover:bg-zinc-800 transition-colors">
+                <div class="col-span-8">
+                  <p class="text-sm font-bold text-zinc-900 dark:text-white">Technician Arrived</p>
+                  <p class="text-xs text-zinc-500">When the technician is at your property</p>
+                </div>
+                <div class="col-span-2 text-center">
+                  <.input field={pref[:technician_arrived_email]} type="switch" />
+                </div>
+                <div class="col-span-2 text-center">
+                  <.input field={pref[:technician_arrived_sms]} type="switch" />
+                </div>
+              </div>
 
-               <!-- Completed -->
-                <div class="p-4 grid grid-cols-12 gap-4 items-center hover:bg-white dark:hover:bg-zinc-800 transition-colors">
-                  <div class="col-span-8">
-                     <p class="text-sm font-bold text-zinc-900 dark:text-white">Service Completed</p>
-                     <p class="text-xs text-zinc-500">Completion reports and details</p>
-                  </div>
-                  <div class="col-span-2 text-center">
-                     <.input field={pref[:job_completed_email]} type="switch" />
-                  </div>
-                  <div class="col-span-2 text-center">
-                     <.input field={pref[:job_completed_sms]} type="switch" />
-                  </div>
-               </div>
+    <!-- Completed -->
+              <div class="p-4 grid grid-cols-12 gap-4 items-center hover:bg-white dark:hover:bg-zinc-800 transition-colors">
+                <div class="col-span-8">
+                  <p class="text-sm font-bold text-zinc-900 dark:text-white">Service Completed</p>
+                  <p class="text-xs text-zinc-500">Completion reports and details</p>
+                </div>
+                <div class="col-span-2 text-center">
+                  <.input field={pref[:job_completed_email]} type="switch" />
+                </div>
+                <div class="col-span-2 text-center">
+                  <.input field={pref[:job_completed_sms]} type="switch" />
+                </div>
+              </div>
             </div>
 
             <div class="mt-6 flex flex-col gap-3">
@@ -455,31 +406,39 @@ defmodule FieldHubWeb.PortalLive.Dashboard do
                   <p class="text-sm font-bold text-zinc-900 dark:text-white">Financial Updates</p>
                   <p class="text-xs text-zinc-500">Receive invoices and receipts via email</p>
                 </div>
-                 <.input field={pref[:invoice_email]} type="switch" />
+                <.input field={pref[:invoice_email]} type="switch" />
               </div>
 
-               <div class="flex items-center justify-between p-4 bg-zinc-50/50 dark:bg-zinc-900/50 rounded-xl border border-zinc-100 dark:border-zinc-800">
+              <div class="flex items-center justify-between p-4 bg-zinc-50/50 dark:bg-zinc-900/50 rounded-xl border border-zinc-100 dark:border-zinc-800">
                 <div>
                   <p class="text-sm font-bold text-zinc-900 dark:text-white">News & Tips</p>
                   <p class="text-xs text-zinc-500">Occasional updates and maintenance tips</p>
                 </div>
-                 <.input field={pref[:marketing_email]} type="switch" />
+                <.input field={pref[:marketing_email]} type="switch" />
               </div>
             </div>
           </.inputs_for>
 
           <div class="flex items-center justify-end gap-3 pt-6 border-t border-zinc-100 dark:border-zinc-800">
-             <button type="button" phx-click={hide_modal("preferences-modal")} class="px-4 py-2 rounded-xl text-sm font-bold text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors">Cancel</button>
-             <.button type="submit" class="bg-primary hover:bg-primary/90 text-white rounded-xl px-4 py-2 text-sm font-bold shadow-lg shadow-primary/20">
-               Save Changes
-             </.button>
+            <button
+              type="button"
+              phx-click={hide_modal("preferences-modal")}
+              class="px-4 py-2 rounded-xl text-sm font-bold text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors"
+            >
+              Cancel
+            </button>
+            <.button
+              type="submit"
+              class="bg-primary hover:bg-primary/90 text-white rounded-xl px-4 py-2 text-sm font-bold shadow-lg shadow-primary/20"
+            >
+              Save Changes
+            </.button>
           </div>
         </.form>
       </div>
     </.modal>
     """
   end
-
 
   defp kpi_widget(assigns) do
     ~H"""
@@ -495,7 +454,9 @@ defmodule FieldHubWeb.PortalLive.Dashboard do
       </div>
       <div>
         <p class="text-[10px] font-black text-zinc-400 uppercase tracking-[0.15em] mb-1">{@label}</p>
-        <p class="text-2xl font-black text-zinc-900 dark:text-white leading-none tracking-tight mb-1">{@value}</p>
+        <p class="text-2xl font-black text-zinc-900 dark:text-white leading-none tracking-tight mb-1">
+          {@value}
+        </p>
         <p class="text-[10px] text-zinc-500 font-medium">{@subtext}</p>
       </div>
     </div>
@@ -503,19 +464,24 @@ defmodule FieldHubWeb.PortalLive.Dashboard do
   end
 
   defp status_color_theme("pending"),
-    do: "bg-zinc-50 text-zinc-500 border-zinc-100 dark:bg-zinc-800/50 dark:text-zinc-400 dark:border-zinc-700"
+    do:
+      "bg-zinc-50 text-zinc-500 border-zinc-100 dark:bg-zinc-800/50 dark:text-zinc-400 dark:border-zinc-700"
 
   defp status_color_theme("en_route"),
-    do: "bg-blue-50 text-blue-600 border-blue-100 dark:bg-blue-500/10 dark:text-blue-400 dark:border-blue-500/20"
+    do:
+      "bg-blue-50 text-blue-600 border-blue-100 dark:bg-blue-500/10 dark:text-blue-400 dark:border-blue-500/20"
 
   defp status_color_theme("arrived"),
-    do: "bg-indigo-50 text-indigo-600 border-indigo-100 dark:bg-indigo-500/10 dark:text-indigo-400 dark:border-indigo-500/20"
+    do:
+      "bg-indigo-50 text-indigo-600 border-indigo-100 dark:bg-indigo-500/10 dark:text-indigo-400 dark:border-indigo-500/20"
 
   defp status_color_theme("in_progress"),
-    do: "bg-emerald-50 text-emerald-600 border-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20"
+    do:
+      "bg-emerald-50 text-emerald-600 border-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20"
 
   defp status_color_theme("completed"),
-    do: "bg-teal-50 text-teal-600 border-teal-100 dark:bg-teal-500/10 dark:text-teal-400 dark:border-teal-500/20"
+    do:
+      "bg-teal-50 text-teal-600 border-teal-100 dark:bg-teal-500/10 dark:text-teal-400 dark:border-teal-500/20"
 
   defp status_color_theme(_),
     do: "bg-zinc-50 text-zinc-500 border-zinc-100"
@@ -553,8 +519,14 @@ defmodule FieldHubWeb.PortalLive.Dashboard do
     # Calculate average completion time in days
     avg_completion_query =
       from j in Jobs.Job,
-        where: j.customer_id == ^customer_id and j.status == "completed" and not is_nil(j.completed_at),
-        select: fragment("ROUND(AVG(EXTRACT(EPOCH FROM (? - ?)) / 86400)::numeric, 1)", j.completed_at, j.inserted_at)
+        where:
+          j.customer_id == ^customer_id and j.status == "completed" and not is_nil(j.completed_at),
+        select:
+          fragment(
+            "ROUND(AVG(EXTRACT(EPOCH FROM (? - ?)) / 86400)::numeric, 1)",
+            j.completed_at,
+            j.inserted_at
+          )
 
     avg_completion_days = Repo.one(avg_completion_query) || 0.0
 
@@ -564,18 +536,18 @@ defmodule FieldHubWeb.PortalLive.Dashboard do
       from(j in Jobs.Job,
         where: j.customer_id == ^customer_id and j.status != "cancelled",
         select: count(j.id)
-      ) |> Repo.one()
+      )
+      |> Repo.one()
 
     trust_score =
       if total_non_cancelled > 0 do
-        round((history_count / total_non_cancelled) * 100)
+        round(history_count / total_non_cancelled * 100)
       else
         100
       end
 
     {lifetime_total, history_count, avg_completion_days, trust_score}
   end
-
 
   defp format_money(nil), do: "0.00"
 

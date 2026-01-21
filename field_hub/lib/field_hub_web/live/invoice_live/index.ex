@@ -71,7 +71,7 @@ defmodule FieldHubWeb.InvoiceLive.Index do
           </div>
         </div>
       </div>
-
+      
     <!-- Stats Row -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <div class="bg-white dark:bg-zinc-900 rounded-[28px] p-8 border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-col justify-between group hover:border-primary/20 transition-all">
@@ -144,7 +144,7 @@ defmodule FieldHubWeb.InvoiceLive.Index do
           </div>
         </div>
       </div>
-
+      
     <!-- Control Bar -->
       <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-zinc-50 dark:bg-zinc-800/50 p-6 rounded-[24px] border border-zinc-200 dark:border-zinc-800">
         <div class="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0">
@@ -167,7 +167,10 @@ defmodule FieldHubWeb.InvoiceLive.Index do
         <div class="flex items-center gap-3">
           <div class="relative group">
             <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-              <.icon name="hero-magnifying-glass" class="size-4 text-zinc-400 group-focus-within:text-primary transition-colors" />
+              <.icon
+                name="hero-magnifying-glass"
+                class="size-4 text-zinc-400 group-focus-within:text-primary transition-colors"
+              />
             </div>
             <input
               type="text"
@@ -177,7 +180,7 @@ defmodule FieldHubWeb.InvoiceLive.Index do
           </div>
         </div>
       </div>
-
+      
     <!-- Invoice Table -->
       <div class="bg-white dark:bg-zinc-900 rounded-[32px] border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
         <%= if @invoices == [] do %>
@@ -209,7 +212,10 @@ defmodule FieldHubWeb.InvoiceLive.Index do
                     <td class="px-8 py-6">
                       <div class="flex items-center gap-4">
                         <div class="size-10 rounded-xl bg-zinc-50 dark:bg-zinc-800 flex items-center justify-center border border-zinc-200 dark:border-zinc-700 group-hover:border-primary/50 group-hover:bg-primary/5 transition-all">
-                          <.icon name="hero-document" class="size-5 text-zinc-400 group-hover:text-primary transition-colors" />
+                          <.icon
+                            name="hero-document"
+                            class="size-5 text-zinc-400 group-hover:text-primary transition-colors"
+                          />
                         </div>
                         <.link
                           navigate={~p"/invoices/#{invoice.id}"}
@@ -231,7 +237,9 @@ defmodule FieldHubWeb.InvoiceLive.Index do
                           {invoice.customer.name}
                         </span>
                       </div>
-                      <span :if={!invoice.customer} class="text-sm text-zinc-400 italic">No customer</span>
+                      <span :if={!invoice.customer} class="text-sm text-zinc-400 italic">
+                        No customer
+                      </span>
                     </td>
                     <td class="px-8 py-6">
                       <p class="text-[14px] font-black text-zinc-900 dark:text-white">
