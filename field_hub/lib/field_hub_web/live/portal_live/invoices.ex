@@ -34,15 +34,18 @@ defmodule FieldHubWeb.PortalLive.Invoices do
     <div class="min-h-screen bg-zinc-50 dark:bg-zinc-950">
       <main class="max-w-4xl mx-auto px-4 sm:px-6 py-12">
         <div class="mb-8">
-           <.link
-              navigate={~p"/portal"}
-              class="inline-flex items-center gap-2 text-sm font-bold text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition-colors mb-4"
-            >
-              <.icon name="hero-arrow-left" class="size-4" />
-              Back to Dashboard
-            </.link>
-            <h1 class="text-3xl font-black text-zinc-900 dark:text-white tracking-tight">My Invoices</h1>
-            <p class="text-zinc-500 dark:text-zinc-400 mt-1">Manage and pay your invoices from {@customer.organization.name}.</p>
+          <.link
+            navigate={~p"/portal"}
+            class="inline-flex items-center gap-2 text-sm font-bold text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition-colors mb-4"
+          >
+            <.icon name="hero-arrow-left" class="size-4" /> Back to Dashboard
+          </.link>
+          <h1 class="text-3xl font-black text-zinc-900 dark:text-white tracking-tight">
+            My Invoices
+          </h1>
+          <p class="text-zinc-500 dark:text-zinc-400 mt-1">
+            Manage and pay your invoices from {@customer.organization.name}.
+          </p>
         </div>
 
         <%= if Enum.empty?(@invoices) do %>
@@ -65,14 +68,16 @@ defmodule FieldHubWeb.PortalLive.Invoices do
                 <div class="flex items-center justify-between gap-6">
                   <div class="flex-1 min-w-0">
                     <div class="flex items-center gap-3 mb-2">
-                       <span class={"inline-flex px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border #{status_badge_class(invoice.status)}"}>
+                      <span class={"inline-flex px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border #{status_badge_class(invoice.status)}"}>
                         {invoice.status}
                       </span>
                       <span class="text-xs text-zinc-400 font-mono">{invoice.number}</span>
                     </div>
                     <div class="flex items-center gap-4 text-sm text-zinc-500 dark:text-zinc-400">
                       <%= if invoice.job do %>
-                        <span class="font-medium text-zinc-700 dark:text-zinc-300">Service: {invoice.job.title}</span>
+                        <span class="font-medium text-zinc-700 dark:text-zinc-300">
+                          Service: {invoice.job.title}
+                        </span>
                       <% end %>
                       <span class="text-zinc-400">•</span>
                       <span>Due {format_date(invoice.due_date)}</span>
@@ -80,7 +85,9 @@ defmodule FieldHubWeb.PortalLive.Invoices do
                   </div>
                   <div class="text-right">
                     <p class="text-2xl font-black text-zinc-900 dark:text-white tracking-tight group-hover:text-primary transition-colors">
-                      ${format_money(invoice.total_amount)}
+                      {currency_symbol(@customer.organization.currency)}{format_money(
+                        invoice.total_amount
+                      )}
                     </p>
                     <div class="flex items-center justify-end gap-1 text-xs text-primary font-bold mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
                       View Details <.icon name="hero-arrow-right" class="size-3" />
@@ -114,4 +121,17 @@ defmodule FieldHubWeb.PortalLive.Invoices do
   defp status_badge_class("overdue"), do: "bg-red-50 text-red-700"
   defp status_badge_class("cancelled"), do: "bg-zinc-50 text-zinc-500"
   defp status_badge_class(_), do: "bg-zinc-100 text-zinc-600"
+
+  # Currency symbol mapping based on ISO 4217 currency codes
+  defp currency_symbol("USD"), do: "$"
+  defp currency_symbol("EUR"), do: "€"
+  defp currency_symbol("GBP"), do: "£"
+  defp currency_symbol("NGN"), do: "₦"
+  defp currency_symbol("GHS"), do: "₵"
+  defp currency_symbol("KES"), do: "KSh"
+  defp currency_symbol("ZAR"), do: "R"
+  defp currency_symbol("INR"), do: "₹"
+  defp currency_symbol("CAD"), do: "C$"
+  defp currency_symbol("AUD"), do: "A$"
+  defp currency_symbol(_), do: "$"
 end

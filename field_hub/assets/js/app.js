@@ -35,9 +35,12 @@ import {OfflineSync, OfflineAction, OfflineIndicator} from "./hooks/offline_sync
 import PrintInvoice from "./hooks/print_invoice"
 import "leaflet/dist/leaflet.css"
 
+import SidebarTooltip from "./hooks/sidebar_tooltip"
+
 // Custom hooks
 const Hooks = {
   ...colocatedHooks,
+  SidebarTooltip: SidebarTooltip,
   DragDrop: DragDropHook,
   SignaturePad: SignaturePadHook,
   PushNotifications: PushNotifications,

@@ -22,7 +22,7 @@
 [data-phx-session], [data-phx-teleported-src] { display: contents }
 
 @theme {
-  --color-primary: #115e59;
+  --color-primary: #4e2bee;
   --color-primary-hover: #0d9488;
   --color-secondary: #6366f1;
   --color-accent: #10b981;
@@ -112,7 +112,7 @@
 }
 
 [data-theme="dark"] {
-  --bg: 2 4 12;             /* Deepest Midnight */
+  --bg: 0f182a;             /* Deep Space */
   --bg2: 8 10 20;           /* Slate-950+ */
   --panel: 12 16 33;        /* Slate-900+ */
   --panel2: 6 8 18;         /* Dark Panel Accent */

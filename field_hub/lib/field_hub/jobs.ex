@@ -626,9 +626,11 @@ defmodule FieldHub.Jobs do
   end
 
   defp notify_technician_assigned({:ok, job}) do
-    Task.start(fn ->
-      job = Repo.preload(job, technician: :user)
+    # Preload in the calling process so background tasks
+    # don't need database access (keeps tests happy too).
+    job = Repo.preload(job, technician: :user)
 
+    Task.start(fn ->
       if job.technician && job.technician.user do
         user = job.technician.user
 
@@ -649,9 +651,11 @@ defmodule FieldHub.Jobs do
   defp notify_technician_assigned(error), do: error
 
   defp notify_technician_job_cancelled({:ok, job}) do
-    Task.start(fn ->
-      job = Repo.preload(job, technician: :user)
+    # Preload in the calling process so background tasks
+    # don't need database access (keeps tests happy too).
+    job = Repo.preload(job, technician: :user)
 
+    Task.start(fn ->
       if job.technician && job.technician.user do
         user = job.technician.user
 

@@ -1,539 +1,147 @@
 <div class="h-screen w-full bg-zinc-50 dark:bg-zinc-950 flex overflow-hidden selection:bg-primary selection:text-white">
-  
-<!-- Off-canvas menu for mobile -->
-  <div id="mobile-sidebar" class="relative z-50 lg:hidden hidden" role="dialog" aria-modal="true">
-    
-<!-- Backdrop -->
-    <div
-      id="mobile-sidebar-backdrop"
-      class="fixed inset-0 bg-gray-900/80 transition-opacity ease-linear duration-300 opacity-0"
-      aria-hidden="true"
-      phx-click={
-        JS.hide(
-          to: "#mobile-sidebar-backdrop",
-          transition: {"opacity-100", "opacity-100", "opacity-0"}
-        )
-        |> JS.hide(
-          to: "#mobile-sidebar-panel",
-          transition: {"translate-x-0", "translate-x-0", "-translate-x-full"},
-          time: 300
-        )
-        |> JS.hide(to: "#mobile-sidebar", time: 300)
-      }
-    >
-    </div>
+  <.sidebar
+    current_user={@current_user}
+    collapsed={assigns[:sidebar_collapsed] || false}
+    active_tab={assigns[:current_nav]}
+  >
+    <:header>
+      <.sidebar_header collapsed={assigns[:sidebar_collapsed] || false} />
+    </:header>
 
-    <div class="fixed inset-0 flex">
-      <!-- Sidebar panel -->
-      <div
-        id="mobile-sidebar-panel"
-        class="relative mr-16 flex w-full max-w-xs flex-1 transform transition ease-in-out duration-300 -translate-x-full bg-zinc-900 shadow-2xl ring-1 ring-white/10"
+    <:groups>
+      <!-- Core -->
+      <.sidebar_group label="Core" collapsed={assigns[:sidebar_collapsed] || false}>
+        <.sidebar_item
+          navigate={~p"/dashboard"}
+          active={assigns[:current_nav] == :dashboard}
+          icon="hero-home"
+          label="Dashboard"
+          collapsed={assigns[:sidebar_collapsed] || false}
+        />
+      </.sidebar_group>
+      
+<!-- Operations -->
+      <.sidebar_group label="Operations" collapsed={assigns[:sidebar_collapsed] || false}>
+        <.sidebar_item
+          navigate={~p"/jobs"}
+          active={assigns[:current_nav] == :jobs}
+          icon="hero-briefcase"
+          label={(assigns[:terminology] || %{})["task_label_plural"] || "Jobs"}
+          collapsed={assigns[:sidebar_collapsed] || false}
+        />
+        <.sidebar_item
+          navigate={~p"/dispatch"}
+          active={assigns[:current_nav] == :dispatch}
+          icon="hero-calendar"
+          label="Schedule"
+          collapsed={assigns[:sidebar_collapsed] || false}
+        />
+        <.sidebar_item
+          navigate={~p"/technicians"}
+          active={assigns[:current_nav] == :technicians}
+          icon="hero-user-group"
+          label={(assigns[:terminology] || %{})["worker_label_plural"] || "Technicians"}
+          collapsed={assigns[:sidebar_collapsed] || false}
+        />
+      </.sidebar_group>
+      
+<!-- CRM -->
+      <.sidebar_group label="CRM" collapsed={assigns[:sidebar_collapsed] || false}>
+        <.sidebar_item
+          navigate={~p"/customers"}
+          active={assigns[:current_nav] == :customers}
+          icon="hero-users"
+          label={(assigns[:terminology] || %{})["client_label_plural"] || "Customers"}
+          collapsed={assigns[:sidebar_collapsed] || false}
+        />
+        <.sidebar_item
+          navigate={~p"/settings/branding"}
+          active={assigns[:current_nav] == :branding}
+          icon="hero-cursor-arrow-rays"
+          label="Customer Portal"
+          collapsed={assigns[:sidebar_collapsed] || false}
+        />
+      </.sidebar_group>
+      
+<!-- Finance -->
+      <.sidebar_group label="Finance" collapsed={assigns[:sidebar_collapsed] || false}>
+        <.sidebar_item
+          navigate={~p"/invoices"}
+          active={assigns[:current_nav] == :invoices}
+          icon="hero-banknotes"
+          label="Invoices"
+          collapsed={assigns[:sidebar_collapsed] || false}
+        />
+      </.sidebar_group>
+      
+<!-- Analytics -->
+      <.sidebar_group label="Analytics" collapsed={assigns[:sidebar_collapsed] || false}>
+        <.sidebar_item
+          navigate={~p"/reports"}
+          active={assigns[:current_nav] == :reports}
+          icon="hero-chart-bar"
+          label="Reports"
+          collapsed={assigns[:sidebar_collapsed] || false}
+        />
+      </.sidebar_group>
+      
+<!-- System -->
+      <.sidebar_group label="System" collapsed={assigns[:sidebar_collapsed] || false}>
+        <.sidebar_item
+          navigate={~p"/settings/organization"}
+          active={assigns[:current_nav] in [:organization, :users, :billing, :notifications]}
+          icon="hero-cog-6-tooth"
+          label="Settings"
+          collapsed={assigns[:sidebar_collapsed] || false}
+        />
+        <.sidebar_item
+          navigate={~p"/settings/workflows"}
+          active={assigns[:current_nav] in [:workflows, :terminology, :custom_fields]}
+          icon="hero-cpu-chip"
+          label="Configure"
+          collapsed={assigns[:sidebar_collapsed] || false}
+        />
+      </.sidebar_group>
+    </:groups>
+
+    <:footer :let={info}>
+      <div class="flex items-center justify-between mb-2">
+        <.sidebar_toggle collapsed={assigns[:sidebar_collapsed] || false} />
+        <!-- PWA / Network Status icons could be compacted here -->
+      </div>
+      
+<!-- PWA Install (condensed version needed for sidebar footer) -->
+      <button
+        id={"pwa-install-btn-#{info[:context] || "default"}"}
+        phx-hook="PWAInstall"
+        class="hidden w-full group flex items-center justify-center rounded-lg p-2 text-primary hover:bg-primary/10 transition-colors mb-2"
+        aria-label="Install App"
       >
-        <div class="absolute left-full top-0 flex w-16 justify-center pt-5">
-          <button
-            type="button"
-            class="-m-2.5 p-2.5"
-            phx-click={
-              JS.hide(
-                to: "#mobile-sidebar-backdrop",
-                transition: {"opacity-100", "opacity-100", "opacity-0"}
-              )
-              |> JS.hide(
-                to: "#mobile-sidebar-panel",
-                transition: {"translate-x-0", "translate-x-0", "-translate-x-full"},
-                time: 300
-              )
-              |> JS.hide(to: "#mobile-sidebar", time: 300)
-            }
-          >
-            <span class="sr-only">Close sidebar</span>
-            <.icon name="hero-x-mark" class="h-6 w-6 text-white" />
-          </button>
-        </div>
-        
-<!-- Mobile Sidebar Content -->
-        <div class="flex grow flex-col gap-y-5 overflow-y-auto px-6 pb-4 bg-white dark:bg-zinc-900">
-          <div class="flex h-16 shrink-0 items-center mb-4">
-            <%= if assigns[:current_organization] && assigns[:current_organization].logo_url do %>
-              <img
-                class="h-9 w-auto object-contain"
-                src={@current_organization.logo_url}
-                alt={@current_organization.brand_name || "Logo"}
-              />
-            <% else %>
-              <img class="h-8 w-auto" src={~p"/images/logo.svg"} alt="FieldHub" />
-            <% end %>
-            <div class="ml-3 flex flex-col">
-              <span class="text-lg font-bold text-zinc-900 dark:text-white tracking-tight leading-none">
-                {(assigns[:current_organization] && assigns[:current_organization].brand_name) ||
-                  "FieldHub"}
-              </span>
-            </div>
-          </div>
-          <nav class="flex flex-1 flex-col">
-            <ul role="list" class="flex flex-1 flex-col gap-y-6">
-              <li>
-                <div class="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-3 ml-2">
-                  Core
-                </div>
-                <ul role="list" class="-mx-2 space-y-1">
-                  <li>
-                    <.link
-                      navigate={~p"/dashboard"}
-                      class={nav_link_class(assigns[:current_nav] == :dashboard)}
-                    >
-                      <.icon
-                        name="hero-home"
-                        class={nav_icon_class(assigns[:current_nav] == :dashboard)}
-                      />
-                      <span class="font-bold">Dashboard</span>
-                    </.link>
-                  </li>
-                </ul>
-              </li>
+        <.icon name="hero-device-phone-mobile" class="h-5 w-5" />
+      </button>
 
-              <li>
-                <div class="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-3 ml-2">
-                  Operations
-                </div>
-                <ul role="list" class="-mx-2 space-y-1">
-                  <li>
-                    <.link
-                      navigate={~p"/jobs"}
-                      class={nav_link_class(assigns[:current_nav] == :jobs)}
-                    >
-                      <.icon
-                        name="hero-briefcase"
-                        class={nav_icon_class(assigns[:current_nav] == :jobs)}
-                      />
-                      <span class="font-bold">
-                        {(assigns[:terminology] || %{})["task_label_plural"] || "Jobs"}
-                      </span>
-                    </.link>
-                  </li>
-                  <li>
-                    <.link
-                      navigate={~p"/dispatch"}
-                      class={nav_link_class(assigns[:current_nav] == :dispatch)}
-                    >
-                      <.icon
-                        name="hero-calendar"
-                        class={nav_icon_class(assigns[:current_nav] == :dispatch)}
-                      />
-                      <span class="font-bold">Schedule</span>
-                    </.link>
-                  </li>
-                  <li>
-                    <.link
-                      navigate={~p"/technicians"}
-                      class={nav_link_class(assigns[:current_nav] == :technicians)}
-                    >
-                      <.icon
-                        name="hero-user-group"
-                        class={nav_icon_class(assigns[:current_nav] == :technicians)}
-                      />
-                      <span class="font-bold">
-                        {(assigns[:terminology] || %{})["worker_label_plural"] || "Technicians"}
-                      </span>
-                    </.link>
-                  </li>
-                </ul>
-              </li>
-
-              <li>
-                <div class="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-3 ml-2">
-                  CRM
-                </div>
-                <ul role="list" class="-mx-2 space-y-1">
-                  <li>
-                    <.link
-                      navigate={~p"/customers"}
-                      class={nav_link_class(assigns[:current_nav] == :customers)}
-                    >
-                      <.icon
-                        name="hero-users"
-                        class={nav_icon_class(assigns[:current_nav] == :customers)}
-                      />
-                      <span class="font-bold">
-                        {(assigns[:terminology] || %{})["client_label_plural"] || "Customers"}
-                      </span>
-                    </.link>
-                  </li>
-                  <li>
-                    <.link
-                      navigate={~p"/settings/branding"}
-                      class={nav_link_class(assigns[:current_nav] == :branding)}
-                    >
-                      <.icon
-                        name="hero-cursor-arrow-rays"
-                        class={nav_icon_class(assigns[:current_nav] == :branding)}
-                      />
-                      <span class="font-bold">Customer Portal</span>
-                    </.link>
-                  </li>
-                </ul>
-              </li>
-
-              <li>
-                <div class="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-3 ml-2">
-                  Finance
-                </div>
-                <ul role="list" class="-mx-2 space-y-1">
-                  <li>
-                    <.link
-                      navigate={~p"/invoices"}
-                      class={nav_link_class(assigns[:current_nav] == :invoices)}
-                    >
-                      <.icon
-                        name="hero-banknotes"
-                        class={nav_icon_class(assigns[:current_nav] == :invoices)}
-                      />
-                      <span class="font-bold">Invoices</span>
-                    </.link>
-                  </li>
-                </ul>
-              </li>
-
-              <li>
-                <div class="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-3 ml-2">
-                  Analytics
-                </div>
-                <ul role="list" class="-mx-2 space-y-1">
-                  <li>
-                    <.link
-                      navigate={~p"/reports"}
-                      class={nav_link_class(assigns[:current_nav] == :reports)}
-                    >
-                      <.icon
-                        name="hero-chart-bar"
-                        class={nav_icon_class(assigns[:current_nav] == :reports)}
-                      />
-                      <span class="font-bold">Reports</span>
-                    </.link>
-                  </li>
-                </ul>
-              </li>
-
-              <li>
-                <div class="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-3 ml-2">
-                  System
-                </div>
-                <ul role="list" class="-mx-2 space-y-1">
-                  <li>
-                    <.link
-                      navigate={~p"/settings/organization"}
-                      class={
-                        nav_link_class(
-                          assigns[:current_nav] in [
-                            :organization,
-                            :users,
-                            :billing,
-                            :notifications
-                          ]
-                        )
-                      }
-                    >
-                      <.icon
-                        name="hero-cog-6-tooth"
-                        class={
-                          nav_icon_class(
-                            assigns[:current_nav] in [
-                              :organization,
-                              :users,
-                              :billing,
-                              :notifications
-                            ]
-                          )
-                        }
-                      />
-                      <span class="font-bold">Settings</span>
-                    </.link>
-                  </li>
-                  <li>
-                    <.link
-                      navigate={~p"/settings/workflows"}
-                      class={
-                        nav_link_class(
-                          assigns[:current_nav] in [:workflows, :terminology, :custom_fields]
-                        )
-                      }
-                    >
-                      <.icon
-                        name="hero-cpu-chip"
-                        class={
-                          nav_icon_class(
-                            assigns[:current_nav] in [:workflows, :terminology, :custom_fields]
-                          )
-                        }
-                      />
-                      <span class="font-bold">Configure</span>
-                    </.link>
-                  </li>
-                </ul>
-              </li>
-            </ul>
-          </nav>
-        </div>
-      </div>
-    </div>
-  </div>
-  <!-- Static sidebar for desktop -->
-  <div class="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
-    <div class="flex grow flex-col gap-y-5 overflow-y-auto bg-white dark:bg-zinc-900 px-6 pb-4 border-r border-zinc-200 dark:border-zinc-800">
-      <div class="flex h-16 shrink-0 items-center mb-4">
-        <%= if assigns[:current_organization] && assigns[:current_organization].logo_url do %>
-          <img
-            class="h-9 w-auto object-contain"
-            src={@current_organization.logo_url}
-            alt={@current_organization.brand_name || "Logo"}
-          />
-        <% else %>
-          <img class="h-8 w-auto" src={~p"/images/logo.svg"} alt="FieldHub" />
-        <% end %>
-        <div class="ml-3 flex flex-col">
-          <span class="text-lg font-bold text-zinc-900 dark:text-white tracking-tight leading-none">
-            {(assigns[:current_organization] && assigns[:current_organization].brand_name) ||
-              "FieldHub"}
-          </span>
-        </div>
-      </div>
-      <nav class="flex flex-1 flex-col">
-        <ul role="list" class="flex flex-1 flex-col gap-y-6">
-          <li>
-            <div class="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-3 ml-2">
-              Core
-            </div>
-            <ul role="list" class="-mx-2 space-y-1">
-              <li>
-                <.link
-                  navigate={~p"/dashboard"}
-                  class={nav_link_class(assigns[:current_nav] == :dashboard)}
-                >
-                  <.icon
-                    name="hero-home"
-                    class={nav_icon_class(assigns[:current_nav] == :dashboard)}
-                  />
-                  <span class="font-bold">Dashboard</span>
-                </.link>
-              </li>
-            </ul>
-          </li>
-
-          <li>
-            <div class="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-3 ml-2">
-              Operations
-            </div>
-            <ul role="list" class="-mx-2 space-y-1">
-              <li>
-                <.link navigate={~p"/jobs"} class={nav_link_class(assigns[:current_nav] == :jobs)}>
-                  <.icon
-                    name="hero-briefcase"
-                    class={nav_icon_class(assigns[:current_nav] == :jobs)}
-                  />
-                  <span class="font-bold">
-                    {(assigns[:terminology] || %{})["task_label_plural"] || "Jobs"}
-                  </span>
-                </.link>
-              </li>
-              <li>
-                <.link
-                  navigate={~p"/dispatch"}
-                  class={nav_link_class(assigns[:current_nav] == :dispatch)}
-                >
-                  <.icon
-                    name="hero-calendar"
-                    class={nav_icon_class(assigns[:current_nav] == :dispatch)}
-                  />
-                  <span class="font-bold">Schedule</span>
-                </.link>
-              </li>
-              <li>
-                <.link
-                  navigate={~p"/technicians"}
-                  class={nav_link_class(assigns[:current_nav] == :technicians)}
-                >
-                  <.icon
-                    name="hero-user-group"
-                    class={nav_icon_class(assigns[:current_nav] == :technicians)}
-                  />
-                  <span class="font-bold">
-                    {(assigns[:terminology] || %{})["worker_label_plural"] || "Technicians"}
-                  </span>
-                </.link>
-              </li>
-            </ul>
-          </li>
-
-          <li>
-            <div class="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-3 ml-2">
-              CRM
-            </div>
-            <ul role="list" class="-mx-2 space-y-1">
-              <li>
-                <.link
-                  navigate={~p"/customers"}
-                  class={nav_link_class(assigns[:current_nav] == :customers)}
-                >
-                  <.icon
-                    name="hero-users"
-                    class={nav_icon_class(assigns[:current_nav] == :customers)}
-                  />
-                  <span class="font-bold">
-                    {(assigns[:terminology] || %{})["client_label_plural"] || "Customers"}
-                  </span>
-                </.link>
-              </li>
-              <li>
-                <.link
-                  navigate={~p"/settings/branding"}
-                  class={nav_link_class(assigns[:current_nav] == :branding)}
-                >
-                  <.icon
-                    name="hero-cursor-arrow-rays"
-                    class={nav_icon_class(assigns[:current_nav] == :branding)}
-                  />
-                  <span class="font-bold">Customer Portal</span>
-                </.link>
-              </li>
-            </ul>
-          </li>
-
-          <li>
-            <div class="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-3 ml-2">
-              Finance
-            </div>
-            <ul role="list" class="-mx-2 space-y-1">
-              <li>
-                <.link
-                  navigate={~p"/invoices"}
-                  class={nav_link_class(assigns[:current_nav] == :invoices)}
-                >
-                  <.icon
-                    name="hero-banknotes"
-                    class={nav_icon_class(assigns[:current_nav] == :invoices)}
-                  />
-                  <span class="font-bold">Invoices</span>
-                </.link>
-              </li>
-            </ul>
-          </li>
-
-          <li>
-            <div class="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-3 ml-2">
-              Analytics
-            </div>
-            <ul role="list" class="-mx-2 space-y-1">
-              <li>
-                <.link
-                  navigate={~p"/reports"}
-                  class={nav_link_class(assigns[:current_nav] == :reports)}
-                >
-                  <.icon
-                    name="hero-chart-bar"
-                    class={nav_icon_class(assigns[:current_nav] == :reports)}
-                  />
-                  <span class="font-bold">Reports</span>
-                </.link>
-              </li>
-            </ul>
-          </li>
-
-          <li>
-            <div class="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-3 ml-2">
-              System
-            </div>
-            <ul role="list" class="-mx-2 space-y-1">
-              <li>
-                <.link
-                  navigate={~p"/settings/organization"}
-                  class={
-                    nav_link_class(
-                      assigns[:current_nav] in [:organization, :users, :billing, :notifications]
-                    )
-                  }
-                >
-                  <.icon
-                    name="hero-cog-6-tooth"
-                    class={
-                      nav_icon_class(
-                        assigns[:current_nav] in [:organization, :users, :billing, :notifications]
-                      )
-                    }
-                  />
-                  <span class="font-bold">Settings</span>
-                </.link>
-              </li>
-              <li>
-                <.link
-                  navigate={~p"/settings/workflows"}
-                  class={
-                    nav_link_class(
-                      assigns[:current_nav] in [:workflows, :terminology, :custom_fields]
-                    )
-                  }
-                >
-                  <.icon
-                    name="hero-cpu-chip"
-                    class={
-                      nav_icon_class(
-                        assigns[:current_nav] in [:workflows, :terminology, :custom_fields]
-                      )
-                    }
-                  />
-                  <span class="font-bold">Configure</span>
-                </.link>
-              </li>
-            </ul>
-          </li>
-          
-<!-- PWA Install Banner -->
-          <li class="mt-auto pt-4 border-t border-zinc-200 dark:border-zinc-800">
-            <button
-              id="pwa-install-btn"
-              phx-hook="PWAInstall"
-              class="hidden w-full group flex items-center gap-x-3 rounded-xl p-3 text-sm font-semibold bg-gradient-to-r from-primary/10 to-teal-500/10 text-primary hover:from-primary/20 hover:to-teal-500/20 transition-all duration-300 border border-primary/20"
-            >
-              <.icon
-                name="hero-device-phone-mobile"
-                class="h-5 w-5 group-hover:scale-110 transition-transform"
-              />
-              <span class="flex-1 text-left">Install App</span>
-              <.icon
-                name="hero-arrow-down-tray"
-                class="h-4 w-4 opacity-60 group-hover:opacity-100"
-              />
-            </button>
-            
-<!-- Network Status -->
-            <div
-              id="network-status"
-              phx-hook="NetworkStatus"
-              class="flex items-center gap-2 p-2 mt-2 text-xs text-zinc-500"
-            >
-              <span data-indicator class="size-2 rounded-full bg-emerald-500"></span>
-              <span data-text>Online</span>
-            </div>
-          </li>
-        </ul>
-      </nav>
-    </div>
-  </div>
-
-  <div class="lg:pl-72 w-full flex flex-col h-full overflow-hidden">
+      <.user_account_item
+        current_user={@current_user}
+        collapsed={assigns[:sidebar_collapsed] || false}
+      />
+    </:footer>
+  </.sidebar>
+  
+<!-- Main Content Wrapper -->
+  <div class={[
+    "flex flex-col h-full overflow-hidden transition-all duration-300 ease-in-out w-full",
+    if(assigns[:sidebar_collapsed], do: "lg:pl-[64px]", else: "lg:pl-72")
+  ]}>
     <!-- Top Bar -->
     <div class="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
       <button
         type="button"
         class="-m-2.5 p-2.5 text-zinc-700 dark:text-zinc-200 lg:hidden"
         phx-click={
-          JS.show(to: "#mobile-sidebar")
-          |> JS.show(
-            to: "#mobile-sidebar-backdrop",
-            transition: {"ease-linear duration-300", "opacity-0", "opacity-100"}
-          )
+          JS.show(to: "#mobile-sidebar-backdrop")
           |> JS.show(
             to: "#mobile-sidebar-panel",
-            transition: {"ease-in-out duration-300", "-translate-x-full", "translate-x-0"}
+            transition: {"translate-x-full", "-translate-x-full", "translate-x-0"}
           )
         }
       >

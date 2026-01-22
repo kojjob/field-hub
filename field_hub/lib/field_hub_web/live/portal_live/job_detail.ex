@@ -117,16 +117,16 @@ defmodule FieldHubWeb.PortalLive.JobDetail do
               navigate={~p"/portal"}
               class="inline-flex items-center gap-2 text-sm font-bold text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition-colors mb-4"
             >
-              <.icon name="hero-arrow-left" class="size-4" />
-              Back to Dashboard
+              <.icon name="hero-arrow-left" class="size-4" /> Back to Dashboard
             </.link>
             <div class="flex items-center gap-3 mb-1">
               <span class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400">
                 Job {@job.number}
               </span>
               <%= if @job.status == "en_route" do %>
-                 <span class="relative flex h-2.5 w-2.5">
-                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                <span class="relative flex h-2.5 w-2.5">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75">
+                  </span>
                   <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary"></span>
                 </span>
               <% end %>
