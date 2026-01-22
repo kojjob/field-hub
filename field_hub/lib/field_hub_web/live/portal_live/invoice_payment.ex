@@ -96,7 +96,7 @@ defmodule FieldHubWeb.PortalLive.InvoicePayment do
           <div class="p-8 text-center border-b border-zinc-100 dark:border-zinc-800 bg-gradient-to-br from-primary/5 to-transparent">
             <p class="text-sm text-zinc-500 mb-2">Amount Due</p>
             <p class="text-5xl font-black text-zinc-900 dark:text-white tracking-tight">
-              ${format_money(@invoice.total_amount)}
+              {currency_symbol(@invoice.organization.currency)}{format_money(@invoice.total_amount)}
             </p>
             <p class="text-sm text-zinc-500 mt-2">
               Due by {format_date(@invoice.due_date)}
@@ -171,7 +171,7 @@ defmodule FieldHubWeb.PortalLive.InvoicePayment do
                   Processing...
                 <% else %>
                   <.icon name="hero-credit-card" class="size-6" />
-                  Pay ${format_money(@invoice.total_amount)} Now
+                  Pay {currency_symbol(@invoice.organization.currency)}{format_money(@invoice.total_amount)} Now
                 <% end %>
               </button>
 
@@ -230,4 +230,17 @@ defmodule FieldHubWeb.PortalLive.InvoicePayment do
     do: :erlang.float_to_binary(amount / 1, decimals: 2)
 
   defp format_money(_), do: "0.00"
+
+  # Currency symbol mapping based on ISO 4217 currency codes
+  defp currency_symbol("USD"), do: "$"
+  defp currency_symbol("EUR"), do: "€"
+  defp currency_symbol("GBP"), do: "£"
+  defp currency_symbol("NGN"), do: "₦"
+  defp currency_symbol("GHS"), do: "₵"
+  defp currency_symbol("KES"), do: "KSh"
+  defp currency_symbol("ZAR"), do: "R"
+  defp currency_symbol("INR"), do: "₹"
+  defp currency_symbol("CAD"), do: "C$"
+  defp currency_symbol("AUD"), do: "A$"
+  defp currency_symbol(_), do: "$"
 end

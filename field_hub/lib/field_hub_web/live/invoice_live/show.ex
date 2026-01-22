@@ -188,7 +188,7 @@ defmodule FieldHubWeb.InvoiceLive.Show do
         {:noreply,
          socket
          |> assign(:invoice, refreshed_invoice)
-         |> put_flash(:info, "Invoice totals recalculated: $#{format_money(total_amount)}")}
+         |> put_flash(:info, "Invoice totals recalculated: #{currency_symbol(socket.assigns.current_organization.currency)}#{format_money(total_amount)}")}
 
       {:error, _changeset} ->
         {:noreply, put_flash(socket, :error, "Failed to recalculate totals")}
@@ -355,7 +355,7 @@ defmodule FieldHubWeb.InvoiceLive.Show do
               <% end %>
               <span class="text-zinc-900 dark:text-white font-semibold">GENERATE INVOICE</span>
             </nav>
-            
+
     <!-- Action Buttons -->
             <div class="flex items-center gap-3">
               <button
@@ -377,7 +377,7 @@ defmodule FieldHubWeb.InvoiceLive.Show do
           </div>
         </div>
       </header>
-      
+
     <!-- Page Header -->
       <div class="max-w-[1600px] mx-auto px-6 py-6 print:hidden">
         <div class="flex items-center justify-between">
@@ -393,7 +393,7 @@ defmodule FieldHubWeb.InvoiceLive.Show do
           </button>
         </div>
       </div>
-      
+
     <!-- Main Content - Two Column Layout -->
       <div class="max-w-[1600px] mx-auto px-6 pb-12">
         <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
@@ -427,7 +427,7 @@ defmodule FieldHubWeb.InvoiceLive.Show do
                       </div>
                     </div>
                   </div>
-                  
+
     <!-- Invoice Info -->
                   <div class="text-right">
                     <h2 class="text-4xl font-black text-zinc-900 dark:text-white tracking-tight">
@@ -456,7 +456,7 @@ defmodule FieldHubWeb.InvoiceLive.Show do
                   </div>
                 </div>
               </div>
-              
+
     <!-- Bill To / Service Location -->
               <div class="px-8 sm:px-10 pb-8">
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-8">
@@ -487,7 +487,7 @@ defmodule FieldHubWeb.InvoiceLive.Show do
                       <% end %>
                     </div>
                   </div>
-                  
+
     <!-- Service Location -->
                   <%= if @job do %>
                     <div>
@@ -511,7 +511,7 @@ defmodule FieldHubWeb.InvoiceLive.Show do
                   <% end %>
                 </div>
               </div>
-              
+
     <!-- Line Items Table -->
               <div class="border-t border-zinc-100 dark:border-zinc-800">
                 <table class="w-full">
@@ -549,14 +549,14 @@ defmodule FieldHubWeb.InvoiceLive.Show do
                           {format_decimal(@invoice.labor_hours)}
                         </td>
                         <td class="px-4 py-5 text-right text-zinc-600 dark:text-zinc-300">
-                          ${format_money(@invoice.labor_rate)}
+                          {currency_symbol(@current_organization.currency)}{format_money(@invoice.labor_rate)}
                         </td>
                         <td class="px-8 sm:px-10 py-5 text-right font-semibold text-zinc-900 dark:text-white">
-                          ${format_money(@invoice.labor_amount)}
+                          {currency_symbol(@current_organization.currency)}{format_money(@invoice.labor_amount)}
                         </td>
                       </tr>
                     <% end %>
-                    
+
     <!-- Parts & Materials -->
                     <%= if Decimal.gt?(@invoice.parts_amount, Decimal.new(0)) do %>
                       <tr>
@@ -572,14 +572,14 @@ defmodule FieldHubWeb.InvoiceLive.Show do
                           —
                         </td>
                         <td class="px-4 py-5 text-right text-zinc-600 dark:text-zinc-300">
-                          ${format_money(@invoice.parts_amount)}
+                          {currency_symbol(@current_organization.currency)}{format_money(@invoice.parts_amount)}
                         </td>
                         <td class="px-8 sm:px-10 py-5 text-right font-semibold text-zinc-900 dark:text-white">
-                          ${format_money(@invoice.parts_amount)}
+                          {currency_symbol(@current_organization.currency)}{format_money(@invoice.parts_amount)}
                         </td>
                       </tr>
                     <% end %>
-                    
+
     <!-- Dynamic Line Items -->
                     <%= for item <- @invoice.line_items || [] do %>
                       <tr>
@@ -597,17 +597,17 @@ defmodule FieldHubWeb.InvoiceLive.Show do
                           {format_decimal(item.quantity)}
                         </td>
                         <td class="px-4 py-5 text-right text-zinc-600 dark:text-zinc-300">
-                          ${format_money(item.unit_price)}
+                          {currency_symbol(@current_organization.currency)}{format_money(item.unit_price)}
                         </td>
                         <td class="px-8 sm:px-10 py-5 text-right font-semibold text-zinc-900 dark:text-white">
-                          ${format_money(item.amount)}
+                          {currency_symbol(@current_organization.currency)}{format_money(item.amount)}
                         </td>
                       </tr>
                     <% end %>
                   </tbody>
                 </table>
               </div>
-              
+
     <!-- Totals Section -->
               <div class="px-8 sm:px-10 py-8 border-t border-zinc-100 dark:border-zinc-800">
                 <div class="flex justify-end">
@@ -615,7 +615,7 @@ defmodule FieldHubWeb.InvoiceLive.Show do
                     <div class="flex justify-between">
                       <span class="text-zinc-500">Subtotal</span>
                       <span class="font-medium text-zinc-900 dark:text-white">
-                        ${format_money(subtotal(@invoice))}
+                        {currency_symbol(@current_organization.currency)}{format_money(subtotal(@invoice))}
                       </span>
                     </div>
 
@@ -623,7 +623,7 @@ defmodule FieldHubWeb.InvoiceLive.Show do
                       <div class="flex justify-between">
                         <span class="text-primary">Discount (First Time Service)</span>
                         <span class="font-medium text-primary">
-                          -${format_money(@invoice.discount_amount)}
+                          -{currency_symbol(@current_organization.currency)}{format_money(@invoice.discount_amount)}
                         </span>
                       </div>
                     <% end %>
@@ -633,20 +633,20 @@ defmodule FieldHubWeb.InvoiceLive.Show do
                         Sales Tax ({format_decimal(@invoice.tax_rate)}%)
                       </span>
                       <span class="font-medium text-zinc-900 dark:text-white">
-                        ${format_money(@invoice.tax_amount)}
+                        {currency_symbol(@current_organization.currency)}{format_money(@invoice.tax_amount)}
                       </span>
                     </div>
 
                     <div class="pt-4 mt-4 border-t border-zinc-200 dark:border-zinc-700 flex justify-between items-center">
                       <span class="text-base font-bold text-zinc-900 dark:text-white">TOTAL</span>
                       <span class="text-2xl font-black text-primary">
-                        ${format_money(@invoice.total_amount)}
+                        {currency_symbol(@current_organization.currency)}{format_money(@invoice.total_amount)}
                       </span>
                     </div>
                   </div>
                 </div>
               </div>
-              
+
     <!-- Terms & Notes -->
               <%= if @invoice.notes || @invoice.terms do %>
                 <div class="px-8 sm:px-10 py-6 border-t border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-800/20">
@@ -660,7 +660,7 @@ defmodule FieldHubWeb.InvoiceLive.Show do
               <% end %>
             </div>
           </div>
-          
+
     <!-- Right Column: Adjustments Sidebar -->
           <div class="xl:col-span-1 print:hidden space-y-3">
             <!-- Adjustments Header -->
@@ -668,7 +668,7 @@ defmodule FieldHubWeb.InvoiceLive.Show do
               <.icon name="hero-adjustments-horizontal" class="size-5 text-violet-600" />
               <h2 class="text-base font-semibold text-zinc-800 dark:text-white">Adjustments</h2>
             </div>
-            
+
     <!-- Labor Hours Section -->
             <div class="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-100 dark:border-zinc-800 shadow-sm overflow-hidden">
               <button
@@ -709,7 +709,7 @@ defmodule FieldHubWeb.InvoiceLive.Show do
                         </span>
                       </div>
                     </div>
-                    
+
     <!-- Input Row -->
                     <div class="flex items-center gap-2">
                       <div class="flex-1">
@@ -735,7 +735,7 @@ defmodule FieldHubWeb.InvoiceLive.Show do
                         />
                       </div>
                     </div>
-                    
+
     <!-- Add Row Button - Dashed Style -->
                     <button
                       phx-click="add_labor_row"
@@ -747,7 +747,7 @@ defmodule FieldHubWeb.InvoiceLive.Show do
                 </div>
               <% end %>
             </div>
-            
+
     <!-- Parts & Materials Section -->
             <div class="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-100 dark:border-zinc-800 shadow-sm overflow-hidden">
               <button
@@ -782,17 +782,17 @@ defmodule FieldHubWeb.InvoiceLive.Show do
                                 {item.description}
                               </span>
                               <span class="text-[10px] text-zinc-400">
-                                {format_decimal(item.quantity)} × ${format_money(item.unit_price)}
+                                {format_decimal(item.quantity)} × {currency_symbol(@current_organization.currency)}{format_money(item.unit_price)}
                               </span>
                             </div>
                             <span class="text-xs font-medium text-zinc-900 dark:text-white ml-2">
-                              ${format_money(item.amount)}
+                              {currency_symbol(@current_organization.currency)}{format_money(item.amount)}
                             </span>
                           </div>
                         <% end %>
                       </div>
                     <% end %>
-                    
+
     <!-- Total Parts -->
                     <%= if Decimal.gt?(@invoice.parts_amount || Decimal.new(0), Decimal.new(0)) do %>
                       <div class="flex items-center justify-between py-2 border-t border-zinc-100 dark:border-zinc-700">
@@ -800,7 +800,7 @@ defmodule FieldHubWeb.InvoiceLive.Show do
                           Total Parts
                         </span>
                         <span class="text-sm font-semibold text-zinc-900 dark:text-white">
-                          ${format_money(@invoice.parts_amount)}
+                          {currency_symbol(@current_organization.currency)}{format_money(@invoice.parts_amount)}
                         </span>
                       </div>
                     <% else %>
@@ -818,7 +818,7 @@ defmodule FieldHubWeb.InvoiceLive.Show do
                 </div>
               <% end %>
             </div>
-            
+
     <!-- Discounts & Fees Section -->
             <div class="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-100 dark:border-zinc-800 shadow-sm overflow-hidden">
               <button
@@ -856,7 +856,7 @@ defmodule FieldHubWeb.InvoiceLive.Show do
                         <.icon name="hero-trash" class="size-4" />
                       </button>
                     </div>
-                    
+
     <!-- Info Box -->
                     <div class="mt-3 px-3 py-2 bg-amber-50/80 dark:bg-amber-900/20 rounded-lg">
                       <p class="text-[10px] text-amber-700 dark:text-amber-400 flex items-start gap-1.5">
@@ -868,7 +868,7 @@ defmodule FieldHubWeb.InvoiceLive.Show do
                 </div>
               <% end %>
             </div>
-            
+
     <!-- Tax Settings Section -->
             <div class="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-100 dark:border-zinc-800 shadow-sm overflow-hidden">
               <button
@@ -909,7 +909,7 @@ defmodule FieldHubWeb.InvoiceLive.Show do
                 </div>
               <% end %>
             </div>
-            
+
     <!-- Summary Card - Dark Navy Theme -->
             <div
               class="rounded-xl p-4 shadow-lg mt-4"
@@ -922,10 +922,10 @@ defmodule FieldHubWeb.InvoiceLive.Show do
                     SUBTOTAL
                   </span>
                   <span class="text-sm font-bold text-white">
-                    ${format_money(subtotal(@invoice))}
+                    {currency_symbol(@current_organization.currency)}{format_money(subtotal(@invoice))}
                   </span>
                 </div>
-                
+
     <!-- Adjustments Row -->
                 <%= if Decimal.gt?(@invoice.discount_amount || Decimal.new(0), Decimal.new(0)) do %>
                   <div class="flex justify-between items-center">
@@ -933,14 +933,14 @@ defmodule FieldHubWeb.InvoiceLive.Show do
                       ADJUSTMENTS
                     </span>
                     <span class="text-sm font-bold text-pink-400">
-                      -${format_money(@invoice.discount_amount)}
+                      -{currency_symbol(@current_organization.currency)}{format_money(@invoice.discount_amount)}
                     </span>
                   </div>
                 <% end %>
-                
+
     <!-- Divider -->
                 <div class="border-t border-slate-600/50 my-2"></div>
-                
+
     <!-- Total Section -->
                 <div class="flex justify-between items-end">
                   <div>
@@ -948,7 +948,7 @@ defmodule FieldHubWeb.InvoiceLive.Show do
                       TOTAL INVOICE AMOUNT
                     </span>
                     <p class="text-xl font-black text-white mt-0.5 tracking-tight">
-                      ${format_money(@invoice.total_amount)}
+                      {currency_symbol(@current_organization.currency)}{format_money(@invoice.total_amount)}
                     </p>
                   </div>
                   <button
@@ -964,7 +964,7 @@ defmodule FieldHubWeb.InvoiceLive.Show do
           </div>
         </div>
       </div>
-      
+
     <!-- Add Labor Modal -->
       <%= if @show_labor_modal do %>
         <div
@@ -976,7 +976,7 @@ defmodule FieldHubWeb.InvoiceLive.Show do
           <!-- Background overlay -->
           <div class="fixed inset-0 bg-zinc-900/75 transition-opacity" phx-click="close_labor_modal">
           </div>
-          
+
     <!-- Modal panel -->
           <div class="relative bg-white dark:bg-zinc-900 rounded-2xl shadow-xl w-full max-w-md p-6 z-10">
             <div class="flex items-center justify-between mb-4">
@@ -1056,7 +1056,7 @@ defmodule FieldHubWeb.InvoiceLive.Show do
           </div>
         </div>
       <% end %>
-      
+
     <!-- Add Part Modal -->
       <%= if @show_part_modal do %>
         <div
@@ -1068,7 +1068,7 @@ defmodule FieldHubWeb.InvoiceLive.Show do
           <!-- Background overlay -->
           <div class="fixed inset-0 bg-zinc-900/75 transition-opacity" phx-click="close_part_modal">
           </div>
-          
+
     <!-- Modal panel -->
           <div class="relative bg-white dark:bg-zinc-900 rounded-2xl shadow-xl w-full max-w-md p-6 z-10">
             <div class="flex items-center justify-between mb-4">
@@ -1178,4 +1178,47 @@ defmodule FieldHubWeb.InvoiceLive.Show do
   defp default_terms do
     "Please pay this invoice within 15 days of issue. A late fee of 1.5% per month may be applied to overdue balances. Work guaranteed for 90 days from the date of service. For any questions regarding this billing, please contact our support desk."
   end
+
+  # Currency symbol mapping based on ISO 4217 currency codes
+  defp currency_symbol("USD"), do: "$"
+  defp currency_symbol("EUR"), do: "€"
+  defp currency_symbol("GBP"), do: "£"
+  defp currency_symbol("JPY"), do: "¥"
+  defp currency_symbol("CNY"), do: "¥"
+  defp currency_symbol("KRW"), do: "₩"
+  defp currency_symbol("INR"), do: "₹"
+  defp currency_symbol("RUB"), do: "₽"
+  defp currency_symbol("BRL"), do: "R$"
+  defp currency_symbol("CAD"), do: "C$"
+  defp currency_symbol("AUD"), do: "A$"
+  defp currency_symbol("CHF"), do: "CHF"
+  defp currency_symbol("MXN"), do: "$"
+  defp currency_symbol("ZAR"), do: "R"
+  defp currency_symbol("NGN"), do: "₦"
+  defp currency_symbol("GHS"), do: "₵"
+  defp currency_symbol("KES"), do: "KSh"
+  defp currency_symbol("AED"), do: "د.إ"
+  defp currency_symbol("SAR"), do: "﷼"
+  defp currency_symbol("SGD"), do: "S$"
+  defp currency_symbol("HKD"), do: "HK$"
+  defp currency_symbol("NZD"), do: "NZ$"
+  defp currency_symbol("SEK"), do: "kr"
+  defp currency_symbol("NOK"), do: "kr"
+  defp currency_symbol("DKK"), do: "kr"
+  defp currency_symbol("PLN"), do: "zł"
+  defp currency_symbol("THB"), do: "฿"
+  defp currency_symbol("PHP"), do: "₱"
+  defp currency_symbol("IDR"), do: "Rp"
+  defp currency_symbol("MYR"), do: "RM"
+  defp currency_symbol("VND"), do: "₫"
+  defp currency_symbol("TRY"), do: "₺"
+  defp currency_symbol("ILS"), do: "₪"
+  defp currency_symbol("EGP"), do: "£"
+  defp currency_symbol("PKR"), do: "₨"
+  defp currency_symbol("BDT"), do: "৳"
+  defp currency_symbol("COP"), do: "$"
+  defp currency_symbol("ARS"), do: "$"
+  defp currency_symbol("CLP"), do: "$"
+  defp currency_symbol("PEN"), do: "S/"
+  defp currency_symbol(_), do: "$"
 end

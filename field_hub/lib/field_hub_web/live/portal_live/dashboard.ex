@@ -141,7 +141,7 @@ defmodule FieldHubWeb.PortalLive.Dashboard do
               />
               <.kpi_widget
                 label="Lifetime Value"
-                value={"$#{format_money(@lifetime_invoiced)}"}
+                value={"#{currency_symbol(@customer.organization.currency)}#{format_money(@lifetime_invoiced)}"}
                 subtext="Invoiced"
                 icon="hero-banknotes"
                 color="zinc"
@@ -273,7 +273,7 @@ defmodule FieldHubWeb.PortalLive.Dashboard do
                   <%= for invoice <- @unpaid_invoices do %>
                     <div class="bg-white/60 dark:bg-zinc-900/60 rounded-xl p-3 flex items-center justify-between border border-amber-200/50 dark:border-amber-900/30">
                        <span class="text-xs font-bold text-zinc-700 dark:text-zinc-300">#{invoice.number}</span>
-                       <span class="text-sm font-black text-amber-600 dark:text-amber-500">${format_money(invoice.total_amount)}</span>
+                       <span class="text-sm font-black text-amber-600 dark:text-amber-500">{currency_symbol(@customer.organization.currency)}{format_money(invoice.total_amount)}</span>
                     </div>
                   <% end %>
                 </div>
@@ -565,4 +565,21 @@ defmodule FieldHubWeb.PortalLive.Dashboard do
   defp format_date(%Date{} = d), do: Calendar.strftime(d, "%b %d, %Y")
   defp format_date(%DateTime{} = dt), do: Calendar.strftime(dt, "%b %d, %Y")
   defp format_date(_), do: "N/A"
+
+  # Currency symbol mapping based on ISO 4217 currency codes
+  defp currency_symbol("USD"), do: "$"
+  defp currency_symbol("EUR"), do: "€"
+  defp currency_symbol("GBP"), do: "£"
+  defp currency_symbol("JPY"), do: "¥"
+  defp currency_symbol("CNY"), do: "¥"
+  defp currency_symbol("KRW"), do: "₩"
+  defp currency_symbol("INR"), do: "₹"
+  defp currency_symbol("BRL"), do: "R$"
+  defp currency_symbol("CAD"), do: "C$"
+  defp currency_symbol("AUD"), do: "A$"
+  defp currency_symbol("NGN"), do: "₦"
+  defp currency_symbol("GHS"), do: "₵"
+  defp currency_symbol("KES"), do: "KSh"
+  defp currency_symbol("ZAR"), do: "R"
+  defp currency_symbol(_), do: "$"
 end

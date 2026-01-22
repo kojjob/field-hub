@@ -80,7 +80,7 @@ defmodule FieldHubWeb.PortalLive.Invoices do
                   </div>
                   <div class="text-right">
                     <p class="text-2xl font-black text-zinc-900 dark:text-white tracking-tight group-hover:text-primary transition-colors">
-                      ${format_money(invoice.total_amount)}
+                      {currency_symbol(@customer.organization.currency)}{format_money(invoice.total_amount)}
                     </p>
                     <div class="flex items-center justify-end gap-1 text-xs text-primary font-bold mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
                       View Details <.icon name="hero-arrow-right" class="size-3" />
@@ -114,4 +114,17 @@ defmodule FieldHubWeb.PortalLive.Invoices do
   defp status_badge_class("overdue"), do: "bg-red-50 text-red-700"
   defp status_badge_class("cancelled"), do: "bg-zinc-50 text-zinc-500"
   defp status_badge_class(_), do: "bg-zinc-100 text-zinc-600"
+
+  # Currency symbol mapping based on ISO 4217 currency codes
+  defp currency_symbol("USD"), do: "$"
+  defp currency_symbol("EUR"), do: "€"
+  defp currency_symbol("GBP"), do: "£"
+  defp currency_symbol("NGN"), do: "₦"
+  defp currency_symbol("GHS"), do: "₵"
+  defp currency_symbol("KES"), do: "KSh"
+  defp currency_symbol("ZAR"), do: "R"
+  defp currency_symbol("INR"), do: "₹"
+  defp currency_symbol("CAD"), do: "C$"
+  defp currency_symbol("AUD"), do: "A$"
+  defp currency_symbol(_), do: "$"
 end

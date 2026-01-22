@@ -53,21 +53,28 @@
         
 <!-- Mobile Sidebar Content -->
         <div class="flex grow flex-col gap-y-5 overflow-y-auto px-6 pb-4 bg-white dark:bg-zinc-900">
-          <div class="flex h-16 shrink-0 items-center mb-4">
-            <%= if assigns[:current_organization] && assigns[:current_organization].logo_url do %>
-              <img
-                class="h-9 w-auto object-contain"
-                src={@current_organization.logo_url}
-                alt={@current_organization.brand_name || "Logo"}
-              />
-            <% else %>
-              <img class="h-8 w-auto" src={~p"/images/logo.svg"} alt="FieldHub" />
-            <% end %>
-            <div class="ml-3 flex flex-col">
-              <span class="text-lg font-bold text-zinc-900 dark:text-white tracking-tight leading-none">
-                {(assigns[:current_organization] && assigns[:current_organization].brand_name) ||
-                  "FieldHub"}
-              </span>
+          <div class="p-6 -mx-6 border-b border-zinc-200 dark:border-zinc-800">
+            <div class="flex items-center gap-3">
+              <%= if assigns[:current_organization] && assigns[:current_organization].logo_url do %>
+                <div class="size-10 rounded-xl overflow-hidden flex-shrink-0">
+                  <img
+                    class="h-full w-full object-contain"
+                    src={@current_organization.logo_url}
+                    alt={@current_organization.brand_name || "Logo"}
+                  />
+                </div>
+              <% else %>
+                <div class="size-10 bg-primary rounded-xl flex items-center justify-center text-white flex-shrink-0">
+                <span class="material-symbols-outlined text-xl">grid_view</span>
+              </div>
+              <% end %>
+              <div>
+                <h1 class="text-lg font-bold text-zinc-900 dark:text-white leading-tight tracking-tight">
+                  {(assigns[:current_organization] && assigns[:current_organization].brand_name) ||
+                    "FieldHub"}
+                </h1>
+                <p class="text-xs text-primary font-semibold tracking-wider uppercase">Enterprise</p>
+              </div>
             </div>
           </div>
           <nav class="flex flex-1 flex-col">
@@ -280,21 +287,28 @@
   <!-- Static sidebar for desktop -->
   <div class="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
     <div class="flex grow flex-col gap-y-5 overflow-y-auto bg-white dark:bg-zinc-900 px-6 pb-4 border-r border-zinc-200 dark:border-zinc-800">
-      <div class="flex h-16 shrink-0 items-center mb-4">
-        <%= if assigns[:current_organization] && assigns[:current_organization].logo_url do %>
-          <img
-            class="h-9 w-auto object-contain"
-            src={@current_organization.logo_url}
-            alt={@current_organization.brand_name || "Logo"}
-          />
-        <% else %>
-          <img class="h-8 w-auto" src={~p"/images/logo.svg"} alt="FieldHub" />
-        <% end %>
-        <div class="ml-3 flex flex-col">
-          <span class="text-lg font-bold text-zinc-900 dark:text-white tracking-tight leading-none">
-            {(assigns[:current_organization] && assigns[:current_organization].brand_name) ||
-              "FieldHub"}
-          </span>
+      <div class="p-6 -mx-6 border-b border-zinc-200 dark:border-zinc-800">
+        <div class="flex items-center gap-3">
+          <%= if assigns[:current_organization] && assigns[:current_organization].logo_url do %>
+            <div class="size-10 rounded-xl overflow-hidden flex-shrink-0">
+              <img
+                class="h-full w-full object-contain"
+                src={@current_organization.logo_url}
+                alt={@current_organization.brand_name || "Logo"}
+              />
+            </div>
+          <% else %>
+            <div class="size-10 bg-primary rounded-xl flex items-center justify-center text-white flex-shrink-0">
+              <span class="material-symbols-outlined text-xl">grid_view</span>
+            </div>
+          <% end %>
+          <div>
+            <h1 class="text-lg font-bold text-zinc-900 dark:text-white leading-tight tracking-tight">
+              {(assigns[:current_organization] && assigns[:current_organization].brand_name) ||
+                "FieldHub"}
+            </h1>
+            <p class="text-xs text-primary font-semibold tracking-wider uppercase">Enterprise</p>
+          </div>
         </div>
       </div>
       <nav class="flex flex-1 flex-col">
@@ -516,6 +530,29 @@
           </li>
         </ul>
       </nav>
+
+      <!-- User Profile Footer -->
+      <div class="p-4 border-t border-zinc-200 dark:border-zinc-800">
+        <div class="bg-zinc-100 dark:bg-zinc-800 p-3 rounded-xl flex items-center gap-3">
+          <div
+            class="size-10 rounded-full bg-cover bg-center border-2 border-primary flex-shrink-0"
+            style={"background-image: url('#{@current_user && (@current_user.avatar_url || "https://ui-avatars.com/api/?name=#{@current_user.name || @current_user.email}&background=10b981&color=fff")}');"}
+          >
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-xs font-bold text-zinc-900 dark:text-white truncate">
+              {(@current_user && (@current_user.name || @current_user.email)) || "User"}
+            </p>
+            <p class="text-[10px] text-zinc-500 uppercase font-semibold">Admin Mode</p>
+          </div>
+          <.link
+            navigate={~p"/users/settings"}
+            class="text-zinc-400 hover:text-primary transition-colors"
+          >
+            <.icon name="hero-cog-6-tooth" class="size-5" />
+          </.link>
+        </div>
+      </div>
     </div>
   </div>
 

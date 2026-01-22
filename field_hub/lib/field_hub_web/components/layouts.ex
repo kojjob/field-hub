@@ -156,7 +156,7 @@ defmodule FieldHubWeb.Layouts do
             {@current_user.email}
           </p>
         </div>
-        
+
     <!-- Account Section -->
         <div class="py-1">
           <div class="px-3 py-1.5 text-xs font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">
@@ -185,7 +185,7 @@ defmodule FieldHubWeb.Layouts do
             /> Settings
           </.link>
         </div>
-        
+
     <!-- Organization Section -->
         <%= if @current_organization do %>
           <div class="py-1">
@@ -216,7 +216,7 @@ defmodule FieldHubWeb.Layouts do
             </.link>
           </div>
         <% end %>
-        
+
     <!-- Help Section -->
         <div class="py-1">
           <.link
@@ -242,7 +242,7 @@ defmodule FieldHubWeb.Layouts do
             /> API Documentation
           </.link>
         </div>
-        
+
     <!-- Logout -->
         <div class="py-1">
           <.link
@@ -347,17 +347,17 @@ defmodule FieldHubWeb.Layouts do
 
   def nav_link_class(active) do
     if active do
-      "bg-primary/10 text-primary group flex items-center gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-bold transition-all duration-200 border-l-2 border-primary"
+      "bg-primary text-white group flex items-center gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-bold shadow-lg shadow-primary/20 transition-all duration-200"
     else
-      "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white group flex items-center gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-semibold transition-all duration-200 border-l-2 border-transparent"
+      "text-zinc-600 dark:text-zinc-400 hover:bg-primary/10 hover:text-primary dark:hover:text-primary group flex items-center gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-medium transition-all duration-200"
     end
   end
 
   def nav_icon_class(active) do
     if active do
-      "h-5 w-5 shrink-0 text-primary"
+      "h-5 w-5 shrink-0 text-white"
     else
-      "h-5 w-5 shrink-0 text-zinc-400 dark:text-zinc-500 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors"
+      "h-5 w-5 shrink-0 text-zinc-400 dark:text-zinc-500 group-hover:text-primary transition-colors"
     end
   end
 end
