@@ -73,8 +73,7 @@ defmodule FieldHubWeb.PortalLive.InvoiceDetail do
               navigate={~p"/portal/invoices"}
               class="inline-flex items-center gap-2 text-sm font-bold text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition-colors mb-4"
             >
-              <.icon name="hero-arrow-left" class="size-4" />
-              Back to Invoices
+              <.icon name="hero-arrow-left" class="size-4" /> Back to Invoices
             </.link>
             <div class="flex items-center gap-3 mb-1">
               <span class={"inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-widest #{status_badge_class(@invoice.status)}"}>

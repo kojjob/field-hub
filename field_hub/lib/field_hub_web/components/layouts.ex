@@ -345,19 +345,235 @@ defmodule FieldHubWeb.Layouts do
     """
   end
 
-  def nav_link_class(active) do
-    if active do
-      "bg-primary text-white group flex items-center gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-bold shadow-lg shadow-primary/20 transition-all duration-200"
-    else
-      "text-zinc-600 dark:text-zinc-400 hover:bg-primary/10 hover:text-primary dark:hover:text-primary group flex items-center gap-x-3 rounded-xl p-2.5 text-sm leading-6 font-medium transition-all duration-200"
-    end
+  @doc """
+  Renders the efficient, collapsible sidebar.
+  """
+  attr :current_user, :map, required: true
+  attr :active_tab, :atom, default: nil
+  attr :collapsed, :boolean, default: false
+
+  slot :header
+  slot :groups
+  slot :footer
+
+  def sidebar(assigns) do
+    ~H"""
+    <!-- Mobile Sidebar Overlay -->
+    <div
+      id="mobile-sidebar-backdrop"
+      class="fixed inset-0 z-50 bg-zinc-900/80 backdrop-blur-sm lg:hidden hidden"
+      aria-hidden="true"
+      phx-click={
+        JS.hide(to: "#mobile-sidebar-backdrop")
+        |> JS.hide(to: "#mobile-sidebar-panel", transition: "translate-x-full")
+      }
+    >
+    </div>
+
+    <!-- Mobile Sidebar Panel -->
+    <div
+      id="mobile-sidebar-panel"
+      class="fixed inset-y-0 left-0 z-50 w-72 bg-white dark:bg-zinc-900 shadow-2xl transform -translate-x-full transition-transform duration-300 ease-in-out lg:hidden hidden"
+    >
+      <div class="flex h-full flex-col overflow-y-auto px-6 py-6">
+        {render_slot(@header)}
+        <nav class="flex-1 space-y-8 mt-8">
+          {render_slot(@groups)}
+        </nav>
+        <div class="mt-auto">
+          {render_slot(@footer, %{context: :mobile})}
+        </div>
+      </div>
+    </div>
+
+    <!-- Desktop Sidebar -->
+    <div
+      id="desktop-sidebar"
+      class={[
+        "hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:flex-col border-r border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 transition-all duration-300 ease-in-out",
+        if(@collapsed, do: "w-[64px]", else: "w-72")
+      ]}
+    >
+      <!-- Header -->
+      <div class={[
+        "flex h-16 shrink-0 items-center transition-all duration-300",
+        if(@collapsed, do: "justify-center px-0", else: "justify-between px-6")
+      ]}>
+        {render_slot(@header)}
+      </div>
+
+    <!-- Nav -->
+      <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-6 scrollbar-hide">
+        {render_slot(@groups)}
+      </nav>
+
+    <!-- Footer -->
+      <div class={[
+        "shrink-0 border-t border-zinc-200 dark:border-zinc-800 transition-all duration-300",
+        if(@collapsed, do: "p-2", else: "p-4")
+      ]}>
+        {render_slot(@footer, %{context: :desktop})}
+      </div>
+    </div>
+    """
   end
 
-  def nav_icon_class(active) do
-    if active do
-      "h-5 w-5 shrink-0 text-white"
-    else
-      "h-5 w-5 shrink-0 text-zinc-400 dark:text-zinc-500 group-hover:text-primary transition-colors"
-    end
+  @doc """
+  Renders a specific sidebar nav item.
+  """
+  attr :navigate, :string, required: true
+  attr :active, :boolean, default: false
+  attr :icon, :string, required: true
+  attr :label, :string, required: true
+  attr :collapsed, :boolean, default: false
+
+  def sidebar_item(assigns) do
+    ~H"""
+    <.link
+      navigate={@navigate}
+      class={[
+        "group relative flex items-center rounded-lg transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-teal-500",
+        if(@collapsed,
+          do: "justify-center p-2",
+          else: "gap-x-3 px-3 py-2"
+        ),
+        if(@active,
+          do: "bg-teal-50 text-teal-600 dark:bg-teal-500/10 dark:text-teal-400",
+          else:
+            "text-zinc-500 hover:bg-zinc-200/60 dark:text-zinc-400 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-zinc-200"
+        )
+      ]}
+      data-tooltip={if @collapsed, do: @label, else: nil}
+      phx-hook={if @collapsed, do: "SidebarTooltip", else: nil}
+    >
+      <.icon
+        name={@icon}
+        class={[
+          "transition-colors duration-200",
+          if(@collapsed, do: "h-6 w-6", else: "h-5 w-5"),
+          if(@active,
+            do: "text-teal-600 dark:text-teal-400",
+            else: "text-zinc-400 group-hover:text-zinc-600 dark:group-hover:text-zinc-300"
+          )
+        ]}
+      />
+      <span :if={!@collapsed} class="text-sm font-medium leading-6 truncate">
+        {@label}
+      </span>
+
+    <!-- Collapsed Active Indicator -->
+      <span
+        :if={@collapsed and @active}
+        class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-teal-600 dark:bg-teal-400 rounded-r-full"
+      >
+      </span>
+    </.link>
+    """
+  end
+
+  @doc """
+  Renders a labelled group of sidebar items.
+  """
+  attr :label, :string, default: nil
+  attr :collapsed, :boolean, default: false
+  slot :inner_block, required: true
+
+  def sidebar_group(assigns) do
+    ~H"""
+    <div class="space-y-1">
+      <h3
+        :if={@label && !@collapsed}
+        class="px-3 text-xs font-semibold leading-6 text-zinc-400 uppercase tracking-wider mb-2"
+      >
+        {@label}
+      </h3>
+      <div :if={@label && @collapsed} class="h-px w-8 mx-auto bg-zinc-200 dark:bg-zinc-800 mb-2">
+      </div>
+      {render_slot(@inner_block)}
+    </div>
+    """
+  end
+
+  @doc """
+  Renders the sidebar header/branding area.
+  """
+  attr :collapsed, :boolean, default: false
+
+  def sidebar_header(assigns) do
+    ~H"""
+    <div class="flex items-center w-full">
+      <.link navigate={~p"/dashboard"} class="flex items-center gap-x-3 group outline-none">
+        <div class={[
+          "flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-indigo-600 transition-all duration-300 shadow-lg shadow-indigo-500/20 group-hover:scale-105",
+          if(@collapsed, do: "mx-auto", else: "")
+        ]}>
+          <.icon name="hero-bolt" class="h-5 w-5 text-white" />
+        </div>
+        <span
+          :if={!@collapsed}
+          class="text-lg font-bold tracking-tight text-zinc-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors"
+        >
+          FieldHub
+        </span>
+      </.link>
+    </div>
+    """
+  end
+
+  @doc """
+  Renders the user account footer item.
+  """
+  attr :current_user, :map, required: true
+  attr :collapsed, :boolean, default: false
+
+  def user_account_item(assigns) do
+    ~H"""
+    <div class={[
+      "flex items-center gap-x-3 rounded-lg transition-colors",
+      if(@collapsed,
+        do: "justify-center",
+        else: "px-3 py-2 hover:bg-zinc-50 dark:hover:bg-zinc-800/50"
+      )
+    ]}>
+      <img
+        class="h-8 w-8 rounded-full bg-zinc-50 ring-2 ring-white dark:ring-zinc-800"
+        src={@current_user.avatar_url || "https://ui-avatars.com/api/?name=#{@current_user.email}"}
+        alt=""
+      />
+      <div :if={!@collapsed} class="flex flex-col min-w-0">
+        <span class="truncate text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+          {@current_user.name || "User"}
+        </span>
+        <span class="truncate text-xs text-zinc-500 dark:text-zinc-400">
+          {@current_user.email}
+        </span>
+      </div>
+      <!-- Settings/Logout Actions could go here or in a dropdown triggered by this -->
+    </div>
+    """
+  end
+
+  @doc """
+  Renders the sidebar toggle button.
+  """
+  attr :collapsed, :boolean, default: false
+
+  def sidebar_toggle(assigns) do
+    ~H"""
+    <button
+      type="button"
+      phx-click="toggle_sidebar"
+      class="group flex h-8 w-8 items-center justify-center rounded-lg text-zinc-400 hover:bg-zinc-100 dark:text-zinc-500 dark:hover:bg-zinc-800 transition-colors"
+      aria-label={if @collapsed, do: "Expand sidebar", else: "Collapse sidebar"}
+    >
+      <.icon
+        name="hero-chevron-left"
+        class={[
+          "h-5 w-5 transition-transform duration-300",
+          if(@collapsed, do: "rotate-180", else: "")
+        ]}
+      />
+    </button>
+    """
   end
 end

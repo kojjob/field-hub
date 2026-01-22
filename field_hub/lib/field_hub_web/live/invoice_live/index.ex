@@ -118,7 +118,9 @@ defmodule FieldHubWeb.InvoiceLive.Index do
           </div>
           <div class="mt-3">
             <p class="text-3xl font-black text-red-600">
-              {currency_symbol(@current_organization.currency)}{format_money(overdue_amount(@invoices))}
+              {currency_symbol(@current_organization.currency)}{format_money(
+                overdue_amount(@invoices)
+              )}
             </p>
             <p class="text-xs font-bold text-red-400 mt-1">
               {overdue_count(@invoices)} invoices past due
@@ -138,7 +140,9 @@ defmodule FieldHubWeb.InvoiceLive.Index do
           </div>
           <div class="mt-3">
             <p class="text-3xl font-black text-zinc-900 dark:text-white">
-              {currency_symbol(@current_organization.currency)}{format_money(@stats.total_paid || Decimal.new(0))}
+              {currency_symbol(@current_organization.currency)}{format_money(
+                @stats.total_paid || Decimal.new(0)
+              )}
             </p>
             <span class="text-xs font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-900/30 px-2 py-0.5 rounded-md">
               {paid_count(@invoices)} paid
@@ -248,7 +252,9 @@ defmodule FieldHubWeb.InvoiceLive.Index do
                           {format_date(invoice.issue_date)}
                         </td>
                         <td class="px-6 py-4 text-sm font-bold text-zinc-900 dark:text-white">
-                          {currency_symbol(@current_organization.currency)}{format_money(invoice.total_amount)}
+                          {currency_symbol(@current_organization.currency)}{format_money(
+                            invoice.total_amount
+                          )}
                         </td>
                         <td class="px-6 py-4">
                           <span class={"inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold #{status_badge_theme(invoice.status)}"}>

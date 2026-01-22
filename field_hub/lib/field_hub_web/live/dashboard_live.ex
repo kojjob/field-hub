@@ -63,7 +63,7 @@ defmodule FieldHubWeb.DashboardLive do
           </.link>
         </div>
       </div>
-
+      
     <!-- KPI Row -->
       <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
         <FieldHubWeb.DashboardComponents.kpi_card
@@ -94,20 +94,20 @@ defmodule FieldHubWeb.DashboardLive do
           variant={:simple}
         />
       </div>
-
+      
     <!-- Middle Intelligence Grid -->
       <div class="grid grid-cols-1 xl:grid-cols-12 gap-8 mt-10">
         <!-- Billing Insights -->
         <div class="xl:col-span-4">
           <FieldHubWeb.DashboardComponents.billing_overview stats={@billing_stats} />
         </div>
-
+        
     <!-- Revenue Performance -->
         <div class="xl:col-span-8">
           <FieldHubWeb.DashboardComponents.revenue_trend_chart />
         </div>
       </div>
-
+      
     <!-- Bottom Section: Workflows & Activity -->
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
         <div class="lg:col-span-8">

@@ -80,8 +80,7 @@ defmodule FieldHubWeb.PortalLive.InvoicePayment do
             navigate={~p"/portal/invoices/#{@invoice.id}"}
             class="inline-flex items-center gap-2 text-sm font-bold text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition-colors mb-6"
           >
-            <.icon name="hero-arrow-left" class="size-4" />
-            Back to Invoice
+            <.icon name="hero-arrow-left" class="size-4" /> Back to Invoice
           </.link>
 
           <h1 class="text-3xl font-black text-zinc-900 dark:text-white tracking-tight mb-2">
@@ -171,7 +170,9 @@ defmodule FieldHubWeb.PortalLive.InvoicePayment do
                   Processing...
                 <% else %>
                   <.icon name="hero-credit-card" class="size-6" />
-                  Pay {currency_symbol(@invoice.organization.currency)}{format_money(@invoice.total_amount)} Now
+                  Pay {currency_symbol(@invoice.organization.currency)}{format_money(
+                    @invoice.total_amount
+                  )} Now
                 <% end %>
               </button>
 

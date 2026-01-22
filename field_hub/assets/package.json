@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@floating-ui/dom": "^1.7.4",
     "leaflet": "^1.9.4",
     "sortablejs": "^1.15.6"
   }

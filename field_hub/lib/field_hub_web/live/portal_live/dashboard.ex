@@ -97,9 +97,6 @@ defmodule FieldHubWeb.PortalLive.Dashboard do
   @impl true
   def render(assigns) do
     ~H"""
-  @impl true
-  def render(assigns) do
-    ~H"""
     <div class="min-h-screen bg-zinc-50 dark:bg-zinc-950">
       <main class="max-w-6xl mx-auto px-4 sm:px-6 py-12">
         <!-- Hero Greetings -->
@@ -115,10 +112,10 @@ defmodule FieldHubWeb.PortalLive.Dashboard do
         <div class="grid grid-cols-1 xl:grid-cols-12 gap-12">
           <!-- Main Content Column (Left) -->
           <div class="xl:col-span-8 space-y-12">
-
-            <!-- KPI Summary Row -->
+            
+    <!-- KPI Summary Row -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-               <.kpi_widget
+              <.kpi_widget
                 label="Trust Score"
                 value={"#{@trust_score}%"}
                 subtext="Reliability"
@@ -147,8 +144,8 @@ defmodule FieldHubWeb.PortalLive.Dashboard do
                 color="zinc"
               />
             </div>
-
-            <!-- Active Jobs Section -->
+            
+    <!-- Active Jobs Section -->
             <section>
               <div class="flex items-center justify-between mb-6">
                 <h2 class="text-xl font-bold text-zinc-900 dark:text-white tracking-tight flex items-center gap-2">
@@ -196,9 +193,11 @@ defmodule FieldHubWeb.PortalLive.Dashboard do
                             <.icon name="hero-calendar" class="size-4" />
                             <span class="text-sm font-bold">{format_date(job.scheduled_date)}</span>
                           </div>
-                           <%= if job.technician do %>
+                          <%= if job.technician do %>
                             <div class="flex items-center sm:justify-end gap-2 text-xs text-zinc-500">
-                              <span class="font-medium text-zinc-400">{@terminology["worker_label"]}:</span>
+                              <span class="font-medium text-zinc-400">
+                                {@terminology["worker_label"]}:
+                              </span>
                               {job.technician.name}
                             </div>
                           <% end %>
@@ -209,13 +208,12 @@ defmodule FieldHubWeb.PortalLive.Dashboard do
                 </div>
               <% end %>
             </section>
-
-            <!-- Recent History (Compact) -->
+            
+    <!-- Recent History (Compact) -->
             <section>
               <div class="flex items-center justify-between mb-6">
                 <h2 class="text-xl font-bold text-zinc-900 dark:text-white tracking-tight flex items-center gap-2">
-                  <.icon name="hero-clock" class="size-5 text-zinc-400" />
-                  Recent History
+                  <.icon name="hero-clock" class="size-5 text-zinc-400" /> Recent History
                 </h2>
                 <.link
                   navigate={~p"/portal/history"}
@@ -229,15 +227,24 @@ defmodule FieldHubWeb.PortalLive.Dashboard do
                 <table class="w-full text-left">
                   <thead class="bg-zinc-50/50 dark:bg-zinc-800/30 border-b border-zinc-100 dark:border-zinc-800">
                     <tr>
-                      <th class="px-6 py-4 text-[10px] font-black text-zinc-400 uppercase tracking-widest">Service</th>
-                      <th class="px-6 py-4 text-[10px] font-black text-zinc-400 uppercase tracking-widest text-right">Date</th>
+                      <th class="px-6 py-4 text-[10px] font-black text-zinc-400 uppercase tracking-widest">
+                        Service
+                      </th>
+                      <th class="px-6 py-4 text-[10px] font-black text-zinc-400 uppercase tracking-widest text-right">
+                        Date
+                      </th>
                     </tr>
                   </thead>
                   <tbody class="divide-y divide-zinc-50 dark:divide-zinc-800/50">
                     <%= for job <- @completed_jobs do %>
-                      <tr class="group hover:bg-zinc-50 dark:hover:bg-zinc-800/30 transition-colors cursor-pointer" phx-click={JS.navigate(~p"/portal/jobs/#{job}")}>
+                      <tr
+                        class="group hover:bg-zinc-50 dark:hover:bg-zinc-800/30 transition-colors cursor-pointer"
+                        phx-click={JS.navigate(~p"/portal/jobs/#{job}")}
+                      >
                         <td class="px-6 py-4">
-                          <p class="text-sm font-bold text-zinc-900 dark:text-white mb-0.5">{job.title}</p>
+                          <p class="text-sm font-bold text-zinc-900 dark:text-white mb-0.5">
+                            {job.title}
+                          </p>
                           <p class="text-[10px] text-zinc-400">#{job.number}</p>
                         </td>
                         <td class="px-6 py-4 text-right">
@@ -252,17 +259,19 @@ defmodule FieldHubWeb.PortalLive.Dashboard do
               </div>
             </section>
           </div>
-
-          <!-- Sidebar (Right) -->
+          
+    <!-- Sidebar (Right) -->
           <aside class="xl:col-span-4 space-y-10">
             <!-- Action Card: Invoices -->
-             <%= if length(@unpaid_invoices) > 0 do %>
+            <%= if length(@unpaid_invoices) > 0 do %>
               <div class="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/30 dark:to-orange-950/30 rounded-3xl border border-amber-100 dark:border-amber-900/50 p-6">
                 <div class="flex items-center gap-3 mb-4">
                   <div class="size-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-600 dark:text-amber-400">
                     <.icon name="hero-exclamation-circle" class="size-6" />
                   </div>
-                  <h3 class="text-lg font-bold text-amber-900 dark:text-amber-100">Action Required</h3>
+                  <h3 class="text-lg font-bold text-amber-900 dark:text-amber-100">
+                    Action Required
+                  </h3>
                 </div>
 
                 <p class="text-sm text-amber-800/80 dark:text-amber-200/60 font-medium mb-6">
@@ -272,8 +281,14 @@ defmodule FieldHubWeb.PortalLive.Dashboard do
                 <div class="space-y-3">
                   <%= for invoice <- @unpaid_invoices do %>
                     <div class="bg-white/60 dark:bg-zinc-900/60 rounded-xl p-3 flex items-center justify-between border border-amber-200/50 dark:border-amber-900/30">
-                       <span class="text-xs font-bold text-zinc-700 dark:text-zinc-300">#{invoice.number}</span>
-                       <span class="text-sm font-black text-amber-600 dark:text-amber-500">{currency_symbol(@customer.organization.currency)}{format_money(invoice.total_amount)}</span>
+                      <span class="text-xs font-bold text-zinc-700 dark:text-zinc-300">
+                        #{invoice.number}
+                      </span>
+                      <span class="text-sm font-black text-amber-600 dark:text-amber-500">
+                        {currency_symbol(@customer.organization.currency)}{format_money(
+                          invoice.total_amount
+                        )}
+                      </span>
                     </div>
                   <% end %>
                 </div>
@@ -286,10 +301,12 @@ defmodule FieldHubWeb.PortalLive.Dashboard do
                 </.link>
               </div>
             <% end %>
-
-            <!-- Quick Attributes -->
+            
+    <!-- Quick Attributes -->
             <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-6">
-              <h3 class="text-sm font-bold text-zinc-900 dark:text-white mb-6 uppercase tracking-wider">Settings</h3>
+              <h3 class="text-sm font-bold text-zinc-900 dark:text-white mb-6 uppercase tracking-wider">
+                Settings
+              </h3>
 
               <button
                 type="button"
@@ -305,12 +322,16 @@ defmodule FieldHubWeb.PortalLive.Dashboard do
                     <p class="text-xs text-zinc-500">Email & SMS preferences</p>
                   </div>
                 </div>
-                <.icon name="hero-chevron-right" class="size-4 text-zinc-400 group-hover:translate-x-1 transition-transform" />
+                <.icon
+                  name="hero-chevron-right"
+                  class="size-4 text-zinc-400 group-hover:translate-x-1 transition-transform"
+                />
               </button>
 
               <div class="mt-4 pt-4 border-t border-zinc-100 dark:border-zinc-800">
                 <p class="text-[10px] font-medium text-zinc-400 text-center">
-                  Account ID: <span class="font-mono">{@customer.id |> to_string() |> String.slice(0, 8)}</span>
+                  Account ID:
+                  <span class="font-mono">{@customer.id |> to_string() |> String.slice(0, 8)}</span>
                 </p>
               </div>
             </div>
@@ -356,7 +377,7 @@ defmodule FieldHubWeb.PortalLive.Dashboard do
                   <.input field={pref[:job_scheduled_sms]} type="switch" />
                 </div>
               </div>
-
+              
     <!-- Tech En Route -->
               <div class="p-4 grid grid-cols-12 gap-4 items-center hover:bg-white dark:hover:bg-zinc-800 transition-colors">
                 <div class="col-span-8">
@@ -370,7 +391,7 @@ defmodule FieldHubWeb.PortalLive.Dashboard do
                   <.input field={pref[:technician_en_route_sms]} type="switch" />
                 </div>
               </div>
-
+              
     <!-- Tech Arrived -->
               <div class="p-4 grid grid-cols-12 gap-4 items-center hover:bg-white dark:hover:bg-zinc-800 transition-colors">
                 <div class="col-span-8">
@@ -384,7 +405,7 @@ defmodule FieldHubWeb.PortalLive.Dashboard do
                   <.input field={pref[:technician_arrived_sms]} type="switch" />
                 </div>
               </div>
-
+              
     <!-- Completed -->
               <div class="p-4 grid grid-cols-12 gap-4 items-center hover:bg-white dark:hover:bg-zinc-800 transition-colors">
                 <div class="col-span-8">
