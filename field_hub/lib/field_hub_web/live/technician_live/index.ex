@@ -3,6 +3,7 @@ defmodule FieldHubWeb.TechnicianLive.Index do
 
   alias FieldHub.Dispatch
   alias FieldHub.Dispatch.Technician
+  alias FieldHubWeb.Components.EmptyStates
 
   alias FieldHub.Dispatch.Broadcaster
 
@@ -145,7 +146,7 @@ defmodule FieldHubWeb.TechnicianLive.Index do
               </.link>
             </div>
           </div>
-          
+
     <!-- KPI Cards Grid -->
           <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
             <FieldHubWeb.DashboardComponents.kpi_card
@@ -177,7 +178,7 @@ defmodule FieldHubWeb.TechnicianLive.Index do
               variant={:simple}
             />
           </div>
-          
+
     <!-- Search & Filters Bar -->
           <div class="bg-white dark:bg-zinc-900 p-6 rounded-[24px] border border-zinc-200 dark:border-zinc-800 shadow-sm">
             <div class="flex items-center justify-between gap-4">
@@ -213,7 +214,7 @@ defmodule FieldHubWeb.TechnicianLive.Index do
               </div>
             </div>
           </div>
-          
+
     <!-- Technicians Table Card -->
           <div class="bg-white dark:bg-zinc-900 rounded-[32px] border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
             <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-800">
@@ -345,22 +346,12 @@ defmodule FieldHubWeb.TechnicianLive.Index do
               </tbody>
             </table>
             <%= if not @has_technicians do %>
-              <div class="flex flex-col items-center justify-center py-20">
-                <div class="size-16 rounded-2xl bg-zinc-50 dark:bg-zinc-800 flex items-center justify-center mb-4">
-                  <.icon name="hero-magnifying-glass" class="size-8 text-zinc-300 dark:text-zinc-600" />
-                </div>
-                <h3 class="text-sm font-bold text-zinc-900 dark:text-white mb-1">
-                  No technicians found
-                </h3>
-                <p class="text-xs text-zinc-500 dark:text-zinc-400">
-                  Try adjusting your search terms
-                </p>
-              </div>
+              <EmptyStates.no_technicians />
             <% end %>
           </div>
         </div>
       </div>
-      
+
     <!-- Slide-over Panel -->
       <div
         :if={@live_action in [:new, :edit]}
@@ -379,7 +370,7 @@ defmodule FieldHubWeb.TechnicianLive.Index do
               <.icon name="hero-x-mark" class="size-5" />
             </.link>
           </div>
-          
+
     <!-- Slide-over Content -->
           <div class="flex-1 overflow-y-auto p-6">
             <.live_component

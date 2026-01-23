@@ -219,4 +219,42 @@ defmodule FieldHubWeb.Components.EmptyStates do
     </div>
     """
   end
+
+  @doc """
+  Empty state for no invoices.
+  """
+  attr :show_action, :boolean, default: true
+
+  def no_invoices(assigns) do
+    ~H"""
+    <.empty_state
+      title="No invoices yet"
+      message="Create your first invoice to start billing customers and tracking payments."
+      icon_name="hero-document-text"
+      icon_bg_color="bg-green-500/10"
+      icon_color="text-green-500"
+      action_label={if @show_action, do: "Create First Invoice"}
+      action_path={if @show_action, do: "/invoices/new"}
+    />
+    """
+  end
+
+  @doc """
+  Empty state for no parts/inventory.
+  """
+  attr :show_action, :boolean, default: true
+
+  def no_parts(assigns) do
+    ~H"""
+    <.empty_state
+      title="No parts in inventory"
+      message="Add parts and materials to track your inventory, manage stock levels, and streamline job billing."
+      icon_name="hero-cube"
+      icon_bg_color="bg-cyan-500/10"
+      icon_color="text-cyan-500"
+      action_label={if @show_action, do: "Add First Part"}
+      action_event={if @show_action, do: "new"}
+    />
+    """
+  end
 end

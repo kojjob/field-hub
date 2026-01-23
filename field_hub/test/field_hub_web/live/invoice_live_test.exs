@@ -25,7 +25,8 @@ defmodule FieldHubWeb.InvoiceLiveTest do
       {:ok, _view, html} = live(conn, ~p"/invoices")
 
       assert html =~ "Invoices"
-      assert html =~ "No invoices found"
+      # Uses EmptyStates.no_invoices component
+      assert html =~ "No invoices yet"
       assert html =~ "$0"
     end
 

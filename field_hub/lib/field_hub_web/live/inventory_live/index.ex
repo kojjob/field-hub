@@ -3,6 +3,7 @@ defmodule FieldHubWeb.InventoryLive.Index do
 
   alias FieldHub.Inventory
   alias FieldHub.Inventory.Part
+  alias FieldHubWeb.Components.EmptyStates
 
   @impl true
   def mount(_params, _session, socket) do
@@ -144,10 +145,8 @@ defmodule FieldHubWeb.InventoryLive.Index do
           <tbody class="divide-y divide-zinc-100 dark:divide-zinc-800">
             <%= if @parts == [] do %>
               <tr>
-                <td colspan="6" class="px-6 py-12 text-center">
-                  <.icon name="hero-cube" class="h-12 w-12 text-zinc-300 dark:text-zinc-600 mx-auto mb-3" />
-                  <p class="text-sm font-medium text-zinc-500">No parts found</p>
-                  <p class="text-xs text-zinc-400 mt-1">Add your first part to get started</p>
+                <td colspan="6">
+                  <EmptyStates.no_parts />
                 </td>
               </tr>
             <% else %>

@@ -5,6 +5,7 @@ defmodule FieldHubWeb.InvoiceLive.Index do
   use FieldHubWeb, :live_view
 
   alias FieldHub.Billing
+  alias FieldHubWeb.Components.EmptyStates
 
   @impl true
   def mount(_params, _session, socket) do
@@ -218,18 +219,8 @@ defmodule FieldHubWeb.InvoiceLive.Index do
                 <tbody class="divide-y divide-zinc-100 dark:divide-zinc-800">
                   <%= if Enum.empty?(@invoices) do %>
                     <tr>
-                      <td colspan="6" class="px-6 py-12 text-center">
-                        <div class="flex flex-col items-center gap-3">
-                          <div class="size-16 rounded-2xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
-                            <.icon name="hero-document-text" class="size-8 text-zinc-400" />
-                          </div>
-                          <p class="text-zinc-500 dark:text-zinc-400 font-medium">
-                            No invoices found
-                          </p>
-                          <p class="text-sm text-zinc-400 dark:text-zinc-500">
-                            Create an invoice from a completed job.
-                          </p>
-                        </div>
+                      <td colspan="6">
+                        <EmptyStates.no_invoices />
                       </td>
                     </tr>
                   <% else %>
