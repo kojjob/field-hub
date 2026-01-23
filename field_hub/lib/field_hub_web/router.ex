@@ -64,6 +64,9 @@ defmodule FieldHubWeb.Router do
   scope "/api", FieldHubWeb do
     pipe_through [:api, :fetch_session, :fetch_current_scope_for_user]
 
+    # Unified search endpoint
+    get "/search", SearchController, :index
+
     # Technician sync endpoint (uses session auth for PWA)
     post "/tech/sync", TechSyncController, :sync
   end
@@ -107,6 +110,12 @@ defmodule FieldHubWeb.Router do
       # Invoices
       live "/invoices", InvoiceLive.Index, :index
       live "/invoices/:id", InvoiceLive.Show, :show
+
+      # Inventory
+      live "/inventory", InventoryLive.Index, :index
+      live "/inventory/new", InventoryLive.Index, :new
+      live "/inventory/:id", InventoryLive.Show, :show
+      live "/inventory/:id/edit", InventoryLive.Index, :edit
 
       # Technician Mobile Views
       live "/tech/dashboard", TechLive.Dashboard, :index

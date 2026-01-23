@@ -12,6 +12,8 @@ defmodule FieldHub.Application do
       FieldHub.Repo,
       {DNSCluster, query: Application.get_env(:field_hub, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: FieldHub.PubSub},
+      # ChromicPDF for invoice PDF generation
+      ChromicPDF,
       # Start a worker by calling: FieldHub.Worker.start_link(arg)
       # {FieldHub.Worker, arg},
       # Start to serve requests, typically the last entry

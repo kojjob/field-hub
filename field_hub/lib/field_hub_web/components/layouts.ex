@@ -576,4 +576,231 @@ defmodule FieldHubWeb.Layouts do
     </button>
     """
   end
+
+  @doc """
+  Renders the global search modal with keyboard shortcut support.
+  """
+  def search_modal(assigns) do
+    ~H"""
+    <div
+      id="search-modal"
+      phx-hook="SearchModal"
+      class="hidden fixed inset-0 z-[100] overflow-y-auto"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="search-modal-title"
+    >
+      <!-- Backdrop -->
+      <div
+        class="fixed inset-0 bg-zinc-900/50 backdrop-blur-sm transition-opacity"
+        data-backdrop
+        aria-hidden="true"
+      >
+      </div>
+
+      <!-- Modal Panel -->
+      <div class="fixed inset-0 flex items-start justify-center p-4 pt-[15vh]">
+        <div
+          class="relative w-full max-w-xl bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl ring-1 ring-zinc-900/10 dark:ring-zinc-100/10 overflow-hidden transform transition-all"
+          data-panel
+        >
+          <!-- Search Input -->
+          <div class="flex items-center border-b border-zinc-200 dark:border-zinc-700 px-4">
+            <.icon name="hero-magnifying-glass" class="h-5 w-5 text-zinc-400 shrink-0" />
+            <input
+              type="text"
+              id="search-input"
+              data-input
+              class="flex-1 h-14 bg-transparent border-0 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:ring-0 text-base"
+              placeholder="Search jobs, customers, invoices..."
+              autocomplete="off"
+              spellcheck="false"
+            />
+            <kbd class="hidden sm:inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-zinc-400 bg-zinc-100 dark:bg-zinc-800 rounded">
+              ESC
+            </kbd>
+          </div>
+
+          <!-- Results Container -->
+          <div
+            id="search-results"
+            data-results
+            class="max-h-[60vh] overflow-y-auto p-2 space-y-2"
+          >
+            <!-- Loading State -->
+            <div data-loading class="hidden py-8 text-center text-zinc-500">
+              <.icon name="hero-arrow-path" class="h-6 w-6 mx-auto animate-spin mb-2" />
+              <p class="text-sm">Searching...</p>
+            </div>
+
+            <!-- Empty State -->
+            <div data-empty class="py-8 text-center text-zinc-500">
+              <.icon name="hero-magnifying-glass" class="h-8 w-8 mx-auto text-zinc-300 dark:text-zinc-600 mb-2" />
+              <p class="text-sm">Start typing to search...</p>
+              <p class="text-xs text-zinc-400 mt-1">Find jobs, customers, and invoices</p>
+            </div>
+
+            <!-- No Results -->
+            <div data-no-results class="hidden py-8 text-center text-zinc-500">
+              <.icon name="hero-face-frown" class="h-8 w-8 mx-auto text-zinc-300 dark:text-zinc-600 mb-2" />
+              <p class="text-sm">No results found</p>
+            </div>
+
+            <!-- Results will be injected here by JS -->
+          </div>
+
+          <!-- Footer -->
+          <div class="border-t border-zinc-200 dark:border-zinc-700 px-4 py-2 flex items-center justify-between text-xs text-zinc-400">
+            <div class="flex items-center gap-4">
+              <span class="flex items-center gap-1">
+                <kbd class="px-1.5 py-0.5 bg-zinc-100 dark:bg-zinc-800 rounded">↑↓</kbd>
+                Navigate
+              </span>
+              <span class="flex items-center gap-1">
+                <kbd class="px-1.5 py-0.5 bg-zinc-100 dark:bg-zinc-800 rounded">↵</kbd>
+                Open
+              </span>
+            </div>
+            <span>
+              <kbd class="px-1.5 py-0.5 bg-zinc-100 dark:bg-zinc-800 rounded">⌘K</kbd>
+              to toggle
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+    """
+  end
+
+  @doc """
+  Renders the job timeline / audit trail.
+  """
+  attr :events, :list, required: true
+  attr :class, :string, default: nil
+
+  def job_timeline(assigns) do
+    ~H"""
+    <div class={["relative", @class]}>
+      <!-- Timeline line -->
+      <div class="absolute left-4 top-0 bottom-0 w-0.5 bg-zinc-200 dark:bg-zinc-700"></div>
+
+      <div class="space-y-6">
+        <%= for event <- @events do %>
+          <.timeline_event event={event} />
+        <% end %>
+      </div>
+    </div>
+    """
+  end
+
+  defp timeline_event(assigns) do
+    event = assigns.event
+    {icon, color} = event_icon_and_color(event.event_type)
+
+    assigns =
+      assigns
+      |> assign(:icon, icon)
+      |> assign(:color, color)
+      |> assign(:label, event_label(event.event_type))
+      |> assign(:time, format_event_time(event.inserted_at))
+
+    ~H"""
+    <div class="relative flex gap-4">
+      <!-- Icon -->
+      <div class={[
+        "relative z-10 flex h-8 w-8 items-center justify-center rounded-full ring-4 ring-white dark:ring-zinc-900",
+        @color
+      ]}>
+        <.icon name={@icon} class="h-4 w-4 text-white" />
+      </div>
+
+      <!-- Content -->
+      <div class="flex-1 min-w-0 pt-0.5">
+        <div class="flex items-center justify-between gap-4">
+          <p class="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+            {@label}
+          </p>
+          <time class="text-xs text-zinc-500 whitespace-nowrap">{@time}</time>
+        </div>
+
+        <%= if @event.actor do %>
+          <p class="text-xs text-zinc-500 mt-0.5">
+            by {@event.actor.email}
+          </p>
+        <% end %>
+
+        <%= if @event.technician do %>
+          <p class="text-xs text-zinc-500 mt-0.5">
+            Technician: {@event.technician.name}
+          </p>
+        <% end %>
+
+        <!-- Show status change details -->
+        <%= if @event.new_value["status"] do %>
+          <div class="mt-2 flex items-center gap-2 text-xs">
+            <%= if @event.old_value["status"] do %>
+              <span class="px-2 py-0.5 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400">
+                {@event.old_value["status"]}
+              </span>
+              <.icon name="hero-arrow-right" class="h-3 w-3 text-zinc-400" />
+            <% end %>
+            <span class="px-2 py-0.5 rounded-full bg-teal-100 dark:bg-teal-500/20 text-teal-700 dark:text-teal-400 font-medium">
+              {@event.new_value["status"]}
+            </span>
+          </div>
+        <% end %>
+      </div>
+    </div>
+    """
+  end
+
+  defp event_icon_and_color(type) do
+    case type do
+      "created" -> {"hero-plus", "bg-teal-500"}
+      "updated" -> {"hero-pencil", "bg-blue-500"}
+      "status_changed" -> {"hero-arrow-path", "bg-amber-500"}
+      "assigned" -> {"hero-user-plus", "bg-indigo-500"}
+      "unassigned" -> {"hero-user-minus", "bg-zinc-500"}
+      "scheduled" -> {"hero-calendar", "bg-blue-500"}
+      "rescheduled" -> {"hero-calendar-days", "bg-amber-500"}
+      "travel_started" -> {"hero-truck", "bg-cyan-500"}
+      "arrived" -> {"hero-map-pin", "bg-emerald-500"}
+      "work_started" -> {"hero-wrench-screwdriver", "bg-orange-500"}
+      "completed" -> {"hero-check-circle", "bg-green-500"}
+      "cancelled" -> {"hero-x-circle", "bg-red-500"}
+      "note_added" -> {"hero-chat-bubble-left", "bg-gray-500"}
+      "photo_added" -> {"hero-camera", "bg-purple-500"}
+      "signature_captured" -> {"hero-pencil-square", "bg-pink-500"}
+      "payment_collected" -> {"hero-banknotes", "bg-green-600"}
+      _ -> {"hero-clock", "bg-zinc-400"}
+    end
+  end
+
+  defp event_label(type) do
+    case type do
+      "created" -> "Job Created"
+      "updated" -> "Job Updated"
+      "status_changed" -> "Status Changed"
+      "assigned" -> "Technician Assigned"
+      "unassigned" -> "Technician Removed"
+      "scheduled" -> "Job Scheduled"
+      "rescheduled" -> "Job Rescheduled"
+      "travel_started" -> "Travel Started"
+      "arrived" -> "Arrived On Site"
+      "work_started" -> "Work Started"
+      "completed" -> "Job Completed"
+      "cancelled" -> "Job Cancelled"
+      "note_added" -> "Note Added"
+      "photo_added" -> "Photo Added"
+      "signature_captured" -> "Signature Captured"
+      "payment_collected" -> "Payment Collected"
+      _ -> String.replace(type, "_", " ") |> String.capitalize()
+    end
+  end
+
+  defp format_event_time(nil), do: ""
+
+  defp format_event_time(datetime) do
+    Calendar.strftime(datetime, "%b %d, %Y at %I:%M %p")
+  end
 end

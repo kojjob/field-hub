@@ -157,7 +157,7 @@ defmodule FieldHubWeb.JobLive.Index do
               </.link>
             </div>
           </div>
-          
+
     <!-- KPI Cards Grid -->
           <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
             <FieldHubWeb.DashboardComponents.kpi_card
@@ -189,7 +189,7 @@ defmodule FieldHubWeb.JobLive.Index do
               variant={:simple}
             />
           </div>
-          
+
     <!-- Search & Filters Bar -->
           <div class="bg-white dark:bg-zinc-900 p-6 rounded-[24px] border border-zinc-200 dark:border-zinc-800 shadow-sm">
             <div class="flex items-center justify-between gap-4">
@@ -225,9 +225,105 @@ defmodule FieldHubWeb.JobLive.Index do
               </div>
             </div>
           </div>
-          
-    <!-- Jobs Table Card -->
-          <div class="bg-white dark:bg-zinc-900 rounded-[32px] border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
+
+    <!-- Mobile Job Cards (visible on small screens) -->
+          <div class="lg:hidden space-y-3">
+            <div
+              phx-update="stream"
+              id="jobs-mobile"
+              class="space-y-3"
+            >
+              <div
+                :for={{id, job} <- @streams.jobs}
+                id={"mobile-#{id}"}
+                class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm p-4 active:bg-zinc-50 dark:active:bg-zinc-800 transition-colors"
+              >
+                <.link navigate={~p"/jobs/#{job}"} class="block">
+                  <!-- Header: Job number + Status -->
+                  <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center gap-2">
+                      <div class="size-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                        <.icon name="hero-ticket" class="size-4 text-primary" />
+                      </div>
+                      <span class="text-sm font-bold text-zinc-900 dark:text-white">
+                        #{job.number}
+                      </span>
+                    </div>
+                    <span class={[
+                      "inline-flex items-center rounded-lg px-2 py-1 text-[10px] font-black uppercase tracking-wider border",
+                      status_badge_theme(job.status)
+                    ]}>
+                      {String.capitalize(job.status)}
+                    </span>
+                  </div>
+
+                  <!-- Title -->
+                  <h3 class="text-base font-bold text-zinc-900 dark:text-white mb-2 line-clamp-1">
+                    {job.title}
+                  </h3>
+
+                  <!-- Info Grid -->
+                  <div class="grid grid-cols-2 gap-3 text-sm">
+                    <!-- Customer -->
+                    <div class="flex items-center gap-2">
+                      <.icon name="hero-user" class="size-4 text-zinc-400 shrink-0" />
+                      <span class="text-zinc-600 dark:text-zinc-400 truncate">
+                        {if job.customer, do: job.customer.name, else: "No customer"}
+                      </span>
+                    </div>
+
+                    <!-- Technician -->
+                    <div class="flex items-center gap-2">
+                      <.icon name="hero-wrench-screwdriver" class="size-4 text-zinc-400 shrink-0" />
+                      <span class="text-zinc-600 dark:text-zinc-400 truncate">
+                        {if job.technician, do: job.technician.name, else: "Unassigned"}
+                      </span>
+                    </div>
+
+                    <!-- Schedule -->
+                    <div class="flex items-center gap-2 col-span-2">
+                      <.icon name="hero-calendar" class="size-4 text-zinc-400 shrink-0" />
+                      <span class="text-zinc-600 dark:text-zinc-400">
+                        {if job.scheduled_date, do: job.scheduled_date, else: "Not scheduled"}
+                      </span>
+                    </div>
+                  </div>
+                </.link>
+
+                <!-- Action Buttons -->
+                <div class="flex items-center justify-end gap-2 mt-3 pt-3 border-t border-zinc-100 dark:border-zinc-800">
+                  <.link
+                    patch={~p"/jobs/#{job}/edit"}
+                    class="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 text-xs font-bold hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
+                  >
+                    <.icon name="hero-pencil-square" class="size-4" /> Edit
+                  </.link>
+                  <.link
+                    phx-click={JS.push("delete", value: %{number: job.number})}
+                    data-confirm="Are you sure you want to delete this job?"
+                    class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-red-600 dark:text-red-400 text-xs font-bold hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
+                  >
+                    <.icon name="hero-trash" class="size-4" /> Delete
+                  </.link>
+                </div>
+              </div>
+            </div>
+
+            <%= if not @has_jobs do %>
+              <div class="flex flex-col items-center justify-center py-16 bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800">
+                <div class="size-14 rounded-2xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center mb-4">
+                  <.icon name="hero-clipboard-document-list" class="size-7 text-zinc-400" />
+                </div>
+                <h3 class="text-sm font-bold text-zinc-900 dark:text-white mb-1">No jobs found</h3>
+                <p class="text-xs text-zinc-500 dark:text-zinc-400 text-center px-4">
+                  Create your first job or adjust your search
+                </p>
+              </div>
+            <% end %>
+          </div>
+
+    <!-- Desktop Jobs Table (hidden on mobile) -->
+          <div class="hidden lg:block bg-white dark:bg-zinc-900 rounded-[32px] border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
             <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-800">
               <thead class="bg-zinc-50 dark:bg-zinc-800/50">
                 <tr>
@@ -372,7 +468,7 @@ defmodule FieldHubWeb.JobLive.Index do
           </div>
         </div>
       </div>
-      
+
     <!-- Slide-over Panel -->
       <div
         :if={@live_action in [:new, :edit]}
@@ -391,7 +487,7 @@ defmodule FieldHubWeb.JobLive.Index do
               <.icon name="hero-x-mark" class="size-5" />
             </.link>
           </div>
-          
+
     <!-- Slide-over Content -->
           <div class="flex-1 overflow-y-auto p-6">
             <.live_component

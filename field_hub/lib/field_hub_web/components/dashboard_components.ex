@@ -75,7 +75,7 @@ defmodule FieldHubWeb.DashboardComponents do
       <div :if={@variant == :stars} class="flex items-center gap-1 mt-auto">
         <.icon :for={_ <- 1..5} name="hero-star" class="text-amber-400 size-4 fill-current" />
       </div>
-      
+
     <!-- Mini Chart Placeholder (for Revenue) -->
       <div
         :if={@variant == :simple && @icon == "payments"}
@@ -229,6 +229,8 @@ defmodule FieldHubWeb.DashboardComponents do
   @doc """
   Priority jobs table component.
   """
+  attr :jobs, :list, default: []
+
   def priority_jobs_table(assigns) do
     ~H"""
     <div class="bg-white dark:bg-zinc-900 rounded-[32px] border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
@@ -241,9 +243,12 @@ defmodule FieldHubWeb.DashboardComponents do
             Dispatch Queue • Real-time
           </p>
         </div>
-        <button class="px-5 py-2.5 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl text-xs font-black text-zinc-600 dark:text-zinc-300 flex items-center gap-2 hover:bg-zinc-100 transition-all">
+        <.link
+          navigate="/jobs"
+          class="px-5 py-2.5 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl text-xs font-black text-zinc-600 dark:text-zinc-300 flex items-center gap-2 hover:bg-zinc-100 transition-all"
+        >
           View All Jobs <.icon name="hero-arrow-right" class="size-4" />
-        </button>
+        </.link>
       </div>
       <div class="overflow-x-auto">
         <table class="w-full text-left">
@@ -257,70 +262,117 @@ defmodule FieldHubWeb.DashboardComponents do
             </tr>
           </thead>
           <tbody class="divide-y divide-zinc-50 dark:divide-zinc-800/50 text-dashboard">
-            <%= for {id, name, loc, tech, time, status, status_class, color} <- [
-              {"#12818", "HVAC Repair", "Downtown Medical Center", "Elena Rossi", "Today, 14:00", "ON THE WAY", "text-amber-600 bg-amber-500/10 border-amber-500/20", "bg-red-500"},
-              {"#12819", "Electrical Panel", "Sunrise Apartments", "James Wilson", "Today, 15:30", "SCHEDULED", "text-primary bg-primary/10 border-primary/20", "bg-primary"},
-              {"#12820", "Leak Detection", "Pacific Heights", "Sarah L.", "Today, 16:45", "SCHEDULED", "text-primary bg-primary/10 border-primary/20", "bg-primary"},
-              {"#12821", "Maintenance", "City Hall", "Marcus J.", "Tomorrow, 09:00", "PENDING", "text-zinc-500 bg-zinc-100 border-zinc-200", "bg-zinc-400"}
-            ] do %>
-              <tr class="group hover:bg-zinc-50 dark:hover:bg-zinc-800/20 transition-all duration-300">
-                <td class="px-8 py-6">
-                  <div class="flex items-center gap-4">
-                    <div class={["w-1 h-10 rounded-full", color]}></div>
-                    <div>
-                      <p class="text-[15px] font-black text-zinc-900 dark:text-white group-hover:text-primary transition-colors">
-                        {id} - {name}
-                      </p>
-                      <p class="text-[12px] text-zinc-500 dark:text-zinc-400 font-bold mt-0.5">
-                        {loc}
-                      </p>
-                    </div>
+            <%= if @jobs == [] do %>
+              <tr>
+                <td colspan="5" class="px-8 py-12 text-center">
+                  <div class="flex flex-col items-center gap-3 text-zinc-400">
+                    <.icon name="hero-clipboard-document-list" class="size-10" />
+                    <p class="text-sm font-medium">No priority jobs scheduled</p>
                   </div>
-                </td>
-                <td class="px-8 py-6">
-                  <div class="flex items-center gap-3">
-                    <div class="size-9 rounded-xl border-2 border-white dark:border-zinc-800 shadow-sm overflow-hidden group-hover:scale-110 transition-transform">
-                      <img
-                        src={"https://i.pravatar.cc/150?u=#{tech}"}
-                        class="size-full object-cover"
-                      />
-                    </div>
-                    <span class="text-sm font-black text-zinc-700 dark:text-zinc-300">{tech}</span>
-                  </div>
-                </td>
-                <td class="px-8 py-6">
-                  <p class="text-[14px] font-black text-zinc-900 dark:text-white leading-tight">
-                    {time}
-                  </p>
-                  <div class="flex items-center gap-1.5 mt-1">
-                    <div class="size-1.5 rounded-full bg-zinc-200 dark:bg-zinc-700"></div>
-                    <p class="text-[11px] text-zinc-500 dark:text-zinc-400 font-bold uppercase tracking-wider">
-                      Est. 2h 30m
-                    </p>
-                  </div>
-                </td>
-                <td class="px-8 py-6">
-                  <div class="flex justify-center">
-                    <span class={[
-                      "px-3.5 py-1.5 rounded-xl text-[10px] font-black border tracking-widest shadow-sm",
-                      status_class
-                    ]}>
-                      {status}
-                    </span>
-                  </div>
-                </td>
-                <td class="px-8 py-6 text-right">
-                  <button class="size-10 flex items-center justify-center rounded-xl hover:bg-white dark:hover:bg-zinc-800 text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-all border border-transparent hover:border-zinc-200">
-                    <.icon name="hero-ellipsis-vertical" class="size-5" />
-                  </button>
                 </td>
               </tr>
+            <% else %>
+              <%= for job <- @jobs do %>
+                <tr class="group hover:bg-zinc-50 dark:hover:bg-zinc-800/20 transition-all duration-300">
+                  <td class="px-8 py-6">
+                    <div class="flex items-center gap-4">
+                      <div class={["w-1 h-10 rounded-full", status_indicator_color(job.status)]}></div>
+                      <div>
+                        <p class="text-[15px] font-black text-zinc-900 dark:text-white group-hover:text-primary transition-colors">
+                          #{job.number} - {job.title}
+                        </p>
+                        <p class="text-[12px] text-zinc-500 dark:text-zinc-400 font-bold mt-0.5">
+                          {job.service_address || job.customer.name}
+                        </p>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-8 py-6">
+                    <div class="flex items-center gap-3">
+                      <div class="size-9 rounded-xl border-2 border-white dark:border-zinc-800 shadow-sm overflow-hidden group-hover:scale-110 transition-transform bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
+                        <%= if job.technician do %>
+                          <span class="text-xs font-bold text-zinc-600 dark:text-zinc-300">
+                            {String.first(job.technician.name)}
+                          </span>
+                        <% else %>
+                          <.icon name="hero-user" class="size-4 text-zinc-400" />
+                        <% end %>
+                      </div>
+                      <span class="text-sm font-black text-zinc-700 dark:text-zinc-300">
+                        {(job.technician && job.technician.name) || "Unassigned"}
+                      </span>
+                    </div>
+                  </td>
+                  <td class="px-8 py-6">
+                    <p class="text-[14px] font-black text-zinc-900 dark:text-white leading-tight">
+                      {format_schedule(job.scheduled_date)}
+                    </p>
+                    <div class="flex items-center gap-1.5 mt-1">
+                      <div class="size-1.5 rounded-full bg-zinc-200 dark:bg-zinc-700"></div>
+                      <p class="text-[11px] text-zinc-500 dark:text-zinc-400 font-bold uppercase tracking-wider">
+                        Est. {format_duration(job.estimated_duration)}
+                      </p>
+                    </div>
+                  </td>
+                  <td class="px-8 py-6">
+                    <div class="flex justify-center">
+                      <span class={[
+                        "px-3.5 py-1.5 rounded-xl text-[10px] font-black border tracking-widest shadow-sm",
+                        status_badge_class(job.status)
+                      ]}>
+                        {String.upcase(job.status || "pending")}
+                      </span>
+                    </div>
+                  </td>
+                  <td class="px-8 py-6 text-right">
+                    <.link
+                      navigate={"/jobs/#{job.number}"}
+                      class="size-10 flex items-center justify-center rounded-xl hover:bg-white dark:hover:bg-zinc-800 text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-all border border-transparent hover:border-zinc-200"
+                    >
+                      <.icon name="hero-arrow-right" class="size-5" />
+                    </.link>
+                  </td>
+                </tr>
+              <% end %>
             <% end %>
           </tbody>
         </table>
       </div>
     </div>
     """
+  end
+
+  defp status_indicator_color("in_progress"), do: "bg-amber-500"
+  defp status_indicator_color("en_route"), do: "bg-amber-500"
+  defp status_indicator_color("scheduled"), do: "bg-primary"
+  defp status_indicator_color("pending"), do: "bg-zinc-400"
+  defp status_indicator_color(_), do: "bg-zinc-400"
+
+  defp status_badge_class("in_progress"), do: "text-amber-600 bg-amber-500/10 border-amber-500/20"
+  defp status_badge_class("en_route"), do: "text-amber-600 bg-amber-500/10 border-amber-500/20"
+  defp status_badge_class("scheduled"), do: "text-primary bg-primary/10 border-primary/20"
+  defp status_badge_class(_), do: "text-zinc-500 bg-zinc-100 border-zinc-200"
+
+  defp format_schedule(nil), do: "Not scheduled"
+
+  defp format_schedule(date) do
+    today = Date.utc_today()
+    tomorrow = Date.add(today, 1)
+
+    cond do
+      Date.compare(date, today) == :eq -> "Today"
+      Date.compare(date, tomorrow) == :eq -> "Tomorrow"
+      true -> Calendar.strftime(date, "%b %d, %Y")
+    end
+  end
+
+  defp format_duration(nil), do: "TBD"
+  defp format_duration(minutes) when minutes < 60, do: "#{minutes}m"
+
+  defp format_duration(minutes) do
+    hours = div(minutes, 60)
+    mins = rem(minutes, 60)
+    if mins > 0, do: "#{hours}h #{mins}m", else: "#{hours}h"
   end
 
   @doc """
@@ -447,7 +499,13 @@ defmodule FieldHubWeb.DashboardComponents do
   @doc """
   Revenue trend chart component.
   """
+  attr :data, :list, default: []
+
   def revenue_trend_chart(assigns) do
+    # Convert data to chart-friendly format with normalized heights
+    chart_data = normalize_chart_data(assigns.data)
+    assigns = assign(assigns, :chart_data, chart_data)
+
     ~H"""
     <div class="bg-white dark:bg-zinc-900 p-8 rounded-[32px] border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-col gap-10 h-full">
       <div class="flex items-center justify-between">
@@ -470,15 +528,7 @@ defmodule FieldHubWeb.DashboardComponents do
       </div>
 
       <div class="flex-1 flex items-end justify-between px-2 gap-5 group mt-5">
-        <%= for {day, h1, h2} <- [
-          {"MON", 65, 40},
-          {"TUE", 85, 50},
-          {"WED", 95, 35},
-          {"THU", 75, 45},
-          {"FRI", 100, 70},
-          {"SAT", 40, 20},
-          {"SUN", 25, 10}
-        ] do %>
+        <%= for %{day: day, current_height: h1, previous_height: h2} <- @chart_data do %>
           <div class="flex-1 flex flex-col items-center gap-6 group/bar h-full">
             <div class="w-full flex-1 flex flex-row items-end justify-center gap-1.5">
               <div
@@ -503,11 +553,11 @@ defmodule FieldHubWeb.DashboardComponents do
         <div class="flex items-center gap-6">
           <div class="space-y-1">
             <p class="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Avg daily</p>
-            <p class="text-lg font-black text-zinc-900 dark:text-white">$2,480</p>
+            <p class="text-lg font-black text-zinc-900 dark:text-white">{format_average(@data)}</p>
           </div>
           <div class="space-y-1">
             <p class="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Peak week</p>
-            <p class="text-lg font-black text-zinc-900 dark:text-white">$18.2K</p>
+            <p class="text-lg font-black text-zinc-900 dark:text-white">{format_total(@data)}</p>
           </div>
         </div>
         <div class="flex -space-x-2">
@@ -520,6 +570,62 @@ defmodule FieldHubWeb.DashboardComponents do
       </div>
     </div>
     """
+  end
+
+  defp normalize_chart_data([]), do: default_chart_data()
+
+  defp normalize_chart_data(data) do
+    # Find max value to normalize heights
+    max_val =
+      data
+      |> Enum.flat_map(fn %{current: c, previous: p} ->
+        [Decimal.to_float(c || Decimal.new(0)), Decimal.to_float(p || Decimal.new(0))]
+      end)
+      |> Enum.max(fn -> 1 end)
+
+    max_val = if max_val == 0, do: 1, else: max_val
+
+    Enum.map(data, fn %{day: day, current: current, previous: previous} ->
+      %{
+        day: day,
+        current_height: round(Decimal.to_float(current || Decimal.new(0)) / max_val * 100),
+        previous_height: round(Decimal.to_float(previous || Decimal.new(0)) / max_val * 100)
+      }
+    end)
+  end
+
+  defp default_chart_data do
+    for day <- ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"] do
+      %{day: day, current_height: 10, previous_height: 5}
+    end
+  end
+
+  defp format_average([]), do: "$0"
+
+  defp format_average(data) do
+    total =
+      Enum.reduce(data, Decimal.new(0), fn %{current: c}, acc ->
+        Decimal.add(acc, c || Decimal.new(0))
+      end)
+
+    avg = Decimal.div(total, Decimal.new(length(data)))
+    "$#{Decimal.to_string(Decimal.round(avg, 0), :normal)}"
+  end
+
+  defp format_total([]), do: "$0"
+
+  defp format_total(data) do
+    total =
+      Enum.reduce(data, Decimal.new(0), fn %{current: c}, acc ->
+        Decimal.add(acc, c || Decimal.new(0))
+      end)
+
+    if Decimal.gt?(total, Decimal.new(1000)) do
+      k = Decimal.div(total, Decimal.new(1000)) |> Decimal.round(1)
+      "$#{Decimal.to_string(k, :normal)}K"
+    else
+      "$#{Decimal.to_string(Decimal.round(total, 0), :normal)}"
+    end
   end
 
   @doc """

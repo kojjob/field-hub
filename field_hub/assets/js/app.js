@@ -36,11 +36,13 @@ import PrintInvoice from "./hooks/print_invoice"
 import "leaflet/dist/leaflet.css"
 
 import SidebarTooltip from "./hooks/sidebar_tooltip"
+import SearchModal from "./hooks/search_modal"
 
 // Custom hooks
 const Hooks = {
   ...colocatedHooks,
   SidebarTooltip: SidebarTooltip,
+  SearchModal: SearchModal,
   DragDrop: DragDropHook,
   SignaturePad: SignaturePadHook,
   PushNotifications: PushNotifications,

@@ -89,7 +89,10 @@ defmodule FieldHub.MixProject do
 
       # Payment processing
       {:stripity_stripe, "~> 3.2"},
-      {:web_push_encryption, "~> 0.3"}
+      {:web_push_encryption, "~> 0.3"},
+
+      # PDF generation
+      {:chromic_pdf, "~> 1.17"}
     ]
   end
 

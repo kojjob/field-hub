@@ -222,4 +222,121 @@ defmodule FieldHub.Billing do
       invoice_count: invoice_count
     }
   end
+
+  @doc """
+  Get weekly revenue data for the last 7 days.
+  Returns a list of {day_name, current_week_amount, previous_week_amount}
+  """
+  def get_weekly_revenue(org_id) do
+    today = Date.utc_today()
+    start_of_week = Date.add(today, -6)
+    start_of_prev_week = Date.add(start_of_week, -7)
+
+    # Convert dates to DateTime for utc_datetime comparison
+    start_of_week_dt = DateTime.new!(start_of_week, ~T[00:00:00], "Etc/UTC")
+    end_of_today_dt = DateTime.new!(Date.add(today, 1), ~T[00:00:00], "Etc/UTC")
+    start_of_prev_week_dt = DateTime.new!(start_of_prev_week, ~T[00:00:00], "Etc/UTC")
+
+    # Get current week revenue by day
+    current_week =
+      from(i in Invoice,
+        where: i.organization_id == ^org_id,
+        where: i.status == "paid",
+        where: i.paid_at >= ^start_of_week_dt,
+        where: i.paid_at < ^end_of_today_dt,
+        group_by: fragment("DATE(?)::date", i.paid_at),
+        select: {fragment("DATE(?)::date", i.paid_at), sum(i.total_amount)}
+      )
+      |> Repo.all()
+      |> Map.new()
+
+    # Get previous week revenue by day offset
+    prev_week =
+      from(i in Invoice,
+        where: i.organization_id == ^org_id,
+        where: i.status == "paid",
+        where: i.paid_at >= ^start_of_prev_week_dt,
+        where: i.paid_at < ^start_of_week_dt,
+        group_by: fragment("DATE(?)::date", i.paid_at),
+        select: {fragment("DATE(?)::date", i.paid_at), sum(i.total_amount)}
+      )
+      |> Repo.all()
+      |> Map.new()
+
+    # Build 7-day array
+    for offset <- 0..6 do
+      date = Date.add(start_of_week, offset)
+      prev_date = Date.add(date, -7)
+      day_name = Calendar.strftime(date, "%a") |> String.upcase()
+
+      current = Map.get(current_week, date, Decimal.new(0))
+      previous = Map.get(prev_week, prev_date, Decimal.new(0))
+
+      %{
+        day: day_name,
+        current: current,
+        previous: previous
+      }
+    end
+  end
+
+  @doc """
+  Get additional dashboard KPIs.
+  """
+  def get_dashboard_kpis(org_id) do
+    now = DateTime.utc_now()
+    thirty_days_ago = DateTime.add(now, -30, :day)
+    sixty_days_ago = DateTime.add(now, -60, :day)
+
+    # New customers this month
+    new_customers_query =
+      from(c in FieldHub.CRM.Customer,
+        where: c.organization_id == ^org_id,
+        where: c.inserted_at >= ^thirty_days_ago
+      )
+
+    new_customers = Repo.aggregate(new_customers_query, :count, :id)
+
+    # Average job value (last 30 days)
+    avg_job_value =
+      from(i in Invoice,
+        where: i.organization_id == ^org_id,
+        where: i.status == "paid",
+        where: i.paid_at >= ^thirty_days_ago,
+        select: avg(i.total_amount)
+      )
+      |> Repo.one()
+
+    # Collection rate
+    total_sent =
+      from(i in Invoice,
+        where: i.organization_id == ^org_id,
+        where: i.inserted_at >= ^sixty_days_ago,
+        select: coalesce(sum(i.total_amount), 0)
+      )
+      |> Repo.one()
+
+    total_collected =
+      from(i in Invoice,
+        where: i.organization_id == ^org_id,
+        where: i.inserted_at >= ^sixty_days_ago,
+        where: i.status == "paid",
+        select: coalesce(sum(i.total_amount), 0)
+      )
+      |> Repo.one()
+
+    collection_rate =
+      if Decimal.gt?(total_sent, 0) do
+        Decimal.div(Decimal.mult(total_collected, 100), total_sent)
+        |> Decimal.round(1)
+      else
+        Decimal.new(0)
+      end
+
+    %{
+      new_customers: new_customers,
+      avg_job_value: avg_job_value || Decimal.new(0),
+      collection_rate: collection_rate
+    }
+  end
 end

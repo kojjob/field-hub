@@ -14,36 +14,41 @@ FieldHub creates a standardized yet customizable core for the service industry. 
 ## ✨ Key Features
 
 ### 🏢 Organization & Multi-Tenancy
-*   **Secure Isolation:** Complete data separation between tenant organizations.
-*   **Custom Settings:** Each organization configures its own terminology, branding, and workflows.
-*   **Custom Fields:** Dynamic schema extension for Jobs, Customers, and Technicians properly integrated into forms.
+* **Secure Isolation:** Complete data separation between tenant organizations.
+* **Custom Settings:** Each organization configures its own terminology, branding, and workflows.
+* **Custom Fields:** Dynamic schema extension for Jobs, Customers, and Technicians properly integrated into forms.
 
 ### 🧩 Dispatch & Operations
-*   **Live Dispatch Board:** Drag-and-drop calendar with real-time collision detection.
-*   **Smart Queue:** "unassigned" job holding area for rapid triage.
-*   **Technician Status:** Real-time visibility into who is `En Route`, `On Site`, or `Available`.
-*   **Map Integration:** Geospatial visualization of jobs and workforce.
+* **Inter-System Connectivity:** Seamless syncing between dispatch, mobile, and customer views.
+* **Intelligent Sidebar:** Persistent, collapsible navigation with teal branding and tooltips for minimized view.
+
+### 🌐 Customer Portal
+
+* **History Tracking:** Clients can view past and upcoming jobs.
+* **Invoicing & Payments:** Seamless viewing of invoices with integrated payment options.
+* **Brand Consistency:** Uses the organization's custom colors and terminology.
 
 ### 📱 Technician Mobile PWA
-*   **Offline-Ready:** (In progress) Architecture supports low-connectivity environments.
-*   **Job Lifecycle:** Simple one-tap status updates.
-*   **Evidence Capture:** Photos, signatures, and notes attached directly to the job event log.
+
+* **Offline-Ready:** (In progress) Architecture supports low-connectivity environments via local data sync and background SMS fallback.
+* **Job Lifecycle:** Simple one-tap status updates.
+* **Evidence Capture:** Photos, signatures, and notes attached directly to the job event log.
 
 ## 🛠 Technology Stack
 
-*   **Elixir & Phoenix (1.7+):** The backbone of our fault-tolerant, concurrent backend.
-*   **Phoenix LiveView:** For rich, real-time client-side interactions.
-*   **PostgreSQL:** Relational data integrity.
-*   **TailwindCSS:** Utility-first styling for a premium, custom UI.
-*   **Alpine.js / Hooks:** For client-side interactions (Maps, Charts).
+* **Elixir & Phoenix (1.7+):** The backbone of our fault-tolerant, concurrent backend.
+* **Phoenix LiveView:** For rich, real-time client-side interactions.
+* **PostgreSQL:** Relational data integrity.
+* **TailwindCSS:** Utility-first styling for a premium, custom UI.
+* **Alpine.js / Hooks:** For client-side interactions (Maps, Charts).
 
 ## 🚀 Getting Started
 
 ### Prerequisites
 
-*   Elixir and Erlang (via ASDF or standard installers)
-*   PostgreSQL
-*   Node.js (for asset compilation)
+* Elixir and Erlang (via ASDF or standard installers)
+* PostgreSQL
+* Node.js (for asset compilation)
 
 ### Setup
 
