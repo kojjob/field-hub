@@ -6,6 +6,7 @@ defmodule FieldHub.Billing do
   alias FieldHub.Repo
   alias FieldHub.Billing.{Invoice, InvoiceLineItem}
   alias FieldHub.Jobs
+  alias FieldHub.Inventory
 
   # ============================================================================
   # Invoice CRUD
@@ -68,6 +69,9 @@ defmodule FieldHub.Billing do
     labor_rate = (job.technician && job.technician.hourly_rate) || Decimal.new(75)
     labor_amount = Decimal.mult(labor_hours, labor_rate) |> Decimal.round(2)
 
+    # Calculate parts amount from job parts
+    parts_total = Inventory.job_parts_total(job.id)
+
     # Default tax rate from org settings or 8.25%
     tax_rate = get_org_tax_rate(job.organization) || Decimal.new("8.25")
 
@@ -81,7 +85,7 @@ defmodule FieldHub.Billing do
         labor_hours: labor_hours,
         labor_rate: labor_rate,
         labor_amount: labor_amount,
-        parts_amount: job.actual_amount || job.quoted_amount || Decimal.new(0),
+        parts_amount: parts_total,
         tax_rate: tax_rate,
         notes: "Invoice for: #{job.title}\n\nThank you for your business!"
       }
@@ -92,13 +96,32 @@ defmodule FieldHub.Billing do
     |> Repo.insert()
     |> case do
       {:ok, invoice} ->
+        # Create line items from job parts
+        create_parts_line_items(invoice, job.id)
+
         # Update job with invoice reference
         Jobs.update_job(job, %{invoice_id: invoice.id, payment_status: "invoiced"})
-        {:ok, Repo.preload(invoice, [:job, :customer])}
+        {:ok, Repo.preload(invoice, [:job, :customer, :line_items])}
 
       error ->
         error
     end
+  end
+
+  defp create_parts_line_items(invoice, job_id) do
+    job_parts = Inventory.list_job_parts(job_id)
+
+    Enum.each(job_parts, fn jp ->
+      %InvoiceLineItem{}
+      |> InvoiceLineItem.changeset(%{
+        invoice_id: invoice.id,
+        description: jp.part.name,
+        type: "parts",
+        quantity: jp.quantity_used,
+        unit_price: jp.unit_price_at_time
+      })
+      |> Repo.insert()
+    end)
   end
 
   defp calculate_labor_hours(job) do
