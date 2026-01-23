@@ -120,6 +120,40 @@ defmodule FieldHub.Jobs do
   end
 
   @doc """
+  Counts jobs completed this month for an organization.
+  """
+  def count_completed_this_month(org_id) do
+    start_of_month = Date.utc_today() |> Date.beginning_of_month()
+
+    Job
+    |> where([j], j.organization_id == ^org_id)
+    |> where([j], j.status == "completed")
+    |> where([j], j.completed_at >= ^start_of_month)
+    |> Repo.aggregate(:count, :id)
+  end
+
+  @doc """
+  Lists priority jobs for the dispatch queue.
+  Returns jobs ordered by priority and scheduled date.
+  """
+  def list_priority_jobs(org_id, opts \\ []) do
+    limit = Keyword.get(opts, :limit, 5)
+
+    Job
+    |> where([j], j.organization_id == ^org_id)
+    |> where([j], j.status in ["scheduled", "dispatched", "en_route"])
+    |> order_by([j], [
+      fragment("CASE WHEN ? = 'emergency' THEN 1 WHEN ? = 'high' THEN 2 WHEN ? = 'normal' THEN 3 ELSE 4 END",
+               j.priority, j.priority, j.priority),
+      asc: j.scheduled_date,
+      asc: j.scheduled_start
+    ])
+    |> limit(^limit)
+    |> Repo.all()
+    |> Repo.preload([:customer, :technician])
+  end
+
+  @doc """
   Returns completed jobs for a customer with an optional limit.
   Used by the customer portal.
   """
@@ -133,6 +167,16 @@ defmodule FieldHub.Jobs do
     |> limit(^limit)
     |> Repo.all()
     |> Repo.preload([:technician, :customer])
+  end
+
+  @doc """
+  Returns the list of job events (audit trail) for a job.
+  Events are ordered chronologically.
+  """
+  def list_job_events(job_id) do
+    JobEvent.for_job(job_id)
+    |> Repo.all()
+    |> Repo.preload([:actor, :technician])
   end
 
   @doc """

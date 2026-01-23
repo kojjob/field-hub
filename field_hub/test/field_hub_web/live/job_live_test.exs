@@ -86,7 +86,8 @@ defmodule FieldHubWeb.JobLiveTest do
       %{job: job} = create_job(user)
       {:ok, index_live, _html} = live(conn, ~p"/jobs")
 
-      assert index_live |> element("a[href*='/edit']") |> render_click() =~
+      # Use the table edit link since there are now two (mobile + desktop)
+      assert index_live |> element("table a[href*='/edit']") |> render_click() =~
                "Edit Job"
 
       assert_patch(index_live, ~p"/jobs/#{job.number}/edit")
@@ -110,7 +111,8 @@ defmodule FieldHubWeb.JobLiveTest do
       %{job: job} = create_job(user)
       {:ok, index_live, _html} = live(conn, ~p"/jobs")
 
-      assert index_live |> element("a[phx-click*='delete']") |> render_click()
+      # Use the first delete link (desktop table view) since there are now two (mobile + desktop)
+      assert index_live |> element("table a[phx-click*='delete']") |> render_click()
       refute has_element?(index_live, "#jobs-#{job.id}")
     end
   end

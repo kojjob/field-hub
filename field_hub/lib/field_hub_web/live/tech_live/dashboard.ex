@@ -44,10 +44,10 @@ defmodule FieldHubWeb.TechLive.Dashboard do
       <%!-- Offline Banner --%>
       <div
         id="offline-banner"
-        class="hidden bg-amber-500/10 border border-amber-500/30 rounded-xl p-3 flex items-center gap-3"
+        class="hidden bg-amber-500/10 dark:bg-amber-500/20 border border-amber-500/30 rounded-xl p-3 flex items-center gap-3"
       >
         <div class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></div>
-        <p class="text-sm text-amber-700 font-medium">
+        <p class="text-sm text-amber-700 dark:text-amber-400 font-medium">
           You're offline. Changes will sync when connected.
         </p>
       </div>
@@ -55,42 +55,42 @@ defmodule FieldHubWeb.TechLive.Dashboard do
       <%!-- Pending Sync Banner --%>
       <div
         id="pending-sync-banner"
-        class="hidden bg-blue-500/10 border border-blue-500/30 rounded-xl p-3 flex items-center justify-between"
+        class="hidden bg-blue-500/10 dark:bg-blue-500/20 border border-blue-500/30 rounded-xl p-3 flex items-center justify-between"
       >
         <div class="flex items-center gap-3">
           <.icon name="hero-arrow-path" class="w-5 h-5 text-blue-500 animate-spin" />
-          <p class="text-sm text-blue-700 font-medium">
+          <p class="text-sm text-blue-700 dark:text-blue-400 font-medium">
             <span data-pending-badge class="font-bold">0</span> pending updates
           </p>
         </div>
-        <button data-sync-trigger class="text-xs font-semibold text-blue-600 hover:text-blue-800">
+        <button data-sync-trigger class="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
           Sync Now
         </button>
       </div>
 
       <div class="flex items-center justify-between">
-        <h1 class="text-2xl font-bold text-gray-900">Today's Jobs</h1>
+        <h1 class="text-2xl font-bold text-zinc-900 dark:text-white">Today's Jobs</h1>
         <div class="flex items-center gap-3">
           <%!-- Network Status Indicator --%>
           <div id="tech-network-status" phx-hook="OfflineIndicator" class="flex items-center gap-1.5">
             <div data-indicator class="w-2 h-2 rounded-full bg-emerald-500"></div>
-            <span data-text class="text-xs text-gray-500">Online</span>
+            <span data-text class="text-xs text-zinc-500 dark:text-zinc-400">Online</span>
           </div>
           <button
             phx-click="refresh"
-            class="text-gray-500 hover:text-gray-900 p-1 active:scale-95 transition-transform"
+            class="text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white p-2 active:scale-95 transition-all rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800"
           >
             <.icon name="hero-arrow-path" class="w-5 h-5" />
           </button>
-          <div class="text-sm text-gray-500">{Calendar.strftime(Date.utc_today(), "%a, %b %d")}</div>
+          <div class="text-sm text-zinc-500 dark:text-zinc-400">{Calendar.strftime(Date.utc_today(), "%a, %b %d")}</div>
         </div>
       </div>
 
       <%= if Enum.empty?(@jobs) do %>
-        <div class="text-center py-10 bg-gray-50 rounded-2xl border border-dashed border-gray-300">
-          <.icon name="hero-calendar" class="w-12 h-12 text-gray-400 mx-auto mb-2" />
-          <p class="text-gray-500 font-medium">No jobs assigned for today.</p>
-          <p class="text-gray-400 text-sm mt-1">Enjoy your day off!</p>
+        <div class="text-center py-10 bg-zinc-50 dark:bg-zinc-900 rounded-2xl border border-dashed border-zinc-300 dark:border-zinc-700">
+          <.icon name="hero-calendar" class="w-12 h-12 text-zinc-400 dark:text-zinc-500 mx-auto mb-2" />
+          <p class="text-zinc-600 dark:text-zinc-300 font-medium">No jobs assigned for today.</p>
+          <p class="text-zinc-400 dark:text-zinc-500 text-sm mt-1">Enjoy your day off!</p>
         </div>
       <% else %>
         <div class="space-y-4">
@@ -127,20 +127,23 @@ defmodule FieldHubWeb.TechLive.Dashboard do
 
   def job_card(assigns) do
     ~H"""
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 active:bg-gray-50 transition-colors">
+    <div class="bg-white dark:bg-zinc-900 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-800 p-4 active:bg-zinc-50 dark:active:bg-zinc-800 transition-colors">
       <div class="flex justify-between items-start mb-2">
         <div class="flex-1 min-w-0 mr-2">
-          <h3 class="font-semibold text-gray-900 truncate">{@job.title}</h3>
-          <p class="text-sm text-gray-500 truncate">{@job.customer.name}</p>
+          <h3 class="font-semibold text-zinc-900 dark:text-white truncate">{@job.title}</h3>
+          <p class="text-sm text-zinc-500 dark:text-zinc-400 truncate">{@job.customer.name}</p>
         </div>
-        <span class={"px-2 py-1 rounded-full text-xs font-medium shrink-0 " <> status_color(@job.status)}>
+        <span class={[
+          "px-2.5 py-1 rounded-lg text-xs font-bold shrink-0",
+          status_color(@job.status)
+        ]}>
           {String.capitalize(@job.status)}
         </span>
       </div>
 
-      <div class="flex flex-col gap-2 text-sm text-gray-600 mt-3">
+      <div class="flex flex-col gap-2.5 text-sm text-zinc-600 dark:text-zinc-400 mt-3">
         <div class="flex items-center gap-2">
-          <.icon name="hero-clock" class="w-4 h-4 text-gray-400 shrink-0" />
+          <.icon name="hero-clock" class="w-4 h-4 text-zinc-400 dark:text-zinc-500 shrink-0" />
           <span>
             {if @job.scheduled_start,
               do: Calendar.strftime(@job.scheduled_start, "%H:%M"),
@@ -151,7 +154,7 @@ defmodule FieldHubWeb.TechLive.Dashboard do
           </span>
         </div>
         <div class="flex items-center gap-2">
-          <.icon name="hero-map-pin" class="w-4 h-4 text-gray-400 shrink-0" />
+          <.icon name="hero-map-pin" class="w-4 h-4 text-zinc-400 dark:text-zinc-500 shrink-0" />
           <span class="truncate">
             {@job.service_address || @job.customer.address_line1 || "No address provided"}
           </span>
@@ -161,11 +164,11 @@ defmodule FieldHubWeb.TechLive.Dashboard do
     """
   end
 
-  defp status_color("scheduled"), do: "bg-blue-100 text-blue-800"
-  defp status_color("in_progress"), do: "bg-green-100 text-green-800"
-  defp status_color("completed"), do: "bg-gray-100 text-gray-800"
-  defp status_color("cancelled"), do: "bg-red-100 text-red-800"
-  defp status_color(_), do: "bg-gray-100 text-gray-600"
+  defp status_color("scheduled"), do: "bg-blue-100 dark:bg-blue-500/20 text-blue-800 dark:text-blue-400"
+  defp status_color("in_progress"), do: "bg-emerald-100 dark:bg-emerald-500/20 text-emerald-800 dark:text-emerald-400"
+  defp status_color("completed"), do: "bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300"
+  defp status_color("cancelled"), do: "bg-red-100 dark:bg-red-500/20 text-red-800 dark:text-red-400"
+  defp status_color(_), do: "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400"
 
   @impl true
   def handle_event("refresh", _, socket) do

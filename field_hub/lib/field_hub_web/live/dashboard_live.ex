@@ -14,6 +14,12 @@ defmodule FieldHubWeb.DashboardLive do
     # Billing stats
     billing_stats = FieldHub.Billing.get_invoice_stats(org_id)
 
+    # Additional KPIs
+    extra_kpis = FieldHub.Billing.get_dashboard_kpis(org_id)
+
+    # Weekly revenue data for chart
+    weekly_revenue = FieldHub.Billing.get_weekly_revenue(org_id)
+
     # Job stats
     open_jobs_count = FieldHub.Jobs.count_jobs_by_status(org_id, ["unscheduled", "scheduled"])
 
@@ -25,13 +31,22 @@ defmodule FieldHubWeb.DashboardLive do
         "in_progress"
       ])
 
+    completed_this_month = FieldHub.Jobs.count_completed_this_month(org_id)
+
+    # Priority jobs for table
+    priority_jobs = FieldHub.Jobs.list_priority_jobs(org_id, limit: 5)
+
     {:ok,
      socket
      |> assign(:page_title, "Operations Overview")
      |> assign(:current_nav, :dashboard)
      |> assign(:billing_stats, billing_stats)
+     |> assign(:extra_kpis, extra_kpis)
+     |> assign(:weekly_revenue, weekly_revenue)
      |> assign(:open_jobs_count, open_jobs_count)
-     |> assign(:in_progress_jobs_count, in_progress_jobs_count)}
+     |> assign(:in_progress_jobs_count, in_progress_jobs_count)
+     |> assign(:completed_this_month, completed_this_month)
+     |> assign(:priority_jobs, priority_jobs)}
   end
 
   @impl true
@@ -63,13 +78,12 @@ defmodule FieldHubWeb.DashboardLive do
           </.link>
         </div>
       </div>
-      
-    <!-- KPI Row -->
+
+    <!-- KPI Row - Primary Metrics -->
       <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
         <FieldHubWeb.DashboardComponents.kpi_card
           label="Total Revenue"
           value={"$#{format_money(@billing_stats.total_invoiced)}"}
-          change="+12.5%"
           icon="payments"
           variant={:simple}
         />
@@ -78,7 +92,8 @@ defmodule FieldHubWeb.DashboardLive do
           value={"#{@in_progress_jobs_count}"}
           icon="bolt"
           variant={:progress}
-          progress={75}
+          progress={calculate_progress(@in_progress_jobs_count, @open_jobs_count)}
+          subtext={"#{@open_jobs_count} in queue"}
         />
         <FieldHubWeb.DashboardComponents.kpi_card
           label="Outstanding"
@@ -87,31 +102,54 @@ defmodule FieldHubWeb.DashboardLive do
           variant={:simple}
         />
         <FieldHubWeb.DashboardComponents.kpi_card
-          label={"#{task_singular} Completion"}
-          value="98.2%"
-          change="+2.4%"
+          label={"Completed This Month"}
+          value={"#{@completed_this_month}"}
           icon="check_circle"
           variant={:simple}
         />
       </div>
-      
+
+    <!-- KPI Row - Secondary Metrics -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <FieldHubWeb.DashboardComponents.kpi_card
+          label="New Customers (30d)"
+          value={"#{@extra_kpis.new_customers}"}
+          icon="trending_up"
+          variant={:simple}
+        />
+        <FieldHubWeb.DashboardComponents.kpi_card
+          label="Avg Job Value"
+          value={"$#{format_money(@extra_kpis.avg_job_value)}"}
+          icon="star"
+          variant={:simple}
+        />
+        <FieldHubWeb.DashboardComponents.kpi_card
+          label="Collection Rate"
+          value={"#{@extra_kpis.collection_rate}%"}
+          icon="check_circle"
+          variant={:progress}
+          progress={Decimal.to_integer(@extra_kpis.collection_rate)}
+          subtext="60-day window"
+        />
+      </div>
+
     <!-- Middle Intelligence Grid -->
       <div class="grid grid-cols-1 xl:grid-cols-12 gap-8 mt-10">
         <!-- Billing Insights -->
         <div class="xl:col-span-4">
           <FieldHubWeb.DashboardComponents.billing_overview stats={@billing_stats} />
         </div>
-        
+
     <!-- Revenue Performance -->
         <div class="xl:col-span-8">
-          <FieldHubWeb.DashboardComponents.revenue_trend_chart />
+          <FieldHubWeb.DashboardComponents.revenue_trend_chart data={@weekly_revenue} />
         </div>
       </div>
-      
+
     <!-- Bottom Section: Workflows & Activity -->
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
         <div class="lg:col-span-8">
-          <FieldHubWeb.DashboardComponents.priority_jobs_table />
+          <FieldHubWeb.DashboardComponents.priority_jobs_table jobs={@priority_jobs} />
         </div>
         <div class="lg:col-span-4">
           <FieldHubWeb.DashboardComponents.live_activity_feed />
@@ -128,4 +166,11 @@ defmodule FieldHubWeb.DashboardLive do
     do: :erlang.float_to_binary(amount / 1, decimals: 2)
 
   defp format_money(_), do: "0.00"
+
+  defp calculate_progress(active, open) when is_integer(active) and is_integer(open) do
+    total = active + open
+    if total > 0, do: round(active / total * 100), else: 0
+  end
+
+  defp calculate_progress(_, _), do: 0
 end
